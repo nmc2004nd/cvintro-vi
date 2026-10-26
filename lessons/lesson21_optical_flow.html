@@ -57,7 +57,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=593502fb"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Gi%E1%BA%A3-%C4%91%E1%BB%8Bnh-%C4%91%E1%BB%99-s%C3%A1ng-kh%C3%B4ng-%C4%91%E1%BB%95i">Giả định độ sáng không đổi<a class="anchor-link" href="#Gi%E1%BA%A3-%C4%91%E1%BB%8Bnh-%C4%91%E1%BB%99-s%C3%A1ng-kh%C3%B4ng-%C4%91%E1%BB%95i">¶</a></h2><p>Luồng quang học giả định cường độ của một điểm không thay đổi khi nó di chuyển: $I(x, y, t) = I(x+u, y+v, t+1)$. Khai triển Taylor bậc nhất vế phải cho ra <strong>phương trình ràng buộc luồng quang học (optical flow constraint equation)</strong>:</p>
+<h2 id="Gi%E1%BA%A3-%C4%91%E1%BB%8Bnh-%C4%91%E1%BB%99-s%C3%A1ng-kh%C3%B4ng-%C4%91%E1%BB%95i-(The-brightness-constancy-assumption)">Giả định độ sáng không đổi (The brightness constancy assumption)<a class="anchor-link" href="#Gi%E1%BA%A3-%C4%91%E1%BB%8Bnh-%C4%91%E1%BB%99-s%C3%A1ng-kh%C3%B4ng-%C4%91%E1%BB%95i-(The-brightness-constancy-assumption)">¶</a></h2><p>Luồng quang học giả định cường độ của một điểm không thay đổi khi nó di chuyển: $I(x, y, t) = I(x+u, y+v, t+1)$. Khai triển Taylor bậc nhất vế phải cho ra <strong>phương trình ràng buộc luồng quang học (optical flow constraint equation)</strong>:</p>
 <p>$$I_x u + I_y v + I_t = 0$$</p>
 <p>trong đó $I_x, I_y$ là các gradient không gian (Bài 12) và $I_t$ là hiệu cường độ giữa hai khung hình. Đây là <strong>một phương trình với hai ẩn số</strong> (chuyển động $u$ và $v$) tại mỗi điểm ảnh — tự nó không đủ thông tin để giải ra luồng.</p>
 </div>
@@ -66,7 +66,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=b0aad790"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="B%C3%A0i-to%C3%A1n-kh%E1%BA%A9u-%C4%91%E1%BB%99">Bài toán khẩu độ<a class="anchor-link" href="#B%C3%A0i-to%C3%A1n-kh%E1%BA%A9u-%C4%91%E1%BB%99">¶</a></h2><p>Nhìn qua một cửa sổ nhỏ vào một biên đang di chuyển, chỉ có chuyển động <strong>vuông góc với biên</strong> là nhìn thấy được; chuyển động <strong>dọc theo biên</strong> hoàn toàn không tạo ra thay đổi nào thấy được, nên phép đo cục bộ không thể nhận ra nó. Đây chính là lý do phương trình ràng buộc luồng bị thiếu ràng buộc: nó chỉ ràng buộc thành phần của $(u,v)$ dọc theo hướng gradient $(I_x, I_y)$, để thành phần vuông góc hoàn toàn không bị ràng buộc bởi phương trình đó.</p>
+<h2 id="B%C3%A0i-to%C3%A1n-kh%E1%BA%A9u-%C4%91%E1%BB%99-(The-aperture-problem)">Bài toán khẩu độ (The aperture problem)<a class="anchor-link" href="#B%C3%A0i-to%C3%A1n-kh%E1%BA%A9u-%C4%91%E1%BB%99-(The-aperture-problem)">¶</a></h2><p>Nhìn qua một cửa sổ nhỏ vào một biên đang di chuyển, chỉ có chuyển động <strong>vuông góc với biên</strong> là nhìn thấy được; chuyển động <strong>dọc theo biên</strong> hoàn toàn không tạo ra thay đổi nào thấy được, nên phép đo cục bộ không thể nhận ra nó. Đây chính là lý do phương trình ràng buộc luồng bị thiếu ràng buộc: nó chỉ ràng buộc thành phần của $(u,v)$ dọc theo hướng gradient $(I_x, I_y)$, để thành phần vuông góc hoàn toàn không bị ràng buộc bởi phương trình đó.</p>
 </div>
 </div>
 </div>
@@ -155,7 +155,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=b5a2d5da"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Lucas-Kanade:-gi%E1%BA%A3i-b%C3%A0i-to%C3%A1n-kh%E1%BA%A9u-%C4%91%E1%BB%99-b%E1%BA%B1ng-m%E1%BB%99t-c%E1%BB%ADa-s%E1%BB%95">Lucas-Kanade: giải bài toán khẩu độ bằng một cửa sổ<a class="anchor-link" href="#Lucas-Kanade:-gi%E1%BA%A3i-b%C3%A0i-to%C3%A1n-kh%E1%BA%A9u-%C4%91%E1%BB%99-b%E1%BA%B1ng-m%E1%BB%99t-c%E1%BB%ADa-s%E1%BB%95">¶</a></h2><p><a href="../references.html#lucas-kanade-1981">Cách khắc phục của Lucas và Kanade (1981)</a>: giả định luồng $(u,v)$ là <strong>không đổi trên một cửa sổ nhỏ</strong>, rồi kết hợp phương trình ràng buộc luồng từ mọi điểm ảnh trong cửa sổ đó thành một hệ bình phương tối thiểu thừa ràng buộc (overdetermined):</p>
+<h2 id="Lucas-Kanade:-gi%E1%BA%A3i-b%C3%A0i-to%C3%A1n-kh%E1%BA%A9u-%C4%91%E1%BB%99-b%E1%BA%B1ng-m%E1%BB%99t-c%E1%BB%ADa-s%E1%BB%95-(Lucas-Kanade:-solving-the-aperture-problem-with-a-window)">Lucas-Kanade: giải bài toán khẩu độ bằng một cửa sổ (Lucas-Kanade: solving the aperture problem with a window)<a class="anchor-link" href="#Lucas-Kanade:-gi%E1%BA%A3i-b%C3%A0i-to%C3%A1n-kh%E1%BA%A9u-%C4%91%E1%BB%99-b%E1%BA%B1ng-m%E1%BB%99t-c%E1%BB%ADa-s%E1%BB%95-(Lucas-Kanade:-solving-the-aperture-problem-with-a-window)">¶</a></h2><p><a href="../references.html#lucas-kanade-1981">Cách khắc phục của Lucas và Kanade (1981)</a>: giả định luồng $(u,v)$ là <strong>không đổi trên một cửa sổ nhỏ</strong>, rồi kết hợp phương trình ràng buộc luồng từ mọi điểm ảnh trong cửa sổ đó thành một hệ bình phương tối thiểu thừa ràng buộc (overdetermined):</p>
 <p>$$\underbrace{\begin{bmatrix}\sum I_x^2 &amp; \sum I_xI_y \\ \sum I_xI_y &amp; \sum I_y^2\end{bmatrix}}_{M}\begin{bmatrix}u\\v\end{bmatrix} = -\begin{bmatrix}\sum I_xI_t\\ \sum I_yI_t\end{bmatrix}$$</p>
 <p>$M$ chính xác là tensor cấu trúc ở Bài 20! Đây không phải là trùng hợp: giải hệ này đòi hỏi $M$ khả nghịch, tức là có hai giá trị riêng lớn — chính là điều kiện "đặc trưng tốt để theo dõi" của Shi-Tomasi. Một vùng phẳng ($M$ gần bằng 0) hoặc một biên (một giá trị riêng nhỏ — lại là bài toán khẩu độ) cho ra một hệ điều kiện kém hoặc suy biến; một góc cho ra hệ điều kiện tốt. <strong>Các góc theo dõi được vì đúng cùng lý do khiến chúng là góc tốt.</strong></p>
 </div>
@@ -216,7 +216,7 @@ manual LK estimate: (0.612, 0.393)  (averaged over 30 corners)
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=49505292"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Tr%E1%BB%B1c-quan-h%C3%B3a-%E1%BA%A3nh,-c%C3%A1c-%C4%91%E1%BA%B7c-tr%C6%B0ng-%C4%91%C6%B0%E1%BB%A3c-theo-d%C3%B5i-v%C3%A0-chuy%E1%BB%83n-%C4%91%E1%BB%99ng-c%E1%BB%A7a-ch%C3%BAng">Trực quan hóa ảnh, các đặc trưng được theo dõi và chuyển động của chúng<a class="anchor-link" href="#Tr%E1%BB%B1c-quan-h%C3%B3a-%E1%BA%A3nh,-c%C3%A1c-%C4%91%E1%BA%B7c-tr%C6%B0ng-%C4%91%C6%B0%E1%BB%A3c-theo-d%C3%B5i-v%C3%A0-chuy%E1%BB%83n-%C4%91%E1%BB%99ng-c%E1%BB%A7a-ch%C3%BAng">¶</a></h3>
+<h3 id="Tr%E1%BB%B1c-quan-h%C3%B3a-%E1%BA%A3nh,-c%C3%A1c-%C4%91%E1%BA%B7c-tr%C6%B0ng-%C4%91%C6%B0%E1%BB%A3c-theo-d%C3%B5i-v%C3%A0-chuy%E1%BB%83n-%C4%91%E1%BB%99ng-c%E1%BB%A7a-ch%C3%BAng-(Visualizing-the-image,-the-tracked-features,-and-their-motion)">Trực quan hóa ảnh, các đặc trưng được theo dõi và chuyển động của chúng (Visualizing the image, the tracked features, and their motion)<a class="anchor-link" href="#Tr%E1%BB%B1c-quan-h%C3%B3a-%E1%BA%A3nh,-c%C3%A1c-%C4%91%E1%BA%B7c-tr%C6%B0ng-%C4%91%C6%B0%E1%BB%A3c-theo-d%C3%B5i-v%C3%A0-chuy%E1%BB%83n-%C4%91%E1%BB%99ng-c%E1%BB%A7a-ch%C3%BAng-(Visualizing-the-image,-the-tracked-features,-and-their-motion)">¶</a></h3>
 </div>
 </div>
 </div>
@@ -256,7 +256,7 @@ manual LK estimate: (0.612, 0.393)  (averaged over 30 corners)
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=8a1e7a85"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Chuy%E1%BB%83n-%C4%91%E1%BB%99ng-l%E1%BB%9Bn-h%C6%A1n-c%E1%BA%A7n-l%E1%BA%B7p">Chuyển động lớn hơn cần lặp<a class="anchor-link" href="#Chuy%E1%BB%83n-%C4%91%E1%BB%99ng-l%E1%BB%9Bn-h%C6%A1n-c%E1%BA%A7n-l%E1%BA%B7p">¶</a></h3><p>Phép giải tuyến tính một lần này dựa vào xấp xỉ Taylor, vốn chỉ đúng với chuyển động nhỏ. Với độ dịch chuyển lớn hơn, cùng cách tiếp cận một lần đó sẽ suy giảm:</p>
+<h3 id="Chuy%E1%BB%83n-%C4%91%E1%BB%99ng-l%E1%BB%9Bn-h%C6%A1n-c%E1%BA%A7n-l%E1%BA%B7p-(Larger-motions-need-iteration)">Chuyển động lớn hơn cần lặp (Larger motions need iteration)<a class="anchor-link" href="#Chuy%E1%BB%83n-%C4%91%E1%BB%99ng-l%E1%BB%9Bn-h%C6%A1n-c%E1%BA%A7n-l%E1%BA%B7p-(Larger-motions-need-iteration)">¶</a></h3><p>Phép giải tuyến tính một lần này dựa vào xấp xỉ Taylor, vốn chỉ đúng với chuyển động nhỏ. Với độ dịch chuyển lớn hơn, cùng cách tiếp cận một lần đó sẽ suy giảm:</p>
 </div>
 </div>
 </div>
@@ -316,7 +316,7 @@ cv2.calcOpticalFlowPyrLK estimate:    (4.000, 3.000)  &lt;- accurate
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=72d86bf5"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Tr%E1%BB%B1c-quan-h%C3%B3a-c%C3%A1c-vector-lu%E1%BB%93ng-th%C6%B0a">Trực quan hóa các vector luồng thưa<a class="anchor-link" href="#Tr%E1%BB%B1c-quan-h%C3%B3a-c%C3%A1c-vector-lu%E1%BB%93ng-th%C6%B0a">¶</a></h3><p>Mỗi góc được theo dõi được vẽ thành một chấm xanh lục tại vị trí của nó trong khung hình đầu tiên, với một mũi tên đỏ chỉ tới nơi Lucas-Kanade tìm thấy nó trong khung hình thứ hai (mũi tên được phóng đại 3 lần vì chuyển động thực ở đây chỉ vài điểm ảnh).</p>
+<h3 id="Tr%E1%BB%B1c-quan-h%C3%B3a-c%C3%A1c-vector-lu%E1%BB%93ng-th%C6%B0a-(Visualizing-sparse-flow-vectors)">Trực quan hóa các vector luồng thưa (Visualizing sparse flow vectors)<a class="anchor-link" href="#Tr%E1%BB%B1c-quan-h%C3%B3a-c%C3%A1c-vector-lu%E1%BB%93ng-th%C6%B0a-(Visualizing-sparse-flow-vectors)">¶</a></h3><p>Mỗi góc được theo dõi được vẽ thành một chấm xanh lục tại vị trí của nó trong khung hình đầu tiên, với một mũi tên đỏ chỉ tới nơi Lucas-Kanade tìm thấy nó trong khung hình thứ hai (mũi tên được phóng đại 3 lần vì chuyển động thực ở đây chỉ vài điểm ảnh).</p>
 </div>
 </div>
 </div>
@@ -358,7 +358,7 @@ cv2.calcOpticalFlowPyrLK estimate:    (4.000, 3.000)  &lt;- accurate
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=lk7r4ck1ng0intro"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Theo-d%C3%B5i-%C4%91i%E1%BB%83m-qua-m%E1%BB%99t-%C4%91o%E1%BA%A1n-video-ng%E1%BA%AFn">Theo dõi điểm qua một đoạn video ngắn<a class="anchor-link" href="#Theo-d%C3%B5i-%C4%91i%E1%BB%83m-qua-m%E1%BB%99t-%C4%91o%E1%BA%A1n-video-ng%E1%BA%AFn">¶</a></h3><p>Để thấy Lucas-Kanade chạy qua nhiều hơn hai khung hình, ta tạo một chuỗi tổng hợp ngắn bằng cách liên tục biến dạng một bức ảnh tĩnh duy nhất với một phép biến đổi affine thay đổi mượt mà (một chút lia, xoay và phóng to mỗi khung hình) — mô phỏng một camera đang di chuyển. Các góc Shi-Tomasi được phát hiện một lần trên khung hình 0, rồi được theo dõi từ khung hình này sang khung hình khác bằng <code>cv2.calcOpticalFlowPyrLK</code>, nối đầu ra của mỗi khung hình thành đầu vào của khung hình tiếp theo.</p>
+<h3 id="Theo-d%C3%B5i-%C4%91i%E1%BB%83m-qua-m%E1%BB%99t-%C4%91o%E1%BA%A1n-video-ng%E1%BA%AFn-(Tracking-points-through-a-short-video)">Theo dõi điểm qua một đoạn video ngắn (Tracking points through a short video)<a class="anchor-link" href="#Theo-d%C3%B5i-%C4%91i%E1%BB%83m-qua-m%E1%BB%99t-%C4%91o%E1%BA%A1n-video-ng%E1%BA%AFn-(Tracking-points-through-a-short-video)">¶</a></h3><p>Để thấy Lucas-Kanade chạy qua nhiều hơn hai khung hình, ta tạo một chuỗi tổng hợp ngắn bằng cách liên tục biến dạng một bức ảnh tĩnh duy nhất với một phép biến đổi affine thay đổi mượt mà (một chút lia, xoay và phóng to mỗi khung hình) — mô phỏng một camera đang di chuyển. Các góc Shi-Tomasi được phát hiện một lần trên khung hình 0, rồi được theo dõi từ khung hình này sang khung hình khác bằng <code>cv2.calcOpticalFlowPyrLK</code>, nối đầu ra của mỗi khung hình thành đầu vào của khung hình tiếp theo.</p>
 </div>
 </div>
 </div>
@@ -418,7 +418,7 @@ cv2.calcOpticalFlowPyrLK estimate:    (4.000, 3.000)  &lt;- accurate
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=3e0a69e6"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Horn-Schunck:-m%E1%BB%99t-ph%C6%B0%C6%A1ng-%C3%A1n-to%C3%A0n-c%E1%BB%A5c-thay-cho-lu%E1%BB%93ng-theo-c%E1%BB%ADa-s%E1%BB%95">Horn-Schunck: một phương án toàn cục thay cho luồng theo cửa sổ<a class="anchor-link" href="#Horn-Schunck:-m%E1%BB%99t-ph%C6%B0%C6%A1ng-%C3%A1n-to%C3%A0n-c%E1%BB%A5c-thay-cho-lu%E1%BB%93ng-theo-c%E1%BB%ADa-s%E1%BB%95">¶</a></h2><p>Cửa sổ của Lucas-Kanade là một giả định trơn <em>cục bộ</em>: luồng không đổi trên một vùng lân cận nhỏ, được ước lượng độc lập tại mỗi điểm. Cùng năm đó, <a href="../references.html#horn-schunck-1981">Horn và Schunck (1981)</a> đề xuất một phương án <em>toàn cục</em>: thay vì nhiều phép giải độc lập trên từng cửa sổ, cực tiểu hóa một hàm năng lượng duy nhất trên toàn ảnh cùng lúc, đánh đổi giữa mức độ luồng thỏa mãn phương trình ràng buộc luồng quang học và mức độ luồng thay đổi mượt mà giữa các điểm ảnh lân cận:</p>
+<h2 id="Horn-Schunck:-m%E1%BB%99t-ph%C6%B0%C6%A1ng-%C3%A1n-to%C3%A0n-c%E1%BB%A5c-thay-cho-lu%E1%BB%93ng-theo-c%E1%BB%ADa-s%E1%BB%95-(Horn-Schunck:-a-global-alternative-to-windowed-flow)">Horn-Schunck: một phương án toàn cục thay cho luồng theo cửa sổ (Horn-Schunck: a global alternative to windowed flow)<a class="anchor-link" href="#Horn-Schunck:-m%E1%BB%99t-ph%C6%B0%C6%A1ng-%C3%A1n-to%C3%A0n-c%E1%BB%A5c-thay-cho-lu%E1%BB%93ng-theo-c%E1%BB%ADa-s%E1%BB%95-(Horn-Schunck:-a-global-alternative-to-windowed-flow)">¶</a></h2><p>Cửa sổ của Lucas-Kanade là một giả định trơn <em>cục bộ</em>: luồng không đổi trên một vùng lân cận nhỏ, được ước lượng độc lập tại mỗi điểm. Cùng năm đó, <a href="../references.html#horn-schunck-1981">Horn và Schunck (1981)</a> đề xuất một phương án <em>toàn cục</em>: thay vì nhiều phép giải độc lập trên từng cửa sổ, cực tiểu hóa một hàm năng lượng duy nhất trên toàn ảnh cùng lúc, đánh đổi giữa mức độ luồng thỏa mãn phương trình ràng buộc luồng quang học và mức độ luồng thay đổi mượt mà giữa các điểm ảnh lân cận:</p>
 <p>$$E(u,v) = \sum_{x,y} \underbrace{(I_x u + I_y v + I_t)^2}_{\text{data term}} \;+\; \alpha^2 \underbrace{\left(\|\nabla u\|^2 + \|\nabla v\|^2\right)}_{\text{smoothness term}}$$</p>
 <p>Số hạng trơn (smoothness term) là thứ làm cho phương pháp này mang tính toàn cục: nó ràng buộc luồng của mỗi điểm ảnh với luồng của các lân cận, nên việc cực tiểu hóa $E$ (ví dụ bằng các cập nhật lặp Gauss-Seidel) cho phép các ước lượng luồng đáng tin cậy gần biên <em>lan truyền</em> vào các vùng phẳng, không có kết cấu, vốn không có thông tin cục bộ nào của riêng chúng — chính là kiểu thất bại mà bài toán khẩu độ gây ra ở mức tồi tệ nhất.</p>
 </div>
@@ -482,7 +482,7 @@ cv2.calcOpticalFlowPyrLK estimate:    (4.000, 3.000)  &lt;- accurate
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=2c5ea1ed"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ph%C6%B0%C6%A1ng-ph%C3%A1p-Farneb%C3%A4ck-cho-lu%E1%BB%93ng-quang-h%E1%BB%8Dc-d%C3%A0y-%C4%91%E1%BA%B7c">Phương pháp Farnebäck cho luồng quang học dày đặc<a class="anchor-link" href="#Ph%C6%B0%C6%A1ng-ph%C3%A1p-Farneb%C3%A4ck-cho-lu%E1%BB%93ng-quang-h%E1%BB%8Dc-d%C3%A0y-%C4%91%E1%BA%B7c">¶</a></h2><p>Phép tối ưu toàn cục của Horn-Schunck thanh lịch nhưng tốn kém và hội tụ chậm; với luồng dày đặc (mọi điểm ảnh), <a href="../references.html#farneback-2003">phương pháp Farnebäck (2003)</a> — được cung cấp dưới dạng <code>cv2.calcOpticalFlowFarneback</code> — là một phương pháp mới hơn (nhưng vẫn mang tính cổ điển). Nó vẫn cục bộ, giống Lucas-Kanade, nhưng bỏ giả định luồng-không-đổi-trong-cửa-sổ, thay vào đó xấp xỉ cục bộ mỗi vùng lân cận bằng một đa thức và so sánh các khai triển đa thức giữa các khung hình.</p>
+<h2 id="Ph%C6%B0%C6%A1ng-ph%C3%A1p-Farneb%C3%A4ck-cho-lu%E1%BB%93ng-quang-h%E1%BB%8Dc-d%C3%A0y-%C4%91%E1%BA%B7c-(Farneb%C3%A4ck's-method-for-dense-optical-flow)">Phương pháp Farnebäck cho luồng quang học dày đặc (Farnebäck's method for dense optical flow)<a class="anchor-link" href="#Ph%C6%B0%C6%A1ng-ph%C3%A1p-Farneb%C3%A4ck-cho-lu%E1%BB%93ng-quang-h%E1%BB%8Dc-d%C3%A0y-%C4%91%E1%BA%B7c-(Farneb%C3%A4ck's-method-for-dense-optical-flow)">¶</a></h2><p>Phép tối ưu toàn cục của Horn-Schunck thanh lịch nhưng tốn kém và hội tụ chậm; với luồng dày đặc (mọi điểm ảnh), <a href="../references.html#farneback-2003">phương pháp Farnebäck (2003)</a> — được cung cấp dưới dạng <code>cv2.calcOpticalFlowFarneback</code> — là một phương pháp mới hơn (nhưng vẫn mang tính cổ điển). Nó vẫn cục bộ, giống Lucas-Kanade, nhưng bỏ giả định luồng-không-đổi-trong-cửa-sổ, thay vào đó xấp xỉ cục bộ mỗi vùng lân cận bằng một đa thức và so sánh các khai triển đa thức giữa các khung hình.</p>
 </div>
 </div>
 </div>
@@ -520,7 +520,7 @@ cv2.calcOpticalFlowPyrLK estimate:    (4.000, 3.000)  &lt;- accurate
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=b51baba3"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="M%E1%BB%99t-video-th%E1%BA%ADt:-chu%E1%BB%97i-Army">Một video thật: chuỗi Army<a class="anchor-link" href="#M%E1%BB%99t-video-th%E1%BA%ADt:-chu%E1%BB%97i-Army">¶</a></h3><p>Bây giờ hãy xét một cặp khung hình từ bộ đánh giá chuẩn (benchmark) Middlebury, hiển thị bên dưới. Luân phiên giữa hai khung hình giúp dễ dàng nhìn thấy trực tiếp chuyển động — hãy quan sát những người lính đồ chơi, quả bóng và nền dịch chuyển khác nhau thế nào.</p>
+<h3 id="M%E1%BB%99t-video-th%E1%BA%ADt:-chu%E1%BB%97i-Army-(A-real-video:-the-Army-sequence)">Một video thật: chuỗi Army (A real video: the Army sequence)<a class="anchor-link" href="#M%E1%BB%99t-video-th%E1%BA%ADt:-chu%E1%BB%97i-Army-(A-real-video:-the-Army-sequence)">¶</a></h3><p>Bây giờ hãy xét một cặp khung hình từ bộ đánh giá chuẩn (benchmark) Middlebury, hiển thị bên dưới. Luân phiên giữa hai khung hình giúp dễ dàng nhìn thấy trực tiếp chuyển động — hãy quan sát những người lính đồ chơi, quả bóng và nền dịch chuyển khác nhau thế nào.</p>
 <img alt="Chuỗi Army hai khung hình nhấp nháy từ Middlebury" src="../img/army_flicker.gif" style="display: block; margin: 0 auto; max-width: 500px;"/>
 </div>
 </div>
@@ -587,7 +587,7 @@ cv2.calcOpticalFlowPyrLK estimate:    (4.000, 3.000)  &lt;- accurate
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=a569183c"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Chạy lại phép so sánh Lucas-Kanade thưa với <code>large_motion = (10.0, 8.0)</code>. <code>cv2.calcOpticalFlowPyrLK</code> có còn khôi phục chính xác không? Đến mức nào (hãy thử các chuyển động ngày càng lớn) thì nó bắt đầu thất bại, và tại sao bạn kỳ vọng kim tự tháp giúp đẩy giới hạn đó ra xa hơn?</li>
 <li>Sửa cảnh tổng hợp để các hình tròn di chuyển với vận tốc <em>khác nhau</em> (ví dụ một nửa di chuyển theo một hướng, một nửa theo hướng khác). Chạy lại phần trực quan hóa màu Farnebäck dày đặc và xác nhận hai chuyển động hiển thị thành hai màu riêng biệt.</li>
 <li>Trong ví dụ bài toán khẩu độ, hãy dựng một mảng nhỏ có kết cấu (không phải biên) thay vì một biên thẳng, và chỉ ra rằng <em>cả hai</em> thành phần của một vector chuyển động tùy ý đều khôi phục được từ nó — khác với trường hợp biên, ở đây không nên có hướng chuyển động nào là vô hình.</li>

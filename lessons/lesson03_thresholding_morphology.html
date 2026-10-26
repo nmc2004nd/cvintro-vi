@@ -57,7 +57,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=e0e4762c"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="T%E1%BA%A1o-m%E1%BB%99t-%E1%BA%A3nh-th%E1%BB%AD-nghi%E1%BB%87m-c%C3%B3-nhi%E1%BB%85u">Tạo một ảnh thử nghiệm có nhiễu<a class="anchor-link" href="#T%E1%BA%A1o-m%E1%BB%99t-%E1%BA%A3nh-th%E1%BB%AD-nghi%E1%BB%87m-c%C3%B3-nhi%E1%BB%85u">¶</a></h2><p>Chúng ta tổng hợp một ảnh xám có một hình sáng trên nền tối, rồi thêm nhiễu ngẫu nhiên để một số điểm ảnh nền bị sáng và một số điểm ảnh tiền cảnh bị tối.</p>
+<h2 id="T%E1%BA%A1o-m%E1%BB%99t-%E1%BA%A3nh-th%E1%BB%AD-nghi%E1%BB%87m-c%C3%B3-nhi%E1%BB%85u-(Build-a-noisy-test-image)">Tạo một ảnh thử nghiệm có nhiễu (Build a noisy test image)<a class="anchor-link" href="#T%E1%BA%A1o-m%E1%BB%99t-%E1%BA%A3nh-th%E1%BB%AD-nghi%E1%BB%87m-c%C3%B3-nhi%E1%BB%85u-(Build-a-noisy-test-image)">¶</a></h2><p>Chúng ta tổng hợp một ảnh xám có một hình sáng trên nền tối, rồi thêm nhiễu ngẫu nhiên để một số điểm ảnh nền bị sáng và một số điểm ảnh tiền cảnh bị tối.</p>
 </div>
 </div>
 </div>
@@ -101,7 +101,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=b4304e41"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ph%C3%A2n-ng%C6%B0%E1%BB%A1ng">Phân ngưỡng<a class="anchor-link" href="#Ph%C3%A2n-ng%C6%B0%E1%BB%A1ng">¶</a></h2><p>Phân ngưỡng chẳng qua là một phép so sánh trên từng điểm ảnh: mọi điểm ảnh lớn hơn ngưỡng trở thành trắng (255), mọi điểm ảnh nhỏ hơn hoặc bằng ngưỡng trở thành đen (0). Với NumPy, đó chỉ là một phép so sánh boolean cộng với <code>np.where</code> để chọn giá trị đầu ra.</p>
+<h2 id="Ph%C3%A2n-ng%C6%B0%E1%BB%A1ng-(Thresholding)">Phân ngưỡng (Thresholding)<a class="anchor-link" href="#Ph%C3%A2n-ng%C6%B0%E1%BB%A1ng-(Thresholding)">¶</a></h2><p>Phân ngưỡng chẳng qua là một phép so sánh trên từng điểm ảnh: mọi điểm ảnh lớn hơn ngưỡng trở thành trắng (255), mọi điểm ảnh nhỏ hơn hoặc bằng ngưỡng trở thành đen (0). Với NumPy, đó chỉ là một phép so sánh boolean cộng với <code>np.where</code> để chọn giá trị đầu ra.</p>
 </div>
 </div>
 </div>
@@ -134,7 +134,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=b6d84f64"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="H%C3%A0m-cv2.threshold-c%E1%BB%A7a-OpenCV">Hàm <code>cv2.threshold</code> của OpenCV<a class="anchor-link" href="#H%C3%A0m-cv2.threshold-c%E1%BB%A7a-OpenCV">¶</a></h3><p>OpenCV gói cùng phép toán này vào <code>cv2.threshold</code>, rất tiện vì hàm còn hỗ trợ các biến thể ngoài phân ngưỡng nhị phân đơn giản — đầu ra đảo ngược, cắt trần thay vì đưa về 0, và tự động chọn ngưỡng (<code>cv2.THRESH_OTSU</code>) — tất cả qua cùng một hàm. Với phân ngưỡng nhị phân thông thường, nó tính ra kết quả giống hệt phiên bản NumPy ở trên.</p>
+<h3 id="H%C3%A0m-cv2.threshold-c%E1%BB%A7a-OpenCV-(OpenCV's-cv2.threshold)">Hàm <code>cv2.threshold</code> của OpenCV (OpenCV's <code>cv2.threshold</code>)<a class="anchor-link" href="#H%C3%A0m-cv2.threshold-c%E1%BB%A7a-OpenCV-(OpenCV's-cv2.threshold)">¶</a></h3><p>OpenCV gói cùng phép toán này vào <code>cv2.threshold</code>, rất tiện vì hàm còn hỗ trợ các biến thể ngoài phân ngưỡng nhị phân đơn giản — đầu ra đảo ngược, cắt trần thay vì đưa về 0, và tự động chọn ngưỡng (<code>cv2.THRESH_OTSU</code>) — tất cả qua cùng một hàm. Với phân ngưỡng nhị phân thông thường, nó tính ra kết quả giống hệt phiên bản NumPy ở trên.</p>
 </div>
 </div>
 </div>
@@ -165,7 +165,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=f2615cc2"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ph%C6%B0%C6%A1ng-ph%C3%A1p-Otsu:-t%E1%BB%B1-%C4%91%E1%BB%99ng-ch%E1%BB%8Dn-ng%C6%B0%E1%BB%A1ng">Phương pháp Otsu: tự động chọn ngưỡng<a class="anchor-link" href="#Ph%C6%B0%C6%A1ng-ph%C3%A1p-Otsu:-t%E1%BB%B1-%C4%91%E1%BB%99ng-ch%E1%BB%8Dn-ng%C6%B0%E1%BB%A1ng">¶</a></h2><p>Giá trị <code>threshold_value = 128</code> ở trên được chọn thủ công. <strong>Phương pháp Otsu (Otsu's method)</strong> (<a href="../references.html#otsu-1979">Otsu, 1979</a><span class="landmark-paper">★</span>) chọn ngưỡng một cách tự động: nó coi histogram của ảnh là hỗn hợp của hai lớp (tiền cảnh và nền) và duyệt qua mọi ngưỡng có thể để tìm ngưỡng làm cực tiểu phương sai <em>trong lớp</em> (within-class variance) (tương đương với cực đại phương sai <em>giữa</em> hai lớp) — tức ngưỡng chia histogram tốt nhất thành hai cụm chặt và tách biệt rõ. Phương pháp giả định histogram có dạng gần như hai đỉnh (bimodal), điều mà một hình sáng trên nền tối thỏa mãn khá tốt.</p>
+<h2 id="Ph%C6%B0%C6%A1ng-ph%C3%A1p-Otsu:-t%E1%BB%B1-%C4%91%E1%BB%99ng-ch%E1%BB%8Dn-ng%C6%B0%E1%BB%A1ng-(Otsu's-method:-choosing-the-threshold-automatically)">Phương pháp Otsu: tự động chọn ngưỡng (Otsu's method: choosing the threshold automatically)<a class="anchor-link" href="#Ph%C6%B0%C6%A1ng-ph%C3%A1p-Otsu:-t%E1%BB%B1-%C4%91%E1%BB%99ng-ch%E1%BB%8Dn-ng%C6%B0%E1%BB%A1ng-(Otsu's-method:-choosing-the-threshold-automatically)">¶</a></h2><p>Giá trị <code>threshold_value = 128</code> ở trên được chọn thủ công. <strong>Phương pháp Otsu (Otsu's method)</strong> (<a href="../references.html#otsu-1979">Otsu, 1979</a><span class="landmark-paper">★</span>) chọn ngưỡng một cách tự động: nó coi histogram của ảnh là hỗn hợp của hai lớp (tiền cảnh và nền) và duyệt qua mọi ngưỡng có thể để tìm ngưỡng làm cực tiểu phương sai <em>trong lớp</em> (within-class variance) (tương đương với cực đại phương sai <em>giữa</em> hai lớp) — tức ngưỡng chia histogram tốt nhất thành hai cụm chặt và tách biệt rõ. Phương pháp giả định histogram có dạng gần như hai đỉnh (bimodal), điều mà một hình sáng trên nền tối thỏa mãn khá tốt.</p>
 </div>
 </div>
 </div>
@@ -222,7 +222,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=dd199cce"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ph%C3%A9p-co">Phép co<a class="anchor-link" href="#Ph%C3%A9p-co">¶</a></h2><p>Có hai <strong>phép toán hình thái học</strong> cơ bản (co và giãn) để làm sạch các đốm muối tiêu (salt-and-pepper) và các cạnh lởm chởm trong kết quả trên. <strong>Phép co (erosion)</strong> trượt một <strong>phần tử cấu trúc (structuring element)</strong> nhỏ (kernel) trên ảnh; một điểm ảnh chỉ giữ màu trắng nếu <em>toàn bộ</em> kernel nằm gọn trong vùng trắng. Điều này làm thu nhỏ vùng trắng và loại bỏ các đốm trắng nhỏ.</p>
+<h2 id="Ph%C3%A9p-co-(Erosion)">Phép co (Erosion)<a class="anchor-link" href="#Ph%C3%A9p-co-(Erosion)">¶</a></h2><p>Có hai <strong>phép toán hình thái học</strong> cơ bản (co và giãn) để làm sạch các đốm muối tiêu (salt-and-pepper) và các cạnh lởm chởm trong kết quả trên. <strong>Phép co (erosion)</strong> trượt một <strong>phần tử cấu trúc (structuring element)</strong> nhỏ (kernel) trên ảnh; một điểm ảnh chỉ giữ màu trắng nếu <em>toàn bộ</em> kernel nằm gọn trong vùng trắng. Điều này làm thu nhỏ vùng trắng và loại bỏ các đốm trắng nhỏ.</p>
 </div>
 </div>
 </div>
@@ -264,7 +264,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=9accd5cc"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ph%C3%A9p-gi%C3%A3n">Phép giãn<a class="anchor-link" href="#Ph%C3%A9p-gi%C3%A3n">¶</a></h2><p><strong>Phép giãn (dilation)</strong> làm điều ngược lại: một điểm ảnh trở thành trắng nếu kernel chồng lên <em>bất kỳ</em> phần nào của vùng trắng. Điều này làm mở rộng vùng trắng và lấp các lỗ/đốm đen nhỏ.</p>
+<h2 id="Ph%C3%A9p-gi%C3%A3n-(Dilation)">Phép giãn (Dilation)<a class="anchor-link" href="#Ph%C3%A9p-gi%C3%A3n-(Dilation)">¶</a></h2><p><strong>Phép giãn (dilation)</strong> làm điều ngược lại: một điểm ảnh trở thành trắng nếu kernel chồng lên <em>bất kỳ</em> phần nào của vùng trắng. Điều này làm mở rộng vùng trắng và lấp các lỗ/đốm đen nhỏ.</p>
 </div>
 </div>
 </div>
@@ -305,7 +305,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=dc64b275"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ph%C3%A9p-m%E1%BB%9F:-co-r%E1%BB%93i-gi%C3%A3n">Phép mở: co rồi giãn<a class="anchor-link" href="#Ph%C3%A9p-m%E1%BB%9F:-co-r%E1%BB%93i-gi%C3%A3n">¶</a></h2><p>Áp dụng phép co rồi đến phép giãn (gọi là <strong>phép mở (opening)</strong>) giúp loại bỏ các đốm trắng nhỏ trong khi khôi phục kích thước của vùng chính — một cách phổ biến để khử nhiễu ảnh đã phân ngưỡng.</p>
+<h2 id="Ph%C3%A9p-m%E1%BB%9F:-co-r%E1%BB%93i-gi%C3%A3n-(Opening:-erosion-followed-by-dilation)">Phép mở: co rồi giãn (Opening: erosion followed by dilation)<a class="anchor-link" href="#Ph%C3%A9p-m%E1%BB%9F:-co-r%E1%BB%93i-gi%C3%A3n-(Opening:-erosion-followed-by-dilation)">¶</a></h2><p>Áp dụng phép co rồi đến phép giãn (gọi là <strong>phép mở (opening)</strong>) giúp loại bỏ các đốm trắng nhỏ trong khi khôi phục kích thước của vùng chính — một cách phổ biến để khử nhiễu ảnh đã phân ngưỡng.</p>
 </div>
 </div>
 </div>
@@ -345,7 +345,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=78cafb82"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Hãy thử <code>cv2.MORPH_CLOSE</code> (giãn rồi co) thay cho <code>MORPH_OPEN</code>. Nó khác thế nào, và nó khắc phục loại nhiễu điểm ảnh đen nào mà phép mở không làm được?</li>
 <li>Tăng kích thước kernel lên <code>(5, 5)</code>. Kết quả thay đổi thế nào so với <code>(3, 3)</code>?</li>
 </ol>

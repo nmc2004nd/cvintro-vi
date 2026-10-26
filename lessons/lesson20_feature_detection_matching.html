@@ -57,7 +57,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=a93774b9"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Tensor-c%E1%BA%A5u-tr%C3%BAc:-%C4%91i%E1%BB%81u-g%C3%AC-t%E1%BA%A1o-n%C3%AAn-m%E1%BB%99t-%C4%91i%E1%BB%83m-t%E1%BB%91t-%C4%91%E1%BB%83-so-kh%E1%BB%9Bp?">Tensor cấu trúc: điều gì tạo nên một điểm tốt để so khớp?<a class="anchor-link" href="#Tensor-c%E1%BA%A5u-tr%C3%BAc:-%C4%91i%E1%BB%81u-g%C3%AC-t%E1%BA%A1o-n%C3%AAn-m%E1%BB%99t-%C4%91i%E1%BB%83m-t%E1%BB%91t-%C4%91%E1%BB%83-so-kh%E1%BB%9Bp?">¶</a></h2><p>Tại mỗi điểm ảnh, xây dựng <strong>tensor cấu trúc (structure tensor)</strong> $2\times2$ từ cửa sổ cục bộ các gradient (Bài 12):</p>
+<h2 id="Tensor-c%E1%BA%A5u-tr%C3%BAc:-%C4%91i%E1%BB%81u-g%C3%AC-t%E1%BA%A1o-n%C3%AAn-m%E1%BB%99t-%C4%91i%E1%BB%83m-t%E1%BB%91t-%C4%91%E1%BB%83-so-kh%E1%BB%9Bp?-(The-structure-tensor:-what-makes-a-good-point-to-match?)">Tensor cấu trúc: điều gì tạo nên một điểm tốt để so khớp? (The structure tensor: what makes a good point to match?)<a class="anchor-link" href="#Tensor-c%E1%BA%A5u-tr%C3%BAc:-%C4%91i%E1%BB%81u-g%C3%AC-t%E1%BA%A1o-n%C3%AAn-m%E1%BB%99t-%C4%91i%E1%BB%83m-t%E1%BB%91t-%C4%91%E1%BB%83-so-kh%E1%BB%9Bp?-(The-structure-tensor:-what-makes-a-good-point-to-match?)">¶</a></h2><p>Tại mỗi điểm ảnh, xây dựng <strong>tensor cấu trúc (structure tensor)</strong> $2\times2$ từ cửa sổ cục bộ các gradient (Bài 12):</p>
 <p>$$M = \sum_{\text{window}} \begin{bmatrix}I_x^2 &amp; I_xI_y \\ I_xI_y &amp; I_y^2\end{bmatrix}$$</p>
 <p>Điều này hẳn trông quen thuộc: đó chính xác là ma trận hiệp phương sai mô-men ở Bài 6, nhưng được xây dựng từ gradient thay vì tọa độ điểm ảnh. Các giá trị riêng $\lambda_1 \ge \lambda_2$ của nó mô tả cấu trúc cường độ cục bộ:</p>
 <ul>
@@ -116,7 +116,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=cd745658"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="B%E1%BB%99-ph%C3%A1t-hi%E1%BB%87n-g%C3%B3c-Harris">Bộ phát hiện góc Harris<a class="anchor-link" href="#B%E1%BB%99-ph%C3%A1t-hi%E1%BB%87n-g%C3%B3c-Harris">¶</a></h2><p>Tính trực tiếp các giá trị riêng ở mọi nơi hơi tốn kém, nên <a href="../references.html#harris-stephens-1988">Harris và Stephens (1988)</a> đề xuất một đại lượng thay thế rẻ hơn chỉ dùng $\det(M)$ và $\text{trace}(M)$ (có thể tính mà không cần tìm giá trị riêng):</p>
+<h2 id="B%E1%BB%99-ph%C3%A1t-hi%E1%BB%87n-g%C3%B3c-Harris-(Harris-corner-detector)">Bộ phát hiện góc Harris (Harris corner detector)<a class="anchor-link" href="#B%E1%BB%99-ph%C3%A1t-hi%E1%BB%87n-g%C3%B3c-Harris-(Harris-corner-detector)">¶</a></h2><p>Tính trực tiếp các giá trị riêng ở mọi nơi hơi tốn kém, nên <a href="../references.html#harris-stephens-1988">Harris và Stephens (1988)</a> đề xuất một đại lượng thay thế rẻ hơn chỉ dùng $\det(M)$ và $\text{trace}(M)$ (có thể tính mà không cần tìm giá trị riêng):</p>
 <p>$$R = \det(M) - k \cdot \text{trace}(M)^2, \qquad k \approx 0.04$$</p>
 <p>$R$ lớn và dương ở góc, âm ở biên, và gần 0 ở vùng phẳng.</p>
 </div>
@@ -219,14 +219,14 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=2caf0562"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="V%E1%BA%A5n-%C4%91%E1%BB%81-t%E1%BB%89-l%E1%BB%87">Vấn đề tỉ lệ<a class="anchor-link" href="#V%E1%BA%A5n-%C4%91%E1%BB%81-t%E1%BB%89-l%E1%BB%87">¶</a></h2><p>Harris và Shi-Tomasi đều hoạt động ở một kích thước cửa sổ cố định duy nhất. Phóng to hoặc thu nhỏ cùng một góc, và nó có thể không còn trông giống góc ở tỉ lệ cố định đó (một góc nhọn trở thành một đường cong thoải khi thu nhỏ đủ nhiều) — các bộ phát hiện này không bất biến với tỉ lệ. <strong>SIFT</strong> (Scale-Invariant Feature Transform — biến đổi đặc trưng bất biến tỉ lệ) (<a href="../references.html#lowe-2004">Lowe, 1999/2004</a><span class="landmark-paper">★</span>) khắc phục điều này bằng cách tìm kiếm điểm đặc trưng trên toàn bộ một không gian tỉ lệ (scale-space), không chỉ một kích thước cửa sổ.</p>
+<h2 id="V%E1%BA%A5n-%C4%91%E1%BB%81-t%E1%BB%89-l%E1%BB%87-(The-scale-problem)">Vấn đề tỉ lệ (The scale problem)<a class="anchor-link" href="#V%E1%BA%A5n-%C4%91%E1%BB%81-t%E1%BB%89-l%E1%BB%87-(The-scale-problem)">¶</a></h2><p>Harris và Shi-Tomasi đều hoạt động ở một kích thước cửa sổ cố định duy nhất. Phóng to hoặc thu nhỏ cùng một góc, và nó có thể không còn trông giống góc ở tỉ lệ cố định đó (một góc nhọn trở thành một đường cong thoải khi thu nhỏ đủ nhiều) — các bộ phát hiện này không bất biến với tỉ lệ. <strong>SIFT</strong> (Scale-Invariant Feature Transform — biến đổi đặc trưng bất biến tỉ lệ) (<a href="../references.html#lowe-2004">Lowe, 1999/2004</a><span class="landmark-paper">★</span>) khắc phục điều này bằng cách tìm kiếm điểm đặc trưng trên toàn bộ một không gian tỉ lệ (scale-space), không chỉ một kích thước cửa sổ.</p>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=6a8b4766"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="SIFT:-c%E1%BB%B1c-tr%E1%BB%8B-kh%C3%B4ng-gian-t%E1%BB%89-l%E1%BB%87-v%C3%A0-b%E1%BB%99-m%C3%B4-t%E1%BA%A3">SIFT: cực trị không gian tỉ lệ và bộ mô tả<a class="anchor-link" href="#SIFT:-c%E1%BB%B1c-tr%E1%BB%8B-kh%C3%B4ng-gian-t%E1%BB%89-l%E1%BB%87-v%C3%A0-b%E1%BB%99-m%C3%B4-t%E1%BA%A3">¶</a></h2><p>Quy trình của SIFT, nhìn tổng quát:</p>
+<h2 id="SIFT:-c%E1%BB%B1c-tr%E1%BB%8B-kh%C3%B4ng-gian-t%E1%BB%89-l%E1%BB%87-v%C3%A0-b%E1%BB%99-m%C3%B4-t%E1%BA%A3-(SIFT:-scale-space-extrema-and-descriptors)">SIFT: cực trị không gian tỉ lệ và bộ mô tả (SIFT: scale-space extrema and descriptors)<a class="anchor-link" href="#SIFT:-c%E1%BB%B1c-tr%E1%BB%8B-kh%C3%B4ng-gian-t%E1%BB%89-l%E1%BB%87-v%C3%A0-b%E1%BB%99-m%C3%B4-t%E1%BA%A3-(SIFT:-scale-space-extrema-and-descriptors)">¶</a></h2><p>Quy trình của SIFT, nhìn tổng quát:</p>
 <ol>
 <li>Xây dựng một <strong>không gian tỉ lệ Hiệu-của-Gauss (DoG)</strong> — chính là phép xấp xỉ DoG cho toán tử Laplace ở Bài 13, tính ở nhiều mức làm mờ.</li>
 <li>Tìm điểm đặc trưng dưới dạng cực trị cục bộ của phản hồi DoG theo cả không gian <em>lẫn</em> tỉ lệ — một điểm là cực đại so với 26 lân cận của nó (gồm 8 lân cận ở tỉ lệ hiện tại <em>và</em> 9 lân cận ở mỗi mức tỉ lệ phía trên và phía dưới).</li>
@@ -301,7 +301,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=429094a0"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="So-kh%E1%BB%9Bp-khi-c%C3%B3-ph%C3%A9p-xoay-v%C3%A0-thay-%C4%91%E1%BB%95i-t%E1%BB%89-l%E1%BB%87">So khớp khi có phép xoay và thay đổi tỉ lệ<a class="anchor-link" href="#So-kh%E1%BB%9Bp-khi-c%C3%B3-ph%C3%A9p-xoay-v%C3%A0-thay-%C4%91%E1%BB%95i-t%E1%BB%89-l%E1%BB%87">¶</a></h2><p>Ta xoay và thu nhỏ ảnh bằng một phép biến đổi <em>đã biết</em>, phát hiện đặc trưng SIFT độc lập trên cả hai ảnh, rồi so khớp các bộ mô tả bằng tìm kiếm láng giềng gần nhất. <strong>Phép kiểm tra tỉ số của Lowe (Lowe's ratio test)</strong> chỉ giữ một cặp khớp nếu ứng viên tốt nhất gần hơn đáng kể so với ứng viên tốt <em>thứ hai</em> — một cách đơn giản, hiệu quả để loại bỏ các cặp khớp mơ hồ.</p>
+<h2 id="So-kh%E1%BB%9Bp-khi-c%C3%B3-ph%C3%A9p-xoay-v%C3%A0-thay-%C4%91%E1%BB%95i-t%E1%BB%89-l%E1%BB%87-(Matching-under-rotation-and-scale)">So khớp khi có phép xoay và thay đổi tỉ lệ (Matching under rotation and scale)<a class="anchor-link" href="#So-kh%E1%BB%9Bp-khi-c%C3%B3-ph%C3%A9p-xoay-v%C3%A0-thay-%C4%91%E1%BB%95i-t%E1%BB%89-l%E1%BB%87-(Matching-under-rotation-and-scale)">¶</a></h2><p>Ta xoay và thu nhỏ ảnh bằng một phép biến đổi <em>đã biết</em>, phát hiện đặc trưng SIFT độc lập trên cả hai ảnh, rồi so khớp các bộ mô tả bằng tìm kiếm láng giềng gần nhất. <strong>Phép kiểm tra tỉ số của Lowe (Lowe's ratio test)</strong> chỉ giữ một cặp khớp nếu ứng viên tốt nhất gần hơn đáng kể so với ứng viên tốt <em>thứ hai</em> — một cách đơn giản, hiệu quả để loại bỏ các cặp khớp mơ hồ.</p>
 </div>
 </div>
 </div>
@@ -342,7 +342,7 @@ good matches after Lowe ratio test: 191 / 723 candidate pairs
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=bee9ac4a"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="C%C3%B3-bao-nhi%C3%AAu-c%E1%BA%B7p-kh%E1%BB%9Bp-th%E1%BB%B1c-s%E1%BB%B1-%C4%91%C3%BAng?">Có bao nhiêu cặp khớp thực sự đúng?<a class="anchor-link" href="#C%C3%B3-bao-nhi%C3%AAu-c%E1%BA%B7p-kh%E1%BB%9Bp-th%E1%BB%B1c-s%E1%BB%B1-%C4%91%C3%BAng?">¶</a></h3><p>Vì ta biết chính xác phép biến đổi <code>M</code> dùng để tạo ảnh thứ hai, ta có thể kiểm tra trực tiếp: ánh xạ mỗi điểm đặc trưng đã khớp qua <code>M</code> có rơi gần vị trí nó thực sự được khớp không?</p>
+<h3 id="C%C3%B3-bao-nhi%C3%AAu-c%E1%BA%B7p-kh%E1%BB%9Bp-th%E1%BB%B1c-s%E1%BB%B1-%C4%91%C3%BAng?-(How-many-matches-are-actually-correct?)">Có bao nhiêu cặp khớp thực sự đúng? (How many matches are actually correct?)<a class="anchor-link" href="#C%C3%B3-bao-nhi%C3%AAu-c%E1%BA%B7p-kh%E1%BB%9Bp-th%E1%BB%B1c-s%E1%BB%B1-%C4%91%C3%BAng?-(How-many-matches-are-actually-correct?)">¶</a></h3><p>Vì ta biết chính xác phép biến đổi <code>M</code> dùng để tạo ảnh thứ hai, ta có thể kiểm tra trực tiếp: ánh xạ mỗi điểm đặc trưng đã khớp qua <code>M</code> có rơi gần vị trí nó thực sự được khớp không?</p>
 </div>
 </div>
 </div>
@@ -400,7 +400,7 @@ good matches after Lowe ratio test: 191 / 723 candidate pairs
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=05aa0df7"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Tăng góc xoay lên 90 độ và tỉ lệ xuống 0.3. Số cặp khớp tốt và phần trăm đúng về mặt hình học có giữ vững, hay suy giảm? Đến mức nào thì SIFT bắt đầu gặp khó khăn?</li>
 <li>Thử <code>cv2.ORB_create()</code> (một phương án thay thế SIFT nhanh hơn nhiều, miễn phí, dùng bộ mô tả nhị phân) với <code>cv2.NORM_HAMMING</code> trong <code>BFMatcher</code> thay vì chuẩn L2 mặc định. So sánh số cặp khớp tốt và so sánh định tính tốc độ bằng <code>%timeit</code> trên <code>detectAndCompute</code>.</li>
 <li>Hạ ngưỡng kiểm tra tỉ số từ <code>0.75</code> xuống <code>0.6</code>. Số cặp khớp tốt và tỉ lệ đúng về mặt hình học thay đổi thế nào? Điều này cho bạn biết gì về vai trò của ngưỡng trong sự đánh đổi độ chính xác/độ phủ (precision/recall)?</li>

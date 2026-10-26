@@ -57,7 +57,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=ea35ddbf"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="L%C3%A0m-s%C3%A1ng:-c%E1%BB%99ng-m%E1%BB%99t-h%E1%BA%B1ng-s%E1%BB%91">Làm sáng: cộng một hằng số<a class="anchor-link" href="#L%C3%A0m-s%C3%A1ng:-c%E1%BB%99ng-m%E1%BB%99t-h%E1%BA%B1ng-s%E1%BB%91">¶</a></h2><p>Giá trị của một điểm ảnh biểu thị lượng ánh sáng, vì vậy cộng một hằng số dương vào mọi điểm ảnh lẽ ra sẽ làm sáng toàn bộ ảnh. Hãy thử trực tiếp bằng NumPy.</p>
+<h2 id="L%C3%A0m-s%C3%A1ng:-c%E1%BB%99ng-m%E1%BB%99t-h%E1%BA%B1ng-s%E1%BB%91-(Brightening:-add-a-constant)">Làm sáng: cộng một hằng số (Brightening: add a constant)<a class="anchor-link" href="#L%C3%A0m-s%C3%A1ng:-c%E1%BB%99ng-m%E1%BB%99t-h%E1%BA%B1ng-s%E1%BB%91-(Brightening:-add-a-constant)">¶</a></h2><p>Giá trị của một điểm ảnh biểu thị lượng ánh sáng, vì vậy cộng một hằng số dương vào mọi điểm ảnh lẽ ra sẽ làm sáng toàn bộ ảnh. Hãy thử trực tiếp bằng NumPy.</p>
 </div>
 </div>
 </div>
@@ -105,7 +105,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=76506db6"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="V%E1%BA%A5n-%C4%91%E1%BB%81:-tr%C3%A0n-s%E1%BB%91-uint8">Vấn đề: tràn số <code>uint8</code><a class="anchor-link" href="#V%E1%BA%A5n-%C4%91%E1%BB%81:-tr%C3%A0n-s%E1%BB%91-uint8">¶</a></h2><p>Số nguyên không dấu 8-bit chỉ biểu diễn được các giá trị từ 0 đến 255. Do đó, <code>220 + 80 = 300</code> cho ra kết quả không vừa trong một byte. Phép toán <code>uint8</code> của NumPy sẽ <strong>quay vòng (wrap around)</strong> (giống đồng hồ đo quãng đường của ô tô quay về 0), âm thầm tính ra <code>300 mod 256 = 44</code> thay vì <strong>chặn (clamp)</strong> ở 255. Đây chính là hành vi tràn số độ rộng cố định mà mọi kiểu số nguyên cấp thấp đều có; chỉ là NumPy áp dụng nó một cách im lặng, không hề cảnh báo.</p>
+<h2 id="V%E1%BA%A5n-%C4%91%E1%BB%81:-tr%C3%A0n-s%E1%BB%91-uint8-(The-problem:-uint8-overflow)">Vấn đề: tràn số <code>uint8</code> (The problem: <code>uint8</code> overflow)<a class="anchor-link" href="#V%E1%BA%A5n-%C4%91%E1%BB%81:-tr%C3%A0n-s%E1%BB%91-uint8-(The-problem:-uint8-overflow)">¶</a></h2><p>Số nguyên không dấu 8-bit chỉ biểu diễn được các giá trị từ 0 đến 255. Do đó, <code>220 + 80 = 300</code> cho ra kết quả không vừa trong một byte. Phép toán <code>uint8</code> của NumPy sẽ <strong>quay vòng (wrap around)</strong> (giống đồng hồ đo quãng đường của ô tô quay về 0), âm thầm tính ra <code>300 mod 256 = 44</code> thay vì <strong>chặn (clamp)</strong> ở 255. Đây chính là hành vi tràn số độ rộng cố định mà mọi kiểu số nguyên cấp thấp đều có; chỉ là NumPy áp dụng nó một cách im lặng, không hề cảnh báo.</p>
 </div>
 </div>
 </div>
@@ -140,7 +140,7 @@ what we actually want: [255 255 255]
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=84e83ea2"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c:-s%E1%BB%91-h%E1%BB%8Dc-b%C3%A3o-h%C3%B2a">Cách khắc phục: số học bão hòa<a class="anchor-link" href="#C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c:-s%E1%BB%91-h%E1%BB%8Dc-b%C3%A3o-h%C3%B2a">¶</a></h2><p>Các hàm số học của OpenCV (<code>cv2.add</code>, <code>cv2.subtract</code>, ...) dùng số học <strong>bão hòa (saturating)</strong>: kết quả bị chặn trong khoảng hợp lệ (0-255 với <code>uint8</code>) thay vì quay vòng. Đây gần như luôn là điều bạn thực sự muốn.</p>
+<h2 id="C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c:-s%E1%BB%91-h%E1%BB%8Dc-b%C3%A3o-h%C3%B2a-(The-fix:-saturating-arithmetic)">Cách khắc phục: số học bão hòa (The fix: saturating arithmetic)<a class="anchor-link" href="#C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c:-s%E1%BB%91-h%E1%BB%8Dc-b%C3%A3o-h%C3%B2a-(The-fix:-saturating-arithmetic)">¶</a></h2><p>Các hàm số học của OpenCV (<code>cv2.add</code>, <code>cv2.subtract</code>, ...) dùng số học <strong>bão hòa (saturating)</strong>: kết quả bị chặn trong khoảng hợp lệ (0-255 với <code>uint8</code>) thay vì quay vòng. Đây gần như luôn là điều bạn thực sự muốn.</p>
 </div>
 </div>
 </div>
@@ -197,7 +197,7 @@ pixel value, cv2.add (saturated): 255
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=81459956"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ch%E1%BB%89-l%C3%A0m-s%C3%A1ng-m%E1%BB%99t-ph%E1%BA%A7n-%E1%BA%A3nh,-d%C3%B9ng-m%E1%BA%B7t-n%E1%BA%A1">Chỉ làm sáng một phần ảnh, dùng mặt nạ<a class="anchor-link" href="#Ch%E1%BB%89-l%C3%A0m-s%C3%A1ng-m%E1%BB%99t-ph%E1%BA%A7n-%E1%BA%A3nh,-d%C3%B9ng-m%E1%BA%B7t-n%E1%BA%A1">¶</a></h2><p>Thường thì bạn muốn điều chỉnh độ sáng một cách chọn lọc — ví dụ, làm sáng đối tượng ở tiền cảnh mà không động vào nền. Với một mặt nạ nhị phân (binary mask) (có được từ phân ngưỡng hoặc phân đoạn), ta chỉ sao chép kết quả đã làm sáng vào những chỗ mặt nạ được bật.</p>
+<h2 id="Ch%E1%BB%89-l%C3%A0m-s%C3%A1ng-m%E1%BB%99t-ph%E1%BA%A7n-%E1%BA%A3nh,-d%C3%B9ng-m%E1%BA%B7t-n%E1%BA%A1-(Brightening-only-part-of-an-image,-with-a-mask)">Chỉ làm sáng một phần ảnh, dùng mặt nạ (Brightening only part of an image, with a mask)<a class="anchor-link" href="#Ch%E1%BB%89-l%C3%A0m-s%C3%A1ng-m%E1%BB%99t-ph%E1%BA%A7n-%E1%BA%A3nh,-d%C3%B9ng-m%E1%BA%B7t-n%E1%BA%A1-(Brightening-only-part-of-an-image,-with-a-mask)">¶</a></h2><p>Thường thì bạn muốn điều chỉnh độ sáng một cách chọn lọc — ví dụ, làm sáng đối tượng ở tiền cảnh mà không động vào nền. Với một mặt nạ nhị phân (binary mask) (có được từ phân ngưỡng hoặc phân đoạn), ta chỉ sao chép kết quả đã làm sáng vào những chỗ mặt nạ được bật.</p>
 </div>
 </div>
 </div>
@@ -265,7 +265,7 @@ grass pixel (BGR), before -&gt; after: [72 94 75] -&gt; [72 94 75]
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=1960c1da"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Tr%E1%BB%99n-hai-%E1%BA%A3nh">Trộn hai ảnh<a class="anchor-link" href="#Tr%E1%BB%99n-hai-%E1%BA%A3nh">¶</a></h2><p>Tổng có trọng số của hai ảnh — một phép <strong>hòa tan chéo (cross-dissolve)</strong> — cũng chính là số học bão hòa, ở dạng tổng quát: <code>cv2.addWeighted(a, alpha, b, beta, gamma)</code> tính <code>a*alpha + b*beta + gamma</code>, có bão hòa.</p>
+<h2 id="Tr%E1%BB%99n-hai-%E1%BA%A3nh-(Blending-two-images)">Trộn hai ảnh (Blending two images)<a class="anchor-link" href="#Tr%E1%BB%99n-hai-%E1%BA%A3nh-(Blending-two-images)">¶</a></h2><p>Tổng có trọng số của hai ảnh — một phép <strong>hòa tan chéo (cross-dissolve)</strong> — cũng chính là số học bão hòa, ở dạng tổng quát: <code>cv2.addWeighted(a, alpha, b, beta, gamma)</code> tính <code>a*alpha + b*beta + gamma</code>, có bão hòa.</p>
 </div>
 </div>
 </div>
@@ -319,7 +319,7 @@ grass pixel (BGR), before -&gt; after: [72 94 75] -&gt; [72 94 75]
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=5f25c618"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="%E1%BA%A2nh-hi%E1%BB%87u">Ảnh hiệu<a class="anchor-link" href="#%E1%BA%A2nh-hi%E1%BB%87u">¶</a></h2><p>Trừ hai ảnh cho nhau (lấy giá trị tuyệt đối, để thay đổi theo cả hai chiều đều được tính như nhau) sẽ làm nổi bật chính xác những gì khác nhau giữa chúng — đây là nền tảng của phát hiện chuyển động/thay đổi đơn giản, và cũng là thứ chúng ta sẽ dùng lại khi so sánh kết quả tái tạo với dữ liệu chuẩn (ground truth) ở các bài sau.</p>
+<h2 id="%E1%BA%A2nh-hi%E1%BB%87u-(Difference-imaging)">Ảnh hiệu (Difference imaging)<a class="anchor-link" href="#%E1%BA%A2nh-hi%E1%BB%87u-(Difference-imaging)">¶</a></h2><p>Trừ hai ảnh cho nhau (lấy giá trị tuyệt đối, để thay đổi theo cả hai chiều đều được tính như nhau) sẽ làm nổi bật chính xác những gì khác nhau giữa chúng — đây là nền tảng của phát hiện chuyển động/thay đổi đơn giản, và cũng là thứ chúng ta sẽ dùng lại khi so sánh kết quả tái tạo với dữ liệu chuẩn (ground truth) ở các bài sau.</p>
 </div>
 </div>
 </div>
@@ -368,7 +368,7 @@ grass pixel (BGR), before -&gt; after: [72 94 75] -&gt; [72 94 75]
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=800dbca7"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Hãy dự đoán, rồi kiểm tra, <code>cv2.subtract(img, 150)</code> làm gì với một điểm ảnh có giá trị <code>100</code> — nó quay vòng như phép cộng NumPy ngây thơ ở trên, hay bão hòa?</li>
 <li>Dùng trực tiếp <code>cv2.add</code> với tham số <code>mask</code> (thay vì sao chép thủ công bằng chỉ số boolean như ở trên) để tái tạo kết quả làm sáng có mặt nạ, và xác nhận hai cách cho kết quả giống hệt nhau.</li>
 <li><code>cv2.addWeighted</code> không yêu cầu <code>alpha + beta</code> có tổng bằng 1 (số hạng <code>gamma</code> được cộng thêm vào cả hai). Hãy thử <code>cv2.addWeighted(img_a, 1.0, img_b, 1.0, 0)</code> (một tổng bão hòa đơn thuần, không phải phép trộn) và mô tả kết quả thay đổi thế nào so với <code>alpha=0.5</code>.</li>

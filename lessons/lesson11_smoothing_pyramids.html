@@ -57,7 +57,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=8ca03b1b"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="T%E1%BA%A1i-sao-gi%E1%BA%A3m-m%E1%BA%ABu-c%E1%BA%A7n-l%C3%A0m-m%E1%BB%9D-tr%C6%B0%E1%BB%9Bc">Tại sao giảm mẫu cần làm mờ trước<a class="anchor-link" href="#T%E1%BA%A1i-sao-gi%E1%BA%A3m-m%E1%BA%ABu-c%E1%BA%A7n-l%C3%A0m-m%E1%BB%9D-tr%C6%B0%E1%BB%9Bc">¶</a></h2><p>Thu nhỏ ảnh một cách ngây thơ bằng cách giữ lại mỗi điểm ảnh thứ $k$ ("giảm mẫu láng giềng gần nhất") có thể gây ra <strong>răng cưa / chồng phổ (aliasing)</strong>: các chi tiết tuần hoàn mịn dao động nhanh hơn mức mà khoảng cách điểm ảnh mới có thể biểu diễn sẽ bị gập lại thành một mẫu tần số thấp hoàn toàn khác, giả tạo.</p>
+<h2 id="T%E1%BA%A1i-sao-gi%E1%BA%A3m-m%E1%BA%ABu-c%E1%BA%A7n-l%C3%A0m-m%E1%BB%9D-tr%C6%B0%E1%BB%9Bc-(Why-downsampling-needs-blurring-first)">Tại sao giảm mẫu cần làm mờ trước (Why downsampling needs blurring first)<a class="anchor-link" href="#T%E1%BA%A1i-sao-gi%E1%BA%A3m-m%E1%BA%ABu-c%E1%BA%A7n-l%C3%A0m-m%E1%BB%9D-tr%C6%B0%E1%BB%9Bc-(Why-downsampling-needs-blurring-first)">¶</a></h2><p>Thu nhỏ ảnh một cách ngây thơ bằng cách giữ lại mỗi điểm ảnh thứ $k$ ("giảm mẫu láng giềng gần nhất") có thể gây ra <strong>răng cưa / chồng phổ (aliasing)</strong>: các chi tiết tuần hoàn mịn dao động nhanh hơn mức mà khoảng cách điểm ảnh mới có thể biểu diễn sẽ bị gập lại thành một mẫu tần số thấp hoàn toàn khác, giả tạo.</p>
 <p>Ta minh họa bằng ảnh chụp một bức tường gạch — các hàng gạch và đường vữa lặp lại chính là loại chi tiết mịn, đều đặn bị chồng phổ nặng nề.</p>
 </div>
 </div>
@@ -116,7 +116,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=5de3d67a"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ch%E1%BB%8Dn-sigma-v%C3%A0-k%C3%ADch-th%C6%B0%E1%BB%9Bc-kernel">Chọn sigma và kích thước kernel<a class="anchor-link" href="#Ch%E1%BB%8Dn-sigma-v%C3%A0-k%C3%ADch-th%C6%B0%E1%BB%9Bc-kernel">¶</a></h2><p>Làm mờ đúng cách trước khi giảm mẫu cần hai thứ để thực sự hiệu quả: <code>sigma</code> phù hợp, và một kernel <em>đủ lớn để biểu diễn sigma đó</em>. <code>sigma</code> của <code>cv2.GaussianBlur</code> quyết định trọng số hình chuông trải rộng đến đâu: sigma lớn hơn lấy trung bình trên vùng lân cận rộng hơn, loại bỏ chi tiết mịn hơn. Cụ thể, làm mờ một điểm ảnh bằng kernel Gauss 3x3 chẳng qua là một <strong>trung bình có trọng số trên vùng lân cận 3x3 của nó</strong>: nhân mỗi giá trị trong 9 điểm ảnh lân cận với trọng số kernel tương ứng rồi cộng lại. <code>cv2.getGaussianKernel(3, sigma)</code> cho ra các trọng số 1D; tích ngoài của chúng cho ra kernel 2D.</p>
+<h2 id="Ch%E1%BB%8Dn-sigma-v%C3%A0-k%C3%ADch-th%C6%B0%E1%BB%9Bc-kernel-(Choosing-sigma-and-kernel-size)">Chọn sigma và kích thước kernel (Choosing sigma and kernel size)<a class="anchor-link" href="#Ch%E1%BB%8Dn-sigma-v%C3%A0-k%C3%ADch-th%C6%B0%E1%BB%9Bc-kernel-(Choosing-sigma-and-kernel-size)">¶</a></h2><p>Làm mờ đúng cách trước khi giảm mẫu cần hai thứ để thực sự hiệu quả: <code>sigma</code> phù hợp, và một kernel <em>đủ lớn để biểu diễn sigma đó</em>. <code>sigma</code> của <code>cv2.GaussianBlur</code> quyết định trọng số hình chuông trải rộng đến đâu: sigma lớn hơn lấy trung bình trên vùng lân cận rộng hơn, loại bỏ chi tiết mịn hơn. Cụ thể, làm mờ một điểm ảnh bằng kernel Gauss 3x3 chẳng qua là một <strong>trung bình có trọng số trên vùng lân cận 3x3 của nó</strong>: nhân mỗi giá trị trong 9 điểm ảnh lân cận với trọng số kernel tương ứng rồi cộng lại. <code>cv2.getGaussianKernel(3, sigma)</code> cho ra các trọng số 1D; tích ngoài của chúng cho ra kernel 2D.</p>
 </div>
 </div>
 </div>
@@ -215,7 +215,7 @@ cv2.GaussianBlur pixel:    139
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=47dec8f1"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="K%C3%ADch-th%C6%B0%E1%BB%9Bc-kernel-ph%E1%BA%A3i-theo-k%E1%BB%8Bp-sigma">Kích thước kernel phải theo kịp sigma<a class="anchor-link" href="#K%C3%ADch-th%C6%B0%E1%BB%9Bc-kernel-ph%E1%BA%A3i-theo-k%E1%BB%8Bp-sigma">¶</a></h3><p><code>ksize=(0, 0)</code> ở trên bảo OpenCV tự chọn kích thước kernel cho mỗi sigma. Điều gì xảy ra nếu thay vào đó kernel bị cố định quá nhỏ? <code>cv2.getGaussianKernel</code> luôn chuẩn hóa lại các trọng số để tổng bằng 1, bất kể số phần tử ít đến đâu — nên một kernel quá nhỏ không chỉ cắt mất hai đuôi của hàm Gauss, mà còn âm thầm biến đổi toàn bộ kernel thành thứ gần với trung bình hộp đơn thuần, vứt bỏ hoàn toàn hình dạng chuông.</p>
+<h3 id="K%C3%ADch-th%C6%B0%E1%BB%9Bc-kernel-ph%E1%BA%A3i-theo-k%E1%BB%8Bp-sigma-(Kernel-size-has-to-keep-up-with-sigma)">Kích thước kernel phải theo kịp sigma (Kernel size has to keep up with sigma)<a class="anchor-link" href="#K%C3%ADch-th%C6%B0%E1%BB%9Bc-kernel-ph%E1%BA%A3i-theo-k%E1%BB%8Bp-sigma-(Kernel-size-has-to-keep-up-with-sigma)">¶</a></h3><p><code>ksize=(0, 0)</code> ở trên bảo OpenCV tự chọn kích thước kernel cho mỗi sigma. Điều gì xảy ra nếu thay vào đó kernel bị cố định quá nhỏ? <code>cv2.getGaussianKernel</code> luôn chuẩn hóa lại các trọng số để tổng bằng 1, bất kể số phần tử ít đến đâu — nên một kernel quá nhỏ không chỉ cắt mất hai đuôi của hàm Gauss, mà còn âm thầm biến đổi toàn bộ kernel thành thứ gần với trung bình hộp đơn thuần, vứt bỏ hoàn toàn hình dạng chuông.</p>
 </div>
 </div>
 </div>
@@ -282,7 +282,7 @@ cv2.GaussianBlur pixel:    139
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=b6b5c026"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="X%C3%A2y-d%E1%BB%B1ng-kim-t%E1%BB%B1-th%C3%A1p-Gauss">Xây dựng kim tự tháp Gauss<a class="anchor-link" href="#X%C3%A2y-d%E1%BB%B1ng-kim-t%E1%BB%B1-th%C3%A1p-Gauss">¶</a></h2><p><strong>Kim tự tháp Gauss</strong> lặp đi lặp lại thao tác "làm mờ, rồi giảm mẫu 2 lần", tạo ra một chồng ảnh mà mỗi ảnh có chiều rộng và chiều cao bằng một nửa ảnh trước đó. Mỗi tầng là một góc nhìn thô hơn, đã được khử răng cưa đúng cách, của cùng một cảnh — không chỉ là một vùng cắt nhỏ hơn.</p>
+<h2 id="X%C3%A2y-d%E1%BB%B1ng-kim-t%E1%BB%B1-th%C3%A1p-Gauss-(Building-a-Gaussian-pyramid)">Xây dựng kim tự tháp Gauss (Building a Gaussian pyramid)<a class="anchor-link" href="#X%C3%A2y-d%E1%BB%B1ng-kim-t%E1%BB%B1-th%C3%A1p-Gauss-(Building-a-Gaussian-pyramid)">¶</a></h2><p><strong>Kim tự tháp Gauss</strong> lặp đi lặp lại thao tác "làm mờ, rồi giảm mẫu 2 lần", tạo ra một chồng ảnh mà mỗi ảnh có chiều rộng và chiều cao bằng một nửa ảnh trước đó. Mỗi tầng là một góc nhìn thô hơn, đã được khử răng cưa đúng cách, của cùng một cảnh — không chỉ là một vùng cắt nhỏ hơn.</p>
 </div>
 </div>
 </div>
@@ -347,7 +347,7 @@ cv2.GaussianBlur pixel:    139
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=c05b9fca"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="So-s%C3%A1nh-v%E1%BB%9Bi-h%C3%A0m-c%C3%B3-s%E1%BA%B5n-cv2.pyrDown-c%E1%BB%A7a-OpenCV">So sánh với hàm có sẵn <code>cv2.pyrDown</code> của OpenCV<a class="anchor-link" href="#So-s%C3%A1nh-v%E1%BB%9Bi-h%C3%A0m-c%C3%B3-s%E1%BA%B5n-cv2.pyrDown-c%E1%BB%A7a-OpenCV">¶</a></h3><p>OpenCV cung cấp <code>cv2.pyrDown</code>, thực hiện cùng ý tưởng làm-mờ-rồi-giảm-mẫu nhưng dùng một kernel nhị thức 5 phần tử cố định, được thiết kế cẩn thận (xấp xỉ hàm Gauss) thay vì một <code>sigma</code> tùy ý. Kích thước đầu ra khớp chính xác với của ta; giá trị điểm ảnh gần giống nhưng không hoàn toàn trùng, vì các kernel hơi khác nhau.</p>
+<h3 id="So-s%C3%A1nh-v%E1%BB%9Bi-h%C3%A0m-c%C3%B3-s%E1%BA%B5n-cv2.pyrDown-c%E1%BB%A7a-OpenCV-(Comparison-to-OpenCV's-built-in-cv2.pyrDown)">So sánh với hàm có sẵn <code>cv2.pyrDown</code> của OpenCV (Comparison to OpenCV's built-in <code>cv2.pyrDown</code>)<a class="anchor-link" href="#So-s%C3%A1nh-v%E1%BB%9Bi-h%C3%A0m-c%C3%B3-s%E1%BA%B5n-cv2.pyrDown-c%E1%BB%A7a-OpenCV-(Comparison-to-OpenCV's-built-in-cv2.pyrDown)">¶</a></h3><p>OpenCV cung cấp <code>cv2.pyrDown</code>, thực hiện cùng ý tưởng làm-mờ-rồi-giảm-mẫu nhưng dùng một kernel nhị thức 5 phần tử cố định, được thiết kế cẩn thận (xấp xỉ hàm Gauss) thay vì một <code>sigma</code> tùy ý. Kích thước đầu ra khớp chính xác với của ta; giá trị điểm ảnh gần giống nhưng không hoàn toàn trùng, vì các kernel hơi khác nhau.</p>
 </div>
 </div>
 </div>
@@ -389,7 +389,7 @@ cv2.GaussianBlur pixel:    139
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=99344537"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Kim-t%E1%BB%B1-th%C3%A1p-l%C3%A0m-m%E1%BA%A5t-th%C3%B4ng-tin">Kim tự tháp làm mất thông tin<a class="anchor-link" href="#Kim-t%E1%BB%B1-th%C3%A1p-l%C3%A0m-m%E1%BA%A5t-th%C3%B4ng-tin">¶</a></h2><p>Giảm mẫu là không thể đảo ngược: tăng mẫu (upsampling) một tầng thấp của kim tự tháp trở về kích thước gốc (<code>cv2.pyrUp</code>) không thể khôi phục chi tiết đã bị làm mờ/lấy mẫu thưa loại bỏ. Khoảng chênh lệch giữa một tầng thô đã tăng mẫu và ảnh gốc chính là thứ mà <strong>kim tự tháp Laplace (Laplacian pyramid)</strong> nắm bắt ở mỗi tầng — chủ đề của một bài sau — nhưng ngay bây giờ ta đã có thể thấy trực tiếp sự mất thông tin.</p>
+<h2 id="Kim-t%E1%BB%B1-th%C3%A1p-l%C3%A0m-m%E1%BA%A5t-th%C3%B4ng-tin-(Pyramids-lose-information)">Kim tự tháp làm mất thông tin (Pyramids lose information)<a class="anchor-link" href="#Kim-t%E1%BB%B1-th%C3%A1p-l%C3%A0m-m%E1%BA%A5t-th%C3%B4ng-tin-(Pyramids-lose-information)">¶</a></h2><p>Giảm mẫu là không thể đảo ngược: tăng mẫu (upsampling) một tầng thấp của kim tự tháp trở về kích thước gốc (<code>cv2.pyrUp</code>) không thể khôi phục chi tiết đã bị làm mờ/lấy mẫu thưa loại bỏ. Khoảng chênh lệch giữa một tầng thô đã tăng mẫu và ảnh gốc chính là thứ mà <strong>kim tự tháp Laplace (Laplacian pyramid)</strong> nắm bắt ở mỗi tầng — chủ đề của một bài sau — nhưng ngay bây giờ ta đã có thể thấy trực tiếp sự mất thông tin.</p>
 </div>
 </div>
 </div>
@@ -445,7 +445,7 @@ cv2.GaussianBlur pixel:    139
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=674259a6"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Lặp lại thí nghiệm bức tường gạch với <code>factor = 2</code> thay vì <code>4</code>. Lấy mẫu thưa ngây thơ có còn cho thấy chồng phổ rõ rệt không? Tại sao hệ số giảm mẫu nhỏ hơn lại có thể ít chồng phổ hơn?</li>
 <li>Kim tự tháp Gauss được dùng cho tìm kiếm từ-thô-đến-mịn (coarse-to-fine) (ví dụ nhanh chóng tìm vị trí gần đúng của đối tượng ở một tầng kim tự tháp nhỏ, rồi tinh chỉnh ở các tầng lớn hơn). Tại sao bỏ qua bước làm mờ và chỉ lấy mẫu thưa trực tiếp lại phá hỏng chiến lược này?</li>
 <li>Xây dựng một kim tự tháp 6 tầng của một ảnh giống ảnh chụp thật và đo xem cần bao nhiêu tầng thì ảnh trở nên quá nhỏ để nhận ra bất kỳ hình dạng nào. Với một bức ảnh 1920x1080 chẳng hạn, điều đó tương ứng với độ phân giải thực tế bao nhiêu?</li>

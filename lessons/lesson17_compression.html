@@ -59,7 +59,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=d0f55397"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="N%C3%A9n-kh%C3%B4ng-m%E1%BA%A5t-m%C3%A1t">Nén không mất mát<a class="anchor-link" href="#N%C3%A9n-kh%C3%B4ng-m%E1%BA%A5t-m%C3%A1t">¶</a></h2><h3 id="M%C3%A3-h%C3%B3a-lo%E1%BA%A1t-d%C3%A0i-(RLE)">Mã hóa loạt dài (RLE)<a class="anchor-link" href="#M%C3%A3-h%C3%B3a-lo%E1%BA%A1t-d%C3%A0i-(RLE)">¶</a></h3><p>Lược đồ không mất mát đơn giản nhất: thay vì lưu mọi điểm ảnh, lưu các cặp <code>(value, run length)</code> cho các loạt điểm ảnh giống nhau liên tiếp. Cách này hoạt động rất tốt trên các ảnh có vùng phẳng lớn (đồ họa tổng hợp, văn bản quét, mặt nạ), nhưng chẳng có ích gì với ảnh chụp thật.</p>
+<h2 id="N%C3%A9n-kh%C3%B4ng-m%E1%BA%A5t-m%C3%A1t-(Lossless-compression)">Nén không mất mát (Lossless compression)<a class="anchor-link" href="#N%C3%A9n-kh%C3%B4ng-m%E1%BA%A5t-m%C3%A1t-(Lossless-compression)">¶</a></h2><h3 id="M%C3%A3-h%C3%B3a-lo%E1%BA%A1t-d%C3%A0i-(RLE)-(Run-length-encoding-(RLE))">Mã hóa loạt dài (RLE) (Run-length encoding (RLE))<a class="anchor-link" href="#M%C3%A3-h%C3%B3a-lo%E1%BA%A1t-d%C3%A0i-(RLE)-(Run-length-encoding-(RLE))">¶</a></h3><p>Lược đồ không mất mát đơn giản nhất: thay vì lưu mọi điểm ảnh, lưu các cặp <code>(value, run length)</code> cho các loạt điểm ảnh giống nhau liên tiếp. Cách này hoạt động rất tốt trên các ảnh có vùng phẳng lớn (đồ họa tổng hợp, văn bản quét, mặt nạ), nhưng chẳng có ích gì với ảnh chụp thật.</p>
 </div>
 </div>
 </div>
@@ -123,7 +123,7 @@ RLE size:  ~369 bytes (17.3x smaller)
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=e0a4224d"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="M%C3%A3-h%C3%B3a-Huffman:-%C3%ADt-bit-h%C6%A1n-cho-c%C3%A1c-gi%C3%A1-tr%E1%BB%8B-ph%E1%BB%95-bi%E1%BA%BFn">Mã hóa Huffman: ít bit hơn cho các giá trị phổ biến<a class="anchor-link" href="#M%C3%A3-h%C3%B3a-Huffman:-%C3%ADt-bit-h%C6%A1n-cho-c%C3%A1c-gi%C3%A1-tr%E1%BB%8B-ph%E1%BB%95-bi%E1%BA%BFn">¶</a></h3><p>Một phương pháp không mất mát tinh vi hơn là <strong>mã hóa Huffman (Huffman coding)</strong>, tận dụng thực tế rằng một số giá trị điểm ảnh (ví dụ một mức xám nền phổ biến) xuất hiện thường xuyên hơn nhiều so với các giá trị khác. Nó xây dựng một bộ mã độ dài thay đổi, trong đó các giá trị thường gặp có mã ngắn và các giá trị hiếm có mã dài hơn — và đã được chứng minh là tối ưu trong số các mã tiền tố (prefix codes).</p>
+<h3 id="M%C3%A3-h%C3%B3a-Huffman:-%C3%ADt-bit-h%C6%A1n-cho-c%C3%A1c-gi%C3%A1-tr%E1%BB%8B-ph%E1%BB%95-bi%E1%BA%BFn-(Huffman-coding:-fewer-bits-for-common-values)">Mã hóa Huffman: ít bit hơn cho các giá trị phổ biến (Huffman coding: fewer bits for common values)<a class="anchor-link" href="#M%C3%A3-h%C3%B3a-Huffman:-%C3%ADt-bit-h%C6%A1n-cho-c%C3%A1c-gi%C3%A1-tr%E1%BB%8B-ph%E1%BB%95-bi%E1%BA%BFn-(Huffman-coding:-fewer-bits-for-common-values)">¶</a></h3><p>Một phương pháp không mất mát tinh vi hơn là <strong>mã hóa Huffman (Huffman coding)</strong>, tận dụng thực tế rằng một số giá trị điểm ảnh (ví dụ một mức xám nền phổ biến) xuất hiện thường xuyên hơn nhiều so với các giá trị khác. Nó xây dựng một bộ mã độ dài thay đổi, trong đó các giá trị thường gặp có mã ngắn và các giá trị hiếm có mã dài hơn — và đã được chứng minh là tối ưu trong số các mã tiền tố (prefix codes).</p>
 <p><strong>Entropy</strong> của Shannon cho ra cận dưới lý thuyết về số bit trung bình trên mỗi điểm ảnh đối với <em>bất kỳ</em> bộ mã nào chỉ dựa trên phân phối giá trị (bỏ qua cấu trúc không gian):</p>
 <p>$$H = -\sum_i p_i \log_2 p_i$$</p>
 <p>trong đó $p_i$ là xác suất một giá trị điểm ảnh nhất định xuất hiện trong ảnh, và tổng được lấy trên mọi giá trị điểm ảnh có thể.</p>
@@ -206,7 +206,7 @@ Huffman coding achieves:              5.20 bits/pixel
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=9d68a53f"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="N%C3%A9n-c%C3%B3-m%E1%BA%A5t-m%C3%A1t:-DCT">Nén có mất mát: DCT<a class="anchor-link" href="#N%C3%A9n-c%C3%B3-m%E1%BA%A5t-m%C3%A1t:-DCT">¶</a></h2><p>Ý tưởng cốt lõi của JPEG là tận dụng xu hướng bỏ qua các chi tiết nhỏ của hệ thị giác con người. JPEG chia ảnh thành các khối nhỏ 8x8, rồi biến đổi mỗi khối sang miền tần số để có thể loại bỏ các thành phần tần số cao mà mắt người hầu như không nhận ra. JPEG dùng <strong>biến đổi cosin rời rạc (discrete cosine transform — DCT)</strong>, một họ hàng gần của biến đổi Fourier ở Bài 15. Giống như DFT, DCT biểu diễn lại một khối thành tổng các thành phần tần số — nhưng chỉ dùng cosin (không có phần ảo) để tránh nhiễu ở biên.</p>
+<h2 id="N%C3%A9n-c%C3%B3-m%E1%BA%A5t-m%C3%A1t:-DCT-(Lossy-compression:-the-DCT)">Nén có mất mát: DCT (Lossy compression: the DCT)<a class="anchor-link" href="#N%C3%A9n-c%C3%B3-m%E1%BA%A5t-m%C3%A1t:-DCT-(Lossy-compression:-the-DCT)">¶</a></h2><p>Ý tưởng cốt lõi của JPEG là tận dụng xu hướng bỏ qua các chi tiết nhỏ của hệ thị giác con người. JPEG chia ảnh thành các khối nhỏ 8x8, rồi biến đổi mỗi khối sang miền tần số để có thể loại bỏ các thành phần tần số cao mà mắt người hầu như không nhận ra. JPEG dùng <strong>biến đổi cosin rời rạc (discrete cosine transform — DCT)</strong>, một họ hàng gần của biến đổi Fourier ở Bài 15. Giống như DFT, DCT biểu diễn lại một khối thành tổng các thành phần tần số — nhưng chỉ dùng cosin (không có phần ảo) để tránh nhiễu ở biên.</p>
 </div>
 </div>
 </div>
@@ -257,7 +257,7 @@ fraction of block energy in top-left 4x4 coefficients: 92.40%
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=15fb76c1"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="L%C6%B0%E1%BB%A3ng-t%E1%BB%AD-h%C3%B3a:-v%E1%BB%A9t-b%E1%BB%8F-nh%E1%BB%AFng-h%E1%BB%87-s%E1%BB%91-%C3%ADt-quan-tr%E1%BB%8Dng-nh%E1%BA%A5t">Lượng tử hóa: vứt bỏ những hệ số ít quan trọng nhất<a class="anchor-link" href="#L%C6%B0%E1%BB%A3ng-t%E1%BB%AD-h%C3%B3a:-v%E1%BB%A9t-b%E1%BB%8F-nh%E1%BB%AFng-h%E1%BB%87-s%E1%BB%91-%C3%ADt-quan-tr%E1%BB%8Dng-nh%E1%BA%A5t">¶</a></h3><p>Việc nén xảy ra nhờ <strong>lượng tử hóa (quantizing)</strong> các hệ số DCT — chia cho một giá trị nào đó rồi làm tròn. Các giá trị dùng để chia được lấy từ một bảng lượng tử hóa, được thiết kế dựa trên độ nhạy thị giác của con người. Nhiều hệ số (đặc biệt là các hệ số tần số cao, vốn mang ít năng lượng nhất) trở thành đúng bằng 0 và hầu như không tốn chỗ lưu trữ.</p>
+<h3 id="L%C6%B0%E1%BB%A3ng-t%E1%BB%AD-h%C3%B3a:-v%E1%BB%A9t-b%E1%BB%8F-nh%E1%BB%AFng-h%E1%BB%87-s%E1%BB%91-%C3%ADt-quan-tr%E1%BB%8Dng-nh%E1%BA%A5t-(Quantization:-throwing-away-the-coefficients-that-matter-least)">Lượng tử hóa: vứt bỏ những hệ số ít quan trọng nhất (Quantization: throwing away the coefficients that matter least)<a class="anchor-link" href="#L%C6%B0%E1%BB%A3ng-t%E1%BB%AD-h%C3%B3a:-v%E1%BB%A9t-b%E1%BB%8F-nh%E1%BB%AFng-h%E1%BB%87-s%E1%BB%91-%C3%ADt-quan-tr%E1%BB%8Dng-nh%E1%BA%A5t-(Quantization:-throwing-away-the-coefficients-that-matter-least)">¶</a></h3><p>Việc nén xảy ra nhờ <strong>lượng tử hóa (quantizing)</strong> các hệ số DCT — chia cho một giá trị nào đó rồi làm tròn. Các giá trị dùng để chia được lấy từ một bảng lượng tử hóa, được thiết kế dựa trên độ nhạy thị giác của con người. Nhiều hệ số (đặc biệt là các hệ số tần số cao, vốn mang ít năng lượng nhất) trở thành đúng bằng 0 và hầu như không tốn chỗ lưu trữ.</p>
 </div>
 </div>
 </div>
@@ -315,7 +315,7 @@ fraction of block energy in top-left 4x4 coefficients: 92.40%
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=cdb035e7"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="JPEG-th%E1%BB%B1c-t%E1%BA%BF:-s%E1%BB%B1-%C4%91%C3%A1nh-%C4%91%E1%BB%95i-t%E1%BB%91c-%C4%91%E1%BB%99-bit-%C4%91%E1%BB%99-m%C3%A9o">JPEG thực tế: sự đánh đổi tốc độ bit-độ méo<a class="anchor-link" href="#JPEG-th%E1%BB%B1c-t%E1%BA%BF:-s%E1%BB%B1-%C4%91%C3%A1nh-%C4%91%E1%BB%95i-t%E1%BB%91c-%C4%91%E1%BB%99-bit-%C4%91%E1%BB%99-m%C3%A9o">¶</a></h2><p>Mã hóa JPEG thực tế theo cùng công thức DCT-rồi-lượng-tử-hóa này cho từng khối (với một bảng lượng tử hóa phụ thuộc tần số được thiết kế cẩn thận, cộng với mã hóa loạt dài và Huffman cho các hệ số thưa thu được — kết hợp các ý tưởng có mất mát và không mất mát trong bài này). Ta dùng trực tiếp bộ mã hóa có sẵn của OpenCV, quét tham số chất lượng, và đo cả kích thước tệp lẫn sai số tái tạo.</p>
+<h2 id="JPEG-th%E1%BB%B1c-t%E1%BA%BF:-s%E1%BB%B1-%C4%91%C3%A1nh-%C4%91%E1%BB%95i-t%E1%BB%91c-%C4%91%E1%BB%99-bit-%C4%91%E1%BB%99-m%C3%A9o-(Real-JPEG:-the-rate-distortion-tradeoff)">JPEG thực tế: sự đánh đổi tốc độ bit-độ méo (Real JPEG: the rate-distortion tradeoff)<a class="anchor-link" href="#JPEG-th%E1%BB%B1c-t%E1%BA%BF:-s%E1%BB%B1-%C4%91%C3%A1nh-%C4%91%E1%BB%95i-t%E1%BB%91c-%C4%91%E1%BB%99-bit-%C4%91%E1%BB%99-m%C3%A9o-(Real-JPEG:-the-rate-distortion-tradeoff)">¶</a></h2><p>Mã hóa JPEG thực tế theo cùng công thức DCT-rồi-lượng-tử-hóa này cho từng khối (với một bảng lượng tử hóa phụ thuộc tần số được thiết kế cẩn thận, cộng với mã hóa loạt dài và Huffman cho các hệ số thưa thu được — kết hợp các ý tưởng có mất mát và không mất mát trong bài này). Ta dùng trực tiếp bộ mã hóa có sẵn của OpenCV, quét tham số chất lượng, và đo cả kích thước tệp lẫn sai số tái tạo.</p>
 </div>
 </div>
 </div>
@@ -421,7 +421,7 @@ fraction of block energy in top-left 4x4 coefficients: 92.40%
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=b52c60e3"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="JPEG-hay-PNG?-Ch%E1%BB%8Dn-%C4%91%C3%BAng-%C4%91%E1%BB%8Bnh-d%E1%BA%A1ng">JPEG hay PNG? Chọn đúng định dạng<a class="anchor-link" href="#JPEG-hay-PNG?-Ch%E1%BB%8Dn-%C4%91%C3%BAng-%C4%91%E1%BB%8Bnh-d%E1%BA%A1ng">¶</a></h2><p>Các sự đánh đổi ở trên chuyển thành một quy tắc thực tế:</p>
+<h2 id="JPEG-hay-PNG?-Ch%E1%BB%8Dn-%C4%91%C3%BAng-%C4%91%E1%BB%8Bnh-d%E1%BA%A1ng-(JPEG-or-PNG?-Choosing-the-right-format)">JPEG hay PNG? Chọn đúng định dạng (JPEG or PNG? Choosing the right format)<a class="anchor-link" href="#JPEG-hay-PNG?-Ch%E1%BB%8Dn-%C4%91%C3%BAng-%C4%91%E1%BB%8Bnh-d%E1%BA%A1ng-(JPEG-or-PNG?-Choosing-the-right-format)">¶</a></h2><p>Các sự đánh đổi ở trên chuyển thành một quy tắc thực tế:</p>
 <ul>
 <li><p>Dùng <strong>JPEG cho ảnh chụp</strong>. Ảnh chụp chủ yếu gồm các dải chuyển màu mượt — chính là thứ mà DCT dồn vào một vài hệ số tần số thấp, nên loại bỏ phần còn lại hầu như không thấy được, và JPEG mang lại mức giảm kích thước lớn với tổn thất cảm nhận nhỏ.</p>
 </li>
@@ -498,7 +498,7 @@ graphic          60000 B      1920 B      3594 B    (PNG is smaller than JPEG by
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=37905393"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Nh%C3%ACn-k%E1%BB%B9-h%C6%A1n-c%C3%A1c-nhi%E1%BB%85u-c%E1%BB%A7a-JPEG">Nhìn kỹ hơn các nhiễu của JPEG<a class="anchor-link" href="#Nh%C3%ACn-k%E1%BB%B9-h%C6%A1n-c%C3%A1c-nhi%E1%BB%85u-c%E1%BB%A7a-JPEG">¶</a></h3><p>Phóng to vào một vùng có độ tương phản cao (đường mái nhà trên nền trời) ở mức chất lượng thấp hơn nhiều cho thấy trực tiếp cái giá của việc lượng tử hóa mạnh tay: các ô vuông 8x8 vỡ khối và hiện tượng rung quanh cạnh sắc, đúng như kiểu thất bại mô tả ở trên.</p>
+<h3 id="Nh%C3%ACn-k%E1%BB%B9-h%C6%A1n-c%C3%A1c-nhi%E1%BB%85u-c%E1%BB%A7a-JPEG-(A-closer-look-at-JPEG-artifacts)">Nhìn kỹ hơn các nhiễu của JPEG (A closer look at JPEG artifacts)<a class="anchor-link" href="#Nh%C3%ACn-k%E1%BB%B9-h%C6%A1n-c%C3%A1c-nhi%E1%BB%85u-c%E1%BB%A7a-JPEG-(A-closer-look-at-JPEG-artifacts)">¶</a></h3><p>Phóng to vào một vùng có độ tương phản cao (đường mái nhà trên nền trời) ở mức chất lượng thấp hơn nhiều cho thấy trực tiếp cái giá của việc lượng tử hóa mạnh tay: các ô vuông 8x8 vỡ khối và hiện tượng rung quanh cạnh sắc, đúng như kiểu thất bại mô tả ở trên.</p>
 </div>
 </div>
 </div>
@@ -552,7 +552,7 @@ graphic          60000 B      1920 B      3594 B    (PNG is smaller than JPEG by
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=617f2677"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Chạy thí nghiệm RLE trên <code>photo_like</code> (có nhiễu Gauss) thay vì <code>flat_regions_img</code>. Nó tạo ra bao nhiêu loạt, và điều đó nói gì về sự phù hợp của RLE với ảnh tự nhiên có nhiễu?</li>
 <li><code>keep_top_left</code> là một sự thay thế thô sơ có chủ đích cho lượng tử hóa thực sự (vốn thu nhỏ <em>mọi</em> hệ số một cách từ từ thay vì đưa cứng một khối hệ số về 0). Hãy thay nó bằng <code>np.round(dct_block / step) * step</code> với vài giá trị <code>step</code> khác nhau, và so sánh các nhiễu thị giác với phiên bản góc trên-trái.</li>
 <li>Ở chất lượng JPEG rất thấp, bạn có thể nhận thấy một mẫu lưới thấy rõ thẳng hàng với ranh giới các khối 8x8 ("nhiễu vỡ khối — blocking artifacts"). Dựa trên mối liên hệ giữa ranh giới khối và DCT, hãy giải thích tại sao lượng tử hóa mỗi khối một cách <em>độc lập</em> lại tạo ra đúng loại nhiễu này.</li>

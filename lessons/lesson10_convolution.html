@@ -57,7 +57,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=d292b213"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="T%C3%ADch-ch%E1%BA%ADp-1D">Tích chập 1D<a class="anchor-link" href="#T%C3%ADch-ch%E1%BA%ADp-1D">¶</a></h2><p>Trước khi xử lý ảnh 2D, hãy bắt đầu với bài toán đơn giản hơn là tích chập hai mảng 1D. Với tín hiệu $I$ và kernel $K$, tích chập rời rạc là</p>
+<h2 id="T%C3%ADch-ch%E1%BA%ADp-1D-(1D-convolution)">Tích chập 1D (1D convolution)<a class="anchor-link" href="#T%C3%ADch-ch%E1%BA%ADp-1D-(1D-convolution)">¶</a></h2><p>Trước khi xử lý ảnh 2D, hãy bắt đầu với bài toán đơn giản hơn là tích chập hai mảng 1D. Với tín hiệu $I$ và kernel $K$, tích chập rời rạc là</p>
 <p>$$(I * K)(x) = \sum_{i} K(i)\, I(x - i)$$</p>
 <p>Cụ thể: <strong>lật</strong> kernel từ đầu sang cuối, <strong>trượt</strong> nó dọc theo tín hiệu mỗi lần một vị trí, và tại mỗi vị trí lấy tích vô hướng giữa kernel đã lật và đoạn tín hiệu chồng lên nó. Giờ hãy thử với một tín hiệu tăng dần rồi giảm xuống, và một kernel 3 phần tử đơn giản $[-1, 0, 1]$ — một phép đạo hàm rời rạc tính độ dốc.</p>
 </div>
@@ -140,7 +140,7 @@ match: True
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=86b6a4dd"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="T%C3%ADch-ch%E1%BA%ADp-2D">Tích chập 2D<a class="anchor-link" href="#T%C3%ADch-ch%E1%BA%ADp-2D">¶</a></h2><p>Phiên bản 2D của tích chập (thứ thực sự được dùng trên ảnh) có cùng ý tưởng lật-và-trượt như trường hợp 1D ở trên, chỉ là trên hai trục:</p>
+<h2 id="T%C3%ADch-ch%E1%BA%ADp-2D-(2D-convolution)">Tích chập 2D (2D convolution)<a class="anchor-link" href="#T%C3%ADch-ch%E1%BA%ADp-2D-(2D-convolution)">¶</a></h2><p>Phiên bản 2D của tích chập (thứ thực sự được dùng trên ảnh) có cùng ý tưởng lật-và-trượt như trường hợp 1D ở trên, chỉ là trên hai trục:</p>
 <p>$$(I * K)(x, y) = \sum_{i}\sum_{j} K(i, j)\, I(x - i,\, y - j)$$</p>
 <p>với ảnh $I$ và kernel $K$. Cũng như phiên bản 1D, chi tiết then chốt là các dấu <em>trừ</em>: kernel được lật (xoay 180°) trước khi trượt qua ảnh. Điều này quan trọng bất cứ khi nào kernel không đối xứng.</p>
 <p><strong>Tương quan (correlation)</strong> có cùng ý tưởng nhưng không lật:</p>
@@ -152,7 +152,7 @@ match: True
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=4fa20875"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="T%C3%ADch-ch%E1%BA%ADp-t%E1%BB%AB-%C4%91%E1%BA%A7u">Tích chập từ đầu<a class="anchor-link" href="#T%C3%ADch-ch%E1%BA%ADp-t%E1%BB%AB-%C4%91%E1%BA%A7u">¶</a></h2><p>Để cài đặt tích chập 2D: lật kernel theo cả chiều ngang và chiều dọc, đệm ảnh để kernel không bao giờ chạy ra ngoài biên, rồi tại mỗi vị trí nhân từng phần tử của kernel đã lật với các điểm ảnh bên dưới nó và cộng lại.</p>
+<h2 id="T%C3%ADch-ch%E1%BA%ADp-t%E1%BB%AB-%C4%91%E1%BA%A7u-(Convolution-from-scratch)">Tích chập từ đầu (Convolution from scratch)<a class="anchor-link" href="#T%C3%ADch-ch%E1%BA%ADp-t%E1%BB%AB-%C4%91%E1%BA%A7u-(Convolution-from-scratch)">¶</a></h2><p>Để cài đặt tích chập 2D: lật kernel theo cả chiều ngang và chiều dọc, đệm ảnh để kernel không bao giờ chạy ra ngoài biên, rồi tại mỗi vị trí nhân từng phần tử của kernel đã lật với các điểm ảnh bên dưới nó và cộng lại.</p>
 <p>Minh họa trong ảnh động này: lật kernel 180°, rồi trượt nó qua một ảnh nhỏ đã đệm số 0, lấy tích vô hướng với cửa sổ 3x3 chồng lên ở mỗi vị trí. Đây cũng là kernel bất đối xứng được dùng lại bên dưới trong phần so sánh tích chập với tương quan, nơi việc lật sẽ tạo ra khác biệt thấy rõ.</p>
 <img alt="Ảnh động minh họa tích chập 2D: lật kernel 180 độ và trượt nó qua ảnh, tính tích vô hướng ở mỗi vị trí" src="../animations/convolution2d_demo.gif" style="display: block; margin: 0 auto; max-width: 900px;"/>
 </div>
@@ -161,7 +161,7 @@ match: True
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=88eb2dc2"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="T%C4%83ng-t%E1%BB%91c-t%C3%ADch-ch%E1%BA%ADp:-l%E1%BA%B7p-qua-kernel,-kh%C3%B4ng-ph%E1%BA%A3i-qua-%E1%BA%A3nh">Tăng tốc tích chập: lặp qua kernel, không phải qua ảnh<a class="anchor-link" href="#T%C4%83ng-t%E1%BB%91c-t%C3%ADch-ch%E1%BA%ADp:-l%E1%BA%B7p-qua-kernel,-kh%C3%B4ng-ph%E1%BA%A3i-qua-%E1%BA%A3nh">¶</a></h2><p>Đoạn code dưới đây cài đặt trực tiếp tích chập 2D — ngoại trừ việc để tăng tốc, nó lặp qua (ít) phần tử của kernel thay vì qua (nhiều) điểm ảnh của ảnh, dịch chuyển và cộng dồn toàn bộ ảnh đã đệm cùng lúc cho mỗi trọng số kernel.</p>
+<h2 id="T%C4%83ng-t%E1%BB%91c-t%C3%ADch-ch%E1%BA%ADp:-l%E1%BA%B7p-qua-kernel,-kh%C3%B4ng-ph%E1%BA%A3i-qua-%E1%BA%A3nh-(Speeding-up-convolution:-loop-over-the-kernel,-not-the-image)">Tăng tốc tích chập: lặp qua kernel, không phải qua ảnh (Speeding up convolution: loop over the kernel, not the image)<a class="anchor-link" href="#T%C4%83ng-t%E1%BB%91c-t%C3%ADch-ch%E1%BA%ADp:-l%E1%BA%B7p-qua-kernel,-kh%C3%B4ng-ph%E1%BA%A3i-qua-%E1%BA%A3nh-(Speeding-up-convolution:-loop-over-the-kernel,-not-the-image)">¶</a></h2><p>Đoạn code dưới đây cài đặt trực tiếp tích chập 2D — ngoại trừ việc để tăng tốc, nó lặp qua (ít) phần tử của kernel thay vì qua (nhiều) điểm ảnh của ảnh, dịch chuyển và cộng dồn toàn bộ ảnh đã đệm cùng lúc cho mỗi trọng số kernel.</p>
 </div>
 </div>
 </div>
@@ -198,7 +198,7 @@ match: True
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=57abeb5c"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-OpenCV">Đối chiếu với OpenCV<a class="anchor-link" href="#%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-OpenCV">¶</a></h3><p>Vì <code>cv2.filter2D</code> tính tương quan, ta đưa vào kernel <em>đã được lật sẵn</em> để có kết quả tích chập thực sự mà so sánh.</p>
+<h3 id="%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-OpenCV-(Sanity-check-against-OpenCV)">Đối chiếu với OpenCV (Sanity check against OpenCV)<a class="anchor-link" href="#%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-OpenCV-(Sanity-check-against-OpenCV)">¶</a></h3><p>Vì <code>cv2.filter2D</code> tính tương quan, ta đưa vào kernel <em>đã được lật sẵn</em> để có kết quả tích chập thực sự mà so sánh.</p>
 </div>
 </div>
 </div>
@@ -239,7 +239,7 @@ match: True
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=c795c3d1"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="T%C3%ADch-ch%E1%BA%ADp-v%C3%A0-t%C6%B0%C6%A1ng-quan,-nh%C3%ACn-th%E1%BA%A5y-%C4%91%C6%B0%E1%BB%A3c">Tích chập và tương quan, nhìn thấy được<a class="anchor-link" href="#T%C3%ADch-ch%E1%BA%ADp-v%C3%A0-t%C6%B0%C6%A1ng-quan,-nh%C3%ACn-th%E1%BA%A5y-%C4%91%C6%B0%E1%BB%A3c">¶</a></h3><p>Với kernel đối xứng, tích chập và tương quan cho kết quả <em>giống hệt nhau</em>. Với kernel bất đối xứng, kết quả sẽ khác — nhưng trên thực tế hầu hết các kernel bất đối xứng chỉ gây ra một phép đảo dấu đơn giản.</p>
+<h3 id="T%C3%ADch-ch%E1%BA%ADp-v%C3%A0-t%C6%B0%C6%A1ng-quan,-nh%C3%ACn-th%E1%BA%A5y-%C4%91%C6%B0%E1%BB%A3c-(Convolution-vs.-correlation,-made-visible)">Tích chập và tương quan, nhìn thấy được (Convolution vs. correlation, made visible)<a class="anchor-link" href="#T%C3%ADch-ch%E1%BA%ADp-v%C3%A0-t%C6%B0%C6%A1ng-quan,-nh%C3%ACn-th%E1%BA%A5y-%C4%91%C6%B0%E1%BB%A3c-(Convolution-vs.-correlation,-made-visible)">¶</a></h3><p>Với kernel đối xứng, tích chập và tương quan cho kết quả <em>giống hệt nhau</em>. Với kernel bất đối xứng, kết quả sẽ khác — nhưng trên thực tế hầu hết các kernel bất đối xứng chỉ gây ra một phép đảo dấu đơn giản.</p>
 </div>
 </div>
 </div>
@@ -287,7 +287,7 @@ match: True
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=05b4428e"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="X%E1%BB%AD-l%C3%BD-bi%C3%AAn">Xử lý biên<a class="anchor-link" href="#X%E1%BB%AD-l%C3%BD-bi%C3%AAn">¶</a></h2><p>Ở gần các cạnh, kernel thò ra ngoài ảnh. <code>convolve2d</code> dùng <code>cv2.copyMakeBorder</code> để đệm trước; chế độ đệm làm thay đổi kết quả ở biên. Các lựa chọn phổ biến: đệm hằng số (số 0), sao chép (replicate — kéo dài điểm ảnh ở cạnh), và phản xạ (reflect — lấy đối xứng gương qua cạnh). Với phản xạ có hai lựa chọn: <code>REFLECT101</code> phổ biến hơn vì tránh lặp lại chính điểm ảnh ở cạnh. Trong ví dụ này, mảng $4 \times 4$ bên trong của mỗi đầu ra giống hệt mảng gốc — chỉ có vòng ngoài là khác.</p>
+<h2 id="X%E1%BB%AD-l%C3%BD-bi%C3%AAn-(Boundary-handling)">Xử lý biên (Boundary handling)<a class="anchor-link" href="#X%E1%BB%AD-l%C3%BD-bi%C3%AAn-(Boundary-handling)">¶</a></h2><p>Ở gần các cạnh, kernel thò ra ngoài ảnh. <code>convolve2d</code> dùng <code>cv2.copyMakeBorder</code> để đệm trước; chế độ đệm làm thay đổi kết quả ở biên. Các lựa chọn phổ biến: đệm hằng số (số 0), sao chép (replicate — kéo dài điểm ảnh ở cạnh), và phản xạ (reflect — lấy đối xứng gương qua cạnh). Với phản xạ có hai lựa chọn: <code>REFLECT101</code> phổ biến hơn vì tránh lặp lại chính điểm ảnh ở cạnh. Trong ví dụ này, mảng $4 \times 4$ bên trong của mỗi đầu ra giống hệt mảng gốc — chỉ có vòng ngoài là khác.</p>
 </div>
 </div>
 </div>
@@ -353,7 +353,7 @@ REFLECT101:
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=06ee81e6"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="C%C3%A1c-b%E1%BB%99-l%E1%BB%8Dc-kinh-%C4%91i%E1%BB%83n-d%C6%B0%E1%BB%9Bi-d%E1%BA%A1ng-kernel">Các bộ lọc kinh điển dưới dạng kernel<a class="anchor-link" href="#C%C3%A1c-b%E1%BB%99-l%E1%BB%8Dc-kinh-%C4%91i%E1%BB%83n-d%C6%B0%E1%BB%9Bi-d%E1%BA%A1ng-kernel">¶</a></h2><p>Khi đã tính được tích chập, hầu hết các bộ lọc chỉ là "chọn một kernel":</p>
+<h2 id="C%C3%A1c-b%E1%BB%99-l%E1%BB%8Dc-kinh-%C4%91i%E1%BB%83n-d%C6%B0%E1%BB%9Bi-d%E1%BA%A1ng-kernel-(Classic-filters-as-kernels)">Các bộ lọc kinh điển dưới dạng kernel (Classic filters as kernels)<a class="anchor-link" href="#C%C3%A1c-b%E1%BB%99-l%E1%BB%8Dc-kinh-%C4%91i%E1%BB%83n-d%C6%B0%E1%BB%9Bi-d%E1%BA%A1ng-kernel-(Classic-filters-as-kernels)">¶</a></h2><p>Khi đã tính được tích chập, hầu hết các bộ lọc chỉ là "chọn một kernel":</p>
 <ul>
 <li><strong>Lọc hộp (box blur)</strong>: mọi điểm lân cận có trọng số bằng nhau — làm trung bình hóa nhiễu nhưng làm mờ các cạnh.</li>
 <li><strong>Làm mờ (khả tách)</strong>: các điểm lân cận được đánh trọng số nặng hơn về phía tâm (dạng hình lều) — giảm dần mượt hơn lọc hộp, và như ta sẽ thấy bên dưới, có thể dựng nó từ hai kernel 1D.</li>
@@ -422,7 +422,7 @@ REFLECT101:
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=34da84e6"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Kernel-kh%E1%BA%A3-t%C3%A1ch:-m%E1%BB%99t-m%E1%BA%B9o-t%C4%83ng-t%E1%BB%91c">Kernel khả tách: một mẹo tăng tốc<a class="anchor-link" href="#Kernel-kh%E1%BA%A3-t%C3%A1ch:-m%E1%BB%99t-m%E1%BA%B9o-t%C4%83ng-t%E1%BB%91c">¶</a></h2><p>Kernel làm mờ ở trên là <strong>khả tách (separable)</strong>: nó có thể viết dưới dạng tích ngoài (outer product) của hai kernel 1D, $K = k_x \, k_y^\top$. Điều đó có nghĩa là tích chập với kernel đầy đủ $n \times n$ tương đương với tích chập với một kernel $1 \times n$, rồi một kernel $n \times 1$ — biến khối lượng công việc $O(n^2)$ trên mỗi điểm ảnh thành $O(2n)$.</p>
+<h2 id="Kernel-kh%E1%BA%A3-t%C3%A1ch:-m%E1%BB%99t-m%E1%BA%B9o-t%C4%83ng-t%E1%BB%91c-(Separable-kernels:-a-speed-trick)">Kernel khả tách: một mẹo tăng tốc (Separable kernels: a speed trick)<a class="anchor-link" href="#Kernel-kh%E1%BA%A3-t%C3%A1ch:-m%E1%BB%99t-m%E1%BA%B9o-t%C4%83ng-t%E1%BB%91c-(Separable-kernels:-a-speed-trick)">¶</a></h2><p>Kernel làm mờ ở trên là <strong>khả tách (separable)</strong>: nó có thể viết dưới dạng tích ngoài (outer product) của hai kernel 1D, $K = k_x \, k_y^\top$. Điều đó có nghĩa là tích chập với kernel đầy đủ $n \times n$ tương đương với tích chập với một kernel $1 \times n$, rồi một kernel $n \times 1$ — biến khối lượng công việc $O(n^2)$ trên mỗi điểm ảnh thành $O(2n)$.</p>
 </div>
 </div>
 </div>
@@ -491,7 +491,7 @@ separable == full 2D convolution? True
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=5dc67665"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Xác minh rằng kernel hộp cũng khả tách, bằng cách viết nó dưới dạng tích ngoài của hai kernel 1D đều.</li>
 <li><code>sobel_x</code> ở trên không đối xứng. Tính cả tích chập lẫn tương quan của <code>photo_like</code> với nó, và mô tả hai đầu ra khác nhau thế nào (gợi ý: hãy nghĩ xem mỗi phép phản hồi với chiều thay đổi cường độ nào).</li>
 <li>Đo thời gian <code>convolve2d</code> so với <code>cv2.filter2D</code> trên ảnh 300x300 với kernel Gauss 15x15 bằng <code>%timeit</code>. Sau đó đo thời gian phiên bản khả tách hai lượt so với phiên bản 2D đầy đủ. Mỗi cách tăng tốc nhanh hơn bao nhiêu?</li>

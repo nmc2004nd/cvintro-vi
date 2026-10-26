@@ -57,7 +57,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=22d7aa2f"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Hi%E1%BB%87u-ch%E1%BB%89nh-kh%C3%B4i-ph%E1%BB%A5c-nh%E1%BB%AFng-g%C3%AC">Hiệu chỉnh khôi phục những gì<a class="anchor-link" href="#Hi%E1%BB%87u-ch%E1%BB%89nh-kh%C3%B4i-ph%E1%BB%A5c-nh%E1%BB%AFng-g%C3%AC">¶</a></h2><p>Hiệu chỉnh camera khôi phục hai thứ riêng biệt:</p>
+<h2 id="Hi%E1%BB%87u-ch%E1%BB%89nh-kh%C3%B4i-ph%E1%BB%A5c-nh%E1%BB%AFng-g%C3%AC-(What-calibration-recovers)">Hiệu chỉnh khôi phục những gì (What calibration recovers)<a class="anchor-link" href="#Hi%E1%BB%87u-ch%E1%BB%89nh-kh%C3%B4i-ph%E1%BB%A5c-nh%E1%BB%AFng-g%C3%AC-(What-calibration-recovers)">¶</a></h2><p>Hiệu chỉnh camera khôi phục hai thứ riêng biệt:</p>
 <ol>
 <li><strong>Tham số nội</strong> $K = \begin{bmatrix}f_x &amp; s &amp; c_x\\0 &amp; f_y &amp; c_y\\0&amp;0&amp;1\end{bmatrix}$: tiêu cự, điểm chính và độ xiên (skew) — phần lỗ kim lý tưởng của mô hình camera được dùng xuyên suốt Bài 28 và 29. Với camera thực, có thể yên tâm giả định độ xiên bằng 0.</li>
 <li><strong>Hệ số méo (distortion coefficients)</strong> $(k_1, k_2, p_1, p_2, k_3, \dots)$: thấu kính thực không phải lỗ kim hoàn hảo. Méo hướng tâm (radial distortion) ($k_1, k_2, k_3$) uốn cong các đường thẳng thành đường cong (méo thùng (barrel) hoặc méo gối (pincushion), tùy dấu); méo tiếp tuyến (tangential distortion) ($p_1, p_2$) tính đến việc thấu kính không hoàn toàn song song với cảm biến. Mọi phương trình ở Bài 28 và 29 đều ngầm giả định mô hình camera lỗ kim (tức là méo đã được loại bỏ, điều này đòi hỏi phải hiệu chỉnh).</li>
@@ -68,7 +68,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=4c04090a"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="M%E1%BB%99t-h%E1%BB%87-hi%E1%BB%87u-ch%E1%BB%89nh-t%E1%BB%95ng-h%E1%BB%A3p">Một hệ hiệu chỉnh tổng hợp<a class="anchor-link" href="#M%E1%BB%99t-h%E1%BB%87-hi%E1%BB%87u-ch%E1%BB%89nh-t%E1%BB%95ng-h%E1%BB%A3p">¶</a></h2><p>Ta tạo các ảnh tổng hợp về một camera nhìn vào một bàn cờ: định nghĩa $K$ và độ méo chuẩn, định nghĩa vị trí 3D các góc của một bàn cờ phẳng, và tạo ra vài "bức ảnh" của nó từ các tư thế khác nhau bằng cách chiếu các góc bằng <code>cv2.projectPoints</code> (hàm này áp dụng méo y hệt như một thấu kính thực). Điều này cho ta cùng loại đầu vào mà <code>cv2.calibrateCamera</code> mong đợi từ các góc bàn cờ thực được phát hiện — đồng thời cung cấp dữ liệu chuẩn để đối chiếu.</p>
+<h2 id="M%E1%BB%99t-h%E1%BB%87-hi%E1%BB%87u-ch%E1%BB%89nh-t%E1%BB%95ng-h%E1%BB%A3p-(A-synthetic-calibration-rig)">Một hệ hiệu chỉnh tổng hợp (A synthetic calibration rig)<a class="anchor-link" href="#M%E1%BB%99t-h%E1%BB%87-hi%E1%BB%87u-ch%E1%BB%89nh-t%E1%BB%95ng-h%E1%BB%A3p-(A-synthetic-calibration-rig)">¶</a></h2><p>Ta tạo các ảnh tổng hợp về một camera nhìn vào một bàn cờ: định nghĩa $K$ và độ méo chuẩn, định nghĩa vị trí 3D các góc của một bàn cờ phẳng, và tạo ra vài "bức ảnh" của nó từ các tư thế khác nhau bằng cách chiếu các góc bằng <code>cv2.projectPoints</code> (hàm này áp dụng méo y hệt như một thấu kính thực). Điều này cho ta cùng loại đầu vào mà <code>cv2.calibrateCamera</code> mong đợi từ các góc bàn cờ thực được phát hiện — đồng thời cung cấp dữ liệu chuẩn để đối chiếu.</p>
 </div>
 </div>
 </div>
@@ -118,7 +118,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=7e6d9f39"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="K%E1%BA%BFt-xu%E1%BA%A5t-%E1%BA%A3nh-t%E1%BB%95ng-h%E1%BB%A3p">Kết xuất ảnh tổng hợp<a class="anchor-link" href="#K%E1%BA%BFt-xu%E1%BA%A5t-%E1%BA%A3nh-t%E1%BB%95ng-h%E1%BB%A3p">¶</a></h3><p>Để có thứ gì đó mà phát hiện góc trong đó, thay vì chỉ có tọa độ điểm, ta cần ảnh thực sự. Vì bàn cờ phẳng, phép ánh xạ từ mẫu bề mặt 2D của chính nó sang một bức ảnh chụp nó chính xác là một phép đồng nhất, nên biến dạng một hình bàn cờ (các ô vuông đen trắng xen kẽ) qua phép đồng nhất của mỗi góc nhìn sẽ tổng hợp ra một bức ảnh — thay thế cho một bức ảnh chụp thật.</p>
+<h3 id="K%E1%BA%BFt-xu%E1%BA%A5t-%E1%BA%A3nh-t%E1%BB%95ng-h%E1%BB%A3p-(Rendering-synthetic-photos)">Kết xuất ảnh tổng hợp (Rendering synthetic photos)<a class="anchor-link" href="#K%E1%BA%BFt-xu%E1%BA%A5t-%E1%BA%A3nh-t%E1%BB%95ng-h%E1%BB%A3p-(Rendering-synthetic-photos)">¶</a></h3><p>Để có thứ gì đó mà phát hiện góc trong đó, thay vì chỉ có tọa độ điểm, ta cần ảnh thực sự. Vì bàn cờ phẳng, phép ánh xạ từ mẫu bề mặt 2D của chính nó sang một bức ảnh chụp nó chính xác là một phép đồng nhất, nên biến dạng một hình bàn cờ (các ô vuông đen trắng xen kẽ) qua phép đồng nhất của mỗi góc nhìn sẽ tổng hợp ra một bức ảnh — thay thế cho một bức ảnh chụp thật.</p>
 </div>
 </div>
 </div>
@@ -152,7 +152,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=eb3b6562"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Ph%C3%A1t-hi%E1%BB%87n-m%E1%BA%ABu-hi%E1%BB%87u-ch%E1%BB%89nh">Phát hiện mẫu hiệu chỉnh<a class="anchor-link" href="#Ph%C3%A1t-hi%E1%BB%87n-m%E1%BA%ABu-hi%E1%BB%87u-ch%E1%BB%89nh">¶</a></h3><p>Một quy trình hiệu chỉnh thực tế biết bố cục 2D phẳng của chính bàn cờ (kích thước ô vuông vật lý, do đó có lưới phẳng của <code>corners_3d</code>) — nhưng không biết tư thế của bàn cờ trong không gian 3D so với camera ở mỗi lần chụp (phép xoay và tịnh tiến của nó), và không biết vị trí điểm ảnh 2D nơi các góc của nó rơi vào trong mỗi bức ảnh. Vì vậy bước đầu tiên trong mọi quy trình hiệu chỉnh là tìm các vị trí 2D đó: ta chạy <code>cv2.findChessboardCorners</code> của OpenCV trên mỗi bức ảnh — y như với một bức ảnh thật — và so sánh các phát hiện của nó với <code>image_points</code> chuẩn mà ta đã biết.</p>
+<h3 id="Ph%C3%A1t-hi%E1%BB%87n-m%E1%BA%ABu-hi%E1%BB%87u-ch%E1%BB%89nh-(Detecting-the-target)">Phát hiện mẫu hiệu chỉnh (Detecting the target)<a class="anchor-link" href="#Ph%C3%A1t-hi%E1%BB%87n-m%E1%BA%ABu-hi%E1%BB%87u-ch%E1%BB%89nh-(Detecting-the-target)">¶</a></h3><p>Một quy trình hiệu chỉnh thực tế biết bố cục 2D phẳng của chính bàn cờ (kích thước ô vuông vật lý, do đó có lưới phẳng của <code>corners_3d</code>) — nhưng không biết tư thế của bàn cờ trong không gian 3D so với camera ở mỗi lần chụp (phép xoay và tịnh tiến của nó), và không biết vị trí điểm ảnh 2D nơi các góc của nó rơi vào trong mỗi bức ảnh. Vì vậy bước đầu tiên trong mọi quy trình hiệu chỉnh là tìm các vị trí 2D đó: ta chạy <code>cv2.findChessboardCorners</code> của OpenCV trên mỗi bức ảnh — y như với một bức ảnh thật — và so sánh các phát hiện của nó với <code>image_points</code> chuẩn mà ta đã biết.</p>
 </div>
 </div>
 </div>
@@ -224,7 +224,7 @@ mean per-view corner error vs. ground truth: 1.83 px (max 2.37 px)
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=f2d965d2"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ch%E1%BA%A1y-hi%E1%BB%87u-ch%E1%BB%89nh">Chạy hiệu chỉnh<a class="anchor-link" href="#Ch%E1%BA%A1y-hi%E1%BB%87u-ch%E1%BB%89nh">¶</a></h2><p>Thuật toán hiệu chỉnh của Zhang (<code>cv2.calibrateCamera</code>) nhận vị trí các góc đã biết trên bàn cờ và vị trí ảnh 2D <em>được phát hiện</em> của chúng qua mọi góc nhìn, rồi giải đồng thời ra $K$, độ méo và tư thế riêng của mỗi góc nhìn.</p>
+<h2 id="Ch%E1%BA%A1y-hi%E1%BB%87u-ch%E1%BB%89nh-(Running-calibration)">Chạy hiệu chỉnh (Running calibration)<a class="anchor-link" href="#Ch%E1%BA%A1y-hi%E1%BB%87u-ch%E1%BB%89nh-(Running-calibration)">¶</a></h2><p>Thuật toán hiệu chỉnh của Zhang (<code>cv2.calibrateCamera</code>) nhận vị trí các góc đã biết trên bàn cờ và vị trí ảnh 2D <em>được phát hiện</em> của chúng qua mọi góc nhìn, rồi giải đồng thời ra $K$, độ méo và tư thế riêng của mỗi góc nhìn.</p>
 </div>
 </div>
 </div>
@@ -280,7 +280,7 @@ distortion (estimated): [ 5.4000e-03 -5.0210e-02 -1.1000e-04 -7.0000e-05 -1.1434
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=df786998"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="%C4%90%C6%B0%E1%BB%9Dng-th%E1%BA%B3ng-b%E1%BB%8B-th%E1%BA%A5u-k%C3%ADnh-b%E1%BA%BB-cong">Đường thẳng bị thấu kính bẻ cong<a class="anchor-link" href="#%C4%90%C6%B0%E1%BB%9Dng-th%E1%BA%B3ng-b%E1%BB%8B-th%E1%BA%A5u-k%C3%ADnh-b%E1%BA%BB-cong">¶</a></h2><p>Méo thấu kính khiến đường thẳng trở thành đường cong. Trong tọa độ camera chuẩn hóa (trước khi nhân $K$):</p>
+<h2 id="%C4%90%C6%B0%E1%BB%9Dng-th%E1%BA%B3ng-b%E1%BB%8B-th%E1%BA%A5u-k%C3%ADnh-b%E1%BA%BB-cong-(Straight-lines,-bent-by-a-lens)">Đường thẳng bị thấu kính bẻ cong (Straight lines, bent by a lens)<a class="anchor-link" href="#%C4%90%C6%B0%E1%BB%9Dng-th%E1%BA%B3ng-b%E1%BB%8B-th%E1%BA%A5u-k%C3%ADnh-b%E1%BA%BB-cong-(Straight-lines,-bent-by-a-lens)">¶</a></h2><p>Méo thấu kính khiến đường thẳng trở thành đường cong. Trong tọa độ camera chuẩn hóa (trước khi nhân $K$):</p>
 <p>$$x_d = x(1 + k_1r^2 + k_2r^4 + k_3r^6) + 2p_1xy + p_2(r^2+2x^2)$$
 $$y_d = y(1 + k_1r^2 + k_2r^4 + k_3r^6) + p_1(r^2+2y^2) + 2p_2xy$$</p>
 <p>trong đó $r^2 = x^2+y^2$. Đây chính xác là mô hình mà <code>cv2.projectPoints</code> đã áp dụng bên trong ở trên.</p>
@@ -359,7 +359,7 @@ $$y_d = y(1 + k_1r^2 + k_2r^4 + k_3r^6) + p_1(r^2+2y^2) + 2p_2xy$$</p>
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=eea0726b"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Kh%E1%BB%AD-m%C3%A9o-b%E1%BA%B1ng-c%C3%A1c-tham-s%E1%BB%91-%C6%B0%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-%C4%91%C6%B0%E1%BB%A3c">Khử méo bằng các tham số ước lượng được<a class="anchor-link" href="#Kh%E1%BB%AD-m%C3%A9o-b%E1%BA%B1ng-c%C3%A1c-tham-s%E1%BB%91-%C6%B0%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-%C4%91%C6%B0%E1%BB%A3c">¶</a></h2><p><code>cv2.undistortPoints</code> đảo ngược mô hình méo, chuyển tọa độ điểm ảnh bị méo trở về tọa độ chuẩn hóa không méo. Áp dụng nó lên các đường lưới bị cong ở trên, dùng phép hiệu chỉnh <em>ước lượng được</em> (không phải thực) của ta, sẽ làm chúng thẳng trở lại.</p>
+<h2 id="Kh%E1%BB%AD-m%C3%A9o-b%E1%BA%B1ng-c%C3%A1c-tham-s%E1%BB%91-%C6%B0%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-%C4%91%C6%B0%E1%BB%A3c-(Undoing-distortion-with-the-estimated-parameters)">Khử méo bằng các tham số ước lượng được (Undoing distortion with the estimated parameters)<a class="anchor-link" href="#Kh%E1%BB%AD-m%C3%A9o-b%E1%BA%B1ng-c%C3%A1c-tham-s%E1%BB%91-%C6%B0%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-%C4%91%C6%B0%E1%BB%A3c-(Undoing-distortion-with-the-estimated-parameters)">¶</a></h2><p><code>cv2.undistortPoints</code> đảo ngược mô hình méo, chuyển tọa độ điểm ảnh bị méo trở về tọa độ chuẩn hóa không méo. Áp dụng nó lên các đường lưới bị cong ở trên, dùng phép hiệu chỉnh <em>ước lượng được</em> (không phải thực) của ta, sẽ làm chúng thẳng trở lại.</p>
 </div>
 </div>
 </div>
@@ -419,7 +419,7 @@ $$y_d = y(1 + k_1r^2 + k_2r^4 + k_3r^6) + p_1(r^2+2y^2) + 2p_2xy$$</p>
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=5546eaca"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Thêm nhiễu điểm ảnh tổng hợp (ví dụ <code>rng.normal(0, 0.5, corners.shape)</code>) bên trên nhiễu thực của bộ phát hiện, vào các góc được phát hiện của mỗi góc nhìn trước khi hiệu chỉnh. Sai số chiếu lại RMS tăng bao nhiêu, và <code>K_estimated</code> trôi xa hơn khỏi <code>K_true</code> như thế nào?</li>
 <li>Thiết lập này kết thúc với chỉ một nhúm góc nhìn được phát hiện thành công (đã in ở trên). Hãy thử giảm <code>detected_object_points</code>/<code>detected_image_points</code> xuống chỉ còn 3 góc nhìn trước khi hiệu chỉnh. Ước lượng có suy giảm thấy rõ không, đặc biệt là với các hệ số méo (vốn cần các góc trải rộng khắp khung hình, kể cả gần các cạnh, để được ràng buộc tốt)?</li>
 <li>Đặt <code>dist_true = np.zeros(5)</code> (một lỗ kim hoàn hảo, không méo) và chạy lại toàn bộ notebook. Xác nhận lưới "bị méo" và lưới "lý tưởng" trở nên giống hệt nhau, và phép hiệu chỉnh vẫn khôi phục <code>K_true</code> khá tốt ngay cả khi độ méo cần ước lượng bằng 0.</li>

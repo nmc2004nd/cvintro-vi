@@ -61,7 +61,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=ca269d40"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="M%E1%BB%99t-%C4%91%E1%BB%8Ba-h%C3%ACnh-h%C3%A0m-m%E1%BA%A5t-m%C3%A1t-m%C3%A0-h%E1%BA%A1-gradient-%C4%91%C6%A1n-thu%E1%BA%A7n-g%E1%BA%B7p-kh%C3%B3">Một địa hình hàm mất mát mà hạ gradient đơn thuần gặp khó<a class="anchor-link" href="#M%E1%BB%99t-%C4%91%E1%BB%8Ba-h%C3%ACnh-h%C3%A0m-m%E1%BA%A5t-m%C3%A1t-m%C3%A0-h%E1%BA%A1-gradient-%C4%91%C6%A1n-thu%E1%BA%A7n-g%E1%BA%B7p-kh%C3%B3">¶</a></h2><p>$f(x,y) = 0.05x^2 + 5y^2$ là một cái bát dốc theo $y$ và thoải theo $x$. Một kích thước bước đủ lớn để tiến triển dọc theo $x$ sẽ vượt quá đích dọc theo $y$, gây ra hiện tượng <em>zigzag</em> kinh điển.</p>
+<h2 id="M%E1%BB%99t-%C4%91%E1%BB%8Ba-h%C3%ACnh-h%C3%A0m-m%E1%BA%A5t-m%C3%A1t-m%C3%A0-h%E1%BA%A1-gradient-%C4%91%C6%A1n-thu%E1%BA%A7n-g%E1%BA%B7p-kh%C3%B3-(A-loss-landscape-where-plain-gradient-descent-struggles)">Một địa hình hàm mất mát mà hạ gradient đơn thuần gặp khó (A loss landscape where plain gradient descent struggles)<a class="anchor-link" href="#M%E1%BB%99t-%C4%91%E1%BB%8Ba-h%C3%ACnh-h%C3%A0m-m%E1%BA%A5t-m%C3%A1t-m%C3%A0-h%E1%BA%A1-gradient-%C4%91%C6%A1n-thu%E1%BA%A7n-g%E1%BA%B7p-kh%C3%B3-(A-loss-landscape-where-plain-gradient-descent-struggles)">¶</a></h2><p>$f(x,y) = 0.05x^2 + 5y^2$ là một cái bát dốc theo $y$ và thoải theo $x$. Một kích thước bước đủ lớn để tiến triển dọc theo $x$ sẽ vượt quá đích dọc theo $y$, gây ra hiện tượng <em>zigzag</em> kinh điển.</p>
 </div>
 </div>
 </div>
@@ -137,7 +137,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=2155b589"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Qu%C3%A1n-t%C3%ADnh:-nh%E1%BB%9B-xem-b%E1%BA%A1n-%C4%91ang-h%C6%B0%E1%BB%9Bng-v%E1%BB%81-%C4%91%C3%A2u">Quán tính: nhớ xem bạn đang hướng về đâu<a class="anchor-link" href="#Qu%C3%A1n-t%C3%ADnh:-nh%E1%BB%9B-xem-b%E1%BA%A1n-%C4%91ang-h%C6%B0%E1%BB%9Bng-v%E1%BB%81-%C4%91%C3%A2u">¶</a></h2><p>Thay vì bước thuần túy theo gradient hiện tại, hãy tích lũy một <strong>vận tốc (velocity)</strong> tức thời — trung bình có trọng số của các gradient quá khứ — và bước theo đó:</p>
+<h2 id="Qu%C3%A1n-t%C3%ADnh:-nh%E1%BB%9B-xem-b%E1%BA%A1n-%C4%91ang-h%C6%B0%E1%BB%9Bng-v%E1%BB%81-%C4%91%C3%A2u-(Momentum:-remember-where-you-were-heading)">Quán tính: nhớ xem bạn đang hướng về đâu (Momentum: remember where you were heading)<a class="anchor-link" href="#Qu%C3%A1n-t%C3%ADnh:-nh%E1%BB%9B-xem-b%E1%BA%A1n-%C4%91ang-h%C6%B0%E1%BB%9Bng-v%E1%BB%81-%C4%91%C3%A2u-(Momentum:-remember-where-you-were-heading)">¶</a></h2><p>Thay vì bước thuần túy theo gradient hiện tại, hãy tích lũy một <strong>vận tốc (velocity)</strong> tức thời — trung bình có trọng số của các gradient quá khứ — và bước theo đó:</p>
 <p>$$v \leftarrow \beta v - \eta\,\nabla f(p), \qquad p \leftarrow p + v$$</p>
 <p>Lợi ích thực sự của quán tính là tăng tốc, không phải giảm chấn. Dọc theo một hướng nhất quán (như trục $x$ thoải ở đây), mọi gradient đều chỉ cùng một hướng, nên vận tốc tích lũy tiếp tục tăng qua từng bước — kích thước bước hiệu dụng dọc theo trục đó trở nên lớn hơn nhiều so với chỉ riêng $\eta$, y như một quả bóng tăng tốc khi lăn xuống dốc. Dọc theo một hướng dao động (trục $y$ dốc, đổi dấu ở mỗi bước), các gradient liên tiếp triệt tiêu một phần trong cùng phép trung bình tích lũy đó — nhưng chỉ <em>một phần</em>: một hệ số quán tính duy nhất $\beta$ được dùng chung cho mọi hướng, nên sự triệt tiêu đó không được điều chỉnh theo độ cong của riêng hướng nào, và trục dốc vẫn có thể dao động đáng kể — đôi khi còn nhiều hơn cả dao động của hạ gradient đơn thuần — trước khi tắt dần. Hiệu quả chung, qua cả một lần chạy, thường vẫn là có lợi: tiến triển nhanh hơn trên trục hành xử tốt bù đắp cho trục được giảm chấn không hoàn hảo. Nhưng đó là thắng lợi nhờ tăng tốc cộng với một cái phanh thô, chưa được điều chỉnh, chứ không phải một cách khắc phục gọn gàng cho dao động — đó mới là thứ Adam, tiếp theo, thực sự được xây dựng để làm.</p>
 <p>(Quán tính có lợi ích thứ hai còn quan trọng hơn trong huấn luyện thực tế: với gradient lô nhỏ có nhiễu thay vì gradient chính xác dùng ở đây, phép trung bình tích lũy hoạt động như một bộ lọc thông thấp, làm trơn nhiễu giữa các lần lấy mẫu thành một hướng đáng tin cậy hơn. Ta sẽ thấy trực tiếp trường hợp có nhiễu gần cuối bài.)</p>
@@ -180,7 +180,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=a4ce459d"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-PyTorch">Đối chiếu với PyTorch<a class="anchor-link" href="#%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-PyTorch">¶</a></h3>
+<h3 id="%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-PyTorch-(Sanity-check-against-PyTorch)">Đối chiếu với PyTorch (Sanity check against PyTorch)<a class="anchor-link" href="#%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-PyTorch-(Sanity-check-against-PyTorch)">¶</a></h3>
 </div>
 </div>
 </div>
@@ -221,7 +221,7 @@ max diff: 2.22e-16
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=5d15e784"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Adam:-k%C3%ADch-th%C6%B0%E1%BB%9Bc-b%C6%B0%E1%BB%9Bc-th%C3%ADch-nghi-theo-t%E1%BB%ABng-tham-s%E1%BB%91">Adam: kích thước bước thích nghi theo từng tham số<a class="anchor-link" href="#Adam:-k%C3%ADch-th%C6%B0%E1%BB%9Bc-b%C6%B0%E1%BB%9Bc-th%C3%ADch-nghi-theo-t%E1%BB%ABng-tham-s%E1%BB%91">¶</a></h2><p><strong>Adam</strong> (<a href="../references.html#kingma-ba-2014">Kingma &amp; Ba, 2014</a><span class="landmark-paper">★</span>) theo dõi cả một trung bình tích lũy kiểu quán tính của gradient ($m$) <em>lẫn</em> một trung bình tích lũy của bình phương gradient ($v$), rồi chia bước cho $\sqrt{v}$ — tự động thu nhỏ kích thước bước cho các tham số có gradient lớn nhất quán (như hướng $y$ dốc ở đây) và tăng nó cho các tham số có gradient nhỏ:</p>
+<h2 id="Adam:-k%C3%ADch-th%C6%B0%E1%BB%9Bc-b%C6%B0%E1%BB%9Bc-th%C3%ADch-nghi-theo-t%E1%BB%ABng-tham-s%E1%BB%91-(Adam:-per-parameter-adaptive-step-sizes)">Adam: kích thước bước thích nghi theo từng tham số (Adam: per-parameter adaptive step sizes)<a class="anchor-link" href="#Adam:-k%C3%ADch-th%C6%B0%E1%BB%9Bc-b%C6%B0%E1%BB%9Bc-th%C3%ADch-nghi-theo-t%E1%BB%ABng-tham-s%E1%BB%91-(Adam:-per-parameter-adaptive-step-sizes)">¶</a></h2><p><strong>Adam</strong> (<a href="../references.html#kingma-ba-2014">Kingma &amp; Ba, 2014</a><span class="landmark-paper">★</span>) theo dõi cả một trung bình tích lũy kiểu quán tính của gradient ($m$) <em>lẫn</em> một trung bình tích lũy của bình phương gradient ($v$), rồi chia bước cho $\sqrt{v}$ — tự động thu nhỏ kích thước bước cho các tham số có gradient lớn nhất quán (như hướng $y$ dốc ở đây) và tăng nó cho các tham số có gradient nhỏ:</p>
 <p>$$m \leftarrow \beta_1 m + (1-\beta_1)g, \qquad v \leftarrow \beta_2 v + (1-\beta_2)g^2, \qquad p \leftarrow p - \eta\frac{\hat{m}}{\sqrt{\hat{v}}+\epsilon}$$</p>
 <p>($\hat{m}, \hat{v}$ là các phiên bản đã hiệu chỉnh độ chệch (bias-corrected) của $m, v$, chủ yếu quan trọng trong vài bước đầu tiên.)</p>
 </div>
@@ -278,7 +278,7 @@ max diff vs torch.optim.Adam: 1.11e-16
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=311ce961"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="C%E1%BA%A3-ba-%C4%91%C6%B0%E1%BB%9Dng-%C4%91i,-tr%E1%BB%B1c-quan-h%C3%B3a">Cả ba đường đi, trực quan hóa<a class="anchor-link" href="#C%E1%BA%A3-ba-%C4%91%C6%B0%E1%BB%9Dng-%C4%91i,-tr%E1%BB%B1c-quan-h%C3%B3a">¶</a></h3>
+<h3 id="C%E1%BA%A3-ba-%C4%91%C6%B0%E1%BB%9Dng-%C4%91i,-tr%E1%BB%B1c-quan-h%C3%B3a-(All-three-paths,-visualized)">Cả ba đường đi, trực quan hóa (All three paths, visualized)<a class="anchor-link" href="#C%E1%BA%A3-ba-%C4%91%C6%B0%E1%BB%9Dng-%C4%91i,-tr%E1%BB%B1c-quan-h%C3%B3a-(All-three-paths,-visualized)">¶</a></h3>
 </div>
 </div>
 </div>
@@ -328,7 +328,7 @@ max diff vs torch.optim.Adam: 1.11e-16
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=f5ac0d62"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Kh%E1%BB%9Fi-t%E1%BA%A1o-tr%E1%BB%8Dng-s%E1%BB%91:-t%E1%BA%A1i-sao-s%E1%BB%91-0-kh%C3%B4ng-ho%E1%BA%A1t-%C4%91%E1%BB%99ng">Khởi tạo trọng số: tại sao số 0 không hoạt động<a class="anchor-link" href="#Kh%E1%BB%9Fi-t%E1%BA%A1o-tr%E1%BB%8Dng-s%E1%BB%91:-t%E1%BA%A1i-sao-s%E1%BB%91-0-kh%C3%B4ng-ho%E1%BA%A1t-%C4%91%E1%BB%99ng">¶</a></h2><p>Thật hấp dẫn khi khởi tạo mọi trọng số bằng 0. Dù đây có vẻ là điểm xuất phát "trung lập" nhất, nó thực ra là thảm họa với bất kỳ lớp nào có nhiều hơn một đơn vị: mọi đơn vị ẩn tính chính xác cùng một hàm của đầu vào, nhận chính xác cùng một gradient, và được cập nhật chính xác cùng một lượng, mãi mãi. <strong>Tính đối xứng (symmetry)</strong> này không bao giờ tự phá vỡ.</p>
+<h2 id="Kh%E1%BB%9Fi-t%E1%BA%A1o-tr%E1%BB%8Dng-s%E1%BB%91:-t%E1%BA%A1i-sao-s%E1%BB%91-0-kh%C3%B4ng-ho%E1%BA%A1t-%C4%91%E1%BB%99ng-(Weight-initialization:-why-zero-doesn't-work)">Khởi tạo trọng số: tại sao số 0 không hoạt động (Weight initialization: why zero doesn't work)<a class="anchor-link" href="#Kh%E1%BB%9Fi-t%E1%BA%A1o-tr%E1%BB%8Dng-s%E1%BB%91:-t%E1%BA%A1i-sao-s%E1%BB%91-0-kh%C3%B4ng-ho%E1%BA%A1t-%C4%91%E1%BB%99ng-(Weight-initialization:-why-zero-doesn't-work)">¶</a></h2><p>Thật hấp dẫn khi khởi tạo mọi trọng số bằng 0. Dù đây có vẻ là điểm xuất phát "trung lập" nhất, nó thực ra là thảm họa với bất kỳ lớp nào có nhiều hơn một đơn vị: mọi đơn vị ẩn tính chính xác cùng một hàm của đầu vào, nhận chính xác cùng một gradient, và được cập nhật chính xác cùng một lượng, mãi mãi. <strong>Tính đối xứng (symmetry)</strong> này không bao giờ tự phá vỡ.</p>
 </div>
 </div>
 </div>
@@ -422,7 +422,7 @@ all 4 hidden units still have identical weight vectors after 3000 steps of zero-
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=e7578cf7"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="C%C3%A1c-l%C6%B0%E1%BB%A3c-%C4%91%E1%BB%93-kh%E1%BB%9Fi-t%E1%BA%A1o-tr%E1%BB%8Dng-s%E1%BB%91:-%22ng%E1%BA%ABu-nhi%C3%AAn-nh%E1%BB%8F%22-n%C3%AAn-nh%E1%BB%8F-%C4%91%E1%BA%BFn-%C4%91%C3%A2u?">Các lược đồ khởi tạo trọng số: "ngẫu nhiên nhỏ" nên nhỏ đến đâu?<a class="anchor-link" href="#C%C3%A1c-l%C6%B0%E1%BB%A3c-%C4%91%E1%BB%93-kh%E1%BB%9Fi-t%E1%BA%A1o-tr%E1%BB%8Dng-s%E1%BB%91:-%22ng%E1%BA%ABu-nhi%C3%AAn-nh%E1%BB%8F%22-n%C3%AAn-nh%E1%BB%8F-%C4%91%E1%BA%BFn-%C4%91%C3%A2u?">¶</a></h2><p>Khởi tạo bằng 0 thất bại hoàn toàn; "ngẫu nhiên nhỏ" khắc phục được. Nhưng nhỏ <em>đến đâu</em>? Chọn một độ lệch chuẩn cố định thì nó hoạt động ở một độ rộng lớp, rồi âm thầm thất bại ở độ rộng khác. Hãy theo dõi phương sai của các giá trị kích hoạt sau khi cho dữ liệu ngẫu nhiên đi qua một chồng sâu các lớp tuyến tính dùng hàm kích hoạt <code>tanh</code>, dùng cùng một độ lệch chuẩn trọng số cố định ở mọi độ rộng:</p>
+<h2 id="C%C3%A1c-l%C6%B0%E1%BB%A3c-%C4%91%E1%BB%93-kh%E1%BB%9Fi-t%E1%BA%A1o-tr%E1%BB%8Dng-s%E1%BB%91:-%22ng%E1%BA%ABu-nhi%C3%AAn-nh%E1%BB%8F%22-n%C3%AAn-nh%E1%BB%8F-%C4%91%E1%BA%BFn-%C4%91%C3%A2u?-(Weight-initialization-schemes:-how-large-should-%22small-random%22-be?)">Các lược đồ khởi tạo trọng số: "ngẫu nhiên nhỏ" nên nhỏ đến đâu? (Weight initialization schemes: how large should "small random" be?)<a class="anchor-link" href="#C%C3%A1c-l%C6%B0%E1%BB%A3c-%C4%91%E1%BB%93-kh%E1%BB%9Fi-t%E1%BA%A1o-tr%E1%BB%8Dng-s%E1%BB%91:-%22ng%E1%BA%ABu-nhi%C3%AAn-nh%E1%BB%8F%22-n%C3%AAn-nh%E1%BB%8F-%C4%91%E1%BA%BFn-%C4%91%C3%A2u?-(Weight-initialization-schemes:-how-large-should-%22small-random%22-be?)">¶</a></h2><p>Khởi tạo bằng 0 thất bại hoàn toàn; "ngẫu nhiên nhỏ" khắc phục được. Nhưng nhỏ <em>đến đâu</em>? Chọn một độ lệch chuẩn cố định thì nó hoạt động ở một độ rộng lớp, rồi âm thầm thất bại ở độ rộng khác. Hãy theo dõi phương sai của các giá trị kích hoạt sau khi cho dữ liệu ngẫu nhiên đi qua một chồng sâu các lớp tuyến tính dùng hàm kích hoạt <code>tanh</code>, dùng cùng một độ lệch chuẩn trọng số cố định ở mọi độ rộng:</p>
 </div>
 </div>
 </div>
@@ -570,7 +570,7 @@ nn.init.kaiming_normal_ weight std: 0.0881  (formula predicts 0.0884)
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=2d29c169"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="L%E1%BB%8Bch-tr%C3%ACnh-t%E1%BB%91c-%C4%91%E1%BB%99-h%E1%BB%8Dc">Lịch trình tốc độ học<a class="anchor-link" href="#L%E1%BB%8Bch-tr%C3%ACnh-t%E1%BB%91c-%C4%91%E1%BB%99-h%E1%BB%8Dc">¶</a></h2><p>Một tốc độ học cố định duy nhất cho cả quá trình huấn luyện thật hấp dẫn — đó là mặc định hiển nhiên — nhưng nó thường là lựa chọn sai: một tốc độ đủ lớn để tiến triển nhanh lúc đầu thường quá lớn để dừng lại chính xác khi huấn luyện tiến gần một cực tiểu. <strong>Lịch trình tốc độ học</strong> thay đổi tốc độ theo thời gian. Ba lịch trình phổ biến, được đối chiếu với <code>torch.optim.lr_scheduler</code>:</p>
+<h2 id="L%E1%BB%8Bch-tr%C3%ACnh-t%E1%BB%91c-%C4%91%E1%BB%99-h%E1%BB%8Dc-(Learning-rate-schedules)">Lịch trình tốc độ học (Learning rate schedules)<a class="anchor-link" href="#L%E1%BB%8Bch-tr%C3%ACnh-t%E1%BB%91c-%C4%91%E1%BB%99-h%E1%BB%8Dc-(Learning-rate-schedules)">¶</a></h2><p>Một tốc độ học cố định duy nhất cho cả quá trình huấn luyện thật hấp dẫn — đó là mặc định hiển nhiên — nhưng nó thường là lựa chọn sai: một tốc độ đủ lớn để tiến triển nhanh lúc đầu thường quá lớn để dừng lại chính xác khi huấn luyện tiến gần một cực tiểu. <strong>Lịch trình tốc độ học</strong> thay đổi tốc độ theo thời gian. Ba lịch trình phổ biến, được đối chiếu với <code>torch.optim.lr_scheduler</code>:</p>
 <ul>
 <li><strong>Giảm theo bậc (step decay)</strong>: nhân tốc độ với một hệ số cố định mỗi <code>N</code> bước.</li>
 <li><strong>Ủ cosin (cosine annealing)</strong>: giảm mượt mà theo một đường cosin từ tốc độ ban đầu xuống (gần) 0 — cái tên được mượn trực tiếp từ <strong>ủ mô phỏng (simulated annealing)</strong>, kỹ thuật tối ưu hóa cổ điển bắt đầu "nóng" (tự do khám phá, thậm chí chấp nhận các bước đi tệ hơn) rồi dần "nguội" về một nghiệm cố định.</li>
@@ -653,7 +653,7 @@ linear warmup: max diff vs torch.optim.lr_scheduler = 0.00e+00
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=baffb86a"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="T%E1%BA%A1i-sao-gi%E1%BA%A3m-d%E1%BA%A7n-th%E1%BB%B1c-s%E1%BB%B1-c%C3%B3-%C3%ADch:-gradient-c%C3%B3-nhi%E1%BB%85u">Tại sao giảm dần thực sự có ích: gradient có nhiễu<a class="anchor-link" href="#T%E1%BA%A1i-sao-gi%E1%BA%A3m-d%E1%BA%A7n-th%E1%BB%B1c-s%E1%BB%B1-c%C3%B3-%C3%ADch:-gradient-c%C3%B3-nhi%E1%BB%85u">¶</a></h3><p>Trên cái bát hẹp chính xác, không nhiễu ở đầu bài, một tốc độ học hằng số được chọn tốt hội tụ hoàn toàn ổn — không có gì để phải giảm dần. Tuy nhiên, như đã nêu ở trên, huấn luyện thực tế hầu như không bao giờ thấy gradient chính xác: mỗi bước dùng một ước lượng lô nhỏ, vốn có nhiễu. Hãy mô phỏng điều đó bằng cách thêm nhiễu ngẫu nhiên vào gradient ở mỗi bước, và so sánh một tốc độ hằng số với giảm theo bậc.</p>
+<h3 id="T%E1%BA%A1i-sao-gi%E1%BA%A3m-d%E1%BA%A7n-th%E1%BB%B1c-s%E1%BB%B1-c%C3%B3-%C3%ADch:-gradient-c%C3%B3-nhi%E1%BB%85u-(Why-decay-actually-helps:-noisy-gradients)">Tại sao giảm dần thực sự có ích: gradient có nhiễu (Why decay actually helps: noisy gradients)<a class="anchor-link" href="#T%E1%BA%A1i-sao-gi%E1%BA%A3m-d%E1%BA%A7n-th%E1%BB%B1c-s%E1%BB%B1-c%C3%B3-%C3%ADch:-gradient-c%C3%B3-nhi%E1%BB%85u-(Why-decay-actually-helps:-noisy-gradients)">¶</a></h3><p>Trên cái bát hẹp chính xác, không nhiễu ở đầu bài, một tốc độ học hằng số được chọn tốt hội tụ hoàn toàn ổn — không có gì để phải giảm dần. Tuy nhiên, như đã nêu ở trên, huấn luyện thực tế hầu như không bao giờ thấy gradient chính xác: mỗi bước dùng một ước lượng lô nhỏ, vốn có nhiễu. Hãy mô phỏng điều đó bằng cách thêm nhiễu ngẫu nhiên vào gradient ở mỗi bước, và so sánh một tốc độ hằng số với giảm theo bậc.</p>
 </div>
 </div>
 </div>
@@ -718,7 +718,7 @@ step decay:   mean loss over final 50 steps = 0.0025
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=0a900192"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Tăng <code>momentum</code> từ 0.9 lên 0.99 trên bài toán bát hẹp. Nó hội tụ nhanh hơn, hay bắt đầu vượt quá cực tiểu và dao động trên trục <em>thoải</em> lúc này?</li>
 <li>Thử khởi tạo trọng số của MLP giống hệt nhau nhưng <em>khác không</em> (ví dụ <code>np.full((2, H), 0.3)</code> cho cả hai lớp) thay vì toàn 0. Tính đối xứng có vẫn không bị phá vỡ không? Tại sao bạn kỳ vọng cùng kiểu thất bại từ bất kỳ khởi tạo nào mà mọi đơn vị ẩn bắt đầu giống hệt nhau, không chỉ khởi tạo toàn 0?</li>
 <li><code>adam_lr</code> (0.3) của Adam lớn hơn nhiều so với <code>lr</code> (0.15) của SGD đơn thuần trong notebook này, vậy mà Adam vẫn ổn định trong khi một lần chạy SGD đơn thuần với <code>lr=0.3</code> sẽ phân kỳ dữ dội trên trục dốc. Hãy thử và xác nhận. Điều đó gợi ý gì về <em>lý do</em> Adam thường được mô tả là dễ dãi hơn với lựa chọn tốc độ học?</li>

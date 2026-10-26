@@ -57,7 +57,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=7a8c7e8c"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="L%E1%BB%8Dc-trung-v%E1%BB%8B:-ch%E1%BB%91ng-ch%E1%BB%8Bu-t%E1%BB%91t-v%E1%BB%9Bi-ngo%E1%BA%A1i-lai">Lọc trung vị: chống chịu tốt với ngoại lai<a class="anchor-link" href="#L%E1%BB%8Dc-trung-v%E1%BB%8B:-ch%E1%BB%91ng-ch%E1%BB%8Bu-t%E1%BB%91t-v%E1%BB%9Bi-ngo%E1%BA%A1i-lai">¶</a></h2><p>Bộ lọc trung vị thay mỗi điểm ảnh bằng <strong>trung vị (median)</strong> (không phải trung bình) của vùng lân cận. Trong khi một giá trị điểm ảnh sai lệch nghiêm trọng duy nhất (ngoại lai) có thể ảnh hưởng mạnh đến giá trị trung bình, nó hầu như không làm trung vị dịch chuyển, nếu có — nên lọc trung vị đặc biệt hiệu quả với <strong>nhiễu muối tiêu (salt-and-pepper noise)</strong> (các điểm ảnh cô lập bị đẩy ngẫu nhiên thành đen hoặc trắng), loại nhiễu mà làm trơn tuyến tính xử lý kém.</p>
+<h2 id="L%E1%BB%8Dc-trung-v%E1%BB%8B:-ch%E1%BB%91ng-ch%E1%BB%8Bu-t%E1%BB%91t-v%E1%BB%9Bi-ngo%E1%BA%A1i-lai-(Median-filtering:-robust-to-outliers)">Lọc trung vị: chống chịu tốt với ngoại lai (Median filtering: robust to outliers)<a class="anchor-link" href="#L%E1%BB%8Dc-trung-v%E1%BB%8B:-ch%E1%BB%91ng-ch%E1%BB%8Bu-t%E1%BB%91t-v%E1%BB%9Bi-ngo%E1%BA%A1i-lai-(Median-filtering:-robust-to-outliers)">¶</a></h2><p>Bộ lọc trung vị thay mỗi điểm ảnh bằng <strong>trung vị (median)</strong> (không phải trung bình) của vùng lân cận. Trong khi một giá trị điểm ảnh sai lệch nghiêm trọng duy nhất (ngoại lai) có thể ảnh hưởng mạnh đến giá trị trung bình, nó hầu như không làm trung vị dịch chuyển, nếu có — nên lọc trung vị đặc biệt hiệu quả với <strong>nhiễu muối tiêu (salt-and-pepper noise)</strong> (các điểm ảnh cô lập bị đẩy ngẫu nhiên thành đen hoặc trắng), loại nhiễu mà làm trơn tuyến tính xử lý kém.</p>
 </div>
 </div>
 </div>
@@ -124,7 +124,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=258936fc"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="B%E1%BB%99-l%E1%BB%8Dc-min-v%C3%A0-max:-co-v%C3%A0-gi%C3%A3n-%E1%BA%A3nh-x%C3%A1m">Bộ lọc min và max: co và giãn ảnh xám<a class="anchor-link" href="#B%E1%BB%99-l%E1%BB%8Dc-min-v%C3%A0-max:-co-v%C3%A0-gi%C3%A3n-%E1%BA%A3nh-x%C3%A1m">¶</a></h2><p>Bài 3 đã giới thiệu phép co và giãn trên ảnh <em>nhị phân</em>. Trên ảnh <strong>xám</strong>, chúng tổng quát hóa một cách tự nhiên: phép co thay mỗi điểm ảnh bằng giá trị <strong>nhỏ nhất</strong> trong vùng lân cận, và phép giãn bằng giá trị <strong>lớn nhất</strong>. Cả hai đều phi tuyến (không phải tổng có trọng số), và cả hai đều bảo toàn biên theo một cách khác với làm mờ — chúng dịch chuyển biên thay vì làm mờ biên.</p>
+<h2 id="B%E1%BB%99-l%E1%BB%8Dc-min-v%C3%A0-max:-co-v%C3%A0-gi%C3%A3n-%E1%BA%A3nh-x%C3%A1m-(Min-and-max-filters:-grayscale-erosion-and-dilation)">Bộ lọc min và max: co và giãn ảnh xám (Min and max filters: grayscale erosion and dilation)<a class="anchor-link" href="#B%E1%BB%99-l%E1%BB%8Dc-min-v%C3%A0-max:-co-v%C3%A0-gi%C3%A3n-%E1%BA%A3nh-x%C3%A1m-(Min-and-max-filters:-grayscale-erosion-and-dilation)">¶</a></h2><p>Bài 3 đã giới thiệu phép co và giãn trên ảnh <em>nhị phân</em>. Trên ảnh <strong>xám</strong>, chúng tổng quát hóa một cách tự nhiên: phép co thay mỗi điểm ảnh bằng giá trị <strong>nhỏ nhất</strong> trong vùng lân cận, và phép giãn bằng giá trị <strong>lớn nhất</strong>. Cả hai đều phi tuyến (không phải tổng có trọng số), và cả hai đều bảo toàn biên theo một cách khác với làm mờ — chúng dịch chuyển biên thay vì làm mờ biên.</p>
 </div>
 </div>
 </div>
@@ -165,7 +165,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=090e8f46"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="V%E1%BA%A5n-%C4%91%E1%BB%81-m%C3%A0-l%C3%A0m-m%E1%BB%9D-tuy%E1%BA%BFn-t%C3%ADnh-kh%C3%B4ng-gi%E1%BA%A3i-quy%E1%BA%BFt-%C4%91%C6%B0%E1%BB%A3c:-l%C3%A0m-tr%C6%A1n-m%C3%A0-kh%C3%B4ng-v%C6%B0%E1%BB%A3t-qua-bi%C3%AAn">Vấn đề mà làm mờ tuyến tính không giải quyết được: làm trơn <em>mà không</em> vượt qua biên<a class="anchor-link" href="#V%E1%BA%A5n-%C4%91%E1%BB%81-m%C3%A0-l%C3%A0m-m%E1%BB%9D-tuy%E1%BA%BFn-t%C3%ADnh-kh%C3%B4ng-gi%E1%BA%A3i-quy%E1%BA%BFt-%C4%91%C6%B0%E1%BB%A3c:-l%C3%A0m-tr%C6%A1n-m%C3%A0-kh%C3%B4ng-v%C6%B0%E1%BB%A3t-qua-bi%C3%AAn">¶</a></h2><p>Làm mờ Gauss đối xử với mọi điểm lân cận như nhau bất kể giá trị của nó khác biệt đến đâu — đó chính là điều khiến nó làm mờ xuyên qua biên. <strong>Bộ lọc song phương</strong> khắc phục điều này bằng cách đánh trọng số mỗi điểm lân cận theo <em>hai</em> yếu tố: nó gần đến đâu về mặt không gian (giống làm mờ Gauss) <strong>và</strong> cường độ của nó giống điểm ảnh trung tâm đến đâu:</p>
+<h2 id="V%E1%BA%A5n-%C4%91%E1%BB%81-m%C3%A0-l%C3%A0m-m%E1%BB%9D-tuy%E1%BA%BFn-t%C3%ADnh-kh%C3%B4ng-gi%E1%BA%A3i-quy%E1%BA%BFt-%C4%91%C6%B0%E1%BB%A3c:-l%C3%A0m-tr%C6%A1n-m%C3%A0-kh%C3%B4ng-v%C6%B0%E1%BB%A3t-qua-bi%C3%AAn-(The-problem-linear-blur-can't-solve:-smoothing-without-crossing-edges)">Vấn đề mà làm mờ tuyến tính không giải quyết được: làm trơn <em>mà không</em> vượt qua biên (The problem linear blur can't solve: smoothing <em>without</em> crossing edges)<a class="anchor-link" href="#V%E1%BA%A5n-%C4%91%E1%BB%81-m%C3%A0-l%C3%A0m-m%E1%BB%9D-tuy%E1%BA%BFn-t%C3%ADnh-kh%C3%B4ng-gi%E1%BA%A3i-quy%E1%BA%BFt-%C4%91%C6%B0%E1%BB%A3c:-l%C3%A0m-tr%C6%A1n-m%C3%A0-kh%C3%B4ng-v%C6%B0%E1%BB%A3t-qua-bi%C3%AAn-(The-problem-linear-blur-can't-solve:-smoothing-without-crossing-edges)">¶</a></h2><p>Làm mờ Gauss đối xử với mọi điểm lân cận như nhau bất kể giá trị của nó khác biệt đến đâu — đó chính là điều khiến nó làm mờ xuyên qua biên. <strong>Bộ lọc song phương</strong> khắc phục điều này bằng cách đánh trọng số mỗi điểm lân cận theo <em>hai</em> yếu tố: nó gần đến đâu về mặt không gian (giống làm mờ Gauss) <strong>và</strong> cường độ của nó giống điểm ảnh trung tâm đến đâu:</p>
 <p>$$I'(p) = \frac{1}{W_p}\sum_{q \in N(p)} G_{\sigma_s}(\|p - q\|) \cdot G_{\sigma_r}(|I(p) - I(q)|) \cdot I(q)$$</p>
 <p>trong đó $W_p$ chuẩn hóa các trọng số để tổng bằng 1. Các điểm lân cận vừa gần về không gian <em>vừa</em> có cường độ tương tự sẽ có trọng số cao (được làm trơn cùng nhau); các điểm lân cận gần về không gian nhưng có cường độ rất khác (tức là ở phía bên kia của một biên) bị giảm trọng số gần như về 0, nên biên được giữ lại.</p>
 </div>
@@ -199,7 +199,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=92761501"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-OpenCV">Đối chiếu với OpenCV<a class="anchor-link" href="#%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-OpenCV">¶</a></h3><p><code>cv2.bilateralFilter</code> dùng cùng ý tưởng với một số phép xấp xỉ bên trong để tăng tốc, nên ta kỳ vọng kết quả gần giống nhưng không khớp chính xác đến từng điểm ảnh.</p>
+<h3 id="%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-OpenCV-(Sanity-check-against-OpenCV)">Đối chiếu với OpenCV (Sanity check against OpenCV)<a class="anchor-link" href="#%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-OpenCV-(Sanity-check-against-OpenCV)">¶</a></h3><p><code>cv2.bilateralFilter</code> dùng cùng ý tưởng với một số phép xấp xỉ bên trong để tăng tốc, nên ta kỳ vọng kết quả gần giống nhưng không khớp chính xác đến từng điểm ảnh.</p>
 </div>
 </div>
 </div>
@@ -237,7 +237,7 @@ mean abs difference = 0.56 gray levels
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=25bd6e62"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%E1%BA%A3o-to%C3%A0n-bi%C3%AAn,-%C4%91%E1%BA%B7t-c%E1%BA%A1nh-nhau">Bảo toàn biên, đặt cạnh nhau<a class="anchor-link" href="#B%E1%BA%A3o-to%C3%A0n-bi%C3%AAn,-%C4%91%E1%BA%B7t-c%E1%BA%A1nh-nhau">¶</a></h3><p>Phép so sánh thực sự quan trọng: trên một biên bậc bị nhiễu, bộ lọc có làm trơn nhiễu trong khi giữ biên sắc nét, hay làm mờ biên cùng với nhiễu?</p>
+<h3 id="B%E1%BA%A3o-to%C3%A0n-bi%C3%AAn,-%C4%91%E1%BA%B7t-c%E1%BA%A1nh-nhau-(Edge-preservation,-side-by-side)">Bảo toàn biên, đặt cạnh nhau (Edge preservation, side by side)<a class="anchor-link" href="#B%E1%BA%A3o-to%C3%A0n-bi%C3%AAn,-%C4%91%E1%BA%B7t-c%E1%BA%A1nh-nhau-(Edge-preservation,-side-by-side)">¶</a></h3><p>Phép so sánh thực sự quan trọng: trên một biên bậc bị nhiễu, bộ lọc có làm trơn nhiễu trong khi giữ biên sắc nét, hay làm mờ biên cùng với nhiễu?</p>
 </div>
 </div>
 </div>
@@ -293,7 +293,7 @@ mean abs difference = 0.56 gray levels
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=503d9da8"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Áp dụng bộ lọc trung vị (thay vì Gauss hay song phương) lên <code>noisy_big</code> và thêm biên dạng của nó vào phép so sánh. Nó so với bộ lọc song phương thế nào trong việc bảo toàn biên?</li>
 <li>Trong <code>bilateral_filter</code>, đặt <code>sigma_range</code> rất lớn (ví dụ 1000). Bộ lọc khi đó sẽ suy biến thành gì, và kết quả của bạn có xác nhận điều đó không?</li>
 <li>Lọc song phương chậm hơn nhiều so với làm mờ Gauss vì các trọng số phải được tính lại tại mỗi điểm ảnh (chúng phụ thuộc vào cường độ cục bộ, không chỉ vị trí). Đo thời gian <code>bilateral_filter</code> tự viết so với <code>cv2.bilateralFilter</code> trên ảnh 100x100 bằng <code>%timeit</code>, và mô tả bằng lời cách cài đặt của OpenCV có thể làm khác đi như thế nào để nhanh hơn.</li>

@@ -57,7 +57,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=70d06988"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="L%E1%BA%A1i-l%C3%A0-b%C3%A0i-to%C3%A1n-kh%C3%B4ng-gi%E1%BA%A3i-%C4%91%C6%B0%E1%BB%A3c">Lại là bài toán không giải được<a class="anchor-link" href="#L%E1%BA%A1i-l%C3%A0-b%C3%A0i-to%C3%A1n-kh%C3%B4ng-gi%E1%BA%A3i-%C4%91%C6%B0%E1%BB%A3c">¶</a></h2>
+<h2 id="L%E1%BA%A1i-l%C3%A0-b%C3%A0i-to%C3%A1n-kh%C3%B4ng-gi%E1%BA%A3i-%C4%91%C6%B0%E1%BB%A3c-(The-unsolvable-problem,-again)">Lại là bài toán không giải được (The unsolvable problem, again)<a class="anchor-link" href="#L%E1%BA%A1i-l%C3%A0-b%C3%A0i-to%C3%A1n-kh%C3%B4ng-gi%E1%BA%A3i-%C4%91%C6%B0%E1%BB%A3c-(The-unsolvable-problem,-again)">¶</a></h2>
 </div>
 </div>
 </div>
@@ -98,7 +98,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=00f80cdb"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Hai-ph%C3%A9p-chi%E1%BA%BFu,-m%E1%BB%99t-h%C3%A0m-phi-tuy%E1%BA%BFn">Hai phép chiếu, một hàm phi tuyến<a class="anchor-link" href="#Hai-ph%C3%A9p-chi%E1%BA%BFu,-m%E1%BB%99t-h%C3%A0m-phi-tuy%E1%BA%BFn">¶</a></h2><p>Một <strong>perceptron nhiều lớp (multi-layer perceptron — MLP)</strong> nối tiếp một phép chiếu <em>ẩn</em> vào một không gian mới, một <strong>hàm kích hoạt (activation)</strong> phi tuyến áp dụng theo từng phần tử, rồi một phép chiếu tuyến tính cuối cùng (chính là nơ-ron ở Bài 31) bên trên các tọa độ <em>đã biến đổi</em>:</p>
+<h2 id="Hai-ph%C3%A9p-chi%E1%BA%BFu,-m%E1%BB%99t-h%C3%A0m-phi-tuy%E1%BA%BFn-(Two-projections,-one-nonlinearity)">Hai phép chiếu, một hàm phi tuyến (Two projections, one nonlinearity)<a class="anchor-link" href="#Hai-ph%C3%A9p-chi%E1%BA%BFu,-m%E1%BB%99t-h%C3%A0m-phi-tuy%E1%BA%BFn-(Two-projections,-one-nonlinearity)">¶</a></h2><p>Một <strong>perceptron nhiều lớp (multi-layer perceptron — MLP)</strong> nối tiếp một phép chiếu <em>ẩn</em> vào một không gian mới, một <strong>hàm kích hoạt (activation)</strong> phi tuyến áp dụng theo từng phần tử, rồi một phép chiếu tuyến tính cuối cùng (chính là nơ-ron ở Bài 31) bên trên các tọa độ <em>đã biến đổi</em>:</p>
 <p>$$h = \text{ReLU}(W_1 x + b_1), \qquad z = w_2^\top h + b_2, \qquad p = \sigma(z)$$</p>
 <p>$\text{ReLU}(u) = \max(0, u)$ là hàm kích hoạt phổ biến đơn giản nhất: nó tuyến tính ở mọi nơi trừ một điểm gãy duy nhất tại 0. Một điểm gãy đó, áp dụng độc lập lên mọi đơn vị của $h$, là đủ — lớp ẩn có thể uốn, gập và kéo giãn không gian đầu vào sao cho một ranh giới <em>tuyến tính</em> trong không gian đã biến đổi tương ứng với một ranh giới phi tuyến cao khi quay lại tọa độ ban đầu.</p>
 <p>ReLU và sigmoid là hai hàm kích hoạt khác nhau làm các việc khác nhau ở đây: ReLU là hàm phi tuyến của <em>lớp ẩn</em>, định hình lại không gian đầu vào để các điểm dễ tách hơn, trong khi sigmoid (giữ nguyên từ Bài 31) nén điểm số cuối cùng $z$ thành một xác suất ở cuối. Hình dạng của chúng trông khá giống nhau (đồ thị bên dưới), nhưng mỗi hàm phù hợp với vai trò riêng: đầu ra không bị chặn và đạo hàm đơn giản của ReLU hoạt động tốt khi nằm sâu bên trong mạng, trong khi đầu ra bị giới hạn trong (0, 1) của sigmoid khiến nó đọc được như một xác suất ở đầu ra.</p>
@@ -140,7 +140,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=5d26b280"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="T%E1%BA%A1i-sao-h%C3%A0m-phi-tuy%E1%BA%BFn-l%C3%A0-thi%E1%BA%BFt-y%E1%BA%BFu">Tại sao hàm phi tuyến là thiết yếu<a class="anchor-link" href="#T%E1%BA%A1i-sao-h%C3%A0m-phi-tuy%E1%BA%BFn-l%C3%A0-thi%E1%BA%BFt-y%E1%BA%BFu">¶</a></h3><p>Không có ReLU — nếu lớp ẩn được để nguyên là $h = W_1 x + b_1$ — hai lớp sẽ sụp đổ thành một phép chiếu tuyến tính duy nhất:</p>
+<h3 id="T%E1%BA%A1i-sao-h%C3%A0m-phi-tuy%E1%BA%BFn-l%C3%A0-thi%E1%BA%BFt-y%E1%BA%BFu-(Why-the-nonlinearity-is-essential)">Tại sao hàm phi tuyến là thiết yếu (Why the nonlinearity is essential)<a class="anchor-link" href="#T%E1%BA%A1i-sao-h%C3%A0m-phi-tuy%E1%BA%BFn-l%C3%A0-thi%E1%BA%BFt-y%E1%BA%BFu-(Why-the-nonlinearity-is-essential)">¶</a></h3><p>Không có ReLU — nếu lớp ẩn được để nguyên là $h = W_1 x + b_1$ — hai lớp sẽ sụp đổ thành một phép chiếu tuyến tính duy nhất:</p>
 <p>$$z = w_2^\top(W_1 x + b_1) + b_2 = \underbrace{(w_2^\top W_1)}_{w'^\top} x + \underbrace{(w_2^\top b_1 + b_2)}_{b'}$$</p>
 <p>Đó chính xác lại là nơ-ron đơn lẻ ở Bài 31, chỉ là với trọng số của hai lớp được nhân với nhau thành một $w'$ và $b'$. Đây là mặt trái của nhận xét ở Bài 30 rằng phép nhân ma trận là phép chiếu xếp chồng: ghép hai phép nhân ma trận <em>vẫn</em> chỉ là một phép nhân ma trận, nên xếp chồng các lớp thuần tuyến tính chẳng được gì, bất kể bạn nối bao nhiêu lớp. Điểm gãy của ReLU là thứ phá vỡ sự sụp đổ đó: vì nó không phải hàm tuyến tính, $w_2^\top \text{ReLU}(W_1x+b_1)+b_2$ không thể viết lại thành $w'^\top x + b'$.</p>
 </div>
@@ -184,7 +184,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=cddb578c"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Lan-truy%E1%BB%81n-ng%C6%B0%E1%BB%A3c-qua-hai-l%E1%BB%9Bp">Lan truyền ngược qua hai lớp<a class="anchor-link" href="#Lan-truy%E1%BB%81n-ng%C6%B0%E1%BB%A3c-qua-hai-l%E1%BB%9Bp">¶</a></h2><p>Quy tắc chuỗi mở rộng một cách gọn gàng: lan truyền tín hiệu sai số $\partial L/\partial z$ từ Bài 31 ngược qua phép chiếu đầu ra để có $\partial L/\partial h$, rồi ngược qua ReLU và phép chiếu ẩn để có $\partial L/\partial W_1, \partial L/\partial b_1$. Mỗi bước hoặc là "nhân với chuyển vị của một ma trận trọng số" hoặc là "nhân từng phần tử với đạo hàm của một hàm kích hoạt" — xếp chồng thêm lớp chỉ là lặp lại hai phép toán này xa hơn về phía sau qua chuỗi.</p>
+<h2 id="Lan-truy%E1%BB%81n-ng%C6%B0%E1%BB%A3c-qua-hai-l%E1%BB%9Bp-(Backprop-through-two-layers)">Lan truyền ngược qua hai lớp (Backprop through two layers)<a class="anchor-link" href="#Lan-truy%E1%BB%81n-ng%C6%B0%E1%BB%A3c-qua-hai-l%E1%BB%9Bp-(Backprop-through-two-layers)">¶</a></h2><p>Quy tắc chuỗi mở rộng một cách gọn gàng: lan truyền tín hiệu sai số $\partial L/\partial z$ từ Bài 31 ngược qua phép chiếu đầu ra để có $\partial L/\partial h$, rồi ngược qua ReLU và phép chiếu ẩn để có $\partial L/\partial W_1, \partial L/\partial b_1$. Mỗi bước hoặc là "nhân với chuyển vị của một ma trận trọng số" hoặc là "nhân từng phần tử với đạo hàm của một hàm kích hoạt" — xếp chồng thêm lớp chỉ là lặp lại hai phép toán này xa hơn về phía sau qua chuỗi.</p>
 </div>
 </div>
 </div>
@@ -228,7 +228,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=42272be4"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-autograd-c%E1%BB%A7a-PyTorch">Đối chiếu với autograd của PyTorch<a class="anchor-link" href="#%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-autograd-c%E1%BB%A7a-PyTorch">¶</a></h3>
+<h3 id="%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-autograd-c%E1%BB%A7a-PyTorch-(Sanity-check-against-PyTorch-autograd)">Đối chiếu với autograd của PyTorch (Sanity check against PyTorch autograd)<a class="anchor-link" href="#%C4%90%E1%BB%91i-chi%E1%BA%BFu-v%E1%BB%9Bi-autograd-c%E1%BB%A7a-PyTorch-(Sanity-check-against-PyTorch-autograd)">¶</a></h3>
 </div>
 </div>
 </div>
@@ -286,14 +286,14 @@ b2 max diff: 0.00e+00
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=8a366eb8"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Hu%E1%BA%A5n-luy%E1%BB%87n">Huấn luyện<a class="anchor-link" href="#Hu%E1%BA%A5n-luy%E1%BB%87n">¶</a></h2><p>Cùng công thức như Bài 31 -- lượt xuôi, hàm mất mát, lượt ngược, bước ngược chiều gradient -- chỉ là với bốn tensor tham số ($W_1, b_1, W_2, b_2$) được cập nhật mỗi epoch thay vì hai. Hàm mất mát tiếp tục giảm về phía (nhưng không bao giờ chạm đúng) 0 ngay cả sau khi độ chính xác đạt 100%, vì các dự đoán tự-tin-và-đúng luôn có thể tự tin thêm một chút nữa.</p>
+<h2 id="Hu%E1%BA%A5n-luy%E1%BB%87n-(Training)">Huấn luyện (Training)<a class="anchor-link" href="#Hu%E1%BA%A5n-luy%E1%BB%87n-(Training)">¶</a></h2><p>Cùng công thức như Bài 31 -- lượt xuôi, hàm mất mát, lượt ngược, bước ngược chiều gradient -- chỉ là với bốn tensor tham số ($W_1, b_1, W_2, b_2$) được cập nhật mỗi epoch thay vì hai. Hàm mất mát tiếp tục giảm về phía (nhưng không bao giờ chạm đúng) 0 ngay cả sau khi độ chính xác đạt 100%, vì các dự đoán tự-tin-và-đúng luôn có thể tự tin thêm một chút nữa.</p>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=mlptr41nl00ph4ndw0rk3d"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Quan-s%C3%A1t-v%C3%B2ng-l%E1%BA%B7p-ch%E1%BA%A1y,-t%E1%BB%ABng-giai-%C4%91o%E1%BA%A1n-m%E1%BB%99t">Quan sát vòng lặp chạy, từng giai đoạn một<a class="anchor-link" href="#Quan-s%C3%A1t-v%C3%B2ng-l%E1%BA%B7p-ch%E1%BA%A1y,-t%E1%BB%ABng-giai-%C4%91o%E1%BA%A1n-m%E1%BB%99t">¶</a></h3><p>Ảnh động bên dưới chạy qua cùng công thức 4 giai đoạn — lượt xuôi, hàm mất mát, lượt ngược, cập nhật — giờ qua hai đơn vị ẩn thay vì một, trên một ví dụ chọn thủ công (không phải tập dữ liệu 120 điểm thật bên dưới): $x=(2, 1)$, $y=1$, các đơn vị ẩn $w_0=(0.2,-0.4)$, $b_0=0.1$ và $w_1=(-0.3,0.5)$, $b_1=0.3$, lớp đầu ra $w_2=(0.4,0.5)$, $b_2=-0.6$, $\eta=0.5$. Giống phiên bản ở Bài 31, các điểm kiểm tra là các bước liên tiếp (không ngắt quãng), nên mọi con số đều có thể tái tạo bằng tay.</p>
+<h3 id="Quan-s%C3%A1t-v%C3%B2ng-l%E1%BA%B7p-ch%E1%BA%A1y,-t%E1%BB%ABng-giai-%C4%91o%E1%BA%A1n-m%E1%BB%99t-(Watching-the-loop-run,-one-stage-at-a-time)">Quan sát vòng lặp chạy, từng giai đoạn một (Watching the loop run, one stage at a time)<a class="anchor-link" href="#Quan-s%C3%A1t-v%C3%B2ng-l%E1%BA%B7p-ch%E1%BA%A1y,-t%E1%BB%ABng-giai-%C4%91o%E1%BA%A1n-m%E1%BB%99t-(Watching-the-loop-run,-one-stage-at-a-time)">¶</a></h3><p>Ảnh động bên dưới chạy qua cùng công thức 4 giai đoạn — lượt xuôi, hàm mất mát, lượt ngược, cập nhật — giờ qua hai đơn vị ẩn thay vì một, trên một ví dụ chọn thủ công (không phải tập dữ liệu 120 điểm thật bên dưới): $x=(2, 1)$, $y=1$, các đơn vị ẩn $w_0=(0.2,-0.4)$, $b_0=0.1$ và $w_1=(-0.3,0.5)$, $b_1=0.3$, lớp đầu ra $w_2=(0.4,0.5)$, $b_2=-0.6$, $\eta=0.5$. Giống phiên bản ở Bài 31, các điểm kiểm tra là các bước liên tiếp (không ngắt quãng), nên mọi con số đều có thể tái tạo bằng tay.</p>
 <img alt="Ảnh động vòng lặp huấn luyện 2 đơn vị ẩn: một đồ thị tính toán với hai khối tuyến tính+ReLU song song dẫn vào một khối tuyến tính đầu ra chung, sigmoid và khối hàm mất mát, luân phiên qua các giai đoạn lượt xuôi, hàm mất mát, lượt ngược và cập nhật kèm thanh tiến trình, trên một ví dụ tính tay" src="../animations/mlp_training_loop_demo.gif" style="display: block; margin: 0 auto; max-width: 900px;"/>
 <p><strong>Tự tính tay bước đầu tiên:</strong></p>
 <p>$$z_0 = w_0\cdot x+b_0 = (0.2)(2)+(-0.4)(1)+0.1=0.1, \qquad h_0=\text{ReLU}(z_0)=0.1$$
@@ -306,7 +306,7 @@ $$\frac{\partial L}{\partial h_0}=\frac{\partial L}{\partial z_2}\cdot w_{2,0}\a
 $$\frac{\partial L}{\partial w_{0,1}}=x_1\cdot\frac{\partial L}{\partial z_0}\approx-0.490, \qquad \frac{\partial L}{\partial w_{0,2}}\approx-0.245, \qquad \frac{\partial L}{\partial b_0}\approx-0.245$$
 $$w_{0,1} \leftarrow 0.2-0.5(-0.490)\approx0.445, \qquad w_{0,2} \leftarrow -0.4-0.5(-0.245)\approx-0.277, \qquad b_0 \leftarrow 0.1-0.5(-0.245)\approx0.223$$</p>
 <p>Đó chính xác là điều ảnh động cho thấy sau lần cập nhật đầu tiên.</p>
-<h4 id="Quay-l%E1%BA%A1i-t%E1%BA%ADp-d%E1%BB%AF-li%E1%BB%87u-th%E1%BA%ADt">Quay lại tập dữ liệu thật<a class="anchor-link" href="#Quay-l%E1%BA%A1i-t%E1%BA%ADp-d%E1%BB%AF-li%E1%BB%87u-th%E1%BA%ADt">¶</a></h4><p>Khi cơ chế hai đơn vị ẩn đã được xác nhận bằng tay, phần còn lại của mục này quay lại mạng thật: $H=4$ đơn vị ẩn, được huấn luyện trên toàn bộ tập dữ liệu vành-khuyên-và-đĩa ở phần trước của bài.</p>
+<h4 id="Quay-l%E1%BA%A1i-t%E1%BA%ADp-d%E1%BB%AF-li%E1%BB%87u-th%E1%BA%ADt-(Back-to-the-real-dataset)">Quay lại tập dữ liệu thật (Back to the real dataset)<a class="anchor-link" href="#Quay-l%E1%BA%A1i-t%E1%BA%ADp-d%E1%BB%AF-li%E1%BB%87u-th%E1%BA%ADt-(Back-to-the-real-dataset)">¶</a></h4><p>Khi cơ chế hai đơn vị ẩn đã được xác nhận bằng tay, phần còn lại của mục này quay lại mạng thật: $H=4$ đơn vị ẩn, được huấn luyện trên toàn bộ tập dữ liệu vành-khuyên-và-đĩa ở phần trước của bài.</p>
 </div>
 </div>
 </div>
@@ -359,7 +359,7 @@ final loss: 0.0091
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=99d88892"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="C%C3%A1c-ph%C3%A9p-chi%E1%BA%BFu-c%E1%BB%A7a-l%E1%BB%9Bp-%E1%BA%A9n,-nh%C3%ACn-th%E1%BA%A5y-%C4%91%C6%B0%E1%BB%A3c">Các phép chiếu của lớp ẩn, nhìn thấy được<a class="anchor-link" href="#C%C3%A1c-ph%C3%A9p-chi%E1%BA%BFu-c%E1%BB%A7a-l%E1%BB%9Bp-%E1%BA%A9n,-nh%C3%ACn-th%E1%BA%A5y-%C4%91%C6%B0%E1%BB%A3c">¶</a></h2><p>Mỗi đơn vị ẩn tự nó là một phép chiếu kiểu Bài 30: một hướng $w_i$ (một cột của $W_1$) và một độ lệch $b_i$ (một phần tử của $b_1$), cùng nhau xác định một đường cắt $w_i \cdot x + b_i = 0$ với ReLU đưa mọi thứ ở một phía của nó về 0. Với chỉ 2 chiều đầu vào, cả $H$ đường cắt này có thể được vẽ trực tiếp lên dữ liệu ban đầu.</p>
+<h2 id="C%C3%A1c-ph%C3%A9p-chi%E1%BA%BFu-c%E1%BB%A7a-l%E1%BB%9Bp-%E1%BA%A9n,-nh%C3%ACn-th%E1%BA%A5y-%C4%91%C6%B0%E1%BB%A3c-(The-hidden-layer's-projections,-made-visible)">Các phép chiếu của lớp ẩn, nhìn thấy được (The hidden layer's projections, made visible)<a class="anchor-link" href="#C%C3%A1c-ph%C3%A9p-chi%E1%BA%BFu-c%E1%BB%A7a-l%E1%BB%9Bp-%E1%BA%A9n,-nh%C3%ACn-th%E1%BA%A5y-%C4%91%C6%B0%E1%BB%A3c-(The-hidden-layer's-projections,-made-visible)">¶</a></h2><p>Mỗi đơn vị ẩn tự nó là một phép chiếu kiểu Bài 30: một hướng $w_i$ (một cột của $W_1$) và một độ lệch $b_i$ (một phần tử của $b_1$), cùng nhau xác định một đường cắt $w_i \cdot x + b_i = 0$ với ReLU đưa mọi thứ ở một phía của nó về 0. Với chỉ 2 chiều đầu vào, cả $H$ đường cắt này có thể được vẽ trực tiếp lên dữ liệu ban đầu.</p>
 </div>
 </div>
 </div>
@@ -429,7 +429,7 @@ final loss: 0.0091
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=8d016c9d"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="L%E1%BB%9Bp-%E1%BA%A9n-th%E1%BB%B1c-s%E1%BB%B1-%C4%91%C3%A3-l%C3%A0m-g%C3%AC">Lớp ẩn thực sự đã làm gì<a class="anchor-link" href="#L%E1%BB%9Bp-%E1%BA%A9n-th%E1%BB%B1c-s%E1%BB%B1-%C4%91%C3%A3-l%C3%A0m-g%C3%AC">¶</a></h2><p>Lớp đầu ra <em>chỉ</em> là một phép chiếu tuyến tính (nơ-ron ở Bài 31) — nhưng nó tác động lên $h$, đầu ra của lớp ẩn, không phải lên $x$ ban đầu. Nếu lớp ẩn làm tốt việc của mình, các điểm <em>đã biến đổi</em> sẽ dễ tách bằng một đường thẳng hơn nhiều. Vì $h$ nằm trong $\mathbb{R}^4$ ở đây, ta dùng PCA (Bài 6) để trực quan hóa nó trong 2D.</p>
+<h2 id="L%E1%BB%9Bp-%E1%BA%A9n-th%E1%BB%B1c-s%E1%BB%B1-%C4%91%C3%A3-l%C3%A0m-g%C3%AC-(What-the-hidden-layer-actually-did)">Lớp ẩn thực sự đã làm gì (What the hidden layer actually did)<a class="anchor-link" href="#L%E1%BB%9Bp-%E1%BA%A9n-th%E1%BB%B1c-s%E1%BB%B1-%C4%91%C3%A3-l%C3%A0m-g%C3%AC-(What-the-hidden-layer-actually-did)">¶</a></h2><p>Lớp đầu ra <em>chỉ</em> là một phép chiếu tuyến tính (nơ-ron ở Bài 31) — nhưng nó tác động lên $h$, đầu ra của lớp ẩn, không phải lên $x$ ban đầu. Nếu lớp ẩn làm tốt việc của mình, các điểm <em>đã biến đổi</em> sẽ dễ tách bằng một đường thẳng hơn nhiều. Vì $h$ nằm trong $\mathbb{R}^4$ ở đây, ta dùng PCA (Bài 6) để trực quan hóa nó trong 2D.</p>
 </div>
 </div>
 </div>
@@ -484,7 +484,7 @@ final loss: 0.0091
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=cdbce6d0"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="N%C4%83ng-l%E1%BB%B1c-m%C3%B4-h%C3%ACnh:-bao-nhi%C3%AAu-%C4%91%C6%A1n-v%E1%BB%8B-%E1%BA%A9n-l%C3%A0-%C4%91%E1%BB%A7?">Năng lực mô hình: bao nhiêu đơn vị ẩn là đủ?<a class="anchor-link" href="#N%C4%83ng-l%E1%BB%B1c-m%C3%B4-h%C3%ACnh:-bao-nhi%C3%AAu-%C4%91%C6%A1n-v%E1%BB%8B-%E1%BA%A9n-l%C3%A0-%C4%91%E1%BB%A7?">¶</a></h2><p><strong>Năng lực (capacity)</strong> của một mô hình là mức độ phong phú của họ hàm mà nó có thể biểu diễn. Ở đây năng lực được đặt trực tiếp bởi $H$, độ rộng của lớp ẩn: mỗi đơn vị ẩn đóng góp một đường cắt thẳng (kiểu Bài 30), và lớp đầu ra kết hợp các đơn vị này. Quá ít đơn vị, và mô hình đơn giản là không thể biểu diễn ranh giới mà tập dữ liệu cần — không lượng huấn luyện nào có thể tìm ra một nghiệm không tồn tại. Hãy quét $H$ và huấn luyện lại từ đầu ở mỗi độ rộng, qua vài lần khởi tạo ngẫu nhiên, để thấy trực tiếp mức trần.</p>
+<h2 id="N%C4%83ng-l%E1%BB%B1c-m%C3%B4-h%C3%ACnh:-bao-nhi%C3%AAu-%C4%91%C6%A1n-v%E1%BB%8B-%E1%BA%A9n-l%C3%A0-%C4%91%E1%BB%A7?-(Model-capacity:-how-many-hidden-units-are-enough?)">Năng lực mô hình: bao nhiêu đơn vị ẩn là đủ? (Model capacity: how many hidden units are enough?)<a class="anchor-link" href="#N%C4%83ng-l%E1%BB%B1c-m%C3%B4-h%C3%ACnh:-bao-nhi%C3%AAu-%C4%91%C6%A1n-v%E1%BB%8B-%E1%BA%A9n-l%C3%A0-%C4%91%E1%BB%A7?-(Model-capacity:-how-many-hidden-units-are-enough?)">¶</a></h2><p><strong>Năng lực (capacity)</strong> của một mô hình là mức độ phong phú của họ hàm mà nó có thể biểu diễn. Ở đây năng lực được đặt trực tiếp bởi $H$, độ rộng của lớp ẩn: mỗi đơn vị ẩn đóng góp một đường cắt thẳng (kiểu Bài 30), và lớp đầu ra kết hợp các đơn vị này. Quá ít đơn vị, và mô hình đơn giản là không thể biểu diễn ranh giới mà tập dữ liệu cần — không lượng huấn luyện nào có thể tìm ra một nghiệm không tồn tại. Hãy quét $H$ và huấn luyện lại từ đầu ở mỗi độ rộng, qua vài lần khởi tạo ngẫu nhiên, để thấy trực tiếp mức trần.</p>
 </div>
 </div>
 </div>
@@ -600,7 +600,7 @@ final loss: 0.0091
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=3696d165"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Phép quét năng lực ở trên dùng ReLU. Hãy chạy lại với <code>tanh</code> thay thế (đổi hàm kích hoạt và đạo hàm của nó trong <code>forward</code>/<code>backward</code> xuyên suốt <code>train_and_eval</code>, tương tự Bài tập 2 bên dưới). Mức trần $H=1$ và bước chuyển $H=3$-sang-$H=4$ có xuất hiện như cũ không, hay một hàm kích hoạt trơn làm thay đổi vị trí của mức sàn?</li>
 <li>Thay <code>relu</code>/<code>relu_deriv</code> bằng <code>tanh</code>/đạo hàm của nó ($1 - \tanh^2$) xuyên suốt, rồi huấn luyện lại. Nó có còn giải được bài toán không? So sánh hình dạng đường cong hàm mất mát thu được với phiên bản ReLU.</li>
 <li>Loại bỏ hoàn toàn hàm phi tuyến (thay <code>relu(z1)</code> bằng chỉ <code>z1</code> trong <code>forward</code>, và <code>relu_deriv(z1)</code> bằng một mảng toàn số 1 trong <code>backward</code>). Xác nhận rằng mạng không còn vượt qua được mức trần ~50% của Bài 31 — nhất quán với lập luận sụp-đổ-thành-một-phép-chiếu ở trên, giờ được minh họa trên động lực huấn luyện thực tế thay vì chỉ trên đại số tĩnh.</li>

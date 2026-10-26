@@ -60,7 +60,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=f0fc9f29"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="M%E1%BB%99t-t%E1%BA%ADp-d%E1%BB%AF-li%E1%BB%87u-nh%E1%BB%8F,-kh%C3%B3-c%C3%B3-ch%E1%BB%A7-%C4%91%C3%ADch">Một tập dữ liệu nhỏ, khó có chủ đích<a class="anchor-link" href="#M%E1%BB%99t-t%E1%BA%ADp-d%E1%BB%AF-li%E1%BB%87u-nh%E1%BB%8F,-kh%C3%B3-c%C3%B3-ch%E1%BB%A7-%C4%91%C3%ADch">¶</a></h2><p>Cùng nhiệm vụ dấu-cộng-và-hình-tròn như Bài 34, nhưng giờ chỉ có <strong>12 ảnh huấn luyện</strong> và nhiễu điểm ảnh được thêm vào mọi ảnh, trong khi tập kiểm định (validation) vẫn lớn (150 ảnh) để độ chính xác của nó là một ước lượng đáng tin cậy.</p>
+<h2 id="M%E1%BB%99t-t%E1%BA%ADp-d%E1%BB%AF-li%E1%BB%87u-nh%E1%BB%8F,-kh%C3%B3-c%C3%B3-ch%E1%BB%A7-%C4%91%C3%ADch-(A-deliberately-hard,-small-dataset)">Một tập dữ liệu nhỏ, khó có chủ đích (A deliberately hard, small dataset)<a class="anchor-link" href="#M%E1%BB%99t-t%E1%BA%ADp-d%E1%BB%AF-li%E1%BB%87u-nh%E1%BB%8F,-kh%C3%B3-c%C3%B3-ch%E1%BB%A7-%C4%91%C3%ADch-(A-deliberately-hard,-small-dataset)">¶</a></h2><p>Cùng nhiệm vụ dấu-cộng-và-hình-tròn như Bài 34, nhưng giờ chỉ có <strong>12 ảnh huấn luyện</strong> và nhiễu điểm ảnh được thêm vào mọi ảnh, trong khi tập kiểm định (validation) vẫn lớn (150 ảnh) để độ chính xác của nó là một ước lượng đáng tin cậy.</p>
 </div>
 </div>
 </div>
@@ -118,7 +118,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=71b1752f"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Quan-s%C3%A1t-n%C3%B3-qu%C3%A1-kh%E1%BB%9Bp">Quan sát nó quá khớp<a class="anchor-link" href="#Quan-s%C3%A1t-n%C3%B3-qu%C3%A1-kh%E1%BB%9Bp">¶</a></h2><p>Huấn luyện một CNN khá lớn (kiến trúc ở Bài 34) chỉ trên 12 ảnh này, và theo dõi cả hàm mất mát huấn luyện lẫn hàm mất mát <em>kiểm định</em> (trên 150 ảnh được giữ lại) ở mọi epoch.</p>
+<h2 id="Quan-s%C3%A1t-n%C3%B3-qu%C3%A1-kh%E1%BB%9Bp-(Watching-it-overfit)">Quan sát nó quá khớp (Watching it overfit)<a class="anchor-link" href="#Quan-s%C3%A1t-n%C3%B3-qu%C3%A1-kh%E1%BB%9Bp-(Watching-it-overfit)">¶</a></h2><p>Huấn luyện một CNN khá lớn (kiến trúc ở Bài 34) chỉ trên 12 ảnh này, và theo dõi cả hàm mất mát huấn luyện lẫn hàm mất mát <em>kiểm định</em> (trên 150 ảnh được giữ lại) ở mọi epoch.</p>
 </div>
 </div>
 </div>
@@ -217,7 +217,7 @@ val loss minimum was 0.456 at epoch 277 (out of 400); it ended at 0.573
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=145842a7"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c-1:-t%C4%83ng-c%C6%B0%E1%BB%9Dng-d%E1%BB%AF-li%E1%BB%87u">Cách khắc phục 1: tăng cường dữ liệu<a class="anchor-link" href="#C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c-1:-t%C4%83ng-c%C6%B0%E1%BB%9Dng-d%E1%BB%AF-li%E1%BB%87u">¶</a></h2><p>Nếu không có đủ dữ liệu thật, hãy sản xuất thêm từ những gì đang có. Áp dụng các phép biến đổi ngẫu nhiên ở Bài 8 (lật, xoay nhẹ) lên mỗi ảnh huấn luyện — nhãn không thay đổi, nhưng các điểm ảnh thì có, nên mạng thấy được sự đa dạng rộng hơn nhiều về "một dấu cộng/hình tròn có thể trông như thế nào" thay vì ghi nhớ 12 ảnh chính xác.</p>
+<h2 id="C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c-1:-t%C4%83ng-c%C6%B0%E1%BB%9Dng-d%E1%BB%AF-li%E1%BB%87u-(Fix-1:-data-augmentation)">Cách khắc phục 1: tăng cường dữ liệu (Fix 1: data augmentation)<a class="anchor-link" href="#C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c-1:-t%C4%83ng-c%C6%B0%E1%BB%9Dng-d%E1%BB%AF-li%E1%BB%87u-(Fix-1:-data-augmentation)">¶</a></h2><p>Nếu không có đủ dữ liệu thật, hãy sản xuất thêm từ những gì đang có. Áp dụng các phép biến đổi ngẫu nhiên ở Bài 8 (lật, xoay nhẹ) lên mỗi ảnh huấn luyện — nhãn không thay đổi, nhưng các điểm ảnh thì có, nên mạng thấy được sự đa dạng rộng hơn nhiều về "một dấu cộng/hình tròn có thể trông như thế nào" thay vì ghi nhớ 12 ảnh chính xác.</p>
 </div>
 </div>
 </div>
@@ -302,7 +302,7 @@ val loss minimum was 0.456 at epoch 277 (out of 400); it ended at 0.573
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=ee09c106"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c-2:-suy-gi%E1%BA%A3m-tr%E1%BB%8Dng-s%E1%BB%91">Cách khắc phục 2: suy giảm trọng số<a class="anchor-link" href="#C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c-2:-suy-gi%E1%BA%A3m-tr%E1%BB%8Dng-s%E1%BB%91">¶</a></h2><p><strong>Suy giảm trọng số (weight decay)</strong> thêm một mức phạt tỉ lệ với bình phương độ lớn trọng số trực tiếp vào hàm mất mát (tương đương, nó thu nhỏ mọi trọng số một chút về phía 0 ở mỗi lần cập nhật). Các trọng số lớn, được tinh chỉnh kỹ chính là thứ một mạng cần để ghi nhớ 12 ảnh nhiễu cụ thể; phạt độ lớn trọng số làm cho việc ghi nhớ đó tốn kém hơn so với việc tìm ra một hàm đơn giản hơn, mượt hơn — mà không cần thêm một mẫu huấn luyện nào.</p>
+<h2 id="C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c-2:-suy-gi%E1%BA%A3m-tr%E1%BB%8Dng-s%E1%BB%91-(Fix-2:-weight-decay)">Cách khắc phục 2: suy giảm trọng số (Fix 2: weight decay)<a class="anchor-link" href="#C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c-2:-suy-gi%E1%BA%A3m-tr%E1%BB%8Dng-s%E1%BB%91-(Fix-2:-weight-decay)">¶</a></h2><p><strong>Suy giảm trọng số (weight decay)</strong> thêm một mức phạt tỉ lệ với bình phương độ lớn trọng số trực tiếp vào hàm mất mát (tương đương, nó thu nhỏ mọi trọng số một chút về phía 0 ở mỗi lần cập nhật). Các trọng số lớn, được tinh chỉnh kỹ chính là thứ một mạng cần để ghi nhớ 12 ảnh nhiễu cụ thể; phạt độ lớn trọng số làm cho việc ghi nhớ đó tốn kém hơn so với việc tìm ra một hàm đơn giản hơn, mượt hơn — mà không cần thêm một mẫu huấn luyện nào.</p>
 </div>
 </div>
 </div>
@@ -350,7 +350,7 @@ val loss minimum was 0.456 at epoch 277 (out of 400); it ended at 0.573
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=5b528267"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c-3:-dropout">Cách khắc phục 3: dropout<a class="anchor-link" href="#C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c-3:-dropout">¶</a></h2><p><strong>Dropout</strong> (<a href="../references.html#srivastava-2014">Srivastava et al., 2014</a><span class="landmark-paper">★</span>) ngẫu nhiên đưa về 0 một tỉ lệ <code>p</code> các giá trị kích hoạt của một lớp ở mỗi bước huấn luyện, buộc các đơn vị còn sống sót không được dựa vào việc một đơn vị cụ thể nào khác luôn có mặt. Để giữ đầu ra của lớp ở cùng một tỉ lệ tổng thể bất kể dropout có đang hoạt động hay không, các giá trị kích hoạt sống sót được co giãn lại theo <code>1 / (1 - p)</code> — đây là "dropout đảo ngược (inverted dropout)", thứ mà lớp <code>Dropout</code> của mọi framework thực sự cài đặt. Khi đánh giá, dropout hoàn toàn không làm gì: lớp đầy đủ, không sửa đổi được chạy, đó là lý do <code>model.eval()</code> (đã được dùng xuyên suốt bài này, cho cả suy giảm trọng số và tăng cường dữ liệu) quan trọng — quên nó sẽ khiến dropout tiếp tục kích hoạt ngẫu nhiên lúc kiểm tra.</p>
+<h2 id="C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c-3:-dropout-(Fix-3:-dropout)">Cách khắc phục 3: dropout (Fix 3: dropout)<a class="anchor-link" href="#C%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c-3:-dropout-(Fix-3:-dropout)">¶</a></h2><p><strong>Dropout</strong> (<a href="../references.html#srivastava-2014">Srivastava et al., 2014</a><span class="landmark-paper">★</span>) ngẫu nhiên đưa về 0 một tỉ lệ <code>p</code> các giá trị kích hoạt của một lớp ở mỗi bước huấn luyện, buộc các đơn vị còn sống sót không được dựa vào việc một đơn vị cụ thể nào khác luôn có mặt. Để giữ đầu ra của lớp ở cùng một tỉ lệ tổng thể bất kể dropout có đang hoạt động hay không, các giá trị kích hoạt sống sót được co giãn lại theo <code>1 / (1 - p)</code> — đây là "dropout đảo ngược (inverted dropout)", thứ mà lớp <code>Dropout</code> của mọi framework thực sự cài đặt. Khi đánh giá, dropout hoàn toàn không làm gì: lớp đầy đủ, không sửa đổi được chạy, đó là lý do <code>model.eval()</code> (đã được dùng xuyên suốt bài này, cho cả suy giảm trọng số và tăng cường dữ liệu) quan trọng — quên nó sẽ khiến dropout tiếp tục kích hoạt ngẫu nhiên lúc kiểm tra.</p>
 </div>
 </div>
 </div>
@@ -481,7 +481,7 @@ dropout(0.5):   mean val acc = 70.2%  (+/- 8.0%, 8 seeds)
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=reg4r1z3rrac3animcell"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="So-s%C3%A1nh-c%E1%BA%A3-ba-c%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c">So sánh cả ba cách khắc phục<a class="anchor-link" href="#So-s%C3%A1nh-c%E1%BA%A3-ba-c%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c">¶</a></h3><p>Mỗi cách khắc phục từ đầu đến giờ đều được thử riêng lẻ so với đường cơ sở. Ảnh động bên dưới so sánh cả bốn đường cong độ chính xác kiểm định cùng nhau trên cùng tập dữ liệu 12 ảnh: đường cơ sở không chính quy hóa kẹt ở mức thấp và nhiễu, tăng cường dữ liệu leo nhanh nhất và ổn định ở mức cao nhất, suy giảm trọng số mạnh nhưng biến động, và dropout — như đã nêu — chỉ cải thiện khiêm tốn so với đường cơ sở trên một tập dữ liệu nhỏ bé như vậy.</p>
+<h3 id="So-s%C3%A1nh-c%E1%BA%A3-ba-c%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c-(All-three-fixes-compared)">So sánh cả ba cách khắc phục (All three fixes compared)<a class="anchor-link" href="#So-s%C3%A1nh-c%E1%BA%A3-ba-c%C3%A1ch-kh%E1%BA%AFc-ph%E1%BB%A5c-(All-three-fixes-compared)">¶</a></h3><p>Mỗi cách khắc phục từ đầu đến giờ đều được thử riêng lẻ so với đường cơ sở. Ảnh động bên dưới so sánh cả bốn đường cong độ chính xác kiểm định cùng nhau trên cùng tập dữ liệu 12 ảnh: đường cơ sở không chính quy hóa kẹt ở mức thấp và nhiễu, tăng cường dữ liệu leo nhanh nhất và ổn định ở mức cao nhất, suy giảm trọng số mạnh nhưng biến động, và dropout — như đã nêu — chỉ cải thiện khiêm tốn so với đường cơ sở trên một tập dữ liệu nhỏ bé như vậy.</p>
 <img alt="Ảnh động cuộc đua của bốn đường cong độ chính xác kiểm định qua 200 epoch: đường cơ sở không chính quy hóa kẹt quanh 60 phần trăm và nhiễu, tăng cường dữ liệu leo nhanh nhất và ổn định trên 95 phần trăm, suy giảm trọng số đạt khoảng 80 phần trăm nhưng biến động, và dropout ở gần đường cơ sở nhiễu" src="../animations/regularizer_race_demo.gif" style="display: block; margin: 0 auto; max-width: 760px;"/>
 </div>
 </div>
@@ -489,7 +489,7 @@ dropout(0.5):   mean val acc = 70.2%  (+/- 8.0%, 8 seeds)
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=3bbe6c72"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Gh%C3%A9p-l%E1%BA%A1i:-%E1%BA%A3nh-th%E1%BA%ADt,-qu%C3%A1-kh%E1%BB%9Bp-th%E1%BA%ADt">Ghép lại: ảnh thật, quá khớp thật<a class="anchor-link" href="#Gh%C3%A9p-l%E1%BA%A1i:-%E1%BA%A3nh-th%E1%BA%ADt,-qu%C3%A1-kh%E1%BB%9Bp-th%E1%BA%ADt">¶</a></h2><p>Bài toán đồ chơi 12 ảnh tổng hợp ở trên được chọn đặc biệt để làm cho kiểu thất bại trở nên không thể nhầm lẫn. Mục kết thúc này lặp lại thí nghiệm trên ảnh chụp thật <strong>CIFAR-10</strong> (<a href="../references.html#krizhevsky-2009-cifar">Krizhevsky, 2009</a>): một tập huấn luyện nhỏ, khan hiếm dữ liệu có chủ đích gồm mèo và xe tải, với tăng cường dữ liệu, suy giảm trọng số và dropout được kết hợp cùng nhau. Ảnh chụp thật chứa ánh sáng, sự lộn xộn và sự mơ hồ thị giác thực sự giữa các lớp.</p>
+<h2 id="Gh%C3%A9p-l%E1%BA%A1i:-%E1%BA%A3nh-th%E1%BA%ADt,-qu%C3%A1-kh%E1%BB%9Bp-th%E1%BA%ADt-(Putting-it-together:-real-photos,-real-overfitting)">Ghép lại: ảnh thật, quá khớp thật (Putting it together: real photos, real overfitting)<a class="anchor-link" href="#Gh%C3%A9p-l%E1%BA%A1i:-%E1%BA%A3nh-th%E1%BA%ADt,-qu%C3%A1-kh%E1%BB%9Bp-th%E1%BA%ADt-(Putting-it-together:-real-photos,-real-overfitting)">¶</a></h2><p>Bài toán đồ chơi 12 ảnh tổng hợp ở trên được chọn đặc biệt để làm cho kiểu thất bại trở nên không thể nhầm lẫn. Mục kết thúc này lặp lại thí nghiệm trên ảnh chụp thật <strong>CIFAR-10</strong> (<a href="../references.html#krizhevsky-2009-cifar">Krizhevsky, 2009</a>): một tập huấn luyện nhỏ, khan hiếm dữ liệu có chủ đích gồm mèo và xe tải, với tăng cường dữ liệu, suy giảm trọng số và dropout được kết hợp cùng nhau. Ảnh chụp thật chứa ánh sáng, sự lộn xộn và sự mơ hồ thị giác thực sự giữa các lớp.</p>
 </div>
 </div>
 </div>
@@ -726,7 +726,7 @@ dropout(0.5):   mean val acc = 70.2%  (+/- 8.0%, 8 seeds)
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=e1262fcf"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Thử các giá trị <code>weight_decay</code> là <code>0.001</code>, <code>0.05</code> và <code>1.0</code>. Có điểm nào mà nó bắt đầu <em>gây hại</em> cho độ chính xác huấn luyện cùng với (cuối cùng là) độ chính xác kiểm định không? Một mức suy giảm trọng số quá lớn làm gì với năng lực khớp bất cứ thứ gì của mô hình?</li>
 <li>Quét <code>dropout_p</code> qua <code>[0.0, 0.2, 0.4, 0.6, 0.8]</code> trong <code>val_acc_for</code>, lấy trung bình qua cùng 8 seed ở mỗi giá trị. Có giá trị nào rõ ràng là tốt nhất không, hay giá trị trung bình nằm trong phạm vi một độ lệch chuẩn trên hầu hết khoảng giá trị vì có quá ít dữ liệu?</li>
 <li>Tăng hệ số tăng cường từ 20 lên 100 bản sao cho mỗi ảnh gốc. Độ chính xác kiểm định có tiếp tục cải thiện, hay chững lại — và nếu chững lại, điều đó gợi ý gì về giới hạn cơ bản của việc tăng cường một tập dữ liệu ngay từ đầu chỉ chứa 12 mẫu <em>gốc</em>?</li>

@@ -62,7 +62,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=3ad75fb2"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ph%E1%BA%A7n-1:-C%C3%A1c-metric-kho%E1%BA%A3ng-c%C3%A1ch-%C4%91i%E1%BB%83m-t%E1%BB%9Bi-%C4%91i%E1%BB%83m">Phần 1: Các metric khoảng cách điểm-tới-điểm<a class="anchor-link" href="#Ph%E1%BA%A7n-1:-C%C3%A1c-metric-kho%E1%BA%A3ng-c%C3%A1ch-%C4%91i%E1%BB%83m-t%E1%BB%9Bi-%C4%91i%E1%BB%83m">¶</a></h2><p>Cho hai điểm ảnh $p=(x_1,y_1)$ và $q=(x_2,y_2)$, đặt $d_x = x_2-x_1$ và $d_y=y_2-y_1$. Ba metric phổ biến:</p>
+<h2 id="Ph%E1%BA%A7n-1:-C%C3%A1c-metric-kho%E1%BA%A3ng-c%C3%A1ch-%C4%91i%E1%BB%83m-t%E1%BB%9Bi-%C4%91i%E1%BB%83m-(Part-1:-Point-to-point-distance-metrics)">Phần 1: Các metric khoảng cách điểm-tới-điểm (Part 1: Point-to-point distance metrics)<a class="anchor-link" href="#Ph%E1%BA%A7n-1:-C%C3%A1c-metric-kho%E1%BA%A3ng-c%C3%A1ch-%C4%91i%E1%BB%83m-t%E1%BB%9Bi-%C4%91i%E1%BB%83m-(Part-1:-Point-to-point-distance-metrics)">¶</a></h2><p>Cho hai điểm ảnh $p=(x_1,y_1)$ và $q=(x_2,y_2)$, đặt $d_x = x_2-x_1$ và $d_y=y_2-y_1$. Ba metric phổ biến:</p>
 <ul>
 <li><p><strong>Manhattan / khối phố (city-block) ($L_1$)</strong>: khoảng cách khi bạn chỉ có thể di chuyển dọc theo các trục của lưới (như đi bộ qua các dãy phố).</p>
 <p>$D_4(p,q) = |d_x| + |d_y|$</p>
@@ -99,7 +99,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=3ca3505d"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Tr%E1%BB%B1c-quan-h%C3%B3a-ba-metric-d%C6%B0%E1%BB%9Bi-d%E1%BA%A1ng-tr%C6%B0%E1%BB%9Dng-kho%E1%BA%A3ng-c%C3%A1ch">Trực quan hóa ba metric dưới dạng trường khoảng cách<a class="anchor-link" href="#Tr%E1%BB%B1c-quan-h%C3%B3a-ba-metric-d%C6%B0%E1%BB%9Bi-d%E1%BA%A1ng-tr%C6%B0%E1%BB%9Dng-kho%E1%BA%A3ng-c%C3%A1ch">¶</a></h3><p>Với mỗi điểm ảnh trên lưới, ta tính khoảng cách của nó tới điểm ảnh trung tâm theo từng metric và hiển thị dưới dạng ảnh. Các metric chỉ trùng nhau dọc theo các trục — ở mọi chỗ khác chúng đều khác nhau.</p>
+<h3 id="Tr%E1%BB%B1c-quan-h%C3%B3a-ba-metric-d%C6%B0%E1%BB%9Bi-d%E1%BA%A1ng-tr%C6%B0%E1%BB%9Dng-kho%E1%BA%A3ng-c%C3%A1ch-(Visualizing-the-three-metrics-as-distance-fields)">Trực quan hóa ba metric dưới dạng trường khoảng cách (Visualizing the three metrics as distance fields)<a class="anchor-link" href="#Tr%E1%BB%B1c-quan-h%C3%B3a-ba-metric-d%C6%B0%E1%BB%9Bi-d%E1%BA%A1ng-tr%C6%B0%E1%BB%9Dng-kho%E1%BA%A3ng-c%C3%A1ch-(Visualizing-the-three-metrics-as-distance-fields)">¶</a></h3><p>Với mỗi điểm ảnh trên lưới, ta tính khoảng cách của nó tới điểm ảnh trung tâm theo từng metric và hiển thị dưới dạng ảnh. Các metric chỉ trùng nhau dọc theo các trục — ở mọi chỗ khác chúng đều khác nhau.</p>
 </div>
 </div>
 </div>
@@ -155,7 +155,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=aa8c0fa3"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ph%E1%BA%A7n-2:-%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-%C4%91%E1%BB%99-d%C3%A0i-%C4%91%C6%B0%E1%BB%9Dng-cong-t%E1%BB%AB-m%C3%A3-chu%E1%BB%97i">Phần 2: Ước lượng độ dài đường cong từ mã chuỗi<a class="anchor-link" href="#Ph%E1%BA%A7n-2:-%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-%C4%91%E1%BB%99-d%C3%A0i-%C4%91%C6%B0%E1%BB%9Dng-cong-t%E1%BB%AB-m%C3%A3-chu%E1%BB%97i">¶</a></h2><p>Giờ giả sử ta muốn ước lượng độ dài của một <em>đường cong</em>, chứ không chỉ khoảng cách giữa hai điểm. Hãy tạo một ảnh thử nghiệm là hình tròn có bán kính đã biết ($60$) và chu vi đã biết ($120 \pi = 377$). Lưu ý rằng số điểm ảnh biên ($336$) là một ước lượng tồi cho chu vi, vì $336 \neq 377$.</p>
+<h2 id="Ph%E1%BA%A7n-2:-%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-%C4%91%E1%BB%99-d%C3%A0i-%C4%91%C6%B0%E1%BB%9Dng-cong-t%E1%BB%AB-m%C3%A3-chu%E1%BB%97i-(Part-2:-Estimating-curve-length-from-a-chain-code)">Phần 2: Ước lượng độ dài đường cong từ mã chuỗi (Part 2: Estimating curve length from a chain code)<a class="anchor-link" href="#Ph%E1%BA%A7n-2:-%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-%C4%91%E1%BB%99-d%C3%A0i-%C4%91%C6%B0%E1%BB%9Dng-cong-t%E1%BB%AB-m%C3%A3-chu%E1%BB%97i-(Part-2:-Estimating-curve-length-from-a-chain-code)">¶</a></h2><p>Giờ giả sử ta muốn ước lượng độ dài của một <em>đường cong</em>, chứ không chỉ khoảng cách giữa hai điểm. Hãy tạo một ảnh thử nghiệm là hình tròn có bán kính đã biết ($60$) và chu vi đã biết ($120 \pi = 377$). Lưu ý rằng số điểm ảnh biên ($336$) là một ước lượng tồi cho chu vi, vì $336 \neq 377$.</p>
 </div>
 </div>
 </div>
@@ -256,7 +256,7 @@ Corrected estimate        = 375.4  (error -0.4%)
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=b79e078f"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ph%E1%BA%A7n-3:-Bi%E1%BA%BFn-%C4%91%E1%BB%95i-kho%E1%BA%A3ng-c%C3%A1ch-chamfer">Phần 3: Biến đổi khoảng cách chamfer<a class="anchor-link" href="#Ph%E1%BA%A7n-3:-Bi%E1%BA%BFn-%C4%91%E1%BB%95i-kho%E1%BA%A3ng-c%C3%A1ch-chamfer">¶</a></h2><p>Khác với các metric điểm-tới-điểm ở Phần 1, vốn đo khoảng cách giữa hai điểm ảnh cụ thể, một <strong>biến đổi khoảng cách (distance transform)</strong> gán nhãn cho <em>mọi</em> điểm ảnh của ảnh nhị phân bằng khoảng cách của nó tới phần tử gần nhất trong một tập điểm ảnh cho trước — thường là tiền cảnh, hoặc nền — hữu ích cho việc tạo khung xương (skeletonization), so khớp hình dạng và lập kế hoạch đường đi. Tính nó <em>chính xác</em> với khoảng cách Euclid đòi hỏi so sánh mọi điểm ảnh với mọi điểm ảnh trong tập đó (chậm), hoặc một thuật toán tinh vi hơn.</p>
+<h2 id="Ph%E1%BA%A7n-3:-Bi%E1%BA%BFn-%C4%91%E1%BB%95i-kho%E1%BA%A3ng-c%C3%A1ch-chamfer-(Part-3:-Chamfer-distance-transform)">Phần 3: Biến đổi khoảng cách chamfer (Part 3: Chamfer distance transform)<a class="anchor-link" href="#Ph%E1%BA%A7n-3:-Bi%E1%BA%BFn-%C4%91%E1%BB%95i-kho%E1%BA%A3ng-c%C3%A1ch-chamfer-(Part-3:-Chamfer-distance-transform)">¶</a></h2><p>Khác với các metric điểm-tới-điểm ở Phần 1, vốn đo khoảng cách giữa hai điểm ảnh cụ thể, một <strong>biến đổi khoảng cách (distance transform)</strong> gán nhãn cho <em>mọi</em> điểm ảnh của ảnh nhị phân bằng khoảng cách của nó tới phần tử gần nhất trong một tập điểm ảnh cho trước — thường là tiền cảnh, hoặc nền — hữu ích cho việc tạo khung xương (skeletonization), so khớp hình dạng và lập kế hoạch đường đi. Tính nó <em>chính xác</em> với khoảng cách Euclid đòi hỏi so sánh mọi điểm ảnh với mọi điểm ảnh trong tập đó (chậm), hoặc một thuật toán tinh vi hơn.</p>
 <p><strong>Biến đổi khoảng cách chamfer</strong> là một phép xấp xỉ nhanh: thay vì một phép tìm kiếm toàn cục, nó lan truyền các khoảng cách cục bộ trên ảnh chỉ trong hai lượt quét mành (từ trên-trái xuống dưới-phải, rồi từ dưới-phải lên trên-trái), cộng thêm một chi phí cố định nhỏ cho mỗi bước sang điểm lân cận. Dùng trọng số nguyên $a=3$ cho các lân cận theo trục và $b=4$ cho các lân cận chéo (rồi chia cho 3 ở cuối) cho ra <strong>khoảng cách chamfer 3-4</strong> cổ điển, một phép xấp xỉ tốt và rẻ cho khoảng cách Euclid — cùng ý tưởng với các trọng số mã chuỗi Freeman/hiệu chỉnh ở Phần 2, nhưng áp dụng cho mọi điểm ảnh thay vì chỉ đường biên.</p>
 <p><code>cv2.distanceTransform</code> của OpenCV với <code>DIST_L2</code> tính khoảng cách chamfer. Tham số <code>maskSize</code> quyết định chất lượng của phép xấp xỉ: mặt nạ lớn hơn chính xác hơn nhưng tốn nhiều phép tính hơn.</p>
 </div>
@@ -331,7 +331,7 @@ mean error = 0.714 pixels
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=e63a8034"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Lặp lại thí nghiệm hình tròn với vài bán kính khác nhau (ví dụ 10, 20, 40, 80). Phần trăm sai số của ước lượng Freeman giữ gần như không đổi, hay giảm dần khi hình tròn lớn hơn? Tại sao lại như vậy?</li>
 <li>Khoảng cách bàn cờ $D_8$ là độ dài đường đi ngắn nhất chính xác khi cho phép bước chéo với chi phí 1. Bạn có thể dựng một metric kiểu bàn cờ cải biên, dùng chi phí bước chéo là $\sqrt{2}$ thay vì 1, hoạt động giống như một phiên bản cục bộ thô của các bộ ước lượng độ dài mã chuỗi ở trên không? So sánh nó với khoảng cách Euclid thực cho một vài điểm.</li>
 </ol>

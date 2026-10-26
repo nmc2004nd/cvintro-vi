@@ -59,7 +59,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=fbcfd6d4"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="M%E1%BB%99t-nhi%E1%BB%87m-v%E1%BB%A5-g%C3%A1n-nh%C3%A3n-%C4%91i%E1%BB%83m-%E1%BA%A3nh-3-l%E1%BB%9Bp">Một nhiệm vụ gán nhãn điểm ảnh 3 lớp<a class="anchor-link" href="#M%E1%BB%99t-nhi%E1%BB%87m-v%E1%BB%A5-g%C3%A1n-nh%C3%A3n-%C4%91i%E1%BB%83m-%E1%BA%A3nh-3-l%E1%BB%9Bp">¶</a></h2><p>Tạo một ảnh với vài hình tròn và hình vuông nhỏ rải rác trên nền. Mục tiêu là một bản đồ lớp đầy đủ theo từng điểm ảnh: 0 = nền, 1 = hình tròn, 2 = hình vuông.</p>
+<h2 id="M%E1%BB%99t-nhi%E1%BB%87m-v%E1%BB%A5-g%C3%A1n-nh%C3%A3n-%C4%91i%E1%BB%83m-%E1%BA%A3nh-3-l%E1%BB%9Bp-(A-3-class-pixel-labeling-task)">Một nhiệm vụ gán nhãn điểm ảnh 3 lớp (A 3-class pixel labeling task)<a class="anchor-link" href="#M%E1%BB%99t-nhi%E1%BB%87m-v%E1%BB%A5-g%C3%A1n-nh%C3%A3n-%C4%91i%E1%BB%83m-%E1%BA%A3nh-3-l%E1%BB%9Bp-(A-3-class-pixel-labeling-task)">¶</a></h2><p>Tạo một ảnh với vài hình tròn và hình vuông nhỏ rải rác trên nền. Mục tiêu là một bản đồ lớp đầy đủ theo từng điểm ảnh: 0 = nền, 1 = hình tròn, 2 = hình vuông.</p>
 </div>
 </div>
 </div>
@@ -138,7 +138,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=0c655321"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="M%E1%BB%99t-m%E1%BA%A1ng-ki%E1%BB%83u-FCN-t%E1%BB%91i-gi%E1%BA%A3n">Một mạng kiểu FCN tối giản<a class="anchor-link" href="#M%E1%BB%99t-m%E1%BA%A1ng-ki%E1%BB%83u-FCN-t%E1%BB%91i-gi%E1%BA%A3n">¶</a></h2><p>Một mạng phân đoạn đưa ra một vector xác suất lớp cho mọi điểm ảnh, nên đầu ra của nó có cùng kích thước không gian với đầu vào. <strong>Bộ mã hóa (encoder)</strong> là một CNN thông thường, giảm mẫu hai lần qua gộp cực đại (Bài 34) để xây dựng các đặc trưng giàu ngữ nghĩa với trường tiếp nhận rộng (kim tự tháp ở Bài 11). <strong>Bộ giải mã (decoder)</strong> sau đó tăng mẫu phần thắt cổ chai (bottleneck) thô đó thẳng trở lại độ phân giải đầy đủ. Đó là toàn bộ công thức FCN: chỉ là giảm mẫu rồi tăng mẫu.</p>
+<h2 id="M%E1%BB%99t-m%E1%BA%A1ng-ki%E1%BB%83u-FCN-t%E1%BB%91i-gi%E1%BA%A3n-(A-minimal-FCN-style-network)">Một mạng kiểu FCN tối giản (A minimal FCN-style network)<a class="anchor-link" href="#M%E1%BB%99t-m%E1%BA%A1ng-ki%E1%BB%83u-FCN-t%E1%BB%91i-gi%E1%BA%A3n-(A-minimal-FCN-style-network)">¶</a></h2><p>Một mạng phân đoạn đưa ra một vector xác suất lớp cho mọi điểm ảnh, nên đầu ra của nó có cùng kích thước không gian với đầu vào. <strong>Bộ mã hóa (encoder)</strong> là một CNN thông thường, giảm mẫu hai lần qua gộp cực đại (Bài 34) để xây dựng các đặc trưng giàu ngữ nghĩa với trường tiếp nhận rộng (kim tự tháp ở Bài 11). <strong>Bộ giải mã (decoder)</strong> sau đó tăng mẫu phần thắt cổ chai (bottleneck) thô đó thẳng trở lại độ phân giải đầy đủ. Đó là toàn bộ công thức FCN: chỉ là giảm mẫu rồi tăng mẫu.</p>
 </div>
 </div>
 </div>
@@ -225,7 +225,7 @@ mean IoU: 0.836
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=3f254359"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Trong-th%E1%BB%B1c-t%E1%BA%BF:-FCN-tr%C3%AAn-m%E1%BB%99t-b%E1%BB%A9c-%E1%BA%A3nh-th%E1%BA%ADt">Trong thực tế: FCN trên một bức ảnh thật<a class="anchor-link" href="#Trong-th%E1%BB%B1c-t%E1%BA%BF:-FCN-tr%C3%AAn-m%E1%BB%99t-b%E1%BB%A9c-%E1%BA%A3nh-th%E1%BA%ADt">¶</a></h2><p><code>torchvision</code> cung cấp <strong>FCN</strong> (<a href="../references.html#long-2015-fcn">Long et al., 2015</a><span class="landmark-paper">★</span>), được tiền huấn luyện trên ảnh COCO (gán nhãn theo 21 danh mục của Pascal VOC — 20 lớp đối tượng cộng với nền). Về kiến trúc, đây là cùng công thức với <code>FCNTiny</code> ở trên: bộ mã hóa, rồi tăng mẫu.</p>
+<h2 id="Trong-th%E1%BB%B1c-t%E1%BA%BF:-FCN-tr%C3%AAn-m%E1%BB%99t-b%E1%BB%A9c-%E1%BA%A3nh-th%E1%BA%ADt-(In-practice:-FCN-on-a-real-photo)">Trong thực tế: FCN trên một bức ảnh thật (In practice: FCN on a real photo)<a class="anchor-link" href="#Trong-th%E1%BB%B1c-t%E1%BA%BF:-FCN-tr%C3%AAn-m%E1%BB%99t-b%E1%BB%A9c-%E1%BA%A3nh-th%E1%BA%ADt-(In-practice:-FCN-on-a-real-photo)">¶</a></h2><p><code>torchvision</code> cung cấp <strong>FCN</strong> (<a href="../references.html#long-2015-fcn">Long et al., 2015</a><span class="landmark-paper">★</span>), được tiền huấn luyện trên ảnh COCO (gán nhãn theo 21 danh mục của Pascal VOC — 20 lớp đối tượng cộng với nền). Về kiến trúc, đây là cùng công thức với <code>FCNTiny</code> ở trên: bộ mã hóa, rồi tăng mẫu.</p>
 </div>
 </div>
 </div>
@@ -304,7 +304,7 @@ mean IoU: 0.836
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=4433b6cd"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Th%C3%AAm-k%E1%BA%BFt-n%E1%BB%91i-t%E1%BA%AFt:-U-Net">Thêm kết nối tắt: U-Net<a class="anchor-link" href="#Th%C3%AAm-k%E1%BA%BFt-n%E1%BB%91i-t%E1%BA%AFt:-U-Net">¶</a></h2><p>Bộ giải mã của <code>FCNTiny</code> chỉ thấy các đặc trưng thắt cổ chai đã gộp, đã tăng mẫu. Sau hai vòng gộp, phần thắt cổ chai đó chỉ còn một phần tư độ phân giải không gian của đầu vào, và các hình nhỏ hoặc xếp sát nhau có thể nhòe vào nhau hoặc mất hoàn toàn ranh giới ở độ phân giải đó. <strong>U-Net</strong> (<a href="../references.html#ronneberger-2015">Ronneberger, Fischer &amp; Brox, 2015</a><span class="landmark-paper">★</span>) khắc phục điều này bằng <strong>các kết nối tắt (skip connections)</strong>: ở mỗi giai đoạn giải mã, nó nối bản đồ đặc trưng của bộ mã hóa ở <em>độ phân giải tương ứng</em>, bảo toàn các chi tiết mịn mà nếu không sẽ bị mất trong quá trình gộp. Điều này tương tự về tinh thần với các kết nối dư ở Bài 37, nhưng mục đích và cơ chế khác nhau: U-Net nối (concatenate) các đặc trưng qua ranh giới mã hóa-giải mã, thay vì cộng một cập nhật dư bên trong một chồng mạng duy nhất.</p>
+<h2 id="Th%C3%AAm-k%E1%BA%BFt-n%E1%BB%91i-t%E1%BA%AFt:-U-Net-(Adding-skip-connections:-U-Net)">Thêm kết nối tắt: U-Net (Adding skip connections: U-Net)<a class="anchor-link" href="#Th%C3%AAm-k%E1%BA%BFt-n%E1%BB%91i-t%E1%BA%AFt:-U-Net-(Adding-skip-connections:-U-Net)">¶</a></h2><p>Bộ giải mã của <code>FCNTiny</code> chỉ thấy các đặc trưng thắt cổ chai đã gộp, đã tăng mẫu. Sau hai vòng gộp, phần thắt cổ chai đó chỉ còn một phần tư độ phân giải không gian của đầu vào, và các hình nhỏ hoặc xếp sát nhau có thể nhòe vào nhau hoặc mất hoàn toàn ranh giới ở độ phân giải đó. <strong>U-Net</strong> (<a href="../references.html#ronneberger-2015">Ronneberger, Fischer &amp; Brox, 2015</a><span class="landmark-paper">★</span>) khắc phục điều này bằng <strong>các kết nối tắt (skip connections)</strong>: ở mỗi giai đoạn giải mã, nó nối bản đồ đặc trưng của bộ mã hóa ở <em>độ phân giải tương ứng</em>, bảo toàn các chi tiết mịn mà nếu không sẽ bị mất trong quá trình gộp. Điều này tương tự về tinh thần với các kết nối dư ở Bài 37, nhưng mục đích và cơ chế khác nhau: U-Net nối (concatenate) các đặc trưng qua ranh giới mã hóa-giải mã, thay vì cộng một cập nhật dư bên trong một chồng mạng duy nhất.</p>
 </div>
 </div>
 </div>
@@ -420,7 +420,7 @@ mean IoU: 0.836
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=d58f6e24"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Tăng <code>n_shapes</code> từ 5 lên 10, làm cảnh đông đúc hơn. Khoảng cách IoU trung bình giữa <code>FCNTiny</code> và <code>UNetTiny</code> lớn hơn hay nhỏ hơn? Điều đó gợi ý gì về thời điểm kết nối tắt quan trọng nhất?</li>
 <li>Hàm mất mát của bài này là entropy chéo theo từng điểm ảnh đơn thuần. In các trọng số lớp theo từng điểm ảnh ngụ ý bởi <code>class pixel fractions</code> ở trên và thử <code>F.cross_entropy(logits, Mt, weight=inverse_class_freq)</code> (cách khắc phục mất cân bằng ở Bài 36, áp dụng ở đây) để xem nó có thay đổi sự cân bằng IoU giữa hình tròn/hình vuông không.</li>
 <li><code>nn.Upsample(mode='nearest')</code> được dùng cho đơn giản. Thay vào đó hãy thử <code>mode='bilinear', align_corners=False</code> (nội suy song tuyến tính ở Bài 9, giờ nằm bên trong một mạng) và so sánh IoU trung bình cho cả <code>FCNTiny</code> và <code>UNetTiny</code>. Phép tăng mẫu mượt hơn giúp ích nhiều hơn hay ít hơn so với kết nối tắt?</li>

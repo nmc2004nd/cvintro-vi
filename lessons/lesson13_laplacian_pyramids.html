@@ -57,7 +57,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=425965cb"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="T%E1%BA%A1i-sao-l%E1%BA%A1i-l%C3%A0-%C4%91i%E1%BB%83m-c%E1%BA%AFt-kh%C3%B4ng?-Tr%E1%BB%B1c-gi%C3%A1c-1D">Tại sao lại là điểm cắt không? Trực giác 1D<a class="anchor-link" href="#T%E1%BA%A1i-sao-l%E1%BA%A1i-l%C3%A0-%C4%91i%E1%BB%83m-c%E1%BA%AFt-kh%C3%B4ng?-Tr%E1%BB%B1c-gi%C3%A1c-1D">¶</a></h2><p>Hãy xét một biên bậc duy nhất dọc theo một hàng. Đạo hàm bậc nhất là một gai nhọn tại biên; đạo hàm bậc hai dao động từ dương sang âm (hoặc ngược lại) và cắt qua đúng giá trị 0 ngay tại vị trí biên.</p>
+<h2 id="T%E1%BA%A1i-sao-l%E1%BA%A1i-l%C3%A0-%C4%91i%E1%BB%83m-c%E1%BA%AFt-kh%C3%B4ng?-Tr%E1%BB%B1c-gi%C3%A1c-1D-(Why-zero-crossings?-A-1D-intuition)">Tại sao lại là điểm cắt không? Trực giác 1D (Why zero crossings? A 1D intuition)<a class="anchor-link" href="#T%E1%BA%A1i-sao-l%E1%BA%A1i-l%C3%A0-%C4%91i%E1%BB%83m-c%E1%BA%AFt-kh%C3%B4ng?-Tr%E1%BB%B1c-gi%C3%A1c-1D-(Why-zero-crossings?-A-1D-intuition)">¶</a></h2><p>Hãy xét một biên bậc duy nhất dọc theo một hàng. Đạo hàm bậc nhất là một gai nhọn tại biên; đạo hàm bậc hai dao động từ dương sang âm (hoặc ngược lại) và cắt qua đúng giá trị 0 ngay tại vị trí biên.</p>
 </div>
 </div>
 </div>
@@ -99,7 +99,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=30f25db3"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="To%C3%A1n-t%E1%BB%AD-Laplace:-%C4%91%E1%BA%A1o-h%C3%A0m-b%E1%BA%ADc-hai-trong-2D">Toán tử Laplace: đạo hàm bậc hai trong 2D<a class="anchor-link" href="#To%C3%A1n-t%E1%BB%AD-Laplace:-%C4%91%E1%BA%A1o-h%C3%A0m-b%E1%BA%ADc-hai-trong-2D">¶</a></h2><p>Toán tử Laplace (Laplacian) cộng các đạo hàm riêng bậc hai không hỗn hợp của một ảnh 2D:</p>
+<h2 id="To%C3%A1n-t%E1%BB%AD-Laplace:-%C4%91%E1%BA%A1o-h%C3%A0m-b%E1%BA%ADc-hai-trong-2D-(The-Laplacian:-a-2D-second-derivative)">Toán tử Laplace: đạo hàm bậc hai trong 2D (The Laplacian: a 2D second derivative)<a class="anchor-link" href="#To%C3%A1n-t%E1%BB%AD-Laplace:-%C4%91%E1%BA%A1o-h%C3%A0m-b%E1%BA%ADc-hai-trong-2D-(The-Laplacian:-a-2D-second-derivative)">¶</a></h2><p>Toán tử Laplace (Laplacian) cộng các đạo hàm riêng bậc hai không hỗn hợp của một ảnh 2D:</p>
 <p>$$\nabla^2 I = \frac{\partial^2 I}{\partial x^2} + \frac{\partial^2 I}{\partial y^2}$$</p>
 <p>Khác với gradient, nó là một giá trị vô hướng duy nhất tại mỗi điểm ảnh (không có hướng) — nó chỉ đo mức độ một điểm ảnh khác biệt so với trung bình các điểm lân cận. Hai kernel rời rạc phổ biến:</p>
 <p>$$K_4 = \begin{bmatrix}0&amp;1&amp;0\\1&amp;-4&amp;1\\0&amp;1&amp;0\end{bmatrix} \qquad K_8 = \begin{bmatrix}1&amp;1&amp;1\\1&amp;-8&amp;1\\1&amp;1&amp;1\end{bmatrix}$$</p>
@@ -162,7 +162,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=3eb00db7"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="B%E1%BB%99-ph%C3%A1t-hi%E1%BB%87n-Marr-Hildreth:-Laplace-c%E1%BB%A7a-Gauss-(LoG)">Bộ phát hiện Marr-Hildreth: Laplace của Gauss (LoG)<a class="anchor-link" href="#B%E1%BB%99-ph%C3%A1t-hi%E1%BB%87n-Marr-Hildreth:-Laplace-c%E1%BB%A7a-Gauss-(LoG)">¶</a></h2><p>Toán tử Laplace, giống như mọi phép đạo hàm, khuếch đại nhiễu tần số cao — và đạo hàm <em>bậc hai</em> còn khuếch đại nhiễu mạnh hơn cả đạo hàm bậc nhất. <a href="../references.html#marr-hildreth-1980">Cách khắc phục của Marr và Hildreth (1980)</a>: <strong>làm trơn trước</strong>, rồi mới lấy Laplace. Vì tích chập có tính kết hợp, điều này tương đương với tích chập trực tiếp với một kernel kết hợp duy nhất, gọi là <strong>Laplace của Gauss (Laplacian of Gaussian — LoG)</strong>:</p>
+<h2 id="B%E1%BB%99-ph%C3%A1t-hi%E1%BB%87n-Marr-Hildreth:-Laplace-c%E1%BB%A7a-Gauss-(LoG)-(The-Marr-Hildreth-detector:-Laplacian-of-Gaussian-(LoG))">Bộ phát hiện Marr-Hildreth: Laplace của Gauss (LoG) (The Marr-Hildreth detector: Laplacian of Gaussian (LoG))<a class="anchor-link" href="#B%E1%BB%99-ph%C3%A1t-hi%E1%BB%87n-Marr-Hildreth:-Laplace-c%E1%BB%A7a-Gauss-(LoG)-(The-Marr-Hildreth-detector:-Laplacian-of-Gaussian-(LoG))">¶</a></h2><p>Toán tử Laplace, giống như mọi phép đạo hàm, khuếch đại nhiễu tần số cao — và đạo hàm <em>bậc hai</em> còn khuếch đại nhiễu mạnh hơn cả đạo hàm bậc nhất. <a href="../references.html#marr-hildreth-1980">Cách khắc phục của Marr và Hildreth (1980)</a>: <strong>làm trơn trước</strong>, rồi mới lấy Laplace. Vì tích chập có tính kết hợp, điều này tương đương với tích chập trực tiếp với một kernel kết hợp duy nhất, gọi là <strong>Laplace của Gauss (Laplacian of Gaussian — LoG)</strong>:</p>
 <p>$$\text{LoG}_\sigma(I) = \nabla^2(G_\sigma * I) = (\nabla^2 G_\sigma) * I$$</p>
 <p>Sau đó biên được tìm dưới dạng các <strong>điểm cắt không</strong> của phản hồi LoG, thay vì phân ngưỡng trực tiếp độ lớn của nó.</p>
 </div>
@@ -220,7 +220,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=8b0d8d43"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Ph%C3%A9p-x%E1%BA%A5p-x%E1%BB%89-r%E1%BA%BB-h%C6%A1n:-Hi%E1%BB%87u-c%E1%BB%A7a-Gauss-(DoG)">Phép xấp xỉ rẻ hơn: Hiệu của Gauss (DoG)<a class="anchor-link" href="#Ph%C3%A9p-x%E1%BA%A5p-x%E1%BB%89-r%E1%BA%BB-h%C6%A1n:-Hi%E1%BB%87u-c%E1%BB%A7a-Gauss-(DoG)">¶</a></h3><p>Tính một kernel LoG thực sự tốn kém hơn làm mờ. Một lối tắt được dùng rộng rãi: <em>hiệu</em> của hai lần làm mờ Gauss ở các tỉ lệ hơi khác nhau xấp xỉ một LoG đã nhân hệ số:</p>
+<h3 id="Ph%C3%A9p-x%E1%BA%A5p-x%E1%BB%89-r%E1%BA%BB-h%C6%A1n:-Hi%E1%BB%87u-c%E1%BB%A7a-Gauss-(DoG)-(The-cheaper-approximation:-Difference-of-Gaussians-(DoG))">Phép xấp xỉ rẻ hơn: Hiệu của Gauss (DoG) (The cheaper approximation: Difference of Gaussians (DoG))<a class="anchor-link" href="#Ph%C3%A9p-x%E1%BA%A5p-x%E1%BB%89-r%E1%BA%BB-h%C6%A1n:-Hi%E1%BB%87u-c%E1%BB%A7a-Gauss-(DoG)-(The-cheaper-approximation:-Difference-of-Gaussians-(DoG))">¶</a></h3><p>Tính một kernel LoG thực sự tốn kém hơn làm mờ. Một lối tắt được dùng rộng rãi: <em>hiệu</em> của hai lần làm mờ Gauss ở các tỉ lệ hơi khác nhau xấp xỉ một LoG đã nhân hệ số:</p>
 <p>$$\text{DoG} = G_{\sigma} - G_{k\sigma} \;\approx\; -(k-1)\sigma^2 \cdot \text{LoG}_\sigma$$</p>
 <p>Đây cũng là khối xây dựng mà sau này SIFT dùng lại để phát hiện điểm đặc trưng (keypoint) ở nhiều tỉ lệ.</p>
 </div>
@@ -280,7 +280,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=2f72c1bc"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Kim-t%E1%BB%B1-th%C3%A1p-Laplace:-kh%C3%B4i-ph%E1%BB%A5c-nh%E1%BB%AFng-g%C3%AC-kim-t%E1%BB%B1-th%C3%A1p-Gauss-v%E1%BB%A9t-b%E1%BB%8F">Kim tự tháp Laplace: khôi phục những gì kim tự tháp Gauss vứt bỏ<a class="anchor-link" href="#Kim-t%E1%BB%B1-th%C3%A1p-Laplace:-kh%C3%B4i-ph%E1%BB%A5c-nh%E1%BB%AFng-g%C3%AC-kim-t%E1%BB%B1-th%C3%A1p-Gauss-v%E1%BB%A9t-b%E1%BB%8F">¶</a></h2><p>Bài 11 cho thấy kim tự tháp Gauss làm mất thông tin: làm mờ và giảm mẫu lặp đi lặp lại, rồi cố tăng mẫu trở lại, không tái tạo được ảnh gốc. <strong>Kim tự tháp Laplace</strong> khắc phục điều này bằng cách lưu, ở mỗi tầng, chính xác phần chi tiết mà nếu không sẽ bị mất — tức <em>hiệu</em> giữa một tầng Gauss và tầng thô hơn được tăng mẫu trở lại để khớp với nó. Hiệu đó là một phép xấp xỉ rời rạc của toán tử Laplace, vì thế mới có cùng tên gọi.</p>
+<h2 id="Kim-t%E1%BB%B1-th%C3%A1p-Laplace:-kh%C3%B4i-ph%E1%BB%A5c-nh%E1%BB%AFng-g%C3%AC-kim-t%E1%BB%B1-th%C3%A1p-Gauss-v%E1%BB%A9t-b%E1%BB%8F-(Laplacian-pyramids:-recovering-what-Gaussian-pyramids-throw-away)">Kim tự tháp Laplace: khôi phục những gì kim tự tháp Gauss vứt bỏ (Laplacian pyramids: recovering what Gaussian pyramids throw away)<a class="anchor-link" href="#Kim-t%E1%BB%B1-th%C3%A1p-Laplace:-kh%C3%B4i-ph%E1%BB%A5c-nh%E1%BB%AFng-g%C3%AC-kim-t%E1%BB%B1-th%C3%A1p-Gauss-v%E1%BB%A9t-b%E1%BB%8F-(Laplacian-pyramids:-recovering-what-Gaussian-pyramids-throw-away)">¶</a></h2><p>Bài 11 cho thấy kim tự tháp Gauss làm mất thông tin: làm mờ và giảm mẫu lặp đi lặp lại, rồi cố tăng mẫu trở lại, không tái tạo được ảnh gốc. <strong>Kim tự tháp Laplace</strong> khắc phục điều này bằng cách lưu, ở mỗi tầng, chính xác phần chi tiết mà nếu không sẽ bị mất — tức <em>hiệu</em> giữa một tầng Gauss và tầng thô hơn được tăng mẫu trở lại để khớp với nó. Hiệu đó là một phép xấp xỉ rời rạc của toán tử Laplace, vì thế mới có cùng tên gọi.</p>
 </div>
 </div>
 </div>
@@ -359,7 +359,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=6a760213"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="T%C3%A1i-t%E1%BA%A1o-ch%C3%ADnh-x%C3%A1c">Tái tạo chính xác<a class="anchor-link" href="#T%C3%A1i-t%E1%BA%A1o-ch%C3%ADnh-x%C3%A1c">¶</a></h3><p>Vì mỗi tầng lưu chính xác những gì tầng tương ứng của kim tự tháp Gauss đã loại bỏ, cộng ngược lên theo kim tự tháp sẽ tái tạo ảnh gốc một cách chính xác (sai khác do làm tròn số nguyên).</p>
+<h3 id="T%C3%A1i-t%E1%BA%A1o-ch%C3%ADnh-x%C3%A1c-(Exact-reconstruction)">Tái tạo chính xác (Exact reconstruction)<a class="anchor-link" href="#T%C3%A1i-t%E1%BA%A1o-ch%C3%ADnh-x%C3%A1c-(Exact-reconstruction)">¶</a></h3><p>Vì mỗi tầng lưu chính xác những gì tầng tương ứng của kim tự tháp Gauss đã loại bỏ, cộng ngược lên theo kim tự tháp sẽ tái tạo ảnh gốc một cách chính xác (sai khác do làm tròn số nguyên).</p>
 </div>
 </div>
 </div>
@@ -416,7 +416,7 @@ mean reconstruction error = 0.0000 gray levels
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=c6e101e8"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Hãy thử <code>threshold=1.0</code> và <code>threshold=15.0</code> trong <code>zero_crossings</code>. Số điểm ảnh biên phát hiện được thay đổi thế nào, và tại sao một ngưỡng <em>cao hơn</em> trên tiêu chí đổi dấu của đạo hàm <em>bậc hai</em> lại hoạt động khác với một ngưỡng độ lớn trên đạo hàm bậc nhất?</li>
 <li>Tăng mức nhiễu trong <code>noisy_disk</code> và xem <code>sigma</code> cần lớn đến đâu thì bản đồ biên điểm cắt không mới hết bị chi phối bởi các vòng nhiễu giả.</li>
 <li>Kim tự tháp Laplace là công cụ kinh điển đằng sau phép trộn ảnh liền mạch (seamless blending) (ví dụ trộn hai bức ảnh dọc theo một mặt nạ, từng tầng một). Hãy phác thảo — bằng lời hoặc bằng code — cách bạn trộn hai kim tự tháp Laplace (ví dụ lấy trung bình chúng với trọng số thay đổi theo không gian ở mỗi tầng) trước khi tái tạo, và tại sao trộn trong biểu diễn này lại tránh được các đường nối sắc cạnh mà trộn trực tiếp các ảnh gốc sẽ tạo ra.</li>

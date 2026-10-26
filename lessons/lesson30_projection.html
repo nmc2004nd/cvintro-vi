@@ -56,7 +56,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=ad1bf246"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Hai-ph%C3%A9p-chi%E1%BA%BFu-b%E1%BA%A1n-%C4%91%C3%A3-x%C3%A2y-d%E1%BB%B1ng">Hai phép chiếu bạn đã xây dựng<a class="anchor-link" href="#Hai-ph%C3%A9p-chi%E1%BA%BFu-b%E1%BA%A1n-%C4%91%C3%A3-x%C3%A2y-d%E1%BB%B1ng">¶</a></h2><p><strong>PCA (Bài 6).</strong> Cho một đám mây điểm, các vector riêng của ma trận hiệp phương sai của chúng cho ra các hướng để chiếu lên. Chiếu lên vector riêng hàng đầu, $y = v^\top x$, thu gọn mỗi điểm 2D thành một con số duy nhất — tọa độ dọc theo hướng có độ trải lớn nhất.</p>
+<h2 id="Hai-ph%C3%A9p-chi%E1%BA%BFu-b%E1%BA%A1n-%C4%91%C3%A3-x%C3%A2y-d%E1%BB%B1ng-(Two-projections-you've-already-built)">Hai phép chiếu bạn đã xây dựng (Two projections you've already built)<a class="anchor-link" href="#Hai-ph%C3%A9p-chi%E1%BA%BFu-b%E1%BA%A1n-%C4%91%C3%A3-x%C3%A2y-d%E1%BB%B1ng-(Two-projections-you've-already-built)">¶</a></h2><p><strong>PCA (Bài 6).</strong> Cho một đám mây điểm, các vector riêng của ma trận hiệp phương sai của chúng cho ra các hướng để chiếu lên. Chiếu lên vector riêng hàng đầu, $y = v^\top x$, thu gọn mỗi điểm 2D thành một con số duy nhất — tọa độ dọc theo hướng có độ trải lớn nhất.</p>
 </div>
 </div>
 </div>
@@ -116,7 +116,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=e28c8e9e"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Ph%C3%A9p-nh%C3%A2n-ma-tr%E1%BA%ADn:-nhi%E1%BB%81u-ph%C3%A9p-chi%E1%BA%BFu-c%C3%B9ng-l%C3%BAc">Phép nhân ma trận: nhiều phép chiếu cùng lúc<a class="anchor-link" href="#Ph%C3%A9p-nh%C3%A2n-ma-tr%E1%BA%ADn:-nhi%E1%BB%81u-ph%C3%A9p-chi%E1%BA%BFu-c%C3%B9ng-l%C3%BAc">¶</a></h2><p>Mọi thứ ở trên đều tính một con số $y = w^\top x$ từ một hướng $w$. Xếp $m$ hướng khác nhau thành các hàng của một ma trận $W$ (kích thước $m \times n$), thì $y = Wx$ tính cả $m$ phép chiếu cùng lúc — mỗi hàng một tích vô hướng. Đây chính là bản chất của phép nhân ma trận: một dàn các phép chiếu đồng thời. Điều đó cũng có nghĩa là một số phép toán tuyến tính trông có vẻ khác nhau ở phần trước của khóa học thực ra là cùng một phép toán, chỉ với một lựa chọn $W$ khác nhau, có cấu trúc:</p>
+<h2 id="Ph%C3%A9p-nh%C3%A2n-ma-tr%E1%BA%ADn:-nhi%E1%BB%81u-ph%C3%A9p-chi%E1%BA%BFu-c%C3%B9ng-l%C3%BAc-(Matrix-multiplication:-many-projections-at-once)">Phép nhân ma trận: nhiều phép chiếu cùng lúc (Matrix multiplication: many projections at once)<a class="anchor-link" href="#Ph%C3%A9p-nh%C3%A2n-ma-tr%E1%BA%ADn:-nhi%E1%BB%81u-ph%C3%A9p-chi%E1%BA%BFu-c%C3%B9ng-l%C3%BAc-(Matrix-multiplication:-many-projections-at-once)">¶</a></h2><p>Mọi thứ ở trên đều tính một con số $y = w^\top x$ từ một hướng $w$. Xếp $m$ hướng khác nhau thành các hàng của một ma trận $W$ (kích thước $m \times n$), thì $y = Wx$ tính cả $m$ phép chiếu cùng lúc — mỗi hàng một tích vô hướng. Đây chính là bản chất của phép nhân ma trận: một dàn các phép chiếu đồng thời. Điều đó cũng có nghĩa là một số phép toán tuyến tính trông có vẻ khác nhau ở phần trước của khóa học thực ra là cùng một phép toán, chỉ với một lựa chọn $W$ khác nhau, có cấu trúc:</p>
 <ul>
 <li><strong>Tích chập</strong> (Bài 10): mỗi giá trị đầu ra là một tích vô hướng giữa một vùng lân cận nhỏ và một kernel — một phép chiếu. Trượt kernel qua toàn bộ tín hiệu là một phép nhân với một ma trận thưa có các hàng là các bản sao dịch chuyển của kernel (một ma trận Toeplitz).</li>
 <li><strong>Biến đổi Fourier</strong> (Bài 15): mỗi giá trị đầu ra là một tích vô hướng giữa <em>toàn bộ</em> tín hiệu và một hình sin ở một tần số cố định — một phép chiếu lên tần số đó. Phép biến đổi đầy đủ là một phép nhân với một ma trận cố định gồm các sin và cosin.</li>
@@ -195,7 +195,7 @@ max diff, DFT as a matrix multiply:          2.92e-15
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=4f0b8ec4"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="M%E1%BB%99t-ph%C3%A9p-chi%E1%BA%BFu-cho-b%C3%A0i-to%C3%A1n-ph%C3%A2n-lo%E1%BA%A1i">Một phép chiếu cho bài toán phân loại<a class="anchor-link" href="#M%E1%BB%99t-ph%C3%A9p-chi%E1%BA%BFu-cho-b%C3%A0i-to%C3%A1n-ph%C3%A2n-lo%E1%BA%A1i">¶</a></h2><p>Giả sử thay vì "cực đại hóa độ trải", mục tiêu là "tách hai lớp". Cùng công thức $y = w^\top x + b$ vẫn áp dụng — chiếu mỗi điểm lên một hướng $w$, và phân loại theo <em>dấu</em> của điểm số thu được. Đây, xét toàn bộ, chính là một nơ-ron nhân tạo đơn lẻ không có hàm kích hoạt: phần lõi tuyến tính mà mọi lớp mạng nơ-ron đều được xây dựng từ đó.</p>
+<h2 id="M%E1%BB%99t-ph%C3%A9p-chi%E1%BA%BFu-cho-b%C3%A0i-to%C3%A1n-ph%C3%A2n-lo%E1%BA%A1i-(A-projection-for-classification)">Một phép chiếu cho bài toán phân loại (A projection for classification)<a class="anchor-link" href="#M%E1%BB%99t-ph%C3%A9p-chi%E1%BA%BFu-cho-b%C3%A0i-to%C3%A1n-ph%C3%A2n-lo%E1%BA%A1i-(A-projection-for-classification)">¶</a></h2><p>Giả sử thay vì "cực đại hóa độ trải", mục tiêu là "tách hai lớp". Cùng công thức $y = w^\top x + b$ vẫn áp dụng — chiếu mỗi điểm lên một hướng $w$, và phân loại theo <em>dấu</em> của điểm số thu được. Đây, xét toàn bộ, chính là một nơ-ron nhân tạo đơn lẻ không có hàm kích hoạt: phần lõi tuyến tính mà mọi lớp mạng nơ-ron đều được xây dựng từ đó.</p>
 </div>
 </div>
 </div>
@@ -291,7 +291,7 @@ classification accuracy: 100.0%
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=3ec5a67c"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="%C4%90i%E1%BB%81u-m%C3%A0-m%E1%BB%99t-ph%C3%A9p-chi%E1%BA%BFu-%C4%91%C6%A1n-l%E1%BA%BB-kh%C3%B4ng-l%C3%A0m-%C4%91%C6%B0%E1%BB%A3c">Điều mà một phép chiếu đơn lẻ không làm được<a class="anchor-link" href="#%C4%90i%E1%BB%81u-m%C3%A0-m%E1%BB%99t-ph%C3%A9p-chi%E1%BA%BFu-%C4%91%C6%A1n-l%E1%BA%BB-kh%C3%B4ng-l%C3%A0m-%C4%91%C6%B0%E1%BB%A3c">¶</a></h2><p>Một phép chiếu tuyến tính đơn lẻ chỉ có thể tạo ra ranh giới quyết định là <em>đường thẳng</em> (một siêu phẳng (hyperplane), trong không gian nhiều chiều hơn). Một số tập dữ liệu hoàn toàn không có đường thẳng phân tách nào, bất kể chọn $w$ và $b$ thế nào — ví dụ kinh điển là một lớp bao quanh lớp kia.</p>
+<h2 id="%C4%90i%E1%BB%81u-m%C3%A0-m%E1%BB%99t-ph%C3%A9p-chi%E1%BA%BFu-%C4%91%C6%A1n-l%E1%BA%BB-kh%C3%B4ng-l%C3%A0m-%C4%91%C6%B0%E1%BB%A3c-(What-a-single-projection-cannot-do)">Điều mà một phép chiếu đơn lẻ không làm được (What a single projection cannot do)<a class="anchor-link" href="#%C4%90i%E1%BB%81u-m%C3%A0-m%E1%BB%99t-ph%C3%A9p-chi%E1%BA%BFu-%C4%91%C6%A1n-l%E1%BA%BB-kh%C3%B4ng-l%C3%A0m-%C4%91%C6%B0%E1%BB%A3c-(What-a-single-projection-cannot-do)">¶</a></h2><p>Một phép chiếu tuyến tính đơn lẻ chỉ có thể tạo ra ranh giới quyết định là <em>đường thẳng</em> (một siêu phẳng (hyperplane), trong không gian nhiều chiều hơn). Một số tập dữ liệu hoàn toàn không có đường thẳng phân tách nào, bất kể chọn $w$ và $b$ thế nào — ví dụ kinh điển là một lớp bao quanh lớp kia.</p>
 </div>
 </div>
 </div>
@@ -361,7 +361,7 @@ classification accuracy: 100.0%
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=8aee3469"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Trong phần ôn tập PCA, chiếu <code>cloud</code> lên vector riêng <em>thứ hai</em> (nhỏ hơn) thay vì vector chính. Độ trải của hình chiếu 1D thu được so với khi chiếu lên hướng chính thế nào, và tại sao điều đó khớp với những gì bản thân giá trị riêng cho bạn biết (Bài 6)?</li>
 <li>Sửa trung bình và độ trải của <code>class_a</code>/<code>class_b</code> để các lớp chồng lấn nhiều hơn. Đến mức nào thì hướng hiệu-trung-bình <code>w</code> không còn đạt độ chính xác cao, và bạn có thể tự tìm ra một <code>w</code> <em>tốt hơn</em> hướng hiệu-trung-bình cho trường hợp khó hơn đó không?</li>
 <li>Với tập dữ liệu vành-khuyên-và-đĩa, thay vì phép chiếu tuyến tính, hãy thử phân loại bằng một hàm phi tuyến đơn giản của các điểm: khoảng cách tới gốc tọa độ, $r = \sqrt{x_1^2+x_2^2}$, phân ngưỡng tại một giá trị nào đó. Đặc trưng phi tuyến duy nhất này đạt độ chính xác bao nhiêu, và điều đó gợi ý gì về <em>loại</em> phép chiếu thực sự giải được bài toán này?</li>

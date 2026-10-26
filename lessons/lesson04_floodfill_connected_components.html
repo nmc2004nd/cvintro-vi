@@ -61,7 +61,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=ad7a36dc"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="T%E1%BA%A1o-m%E1%BB%99t-%E1%BA%A3nh-nh%E1%BB%8B-ph%C3%A2n-g%E1%BB%93m-nhi%E1%BB%81u-%C4%91%E1%BB%91m">Tạo một ảnh nhị phân gồm nhiều đốm<a class="anchor-link" href="#T%E1%BA%A1o-m%E1%BB%99t-%E1%BA%A3nh-nh%E1%BB%8B-ph%C3%A2n-g%E1%BB%93m-nhi%E1%BB%81u-%C4%91%E1%BB%91m">¶</a></h2><p>Hãy đọc một ảnh xám chụp vài loại trái cây trên nền tối, dùng kiến thức Bài 3 để phân ngưỡng ảnh và loại bỏ nhiễu muối.</p>
+<h2 id="T%E1%BA%A1o-m%E1%BB%99t-%E1%BA%A3nh-nh%E1%BB%8B-ph%C3%A2n-g%E1%BB%93m-nhi%E1%BB%81u-%C4%91%E1%BB%91m-(Create-a-binary-image-of-several-blobs)">Tạo một ảnh nhị phân gồm nhiều đốm (Create a binary image of several blobs)<a class="anchor-link" href="#T%E1%BA%A1o-m%E1%BB%99t-%E1%BA%A3nh-nh%E1%BB%8B-ph%C3%A2n-g%E1%BB%93m-nhi%E1%BB%81u-%C4%91%E1%BB%91m-(Create-a-binary-image-of-several-blobs)">¶</a></h2><p>Hãy đọc một ảnh xám chụp vài loại trái cây trên nền tối, dùng kiến thức Bài 3 để phân ngưỡng ảnh và loại bỏ nhiễu muối.</p>
 </div>
 </div>
 </div>
@@ -112,7 +112,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=9aed1b4c"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="T%C3%B4-loang-t%E1%BB%AB-m%E1%BB%99t-%C4%91i%E1%BB%83m-h%E1%BA%A1t-gi%E1%BB%91ng">Tô loang từ một điểm hạt giống<a class="anchor-link" href="#T%C3%B4-loang-t%E1%BB%AB-m%E1%BB%99t-%C4%91i%E1%BB%83m-h%E1%BA%A1t-gi%E1%BB%91ng">¶</a></h2><p>Tô loang bắt đầu từ một điểm ảnh hạt giống và lan ra tất cả các điểm ảnh liên thông có giá trị nằm trong một ngưỡng dung sai so với giá trị hạt giống, tô chúng bằng một màu mới. Thuật toán cổ điển duy trì một "biên (frontier)" gồm các điểm ảnh còn cần thăm (cài đặt bằng ngăn xếp (stack) hoặc hàng đợi (queue)): lấy ra một điểm ảnh; nếu nó thuộc tiền cảnh và chưa được tô, đánh dấu đã tô và đẩy 4 điểm lân cận liên thông của nó vào ngăn xếp. Lặp lại cho đến khi ngăn xếp rỗng, lúc đó mọi điểm ảnh có thể đi tới từ hạt giống qua một đường gồm các điểm ảnh tiền cảnh đều đã được tìm thấy.</p>
+<h2 id="T%C3%B4-loang-t%E1%BB%AB-m%E1%BB%99t-%C4%91i%E1%BB%83m-h%E1%BA%A1t-gi%E1%BB%91ng-(Flood-fill-from-a-seed-point)">Tô loang từ một điểm hạt giống (Flood fill from a seed point)<a class="anchor-link" href="#T%C3%B4-loang-t%E1%BB%AB-m%E1%BB%99t-%C4%91i%E1%BB%83m-h%E1%BA%A1t-gi%E1%BB%91ng-(Flood-fill-from-a-seed-point)">¶</a></h2><p>Tô loang bắt đầu từ một điểm ảnh hạt giống và lan ra tất cả các điểm ảnh liên thông có giá trị nằm trong một ngưỡng dung sai so với giá trị hạt giống, tô chúng bằng một màu mới. Thuật toán cổ điển duy trì một "biên (frontier)" gồm các điểm ảnh còn cần thăm (cài đặt bằng ngăn xếp (stack) hoặc hàng đợi (queue)): lấy ra một điểm ảnh; nếu nó thuộc tiền cảnh và chưa được tô, đánh dấu đã tô và đẩy 4 điểm lân cận liên thông của nó vào ngăn xếp. Lặp lại cho đến khi ngăn xếp rỗng, lúc đó mọi điểm ảnh có thể đi tới từ hạt giống qua một đường gồm các điểm ảnh tiền cảnh đều đã được tìm thấy.</p>
 </div>
 </div>
 </div>
@@ -189,7 +189,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=a28e0330"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="T%C3%B4-loang-v%E1%BB%9Bi-OpenCV">Tô loang với OpenCV<a class="anchor-link" href="#T%C3%B4-loang-v%E1%BB%9Bi-OpenCV">¶</a></h2><p><code>cv2.floodFill</code> làm đúng việc tương tự, chỉ là nhanh hơn đáng kể vì được biên dịch.</p>
+<h2 id="T%C3%B4-loang-v%E1%BB%9Bi-OpenCV-(Flood-fill-with-OpenCV)">Tô loang với OpenCV (Flood fill with OpenCV)<a class="anchor-link" href="#T%C3%B4-loang-v%E1%BB%9Bi-OpenCV-(Flood-fill-with-OpenCV)">¶</a></h2><p><code>cv2.floodFill</code> làm đúng việc tương tự, chỉ là nhanh hơn đáng kể vì được biên dịch.</p>
 </div>
 </div>
 </div>
@@ -237,7 +237,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=9ab456bc"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Th%C3%A0nh-ph%E1%BA%A7n-li%C3%AAn-th%C3%B4ng:-g%C3%A1n-nh%C3%A3n-m%E1%BB%8Di-%C4%91%E1%BB%91m-c%C3%B9ng-l%C3%BAc">Thành phần liên thông: gán nhãn mọi đốm cùng lúc<a class="anchor-link" href="#Th%C3%A0nh-ph%E1%BA%A7n-li%C3%AAn-th%C3%B4ng:-g%C3%A1n-nh%C3%A3n-m%E1%BB%8Di-%C4%91%E1%BB%91m-c%C3%B9ng-l%C3%BAc">¶</a></h2><p>Thay vì chọn hạt giống thủ công, thuật toán gán nhãn thành phần liên thông quét toàn bộ ảnh và gán cho mỗi đốm một nhãn số nguyên riêng. Một cách đơn giản để cài đặt: quét ảnh, và mỗi khi gặp một điểm ảnh tiền cảnh chưa có nhãn, chạy tô loang với một màu mới. Ảnh động này minh họa quá trình đó.</p>
+<h2 id="Th%C3%A0nh-ph%E1%BA%A7n-li%C3%AAn-th%C3%B4ng:-g%C3%A1n-nh%C3%A3n-m%E1%BB%8Di-%C4%91%E1%BB%91m-c%C3%B9ng-l%C3%BAc-(Connected-components:-label-every-blob-at-once)">Thành phần liên thông: gán nhãn mọi đốm cùng lúc (Connected components: label every blob at once)<a class="anchor-link" href="#Th%C3%A0nh-ph%E1%BA%A7n-li%C3%AAn-th%C3%B4ng:-g%C3%A1n-nh%C3%A3n-m%E1%BB%8Di-%C4%91%E1%BB%91m-c%C3%B9ng-l%C3%BAc-(Connected-components:-label-every-blob-at-once)">¶</a></h2><p>Thay vì chọn hạt giống thủ công, thuật toán gán nhãn thành phần liên thông quét toàn bộ ảnh và gán cho mỗi đốm một nhãn số nguyên riêng. Một cách đơn giản để cài đặt: quét ảnh, và mỗi khi gặp một điểm ảnh tiền cảnh chưa có nhãn, chạy tô loang với một màu mới. Ảnh động này minh họa quá trình đó.</p>
 <img alt="Ảnh động minh họa thuật toán thành phần liên thông kiểu quét-và-tô-loang, gán cho mỗi đốm một màu mới khi phát hiện" src="../animations/components_demo.gif" style="display: block; margin: 0 auto; max-width: 500px;"/>
 </div>
 </div>
@@ -328,7 +328,7 @@ label   area         centroid
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=678ac611"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="L%E1%BB%8Dc-%C4%91%E1%BB%91m-theo-k%C3%ADch-th%C6%B0%E1%BB%9Bc">Lọc đốm theo kích thước<a class="anchor-link" href="#L%E1%BB%8Dc-%C4%91%E1%BB%91m-theo-k%C3%ADch-th%C6%B0%E1%BB%9Bc">¶</a></h2><p>Một ứng dụng phổ biến của thành phần liên thông là loại bỏ các đốm nhỏ giống nhiễu và chỉ giữ lại các đốm đáng kể. Ở đây ta chọn một ngưỡng loại bỏ các quả táo nhỏ (đốm 2 và 6).</p>
+<h2 id="L%E1%BB%8Dc-%C4%91%E1%BB%91m-theo-k%C3%ADch-th%C6%B0%E1%BB%9Bc-(Filtering-blobs-by-size)">Lọc đốm theo kích thước (Filtering blobs by size)<a class="anchor-link" href="#L%E1%BB%8Dc-%C4%91%E1%BB%91m-theo-k%C3%ADch-th%C6%B0%E1%BB%9Bc-(Filtering-blobs-by-size)">¶</a></h2><p>Một ứng dụng phổ biến của thành phần liên thông là loại bỏ các đốm nhỏ giống nhiễu và chỉ giữ lại các đốm đáng kể. Ở đây ta chọn một ngưỡng loại bỏ các quả táo nhỏ (đốm 2 và 6).</p>
 </div>
 </div>
 </div>
@@ -370,7 +370,7 @@ label   area         centroid
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=53abce0b"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li>Đổi <code>connectivity=8</code> thành <code>connectivity=4</code> trong <code>connectedComponentsWithStats</code>. Hãy dựng một ảnh nhị phân (ví dụ một bậc thang chéo gồm các điểm ảnh đơn lẻ) mà ở đó liên thông 4 và liên thông 8 cho ra số thành phần <em>khác nhau</em>.</li>
 <li>Dùng <code>cv2.floodFill</code> với dung sai <code>loDiff</code>/<code>upDiff</code> khác 0 trên một ảnh xám (không phải nhị phân), và mô tả điều gì thay đổi.</li>
 </ol>

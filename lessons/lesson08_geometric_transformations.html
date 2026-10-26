@@ -57,7 +57,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=1217dda8"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="M%E1%BB%99t-%E1%BA%A3nh-th%E1%BB%AD-nghi%E1%BB%87m-kh%C3%B4ng-c%C3%B3-t%C3%ADnh-%C4%91%E1%BB%91i-x%E1%BB%A9ng">Một ảnh thử nghiệm không có tính đối xứng<a class="anchor-link" href="#M%E1%BB%99t-%E1%BA%A3nh-th%E1%BB%AD-nghi%E1%BB%87m-kh%C3%B4ng-c%C3%B3-t%C3%ADnh-%C4%91%E1%BB%91i-x%E1%BB%A9ng">¶</a></h2><p>Ta vẽ chữ "F" vì nó không có đối xứng xoay hay đối xứng gương — mỗi phép lật và xoay đều tạo ra kết quả khác biệt rõ ràng, giúp dễ phân biệt các phép biến đổi.</p>
+<h2 id="M%E1%BB%99t-%E1%BA%A3nh-th%E1%BB%AD-nghi%E1%BB%87m-kh%C3%B4ng-c%C3%B3-t%C3%ADnh-%C4%91%E1%BB%91i-x%E1%BB%A9ng-(A-test-image-with-no-symmetry)">Một ảnh thử nghiệm không có tính đối xứng (A test image with no symmetry)<a class="anchor-link" href="#M%E1%BB%99t-%E1%BA%A3nh-th%E1%BB%AD-nghi%E1%BB%87m-kh%C3%B4ng-c%C3%B3-t%C3%ADnh-%C4%91%E1%BB%91i-x%E1%BB%A9ng-(A-test-image-with-no-symmetry)">¶</a></h2><p>Ta vẽ chữ "F" vì nó không có đối xứng xoay hay đối xứng gương — mỗi phép lật và xoay đều tạo ra kết quả khác biệt rõ ràng, giúp dễ phân biệt các phép biến đổi.</p>
 </div>
 </div>
 </div>
@@ -98,7 +98,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=cffc1298"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="C%C3%A1c-thao-t%C3%A1c-c%C6%A1-b%E1%BA%A3n">Các thao tác cơ bản<a class="anchor-link" href="#C%C3%A1c-thao-t%C3%A1c-c%C6%A1-b%E1%BA%A3n">¶</a></h2><h3 id="L%E1%BA%ADt">Lật<a class="anchor-link" href="#L%E1%BA%ADt">¶</a></h3><p><code>cv2.flip</code> lật gương một ảnh: mã <code>1</code> lật ngang (trái-phải), <code>0</code> lật dọc (trên-dưới), <code>-1</code> lật cả hai.</p>
+<h2 id="C%C3%A1c-thao-t%C3%A1c-c%C6%A1-b%E1%BA%A3n-(Basic-operations)">Các thao tác cơ bản (Basic operations)<a class="anchor-link" href="#C%C3%A1c-thao-t%C3%A1c-c%C6%A1-b%E1%BA%A3n-(Basic-operations)">¶</a></h2><h3 id="L%E1%BA%ADt-(Flipping)">Lật (Flipping)<a class="anchor-link" href="#L%E1%BA%ADt-(Flipping)">¶</a></h3><p><code>cv2.flip</code> lật gương một ảnh: mã <code>1</code> lật ngang (trái-phải), <code>0</code> lật dọc (trên-dưới), <code>-1</code> lật cả hai.</p>
 </div>
 </div>
 </div>
@@ -137,7 +137,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=397ea8d9"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="C%E1%BA%AFt">Cắt<a class="anchor-link" href="#C%E1%BA%AFt">¶</a></h3><p>Cắt ảnh chỉ là cắt lát mảng — không cần hàm OpenCV nào. <code>image[y0:y1, x0:x1]</code> giữ lại các hàng <code>y0..y1</code> và các cột <code>x0..x1</code>.</p>
+<h3 id="C%E1%BA%AFt-(Cropping)">Cắt (Cropping)<a class="anchor-link" href="#C%E1%BA%AFt-(Cropping)">¶</a></h3><p>Cắt ảnh chỉ là cắt lát mảng — không cần hàm OpenCV nào. <code>image[y0:y1, x0:x1]</code> giữ lại các hàng <code>y0..y1</code> và các cột <code>x0..x1</code>.</p>
 </div>
 </div>
 </div>
@@ -170,7 +170,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=6a583624"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Co-gi%C3%A3n-(thay-%C4%91%E1%BB%95i-k%C3%ADch-th%C6%B0%E1%BB%9Bc)">Co giãn (thay đổi kích thước)<a class="anchor-link" href="#Co-gi%C3%A3n-(thay-%C4%91%E1%BB%95i-k%C3%ADch-th%C6%B0%E1%BB%9Bc)">¶</a></h3><p><code>cv2.resize</code> thay đổi kích thước ảnh, có thể dùng hệ số khác nhau cho chiều rộng và chiều cao. Tỉ số giữa chiều rộng và chiều cao là <strong>tỉ lệ khung hình (aspect ratio)</strong>. Co giãn đều giữ nguyên hình dạng (tỉ lệ khung hình), còn co giãn không đều sẽ kéo dài hoặc ép dẹt nó.</p>
+<h3 id="Co-gi%C3%A3n-(thay-%C4%91%E1%BB%95i-k%C3%ADch-th%C6%B0%E1%BB%9Bc)-(Scaling-(resizing))">Co giãn (thay đổi kích thước) (Scaling (resizing))<a class="anchor-link" href="#Co-gi%C3%A3n-(thay-%C4%91%E1%BB%95i-k%C3%ADch-th%C6%B0%E1%BB%9Bc)-(Scaling-(resizing))">¶</a></h3><p><code>cv2.resize</code> thay đổi kích thước ảnh, có thể dùng hệ số khác nhau cho chiều rộng và chiều cao. Tỉ số giữa chiều rộng và chiều cao là <strong>tỉ lệ khung hình (aspect ratio)</strong>. Co giãn đều giữ nguyên hình dạng (tỉ lệ khung hình), còn co giãn không đều sẽ kéo dài hoặc ép dẹt nó.</p>
 </div>
 </div>
 </div>
@@ -208,7 +208,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=67ecde5a"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Xoay">Xoay<a class="anchor-link" href="#Xoay">¶</a></h3><p><code>cv2.getRotationMatrix2D</code> tạo một ma trận $2\times3$ để xoay một góc tùy ý quanh một tâm được chọn, sau đó <code>cv2.warpAffine</code> áp dụng ma trận này lên ảnh.</p>
+<h3 id="Xoay-(Rotating)">Xoay (Rotating)<a class="anchor-link" href="#Xoay-(Rotating)">¶</a></h3><p><code>cv2.getRotationMatrix2D</code> tạo một ma trận $2\times3$ để xoay một góc tùy ý quanh một tâm được chọn, sau đó <code>cv2.warpAffine</code> áp dụng ma trận này lên ảnh.</p>
 </div>
 </div>
 </div>
@@ -255,7 +255,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=326513cf"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="H%E1%BB%87-ph%C3%A2n-c%E1%BA%A5p-c%C3%A1c-ph%C3%A9p-bi%E1%BA%BFn-%C4%91%E1%BB%95i">Hệ phân cấp các phép biến đổi<a class="anchor-link" href="#H%E1%BB%87-ph%C3%A2n-c%E1%BA%A5p-c%C3%A1c-ph%C3%A9p-bi%E1%BA%BFn-%C4%91%E1%BB%95i">¶</a></h2><p>Lật, xoay, co giãn và tịnh tiến đều là các trường hợp của một phép biến đổi ma trận $2\times3$ tổng quát</p>
+<h2 id="H%E1%BB%87-ph%C3%A2n-c%E1%BA%A5p-c%C3%A1c-ph%C3%A9p-bi%E1%BA%BFn-%C4%91%E1%BB%95i-(The-transformation-hierarchy)">Hệ phân cấp các phép biến đổi (The transformation hierarchy)<a class="anchor-link" href="#H%E1%BB%87-ph%C3%A2n-c%E1%BA%A5p-c%C3%A1c-ph%C3%A9p-bi%E1%BA%BFn-%C4%91%E1%BB%95i-(The-transformation-hierarchy)">¶</a></h2><p>Lật, xoay, co giãn và tịnh tiến đều là các trường hợp của một phép biến đổi ma trận $2\times3$ tổng quát</p>
 <p>$$\begin{bmatrix}x'\\y'\end{bmatrix} = \begin{bmatrix}a &amp; b\\c &amp; d\end{bmatrix}\begin{bmatrix}x\\y\end{bmatrix} + \begin{bmatrix}t_x\\t_y\end{bmatrix}$$</p>
 <p>được áp dụng bằng <code>cv2.warpAffine</code>. Ràng buộc phần $2\times2$ theo các cách khác nhau cho ra một họ phép biến đổi lồng nhau, từ chặt nhất đến lỏng nhất:</p>
 <table>
@@ -295,7 +295,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=02d1f8cc"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Th%E1%BA%A5y-s%E1%BB%B1-kh%C3%A1c-bi%E1%BB%87t-tr%C3%AAn-m%E1%BB%99t-h%C3%ACnh-vu%C3%B4ng-%C4%91%C6%A1n-v%E1%BB%8B">Thấy sự khác biệt trên một hình vuông đơn vị<a class="anchor-link" href="#Th%E1%BA%A5y-s%E1%BB%B1-kh%C3%A1c-bi%E1%BB%87t-tr%C3%AAn-m%E1%BB%99t-h%C3%ACnh-vu%C3%B4ng-%C4%91%C6%A1n-v%E1%BB%8B">¶</a></h3><p>Cách rõ nhất để thấy mỗi phép biến đổi làm được gì và không làm được gì là quan sát điều xảy ra với một hình vuông đơn giản.</p>
+<h3 id="Th%E1%BA%A5y-s%E1%BB%B1-kh%C3%A1c-bi%E1%BB%87t-tr%C3%AAn-m%E1%BB%99t-h%C3%ACnh-vu%C3%B4ng-%C4%91%C6%A1n-v%E1%BB%8B-(Seeing-the-difference-on-a-unit-square)">Thấy sự khác biệt trên một hình vuông đơn vị (Seeing the difference on a unit square)<a class="anchor-link" href="#Th%E1%BA%A5y-s%E1%BB%B1-kh%C3%A1c-bi%E1%BB%87t-tr%C3%AAn-m%E1%BB%99t-h%C3%ACnh-vu%C3%B4ng-%C4%91%C6%A1n-v%E1%BB%8B-(Seeing-the-difference-on-a-unit-square)">¶</a></h3><p>Cách rõ nhất để thấy mỗi phép biến đổi làm được gì và không làm được gì là quan sát điều xảy ra với một hình vuông đơn giản.</p>
 </div>
 </div>
 </div>
@@ -363,7 +363,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=00868ca8"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-ph%C3%A9p-bi%E1%BA%BFn-%C4%91%E1%BB%95i-affine-t%E1%BB%AB-c%C3%A1c-c%E1%BA%B7p-%C4%91i%E1%BB%83m-t%C6%B0%C6%A1ng-%E1%BB%A9ng">Ước lượng phép biến đổi affine từ các cặp điểm tương ứng<a class="anchor-link" href="#%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-ph%C3%A9p-bi%E1%BA%BFn-%C4%91%E1%BB%95i-affine-t%E1%BB%AB-c%C3%A1c-c%E1%BA%B7p-%C4%91i%E1%BB%83m-t%C6%B0%C6%A1ng-%E1%BB%A9ng">¶</a></h3><p>Trên thực tế, ta thường không biết trực tiếp ma trận biến đổi. Ví dụ: một vật phẳng được chụp <em>nghiêng</em> (hoặc một bản quét bị lệch), và ta muốn hoàn tác sự biến dạng. Điều này đòi hỏi xác định một vài điểm mốc (landmark) trong cả ảnh bị lệch lẫn vị trí mà chúng <em>đáng lẽ</em> phải ở trong một góc nhìn chuẩn, chính diện. <code>cv2.getAffineTransform</code> nhận 3 cặp điểm tương ứng như vậy (số lượng tối thiểu để xác định cả 6 tham số affine) và trả về ma trận ánh xạ tập này lên tập kia — giải theo chiều từ-ảnh-lệch-về-chuẩn, rồi áp dụng nó sẽ <em>nắn thẳng (rectify)</em> bức ảnh.</p>
+<h3 id="%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-ph%C3%A9p-bi%E1%BA%BFn-%C4%91%E1%BB%95i-affine-t%E1%BB%AB-c%C3%A1c-c%E1%BA%B7p-%C4%91i%E1%BB%83m-t%C6%B0%C6%A1ng-%E1%BB%A9ng-(Fitting-an-affine-transform-from-point-correspondences)">Ước lượng phép biến đổi affine từ các cặp điểm tương ứng (Fitting an affine transform from point correspondences)<a class="anchor-link" href="#%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-ph%C3%A9p-bi%E1%BA%BFn-%C4%91%E1%BB%95i-affine-t%E1%BB%AB-c%C3%A1c-c%E1%BA%B7p-%C4%91i%E1%BB%83m-t%C6%B0%C6%A1ng-%E1%BB%A9ng-(Fitting-an-affine-transform-from-point-correspondences)">¶</a></h3><p>Trên thực tế, ta thường không biết trực tiếp ma trận biến đổi. Ví dụ: một vật phẳng được chụp <em>nghiêng</em> (hoặc một bản quét bị lệch), và ta muốn hoàn tác sự biến dạng. Điều này đòi hỏi xác định một vài điểm mốc (landmark) trong cả ảnh bị lệch lẫn vị trí mà chúng <em>đáng lẽ</em> phải ở trong một góc nhìn chuẩn, chính diện. <code>cv2.getAffineTransform</code> nhận 3 cặp điểm tương ứng như vậy (số lượng tối thiểu để xác định cả 6 tham số affine) và trả về ma trận ánh xạ tập này lên tập kia — giải theo chiều từ-ảnh-lệch-về-chuẩn, rồi áp dụng nó sẽ <em>nắn thẳng (rectify)</em> bức ảnh.</p>
 </div>
 </div>
 </div>
@@ -442,7 +442,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=66de1eef"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<h3 id="B%C3%A0i-t%E1%BA%ADp-(Exercises)">Bài tập (Exercises)<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp-(Exercises)">¶</a></h3><ol>
 <li><code>cv2.flip</code> không thuộc họ affine mà ta đã viết dưới dạng ma trận ở trên (ma trận xoay $R$ luôn có định thức $+1$). Ma trận $2\times2$ của một phép lật có định thức bằng bao nhiêu? Hãy dựng ma trận $2\times2$ cho <code>flip(1)</code> và kiểm tra.</li>
 <li>Dựng một ma trận biến đổi đồng dạng với $s=1$ và xác nhận nó trùng với một phép biến đổi Euclid thuần túy — tức phép đồng dạng là sự tổng quát hóa thực sự của phép Euclid, không phải một họ khác.</li>
 <li>Sửa ma trận affine trong ví dụ hình vuông đơn vị sao cho các cạnh đối <em>không</em> song song. Điều gì phải bị phá vỡ để chuyện đó xảy ra? (Gợi ý: đây chính là ranh giới phân tách phép affine với phép xạ ảnh.)</li>

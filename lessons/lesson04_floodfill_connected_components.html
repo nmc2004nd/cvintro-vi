@@ -384,21 +384,21 @@ label   area         centroid
 <tr>
 <td><code>cv.findContours()</code></td>
 <td>Trích xuất thông tin: quét ma trận pixel nhị phân để gom cụm tọa độ hình học.</td>
-<td><code>image</code>, <code>mode</code>, <code>method</code>.</td>
+<td><code>image</code>,<code>mode</code>,<code>method</code>.</td>
 </tr>
 <tr>
 <td><code>cv.drawContours()</code></td>
 <td>Trực quan hóa đồ họa: vẽ các đường viền từ dạng dữ liệu số lên màn hình.</td>
-<td><code>target_img</code>, <code>contours_list</code>, <code>contourIdx</code>, <code>color</code>, <code>thickness</code>.</td>
+<td><code>target_img</code>,<code>contours_list</code>,<code>contourIdx</code>,<code>color</code>,<code>thickness</code>.</td>
 </tr>
 </tbody>
 </table>
 <ul>
 <li>Contour là đường cong khép kín nối tất cả các điểm liên tục dọc theo ranh giới của một hình khối có cùng màu sắc hoặc cùng cường độ sáng</li>
 <li><mark>Quy tắc khi tìm kiếm contour</mark><ul>
-<li><mark>Luôn sử dụng ảnh nhị phân (Binary Image) → trước khi tìm kiếm contour cần áp dụng tách ngưỡng (<code>Thresholding</code>) hoặc phát hiện cạnh<code>Candy</code></mark></li>
+<li><mark>Luôn sử dụng ảnh nhị phân (Binary Image) → trước khi tìm kiếm contour cần áp dụng tách ngưỡng (<code>Thresholding</code>) hoặc phát hiện cạnh<code>Canny</code></mark></li>
 <li><mark>Tìm vật thể trắng trên nền đen</mark></li>
-<li><mark>Không làm hỏng ảnh gốc với hàm</mark> <mark><code>cv2.findContours()</code></mark></li>
+<li><mark>Từ OpenCV 3.2 <code>cv2.findContours()</code> không còn sửa ảnh đầu vào; với bản cũ hơn nên truyền bản sao <code>thresh.copy()</code> để không làm hỏng ảnh gốc</mark></li>
 </ul>
 </li>
 </ul>
@@ -478,7 +478,7 @@ label   area         centroid
 <tbody>
 <tr>
 <td><code>cv.moments()</code></td>
-<td>Ma trận hằng số moment của ảnh.</td>
+<td>Dictionary các giá trị moment (<code>m00</code>,<code>m10</code>,<code>m01</code>, ...).</td>
 <td>Tính toán trọng tâm hình học của vật thể.</td>
 </tr>
 <tr>
@@ -498,12 +498,12 @@ label   area         centroid
 </tr>
 <tr>
 <td><code>cv.convexHull()</code></td>
-<td>Tọa độ lưới bao lồi bên ngoài.</td>
+<td>Các đỉnh của bao lồi bên ngoài.</td>
 <td>Xử lý nhận diện cử chỉ bàn tay, ngón tay.</td>
 </tr>
 <tr>
 <td><code>cv.boundingRect()</code></td>
-<td>Tọa độ chữ nhật thẳng <code>(x, y, w, h)</code>.</td>
+<td>Tọa độ chữ nhật thẳng <code>(x, y, w, h)</code>.</td>
 <td>Khoanh vùng ROI (Region of Interest) để cắt ảnh vật thể.</td>
 </tr>
 <tr>
@@ -528,7 +528,7 @@ label   area         centroid
 
 <ul>
 <li>
-<p>Trích xuất tạo độ trọng tâm (Centroid) <span class="math">\(C_x, C_y\)</span> của vật thể theo công thức:</p>
+<p>Trích xuất tọa độ trọng tâm (Centroid) <span class="math">\(C_x, C_y\)</span> của vật thể theo công thức:</p>
 <ul>
 <li><span class="math display">\[C_x = \frac{M_{10}}{M_{00}}, C_y = \frac{M_{01}}{M_{00}}\]</span></li>
 </ul>
@@ -537,13 +537,16 @@ label   area         centroid
 <span class="n">cy</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="s1">'m01'</span><span class="p">]</span> <span class="o">/</span> <span class="n">M</span><span class="p">[</span><span class="s1">'m00'</span><span class="p">])</span>
 </pre></div>
 
+<ul>
+<li>Cẩn thận <code>M['m00'] = 0</code> (contour suy biến, diện tích bằng 0) sẽ gây lỗi chia cho 0 → nên kiểm tra trước</li>
+</ul>
 </li>
 </ul>
 </li>
 <li>
 <p>Diện tích và chu vi đường viền</p>
 <ul>
-<li>Diện tích contours -<code>cv2.contourArea()</code><ul>
+<li>Diện tích contour - <code>cv2.contourArea()</code><ul>
 <li><code>area = cv.contourArea(cnt)</code></li>
 </ul>
 </li>
@@ -559,15 +562,15 @@ label   area         centroid
 <p>Phép xấp xỉ đa giác đường viền</p>
 <p><img alt="" src="../img/opencv-notes/17-contour-2.png" /></p>
 <ul>
-<li><code>cv2.approxPolyDP(cnt, epsilon, bool)</code></li>
-<li>Phép này giúp biến đổi một đường công ngoằn nghèo có nhiều đỉnh thành khối hình học có ít đỉnh hơn</li>
+<li><code>cv2.approxPolyDP(cnt, epsilon, closed)</code></li>
+<li>Phép này giúp biến đổi một đường cong ngoằn ngoèo có nhiều đỉnh thành khối hình học có ít đỉnh hơn</li>
 <li><code>epsilon</code> : Khoảng cách tối đa cho phép đường viền gốc đến đường viền xấp xỉ<ul>
 <li><span class="math">\(\epsilon\)</span> quá lớn → Hình xấp xỉ bị thô và mất nhiều chi tiết</li>
 <li><span class="math">\(\epsilon\)</span> quá nhỏ → Hình xấp xỉ bám quá sát ảnh gốc, không nén được số đỉnh</li>
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre><span></span><span class="c1"># Thực nghiệm đặt epsilon bằng 10% chiều dài chu vi đường viền</span>
+<div class="highlight"><pre><span></span><span class="c1"># Ví dụ trong tài liệu: epsilon = 10% chu vi (thực tế hay dùng 1-5% để giữ hình dạng tốt hơn)</span>
 <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">cv</span><span class="o">.</span><span class="n">arcLength</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 <span class="n">approx</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">approxPolyDP</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>  <span class="c1"># Đối số 3: đường cong khép kín</span>
 </pre></div>
@@ -582,10 +585,10 @@ label   area         centroid
 <p><img alt="" src="../img/opencv-notes/17-contour-3.png" /></p>
 <ul>
 <li><code>hull = cv.convexHull(points[, hull[, clockwise[, returnPoints]]])</code><ul>
-<li><code>points</code>: Tập hợp đường viền <code>cnt</code>truyền vào</li>
-<li><code>clockwise</code>: Cờ định hướng. Nếu <code>True</code>, bao lồi được sắp xếp theo chiều kim đồng hồ ngược</li>
+<li><code>points</code>: Tập hợp đường viền<code>cnt</code>truyền vào</li>
+<li><code>clockwise</code>: Cờ định hướng. Nếu<code>True</code>, các đỉnh bao lồi được sắp theo chiều kim đồng hồ,<code>False</code> thì ngược chiều kim đồng hồ</li>
 <li><code>returnPoints</code> :<ul>
-<li>Mặc định là True → Trả về tạo độ các đỉnh bao lồi.</li>
+<li>Mặc định là True → Trả về tọa độ các đỉnh bao lồi.</li>
 <li>False trả về chỉ số index của các điểm đó trong mảng cnt.</li>
 <li>Đặt False nếu muốn tính toán convexity defects</li>
 </ul>
@@ -605,9 +608,9 @@ label   area         centroid
 </li>
 <li>Bounding Rectangle</li>
 <li>
-<p>Hình hộp chữ nhật thẳng đứng -<code>cv2.boundingRect</code></p>
+<p>Hình chữ nhật bao thẳng đứng - <code>cv2.boundingRect</code></p>
 <ul>
-<li>Hình hộp thẳng theo lưới tạo độ không quan tâm đến góc xoay của vật thể</li>
+<li>Hình chữ nhật thẳng theo lưới tọa độ không quan tâm đến góc xoay của vật thể</li>
 <li><strong>Diện tích hộp này thường lớn hơn diện tích thực tế của vật thể</strong></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
@@ -619,12 +622,12 @@ label   area         centroid
 <p>Hộp bao chữ nhật xoay quanh có diện tích tối thiểu - <code>cv2.minAreaRect</code></p>
 <ul>
 <li>Ôm sát vật thể bằng cách xoay theo góc nghiêng của vật thể</li>
-<li>Hàm trả về Box2D: tâm (<span class="math">\(c_x\)</span><code>,</code><span class="math">\(c_y\)</span>), kích thước (<code>width, height</code>) và góc xoay</li>
+<li>Hàm trả về Box2D: <code>((cx, cy), (width, height), angle)</code> - tâm, kích thước và góc xoay</li>
 <li>Để vẽ hộp này cần phải chuyển cấu trúc trên thành 4 đỉnh tọa độ thông qua hàm <code>cv2.boxPoints</code></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">rect</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">minAreaRect</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
 <span class="n">box</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">boxPoints</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>     <span class="c1"># Lấy 4 đỉnh tọa độ</span>
-<span class="n">box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>          <span class="c1"># Chuyển đổi sang kiểu số nguyên gốc tọa độ</span>
+<span class="n">box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>           <span class="c1"># Chuyển tọa độ sang số nguyên để vẽ</span>
 <span class="n">cv</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">[</span><span class="n">box</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># Vẽ hộp xoay màu đỏ</span>
 </pre></div>
 
@@ -632,7 +635,7 @@ label   area         centroid
 </ul>
 </li>
 <li>
-<p>Đường tròn, elip và đường thằng khớp tối ưu</p>
+<p>Đường tròn, elip và đường thẳng khớp tối ưu</p>
 <ul>
 <li>
 <p>Đường tròn ngoại tiếp tối thiểu</p>
@@ -644,7 +647,7 @@ label   area         centroid
 <div class="highlight"><pre><span></span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">radius</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">minEnclosingCircle</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
 <span class="n">center</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
 <span class="n">radius</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span>
-<span class="n">cv</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">2</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
 </li>
@@ -666,13 +669,14 @@ label   area         centroid
 <li>Dựa vào bình phương tối thiểu để fit line</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="p">[</span><span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">fitLine</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">DIST_L2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-    <span class="nb">print</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"Đường thẳng bao contour: vx=</span><span class="si">{</span><span class="n">vx</span><span class="si">}</span><span class="s2">, vy=</span><span class="si">{</span><span class="n">vy</span><span class="si">}</span><span class="s2">, x=</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">, y=</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-    <span class="c1"># X = vx * t + x</span>
-    <span class="c1"># Y = vy * t + y</span>
-    <span class="c1"># lefty giải pt tại X = 0, righty giải pt tại X = img.shape[1]</span>
-    <span class="n">lefty</span> <span class="o">=</span> <span class="nb">float</span><span class="p">((</span><span class="o">-</span><span class="n">x</span> <span class="o">*</span> <span class="n">vy</span> <span class="o">/</span> <span class="n">vx</span><span class="p">)</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span>
-    <span class="n">righty</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(((</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">vy</span> <span class="o">/</span> <span class="n">vx</span><span class="p">)</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span>
-    <span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">righty</span><span class="p">)),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">lefty</span><span class="p">)),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span> <span class="c1"># -1 là ids pixel = 0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Đường thẳng khớp contour: vx=</span><span class="si">{</span><span class="n">vx</span><span class="si">}</span><span class="s2">, vy=</span><span class="si">{</span><span class="n">vy</span><span class="si">}</span><span class="s2">, x=</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">, y=</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="c1"># (vx, vy): vector chỉ phương, (x, y): một điểm trên đường thẳng</span>
+<span class="c1"># X = vx * t + x</span>
+<span class="c1"># Y = vy * t + y</span>
+<span class="c1"># lefty: giải pt tại X = 0, righty: giải pt tại X = img.shape[1] - 1 (cột cuối cùng)</span>
+<span class="n">lefty</span> <span class="o">=</span> <span class="nb">float</span><span class="p">((</span><span class="o">-</span><span class="n">x</span> <span class="o">*</span> <span class="n">vy</span> <span class="o">/</span> <span class="n">vx</span><span class="p">)</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">righty</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(((</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">vy</span> <span class="o">/</span> <span class="n">vx</span><span class="p">)</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">righty</span><span class="p">)),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">lefty</span><span class="p">)),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
 </li>
@@ -691,7 +695,7 @@ label   area         centroid
 <tbody>
 <tr>
 <td><code>Aspect Ratio</code></td>
-<td>W/H của hộp bao thẳng đứng.</td>
+<td>W/H của hộp bao thẳng đứng.</td>
 <td>Phân biệt xe máy, thường có hộp bao hẹp và tỷ lệ đứng, với xe ô tô, thường có hộp rộng và tỷ lệ ngang.</td>
 </tr>
 <tr>
@@ -711,17 +715,17 @@ label   area         centroid
 </tr>
 <tr>
 <td><code>cv.minMaxLoc()</code></td>
-<td>Lọc điểm cực trị độ sáng qua <code>mask</code>.</td>
+<td>Lọc điểm cực trị độ sáng qua <code>mask</code>.</td>
 <td>Tìm điểm phản xạ chói sáng nhất trên bề mặt sản phẩm để kiểm thử chất lượng lỗi.</td>
 </tr>
 <tr>
 <td><code>cv.mean()</code></td>
-<td>Trung bình cộng cường độ pixel qua <code>mask</code>.</td>
+<td>Trung bình cộng cường độ pixel qua <code>mask</code>.</td>
 <td>Nhận diện màu sắc của một quả trái cây trên băng chuyền để phân loại độ chín.</td>
 </tr>
 <tr>
 <td><code>Extreme Points</code></td>
-<td>Các điểm có x hoặc y nhỏ nhất/lớn nhất trên contour.</td>
+<td>Các điểm có x hoặc y nhỏ nhất/lớn nhất trên contour.</td>
 <td>Xác định kích thước biên ngoài cùng hoặc điểm mốc để căn chỉnh vật thể.</td>
 </tr>
 </tbody>
@@ -743,7 +747,7 @@ label   area         centroid
 <li>
 <p><strong>Độ phủ / mức độ mở rộng (Extent)</strong></p>
 <ul>
-<li>Tỷ số giữa diện tích của đường viện và diện tích của boundingArea</li>
+<li>Tỷ số giữa diện tích của đường viền và diện tích của hình chữ nhật bao (bounding rect)</li>
 <li>Thể hiện mức độ lấp đầy của vật thể trong khung hình chữ nhật bao quanh nó</li>
 <li><span class="math display">\[\text{Extent} = \frac{\text{Contour Area}}{\text{Bounding Rect Area}}\]</span></li>
 </ul>
@@ -758,8 +762,8 @@ label   area         centroid
 <li>
 <p><strong>Độ đặc/ độ rắn (Solidity)</strong></p>
 <ul>
-<li>Tỷ số giữa diện tích của đường viền vật thể và diện tích bảo lồi (ConvexHull)</li>
-<li>Thuộc tính phản ảnh độ lồi lõm của cấu trúc hiện tại</li>
+<li>Tỷ số giữa diện tích của đường viền vật thể và diện tích bao lồi (Convex Hull)</li>
+<li>Thuộc tính phản ánh độ lồi lõm của cấu trúc hiện tại</li>
 <li>Một đa giác lồi thuần túy sẽ có <code>Solidity = 1</code></li>
 <li><span class="math display">\[\text{Solidity} = \frac{\text{Contour Area}}{\text{Convex Hull Area}}\]</span></li>
 </ul>
@@ -774,7 +778,7 @@ label   area         centroid
 <li>
 <p><strong>Đường kính tương đương (Equivalent Diameter)</strong></p>
 <ul>
-<li>Là đường kính của một hình tròn lý tưởng có diện tích chính xác bằng chính xác diện tích của đường viền vật thể</li>
+<li>Là đường kính của một hình tròn lý tưởng có diện tích bằng chính xác diện tích của đường viền vật thể</li>
 <li><span class="math display">\[\text{Equivalent Diameter} = \sqrt{\frac{4 \times \text{Area}}{\pi}}\]</span></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">area</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">contourArea</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
@@ -783,11 +787,11 @@ label   area         centroid
 
 </li>
 <li>
-<p><strong>Hường và trục hình học (Orientation)</strong></p>
+<p><strong>Hướng và trục hình học (Orientation)</strong></p>
 <ul>
-<li>Hướng là góc nghiêng trục của vật thể được định nghĩa trong không gian</li>
+<li>Hướng là góc nghiêng trục chính của vật thể, lấy từ elip khớp với contour</li>
 </ul>
-<div class="highlight"><pre><span></span><span class="c1"># Trả về tọa độ tâm (x, y), độ dài hai trục (MA, ma), và góc nghiêng (angle)</span>
+<div class="highlight"><pre><span></span><span class="c1"># Trả về tọa độ tâm (x, y), độ dài hai trục (đường kính, không phải bán trục) và góc nghiêng (angle)</span>
 <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">MA</span><span class="p">,</span> <span class="n">ma</span><span class="p">),</span> <span class="n">angle</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">fitEllipse</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
 </pre></div>
 
@@ -795,7 +799,7 @@ label   area         centroid
 </ul>
 </li>
 <li>
-<p><strong>Trích xuất pixel và Thông kê ma trận ảnh vùng ROI</strong></p>
+<p><strong>Trích xuất pixel và thống kê giá trị pixel trong vùng ROI</strong></p>
 <ul>
 <li>
 <p><strong>Mask và tọa độ điểm pixel thành phần</strong></p>
@@ -824,7 +828,7 @@ label   area         centroid
 </li>
 <li>
 <p><strong>Cường độ sáng / màu sắc trung bình</strong></p>
-<div class="highlight"><pre><span></span><span class="c1"># Đối với ảnh màu, hàm trả về tuple tương ứng cho các kênh màu [B, G, R, Alpha]</span>
+<div class="highlight"><pre><span></span><span class="c1"># Hàm luôn trả về tuple 4 phần tử; với ảnh BGR là (B, G, R, 0)</span>
 <span class="n">mean_val</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
 </pre></div>
 
@@ -865,7 +869,7 @@ label   area         centroid
 </tr>
 <tr>
 <td><code>cv.pointPolygonTest()</code></td>
-<td>Khoảng cách hình học có dấu (+, −, 0).</td>
+<td>Khoảng cách hình học có dấu (+, −, 0).</td>
 <td>Camera an ninh hoặc geofencing: kiểm tra xem tọa độ của người hoặc phương tiện có đang xâm nhập vào vùng đa giác cấm hay không.</td>
 </tr>
 <tr>
@@ -883,14 +887,14 @@ label   area         centroid
 <li>Bất kì đoạn nào của vật thể bị lõm sâu vào trong so với đường ConvexHull được coi là một điểm khuyết lồi</li>
 <li>Để tính các điểm khuyết lồi:<ul>
 <li>Dùng hàm <code>cv2.convexityDefects()</code></li>
-<li>Hàm này yêu cầu index của các điểm thay vì tạo độ, trong hàm <code>cv2.convexHull(returnPoints = False)</code></li>
+<li>Hàm này yêu cầu index của các điểm thay vì tọa độ → bao lồi phải tính bằng <code>cv2.convexHull(cnt, returnPoints=False)</code></li>
 </ul>
 </li>
 <li><code>cv2.convexityDefects()</code> trả về:<ul>
 <li><strong>Start Point</strong>: Chỉ số của điểm ranh giới nơi vết lõm bắt đầu</li>
 <li><strong>End Point</strong>: Chỉ số của điểm ranh giới nơi vết lõm kết thúc</li>
 <li><strong>Farthest Point</strong>: Chỉ số của điểm nằm sâu nhất trong vết lõm, tức là có khoảng cách xa nhất tới đường bao lồi</li>
-<li><strong>Farthest Distance</strong>: Giá trị khoảng cách xấp xỉ từ điểm sâu nhất đó tới đường bao lồi</li>
+<li><strong>Farthest Distance</strong>: Khoảng cách từ điểm sâu nhất đó tới đường bao lồi, lưu dạng số nguyên nhân 256 → khoảng cách thật = <code>d / 256</code></li>
 </ul>
 </li>
 </ul>
@@ -913,10 +917,10 @@ label   area         centroid
     <span class="n">start</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">cnt</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">end</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">cnt</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">far</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">cnt</span><span class="p">[</span><span class="n">f</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-    <span class="c1"># Vẽ các điểm khuyết lồi</span>
+    <span class="c1"># Vẽ cạnh bao lồi đi qua vết lõm</span>
     <span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
     <span class="c1"># Vẽ các điểm khuyết lồi</span>
-    <span class="n">cv2</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">far</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">cv2</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">far</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 
 </li>
@@ -924,20 +928,12 @@ label   area         centroid
 <p><strong>Kiểm tra điểm trong đa giác (Point Polygon Test)</strong></p>
 <ul>
 <li>Hàm <code>cv2.pointPolygonTest(cnt, point, measureDist)</code> : dùng để tính khoảng cách ngắn nhất từ 1 điểm tọa độ tới đường viền đa giác</li>
-<li><code>measureDist</code>: False thì kiểm tra nhanh vị trí tương đối (+1, -1, 0)</li>
-<li>
-<ul>
-<li>: Điểm đang nằm hoàn toàn bên trong đường viền</li>
+<li><code>measureDist = True</code>: trả về khoảng cách có dấu;<code>False</code>: chỉ trả về +1, -1, 0 (nhanh hơn)</li>
+<li>Dương: điểm nằm bên trong đường viền</li>
+<li>Âm: điểm nằm ngoài đường viền</li>
+<li>0: điểm nằm ngay trên đường viền</li>
 </ul>
-</li>
-<li>
-<ul>
-<li>:Điểm đang nằm ngoài đường viền</li>
-</ul>
-</li>
-<li>0: Điểm nằm ngay trên đường biên cấu thành đường viền</li>
-</ul>
-<div class="highlight"><pre><span></span><span class="c1"># Ví dụ kiểm tra vị trí tương đối của điểm tọa độ (50, 50) so với đường viền cnt</span>
+<div class="highlight"><pre><span></span><span class="c1"># Ví dụ tính khoảng cách có dấu từ điểm (50, 50) tới đường viền cnt</span>
 <span class="n">distance</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">pointPolygonTest</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">measureDist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
@@ -949,7 +945,7 @@ label   area         centroid
 <li>Score càng gần 0 thì hai hình càng giống nhau</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="c1"># Phép toán so sánh hai đường viền</span>
-<span class="n">similarity_score</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">matchShapes</span><span class="p">(</span><span class="n">cnt1</span><span class="p">,</span> <span class="n">cnt2</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">similarity_score</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">matchShapes</span><span class="p">(</span><span class="n">cnt1</span><span class="p">,</span> <span class="n">cnt2</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">cv</span><span class="o">.</span><span class="n">CONTOURS_MATCH_I1</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">similarity_score</span><span class="p">)</span>
 </pre></div>
 
@@ -969,69 +965,69 @@ label   area         centroid
 <tr>
 <td><code>cv.RETR_LIST</code></td>
 <td>Đúng 1 tầng (Phẳng)</td>
-<td><strong>Có</strong> (Nhưng coi như ngang hàng biên ngoài).</td>
+<td><strong>Có</strong> (Nhưng coi như ngang hàng biên ngoài).</td>
 <td>Đếm tổng số lượng, xử lý hình khối độc lập, tối ưu tốc độ.</td>
 </tr>
 <tr>
 <td><code>cv.RETR_EXTERNAL</code></td>
 <td>Đúng 1 tầng (Rìa ngoài)</td>
-<td><strong>Không</strong> (Bỏ qua hoàn toàn chi tiết bên trong).</td>
+<td><strong>Không</strong> (Bỏ qua hoàn toàn chi tiết bên trong).</td>
 <td>Trích xuất khuôn hình/bóng của vật thể, tách nền nhanh.</td>
 </tr>
 <tr>
 <td><code>cv.RETR_CCOMP</code></td>
 <td>Đúng 2 tầng (Biên &amp; Lỗ)</td>
-<td><strong>Có</strong> (Phân tách rõ ràng biên và lỗ thủng).</td>
+<td><strong>Có</strong> (Phân tách rõ ràng biên và lỗ thủng).</td>
 <td>Xử lý các vật thể có lỗ đục (như nhận diện các con ốc vít, long đền).</td>
 </tr>
 <tr>
 <td><code>cv.RETR_TREE</code></td>
 <td>Vô số tầng (Mạng lưới cây)</td>
-<td><strong>Có</strong> (Lập gia phả chi tiết từ ngoài vào trong).</td>
+<td><strong>Có</strong> (Lập gia phả chi tiết từ ngoài vào trong).</td>
 <td>Phân tích cấu trúc lồng nhau phức tạp, quét mã vạch, mã QR.</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li>Thông thường hàm <code>cv2.findContours()</code> để phát hiện các vật thể độc lập. Tuy nhiên trong thực tế gặp nhiều trường hợp các hình khối nằm lồng vào trong bên nhau<ul>
+<li>Thông thường dùng hàm <code>cv2.findContours()</code> để phát hiện các vật thể độc lập. Tuy nhiên trong thực tế gặp nhiều trường hợp các hình khối nằm lồng vào bên trong nhau<ul>
 <li><strong>Đường viền Cha (Parent Contour)</strong>: Đường bao bọc phía ngoài</li>
 <li><strong>Đường viền Con (Child Contour)</strong>: Đường nằm trọn vẹn ở phía bên trong</li>
 <li><strong>Cùng cấp bậc (Same Hierarchy Level)</strong>: Các đường viền nằm độc lập ở cùng một tầng không gian</li>
 </ul>
 </li>
 <li><span class="math display">\[\text{Hierarchy Array} = \begin{bmatrix} \text{Next}, &amp; \text{Previous}, &amp; \text{First\_Child}, &amp; \text{Parent} \end{bmatrix}\]</span><ul>
-<li><code>Next</code> <strong>(Đường viền tiếp theo):</strong> Chỉ số (index) của đường viền tiếp theo <strong>nằm cùng một cấp bậc</strong> phân cấp với đường viền hiện tại.</li>
-<li><code>Previous</code> <strong>(Đường viền trước đó):</strong> Chỉ số của đường viền nằm ngay trước nó <strong>trên cùng một cấp bậc</strong>.</li>
-<li><code>First_Child</code> <strong>(Con đầu lòng):</strong> Chỉ số của đường viền con <strong>đầu tiên</strong> nằm lồng bên trong nó (nếu có nhiều con, chỉ lấy đứa đầu tiên).</li>
-<li><code>Parent</code> <strong>(Đường viền cha):</strong> Chỉ số của đường viền cha trực tiếp bao bọc lấy nó ở tầng ngay phía trên.</li>
-<li><strong>Quy ước:</strong> Nếu tại vị trí nào đó không tồn tại đường viền thỏa mãn (không có cha, không có con, hoặc không có anh em cùng cấp ở trước/sau), OpenCV sẽ gán giá trị mặc định là <code>1</code>.</li>
+<li><code>Next</code> <strong>(Đường viền tiếp theo):</strong> Chỉ số (index) của đường viền tiếp theo <strong>nằm cùng một cấp bậc</strong> phân cấp với đường viền hiện tại.</li>
+<li><code>Previous</code> <strong>(Đường viền trước đó):</strong> Chỉ số của đường viền nằm ngay trước nó <strong>trên cùng một cấp bậc</strong>.</li>
+<li><code>First_Child</code> <strong>(Con đầu lòng):</strong> Chỉ số của đường viền con <strong>đầu tiên</strong> nằm lồng bên trong nó (nếu có nhiều con, chỉ lấy đứa đầu tiên).</li>
+<li><code>Parent</code> <strong>(Đường viền cha):</strong> Chỉ số của đường viền cha trực tiếp bao bọc lấy nó ở tầng ngay phía trên.</li>
+<li><strong>Quy ước:</strong> Nếu tại vị trí nào đó không tồn tại đường viền thỏa mãn (không có cha, không có con, hoặc không có anh em cùng cấp ở trước/sau), OpenCV sẽ gán giá trị <code>-1</code>.</li>
 </ul>
 </li>
 <li><strong>Contour Retrieval Modes</strong><ul>
 <li><code>cv2.RETR_LIST</code><ul>
-<li><strong>Luật xử lý:</strong> Đây là chế độ đơn giản nhất. Nó thu thập <strong>tuyệt đối tất cả mọi đường viền</strong> nhưng <strong>không thiết lập bất kỳ mối quan hệ cha-con nào</strong>. Cha và con hoàn toàn bình đẳng và bị ép nằm chung ở một cấp phân cấp duy nhất.</li>
-<li><strong>Hệ quả ma trận:</strong> Giá trị cột số 3 (<code>First_Child</code>) và cột số 4 (<code>Parent</code>) luôn luôn bằng <code>1</code>.</li>
-<li><strong>Ứng dụng:</strong> Hãy luôn chọn <code>cv.RETR_LIST</code> nếu ứng dụng của bạn chỉ cần đếm số lượng vật thể hoặc tính diện tích mà không quan tâm chúng có lồng nhau hay không, vì chế độ này chạy rất nhanh và tiết kiệm tài nguyên.</li>
+<li><strong>Luật xử lý:</strong> Đây là chế độ đơn giản nhất. Nó thu thập <strong>tuyệt đối tất cả mọi đường viền</strong> nhưng <strong>không thiết lập bất kỳ mối quan hệ cha-con nào</strong>. Cha và con hoàn toàn bình đẳng và bị ép nằm chung ở một cấp phân cấp duy nhất.</li>
+<li><strong>Hệ quả ma trận:</strong> Giá trị cột số 3 (<code>First_Child</code>) và cột số 4 (<code>Parent</code>) luôn luôn bằng<code>-1</code>.</li>
+<li><strong>Ứng dụng:</strong> Hãy luôn chọn <code>cv.RETR_LIST</code> nếu ứng dụng của bạn chỉ cần đếm số lượng vật thể hoặc tính diện tích mà không quan tâm chúng có lồng nhau hay không, vì chế độ này chạy rất nhanh và tiết kiệm tài nguyên.</li>
 </ul>
 </li>
 <li><code>cv2.RETR_EXTERNAL</code><ul>
-<li><strong>Luật xử lý:</strong> Chế độ này <strong>chỉ thu thập các đường viền nằm ở rìa ngoài cùng</strong>, loại bỏ sạch sẽ tất cả các đường viền con nằm lồng bên trong. (Có thể hiểu vui là luật này chỉ quan tâm đến vị trưởng tộc cao nhất trong gia đình).</li>
-<li><strong>Hệ quả ma trận:</strong> Chỉ lưu các cấu trúc thuộc tầng <code>hierarchy-0</code>. Mọi phần tử con bên trong đều có giá trị bằng <code>1</code> hoặc bị phớt lờ.</li>
-<li><strong>Ứng dụng:</strong> Cực kỳ hữu ích khi bạn muốn cắt lấy biên dạng tổng thể của một vật thể phức tạp và muốn loại bỏ các chi tiết đục lỗ, hoa văn rỗng ở bên trong vật thể đó</li>
+<li><strong>Luật xử lý:</strong> Chế độ này <strong>chỉ thu thập các đường viền nằm ở rìa ngoài cùng</strong>, loại bỏ sạch sẽ tất cả các đường viền con nằm lồng bên trong. (Có thể hiểu vui là luật này chỉ quan tâm đến vị trưởng tộc cao nhất trong gia đình).</li>
+<li><strong>Hệ quả ma trận:</strong> Chỉ trả về các đường viền ở tầng ngoài cùng; đường viền con không được trả về nên <code>First_Child</code> và <code>Parent</code> luôn bằng <code>-1</code>.</li>
+<li><strong>Ứng dụng:</strong> Cực kỳ hữu ích khi bạn muốn cắt lấy biên dạng tổng thể của một vật thể phức tạp và muốn loại bỏ các chi tiết đục lỗ, hoa văn rỗng ở bên trong vật thể đó</li>
 </ul>
 </li>
 <li><code>cv2.RETR_CCOMP</code><ul>
-<li><strong>Luật xử lý:</strong> Thu thập tất cả các đường viền nhưng ép cấu trúc về dạng <strong>phân cấp đúng 2 tầng cố định</strong>:<ul>
-<li><strong>Tầng 1 (Hierarchy-1):</strong> Chứa các đường biên ngoài cùng của vật thể.</li>
-<li><strong>Tầng 2 (Hierarchy-2):</strong> Chứa đường biên của các lỗ thủng (holes) nằm bên trong vật thể đó.</li>
-<li><em>Nếu bên trong lỗ thủng lại chứa một vật thể con khác?</em> Vật thể con đó sẽ tự động được đưa ngược lên xếp ở Tầng 1, và lỗ thủng của nó lại nằm ở Tầng 2.</li>
+<li><strong>Luật xử lý:</strong> Thu thập tất cả các đường viền nhưng ép cấu trúc về dạng <strong>phân cấp đúng 2 tầng cố định</strong>:<ul>
+<li><strong>Tầng 1 (Hierarchy-1):</strong> Chứa các đường biên ngoài cùng của vật thể.</li>
+<li><strong>Tầng 2 (Hierarchy-2):</strong> Chứa đường biên của các lỗ thủng (holes) nằm bên trong vật thể đó.</li>
+<li><em>Nếu bên trong lỗ thủng lại chứa một vật thể con khác?</em> Vật thể con đó sẽ tự động được đưa ngược lên xếp ở Tầng 1, và lỗ thủng của nó lại nằm ở Tầng 2.</li>
 </ul>
 </li>
 </ul>
 </li>
 <li><code>cv2.RETR_TREE</code><ul>
-<li><strong>Luật xử lý:</strong> Đây là chế độ toàn diện và hoàn hảo nhất. Nó thiết lập một <strong>cây phả hệ đầy đủ nhiều tầng bậc</strong>, ghi nhận chính xác tuyệt đối mối quan hệ từ ông bà, cha mẹ, con cái, cháu chắt lồng ghép sâu bao nhiêu tầng tùy ý vào bên trong.</li>
-<li><strong>Ứng dụng:</strong> Sử dụng khi cần phân tích các cấu trúc đồ họa phức tạp đan xen lồng nhau, như nhận diện cấu trúc các linh kiện trên bo mạch điện tử hoặc phân tích văn bản nhiều lớp ký tự<br><br></li>
+<li><strong>Luật xử lý:</strong> Đây là chế độ toàn diện và hoàn hảo nhất. Nó thiết lập một <strong>cây phả hệ đầy đủ nhiều tầng bậc</strong>, ghi nhận chính xác tuyệt đối mối quan hệ từ ông bà, cha mẹ, con cái, cháu chắt lồng ghép sâu bao nhiêu tầng tùy ý vào bên trong.</li>
+<li><strong>Ứng dụng:</strong> Sử dụng khi cần phân tích các cấu trúc đồ họa phức tạp đan xen lồng nhau, như nhận diện cấu trúc các linh kiện trên bo mạch điện tử hoặc phân tích văn bản nhiều lớp ký tự</li>
 </ul>
 </li>
 </ul>

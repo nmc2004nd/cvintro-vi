@@ -8,10 +8,11 @@ after:
     - ==flag :== Kiểu đọc ảnh
         - ==`cv2.IMREAD_COLOR`== - (default) - 1 - Đọc ảnh màu BGR
         - ==`cv2.IMREAD_GRAYSCALE`== - 0 - Đọc ảnh xám
-        - ==`CV2.IMREAD_UNCHANGE`== - -1 - Đọc ảnh gốc giữ cả kênh alpha nếu có
-- Lưu ảnh bằng `cv2.imwwrite(name, img)`
-- Hiển thị ảnh bằng:` cv2.imshow(name_window, img)`
+        - ==`cv2.IMREAD_UNCHANGED`== - -1 - Đọc ảnh gốc giữ cả kênh alpha nếu có
+- Lưu ảnh bằng `cv2.imwrite(name, img)`
+- Hiển thị ảnh bằng: `cv2.imshow(name_window, img)`
 - Chờ phím `cv2.waitKey(d)` :
     - d = 0 - Chờ đến khi nào người dùng nhập phím
-    - d - mili giây
-    - d = x → FPS = $\frac{1000}{d}$
+    - d > 0 - chờ tối đa d mili giây
+    - Khi phát video với mỗi frame chờ d ms → FPS ≈ $\frac{1000}{d}$ (thực tế thấp hơn một chút vì còn thời gian xử lý frame)
+    - `waitKey` chỉ hoạt động khi có ít nhất một cửa sổ `imshow` đang mở

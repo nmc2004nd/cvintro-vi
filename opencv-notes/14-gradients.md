@@ -7,10 +7,9 @@ after: Sobel
 
 | Cú pháp hàm | Tham số cốt lõi cần nhớ | Đặc trưng thuật toán |
 |---|---|---|
-| `cv.Sobel()` | `src`, `ddepth`, `dx`, `dy`, `ksize` | Tính đạo hàm bậc một. Cho phép tách biệt rõ rệt hướng cạnh ngang hoặc cạnh dọc. Chống nhiễu tốt nhờ tích hợp Gaussian. |
-| `cv.Scharr()` | `src`, `ddepth`, `dx`, `dy` | Phiên bản tối ưu hơn của Sobel với kernel 3×33×3. Thường cho kết quả đạo hàm chính xác hơn Sobel 3×33×3. |
-| `cv.Laplacian()` | `src`, `ddepth`, `ksize` | Tính đạo hàm bậc hai tổng hợp. Phát hiện nhanh toàn bộ đường biên theo mọi hướng cùng lúc, nhưng nhạy cảm với nhiễu hơn Sobel. |
-|  |  |  |
+| `cv.Sobel()` | `src`,` ddepth`,` dx`,` dy`,` ksize` | Tính đạo hàm bậc một. Cho phép tách biệt rõ rệt hướng cạnh ngang hoặc cạnh dọc. Chống nhiễu tốt nhờ tích hợp Gaussian. |
+| `cv.Scharr()` | `src`,` ddepth`,` dx`,` dy` | Phiên bản tối ưu hơn của Sobel với kernel 3×3. Thường cho kết quả đạo hàm chính xác hơn Sobel 3×3. |
+| `cv.Laplacian()` | `src`,` ddepth`,` ksize` | Tính đạo hàm bậc hai tổng hợp. Phát hiện nhanh toàn bộ đường biên theo mọi hướng cùng lúc, nhưng nhạy cảm với nhiễu hơn Sobel. |
 
 - ==**Gradient bằng Sobel và Scharr**==
     - Kết hợp giữa:
@@ -23,15 +22,15 @@ after: Sobel
         - Đạo hàm theo y (dy) thì làm mượt Gaussian theo x → $Ga_x = [1, 2, 1]$
         - Với Scharr thì $Ga_y = [3, 10, 3]^T$ và $Ga_x = [3, 10, 3]$
         - Sobel xấp xỉ:
-            - ==Nhận dạng tốt với hướng ở các góc 45, 90==
+            - ==Chính xác nhất với cạnh ngang/dọc (0°, 90°), sai số góc lớn hơn ở các hướng chéo==
             - ==Hay phát hiện cạnh giả do nhiễu==
             - ==Cạnh dày==
-            - $K_x = Ga_y * dx = \begin{bmatrix}-1 & 0 & 1 \\-2 & 0 & 2 \\-1 & 0 & 1\end{bmatrix}$` : x column dọc → tìm cạnh dọc`
-            - $K_y = dy *Ga_x = \begin{bmatrix}-1 & -2 & -1 \\0 & 0 & 0 \\1 & 2 & 1\end{bmatrix}$` : y row ngang → tìm cạnh ngang`
-        - Scharr: **tùy vào quy ước của dx dy mà đảo vị trí**
-            - ==Nhận dạng tốt với mọi hướng==
-            - $$K_x = Ga_y * dx = \begin{bmatrix}3 & 0 & -3 \\10 & 0 & -10 \\3 & 0 & -3\end{bmatrix}$$
-            - $$K_y = dy *Ga_x = \begin{bmatrix}3 & 10 & 3 \\0 & 0 & 0 \\-3 & -10 & -3\end{bmatrix}$$
+            - $K_x = Ga_y * dx = \begin{bmatrix}-1 & 0 & 1 \\-2 & 0 & 2 \\-1 & 0 & 1\end{bmatrix}$: đạo hàm theo x (theo cột) → tìm cạnh dọc
+            - $K_y = dy *Ga_x = \begin{bmatrix}-1 & -2 & -1 \\0 & 0 & 0 \\1 & 2 & 1\end{bmatrix}$: đạo hàm theo y (theo hàng) → tìm cạnh ngang
+        - Scharr (cùng quy ước dấu với Sobel ở trên, giống kernel của OpenCV):
+            - ==Sai số góc nhỏ hơn nhiều, chính xác ở mọi hướng==
+            - $$K_x = Ga_y * dx = \begin{bmatrix}-3 & 0 & 3 \\-10 & 0 & 10 \\-3 & 0 & 3\end{bmatrix}$$
+            - $$K_y = dy *Ga_x = \begin{bmatrix}-3 & -10 & -3 \\0 & 0 & 0 \\3 & 10 & 3\end{bmatrix}$$
     - $G = \sqrt{G_x^2 + G_y^2}$ hoặc có thể tăng tốc độ bằng $G \approx |G_x| + |G_y|$
     - $$\theta = \operatorname{atan2}(G_y, G_x)\times\frac{180}{\pi}$$
     - ==Có khả năng chống nhiễu hạt tốt==
@@ -47,7 +46,7 @@ after: Sobel
     - Tính toán đạo hàm bậc hai của ảnh dựa trên phương trình:
         - $$\Delta img = \frac{\partial^2 img}{\partial x^2} + \frac{\partial^2 img}{\partial y^2}$$
         - Mỗi thành phần đều được xấp xỉ bằng cách tính dựa trên các toán tử Sobel
-        - Với` ksize = 1`
+        - Với `ksize = 1`
 
             $$\begin{bmatrix}0 & 1 & 0 \\1 & -4 & 1 \\0 & 1 & 0\end{bmatrix}$$
 
@@ -63,6 +62,7 @@ after: Sobel
         - `ddepth = cv2.CV_64F` hoặc `cv2.CV_16S`
         - Lấy giá trị tuyệt đối bằng hàm `np.absolute`
         - Sau đó ép kiểu ma trận ngược lại về dạng `np.uint8`
+        - Cẩn thận: giá trị tuyệt đối có thể lớn hơn 255, `np.uint8()` sẽ **tràn số** (quay vòng) thay vì bão hòa → nên `np.clip(..., 0, 255)` hoặc `cv2.normalize` trước, hoặc dùng giải pháp 2
 
         ```python
         sobelx64f = cv.Sobel(img, cv.CV_64F, 1, 0, ksize=5)
@@ -71,7 +71,7 @@ after: Sobel
         ```
 
     - ==Giải pháp 2:==
-        - Dùng thắng hàm `cv2.convertScaleAbs`
+        - Dùng thẳng hàm `cv2.convertScaleAbs` (lấy trị tuyệt đối rồi bão hòa về `uint8`)
         - Sau đó tính `G = cv2.addWeighted`
 
         ```python

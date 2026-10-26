@@ -3,9 +3,9 @@ title: 12. Smoothing
 lesson: lesson11_smoothing_pyramids
 after:
 ---
-- Tần số : độ biến thiên của các pixel:
-    - 0-1 → tần số thấp
-    - 0-100 → tần số cao
+- Tần số: tốc độ thay đổi giá trị pixel theo không gian
+    - Pixel kề nhau thay đổi ít (ví dụ 0 → 1) → tần số thấp: vùng phẳng, mảng màu
+    - Pixel kề nhau thay đổi đột ngột (ví dụ 0 → 100) → tần số cao: cạnh, chi tiết nhỏ, nhiễu
 
 | Loại bộ lọc | Vai trò |
 |---|---|
@@ -14,7 +14,7 @@ after:
 
 - Tích chập 2D
     - `dst = cv.filter2D(src, ddepth, kernel)`
-        - `src `: ảnh đầu vào
+        - `src`: ảnh đầu vào
         - `ddepth:` độ sâu ảnh đầu ra. Dùng -1 để giữ giống ảnh gốc
         - `kernel:` ma trận lọc để tích chập
         - `dst:` ảnh kết quả sau khi lọc
@@ -24,6 +24,7 @@ after:
         - Cộng các kết quả lại
         - Gán kết quả cho pixel trung tâm
         - Lặp lại cho toàn bộ ảnh
+        - Lưu ý: `filter2D` thực chất tính **tương quan** (correlation), không lật kernel; với kernel đối xứng thì kết quả giống tích chập
 
         ```python
         kernel = np.ones((5, 5), np.float32) / 25
@@ -36,8 +37,8 @@ after:
     | Bộ lọc | Hàm OpenCV | Đặc điểm chính |
     |---|---|---|
     | Averaging/ Box Filter | `cv2.blur(), cv2.boxFilter()` | Lấy trung bình vùng lân cận |
-    | Gaussian Blur | `cv2.GaussianBlur()` | Trong số cao với pixel trung tâm,giảm dần ra biên |
-    | Median Blur | `cv2.medianBlur()` | Lây trung vị, tốt với nhiễu muối tiêu |
+    | Gaussian Blur | `cv2.GaussianBlur()` | Trọng số cao với pixel trung tâm, giảm dần ra biên |
+    | Median Blur | `cv2.medianBlur()` | Lấy trung vị, tốt với nhiễu muối tiêu |
     | Bilateral Filter | `cv2.bilateralFilter()` | Giảm nhiễu, giữ cạnh tốt, nhưng chạy chậm |
 
 - Lọc trung bình
@@ -51,27 +52,28 @@ after:
 
     ```python
     dst = cv2.blur(img, (5, 5))
-    # dst = cv2.boxFilter(img, -1, (5, 5), normalize = False)
+    # tương đương: dst = cv2.boxFilter(img, -1, (5, 5), normalize=True)
 
     dst2 = cv2.boxFilter(img, -1, (5, 5), normalize=False)
     # -1 : ddepth
-    # không chia trong số nên nếu quá 255 thì sẽ bão hòa ở 255
+    # không chia trọng số (chỉ cộng) nên nếu quá 255 thì sẽ bão hòa ở 255
     ```
 
 - Lọc Gaussian
     - Hàm : `blur_gaussian = cv.GaussianBlur(src, ksize, sigmaX, sigmaY=0)`
         - `src`: ảnh đầu vào
-        - `ksize `: kích thước kernel số lẻ
+        - `ksize`: kích thước kernel, số lẻ
         - `sigmaX`: độ lệch chuẩn theo trục X
         - `sigmaY`: độ lệch chuẩn theo trục Y
-        - nếu `sigma `= 0 thì OpenCV sẽ tự tính
+        - nếu `sigmaX = 0` thì OpenCV tự tính từ `ksize`; nếu` sigmaY = 0` thì lấy bằng `sigmaX`
 
         `blur_gaussian = cv2.GaussianBlur(img, (5, 5), 0)`
 
 - Lọc trung vị
     - Thay pixel trung tâm bằng trung vị của các pixel trong vùng kernel
     - Hàm: `median = cv.medianBlur(src, ksize)`
-    - Hiệu quả tốt với nhiễu muối tiêu do nhiễu muối tiêu là các pixel có giá trị nhỏ mà lọc trung vị lấy trung vị gắn cho pixel trung tâm lên không làm loang nhiễu
+    - Hiệu quả tốt với nhiễu muối tiêu vì nhiễu muối tiêu là các pixel lẻ có giá trị cực trị (0 hoặc 255); trung vị bỏ qua các giá trị ngoại lai này nên không làm loang nhiễu như lọc trung bình
+    - `ksize` là số lẻ lớn hơn 1
 - Lọc song phương
     - Hàm `blur_bilateral = cv.bilateralFilter(src, d, sigmaColor, sigmaSpace)`
         - `src`: ảnh đầu vào

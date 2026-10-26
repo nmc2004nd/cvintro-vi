@@ -527,7 +527,7 @@
 </li>
 <li>Rotation - xoay ảnh</li>
 <li>
-<p>Ma trận xoay trong toán học : 2x2 → xoay quanh gốc tạo độ (0, 0)</p>
+<p>Ma trận xoay trong toán học : 2x2 → xoay quanh gốc tọa độ (0, 0)</p>
 <p><span class="math display">\[M= \begin{bmatrix} \cos\theta &amp; -\sin\theta\\ \sin\theta &amp; \cos\theta \end{bmatrix}\]</span></p>
 </li>
 <li>
@@ -538,7 +538,10 @@
 <li>Hệ số scale</li>
 </ul>
 <p><span class="math display">\[\begin{aligned}\alpha &amp;= \text{scale}\cdot\cos\theta\\\beta &amp;= \text{scale}\cdot\sin\theta\end{aligned}\]</span></p>
-<p><span class="math display">\[M=\begin{bmatrix}\alpha &amp; -\beta &amp; (1-\alpha)\,\mathrm{center.x}-\beta\,\mathrm{center.y}\\\beta &amp; \alpha &amp; \beta\,\mathrm{center.x}+(1-\alpha)\,\mathrm{center.y}\end{bmatrix}\]</span></p>
+<p><span class="math display">\[M=\begin{bmatrix}\alpha &amp; \beta &amp; (1-\alpha)\,\mathrm{center.x}-\beta\,\mathrm{center.y}\\-\beta &amp; \alpha &amp; \beta\,\mathrm{center.x}+(1-\alpha)\,\mathrm{center.y}\end{bmatrix}\]</span></p>
+<ul>
+<li>Dấu của <span class="math">\(\beta\)</span> ngược với ma trận toán học ở trên vì trục y của ảnh hướng xuống: góc dương = xoay ngược chiều kim đồng hồ khi nhìn trên ảnh</li>
+</ul>
 </li>
 <li>
 <p>Hàm để tính M</p>
@@ -547,14 +550,14 @@
 </ul>
 </li>
 <li>Biến đổi Affine:</li>
-<li><mark>Giữ tính chất song song của đường thẳng</mark><ul>
+<li><mark>Giữ tính chất song song của đường thẳng</mark> (đường thẳng vẫn là đường thẳng)<ul>
 <li>Ví dụ: A//B thì A’//B’</li>
 </ul>
 </li>
 <li>
 <p>Các bước biến đổi Affine: <mark>2x3</mark></p>
 <ul>
-<li>Chọn 3 điểm trên ảnh gốc</li>
+<li>Chọn 3 điểm (không thẳng hàng) trên ảnh gốc</li>
 <li>Chọn 3 điểm tương ứng trên ảnh đích</li>
 <li>Dùng <code>cv2.getAffineTransform()</code></li>
 <li>Áp dụng <code>cv2.warpAffine()</code></li>

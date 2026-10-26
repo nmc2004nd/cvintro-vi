@@ -17,9 +17,9 @@ after:
         pass
     ```
 
-- Tạo một của số để tạo trackbar
+- Tạo một cửa sổ để chứa trackbar
     - `cv2.namedWindow("Color Mixer")`
-- Tạo các trackbar và gắn cho biến
+- Tạo các trackbar: `cv2.createTrackbar(name, window, value, count, onChange)` - giá trị ban đầu `value`, giá trị lớn nhất` count`
 
     ```python
     cv2.createTrackbar("R", "Color Mixer", 0, 255, nothing)
@@ -27,7 +27,7 @@ after:
     cv2.createTrackbar("B", "Color Mixer", 0, 255, nothing)
     ```
 
-- Lấy giá trị từ trackbar- Dùng hàm `cv2.getTrackbarPos( name, nameWindow)`
+- Lấy giá trị từ trackbar - dùng hàm `cv2.getTrackbarPos(name, window)`
 
     ```python
     r = cv2.getTrackbarPos("R", "Color Mixer")

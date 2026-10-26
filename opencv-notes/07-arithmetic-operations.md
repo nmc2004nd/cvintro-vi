@@ -4,8 +4,8 @@ lesson: lesson02_image_arithmetic
 after:
 ---
 - Cộng ảnh
-    - Dùng` cv2.add` nếu value mới lớn hơn 255 sẽ bão hòa về 255
-    - Dùng `x+y` nếu value mới lớn hơn 255 thì sẽ tràn số` x+y % 256`
+    - Dùng `cv2.add` nếu value mới lớn hơn 255 sẽ bão hòa về 255
+    - Dùng `x+y` nếu value mới lớn hơn 255 thì sẽ tràn số `(x + y) % 256`
 
     ```python
     x = np.uint8([[250]])
@@ -20,7 +20,7 @@ after:
 
 - Trừ ảnh
     - Dùng `cv2.subtract` nếu value mới nhỏ hơn 0 thì sẽ bão hòa về 0
-    - Dùng`x-y` nếu value mới nhỏ hơn 0 thì sẽ tràn số `abs(x-y) % 256`
+    - Dùng`x-y` nếu value mới nhỏ hơn 0 thì sẽ tràn số `(x - y) % 256`
 
     ```python
     x = np.uint8([[50]])
@@ -33,21 +33,21 @@ after:
     ```
 
 - Nhân ảnh
-    - Dùng `cv2.multiply` nếu value mới lớn hơn 255 thì sẽ bão hòa về 0
-    - Dùng `x*y` nếu value mới lớn hớn 255 thì sẽ trần số `x*y % 256`
+    - Dùng `cv2.multiply` nếu value mới lớn hơn 255 thì sẽ bão hòa về 255
+    - Dùng `x*y` nếu value mới lớn hơn 255 thì sẽ tràn số `(x * y) % 256`
 
     ```python
     print("Nhân bằng OpenCV:", cv2.multiply(x, y))
     # Kết quả sẽ là 255 (bão hòa)
     print("Nhân bằng NumPy:", x * y)
-    # Kết quả sẽ là 44 (tràn số) 300 mod 256 = 44
+    # Kết quả sẽ là 136 (tràn số): 50 * 100 = 5000, 5000 mod 256 = 136
     ```
 
 - Trộn hai ảnh với nhau
-    - $g(x) = (1 - alpha) * f_0(x) + alpha * f_1(x)$
-    - Dùng hàm `cv2.addWeighted(img1, alpha, img2, beta, gama)`
-    - Hai ảnh `img1 `và `img2 `phải cùng kích thước
-    - Dùng hàm `cv2.resize(img, W, H)` khác với `img.shape - HxWxD`
+    - $g(x) = (1 - \alpha) f_0(x) + \alpha f_1(x)$
+    - Dùng hàm `cv2.addWeighted(img1, alpha, img2, beta, gamma)` = `img1*alpha + img2*beta + gamma`, để ra công thức trên thì` beta = 1 - alpha`
+    - Hai ảnh `img1` và `img2` phải cùng kích thước và cùng số kênh
+    - Dùng hàm `cv2.resize(img, (W, H))` - chú ý thứ tự (W, H) khác với `img.shape` là (H, W, D)
     - Có thể tạo hiệu ứng `Fade in Fade out` bằng cách đổi `alpha từ 0-1`
 - Phép toán Bitwise cần ==mask==
 
@@ -69,7 +69,7 @@ after:
     - Mục tiêu là:
         - Vùng ROI: nền giữ nguyên và vùng logo bị mask thành đen - inv_mask
         - Vùng Logo: nền bị mask thành đen và logo giữ nguyên - mask
-        - Sau đó dùng `add `hai vùng với nhau sẽ thu được vùng mới có nền ảnh gốc và logo là logo cần chèn
-    - Chuẩn bị mask: chuyển ảnh logo sang `grayscale `và dùng `threshold `để tách ngưỡng
+        - Sau đó dùng `add` hai vùng với nhau sẽ thu được vùng mới có nền ảnh gốc và logo là logo cần chèn
+    - Chuẩn bị mask: chuyển ảnh logo sang `grayscale` và dùng `threshold` để tách ngưỡng
     - Inv_mask được chuẩn bị bằng `bitwise_not(mask)`
     - Sau khi bitwise hai vùng xong ta thế vùng mới vào ảnh gốc là xong

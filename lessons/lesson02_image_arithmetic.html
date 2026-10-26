@@ -373,8 +373,8 @@ grass pixel (BGR), before -&gt; after: [72 94 75] -&gt; [72 94 75]
 <li>
 <p>Cộng ảnh</p>
 <ul>
-<li>Dùng<code>cv2.add</code> nếu value mới lớn hơn 255 sẽ bão hòa về 255</li>
-<li>Dùng <code>x+y</code> nếu value mới lớn hơn 255 thì sẽ tràn số<code>x+y % 256</code></li>
+<li>Dùng <code>cv2.add</code> nếu value mới lớn hơn 255 sẽ bão hòa về 255</li>
+<li>Dùng <code>x+y</code> nếu value mới lớn hơn 255 thì sẽ tràn số <code>(x + y) % 256</code></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">([[</span><span class="mi">250</span><span class="p">]])</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">([[</span><span class="mi">10</span><span class="p">]])</span>
@@ -391,7 +391,7 @@ grass pixel (BGR), before -&gt; after: [72 94 75] -&gt; [72 94 75]
 <p>Trừ ảnh</p>
 <ul>
 <li>Dùng <code>cv2.subtract</code> nếu value mới nhỏ hơn 0 thì sẽ bão hòa về 0</li>
-<li>Dùng<code>x-y</code> nếu value mới nhỏ hơn 0 thì sẽ tràn số <code>abs(x-y) % 256</code></li>
+<li>Dùng<code>x-y</code> nếu value mới nhỏ hơn 0 thì sẽ tràn số <code>(x - y) % 256</code></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">([[</span><span class="mi">50</span><span class="p">]])</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">([[</span><span class="mi">100</span><span class="p">]])</span>
@@ -406,23 +406,23 @@ grass pixel (BGR), before -&gt; after: [72 94 75] -&gt; [72 94 75]
 <li>
 <p>Nhân ảnh</p>
 <ul>
-<li>Dùng <code>cv2.multiply</code> nếu value mới lớn hơn 255 thì sẽ bão hòa về 0</li>
-<li>Dùng <code>x*y</code> nếu value mới lớn hớn 255 thì sẽ trần số <code>x*y % 256</code></li>
+<li>Dùng <code>cv2.multiply</code> nếu value mới lớn hơn 255 thì sẽ bão hòa về 255</li>
+<li>Dùng <code>x*y</code> nếu value mới lớn hơn 255 thì sẽ tràn số <code>(x * y) % 256</code></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Nhân bằng OpenCV:"</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
 <span class="c1"># Kết quả sẽ là 255 (bão hòa)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">"Nhân bằng NumPy:"</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
-<span class="c1"># Kết quả sẽ là 44 (tràn số) 300 mod 256 = 44</span>
+<span class="c1"># Kết quả sẽ là 136 (tràn số): 50 * 100 = 5000, 5000 mod 256 = 136</span>
 </pre></div>
 
 </li>
 <li>
 <p>Trộn hai ảnh với nhau</p>
 <ul>
-<li><span class="math">\(g(x) = (1 - alpha) * f_0(x) + alpha * f_1(x)\)</span></li>
-<li>Dùng hàm <code>cv2.addWeighted(img1, alpha, img2, beta, gama)</code></li>
-<li>Hai ảnh <code>img1</code>và <code>img2</code>phải cùng kích thước</li>
-<li>Dùng hàm <code>cv2.resize(img, W, H)</code> khác với <code>img.shape - HxWxD</code></li>
+<li><span class="math">\(g(x) = (1 - \alpha) f_0(x) + \alpha f_1(x)\)</span></li>
+<li>Dùng hàm <code>cv2.addWeighted(img1, alpha, img2, beta, gamma)</code> = <code>img1*alpha + img2*beta + gamma</code>, để ra công thức trên thì<code>beta = 1 - alpha</code></li>
+<li>Hai ảnh <code>img1</code> và <code>img2</code> phải cùng kích thước và cùng số kênh</li>
+<li>Dùng hàm <code>cv2.resize(img, (W, H))</code> - chú ý thứ tự (W, H) khác với <code>img.shape</code> là (H, W, D)</li>
 <li>Có thể tạo hiệu ứng <code>Fade in Fade out</code> bằng cách đổi <code>alpha từ 0-1</code></li>
 </ul>
 </li>
@@ -468,10 +468,10 @@ grass pixel (BGR), before -&gt; after: [72 94 75] -&gt; [72 94 75]
 <li>Mục tiêu là:<ul>
 <li>Vùng ROI: nền giữ nguyên và vùng logo bị mask thành đen - inv_mask</li>
 <li>Vùng Logo: nền bị mask thành đen và logo giữ nguyên - mask</li>
-<li>Sau đó dùng <code>add</code>hai vùng với nhau sẽ thu được vùng mới có nền ảnh gốc và logo là logo cần chèn</li>
+<li>Sau đó dùng <code>add</code> hai vùng với nhau sẽ thu được vùng mới có nền ảnh gốc và logo là logo cần chèn</li>
 </ul>
 </li>
-<li>Chuẩn bị mask: chuyển ảnh logo sang <code>grayscale</code>và dùng <code>threshold</code>để tách ngưỡng</li>
+<li>Chuẩn bị mask: chuyển ảnh logo sang <code>grayscale</code> và dùng <code>threshold</code> để tách ngưỡng</li>
 <li>Inv_mask được chuẩn bị bằng <code>bitwise_not(mask)</code></li>
 <li>Sau khi bitwise hai vùng xong ta thế vùng mới vào ảnh gốc là xong</li>
 </ul>

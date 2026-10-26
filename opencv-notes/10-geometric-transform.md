@@ -37,7 +37,7 @@ after:
 
     - Hàm dùng: `dst = cv2.warpAffine(img, M, dsize)`
 - Rotation - xoay ảnh
-    - Ma trận xoay trong toán học : 2x2 → xoay quanh gốc tạo độ (0, 0)
+    - Ma trận xoay trong toán học : 2x2 → xoay quanh gốc tọa độ (0, 0)
 
         $$M= \begin{bmatrix} \cos\theta & -\sin\theta\\ \sin\theta & \cos\theta \end{bmatrix}$$
 
@@ -48,15 +48,17 @@ after:
 
         $$\begin{aligned}\alpha &= \text{scale}\cdot\cos\theta\\\beta &= \text{scale}\cdot\sin\theta\end{aligned}$$
 
-        $$M=\begin{bmatrix}\alpha & -\beta & (1-\alpha)\,\mathrm{center.x}-\beta\,\mathrm{center.y}\\\beta & \alpha & \beta\,\mathrm{center.x}+(1-\alpha)\,\mathrm{center.y}\end{bmatrix}$$
+        $$M=\begin{bmatrix}\alpha & \beta & (1-\alpha)\,\mathrm{center.x}-\beta\,\mathrm{center.y}\\-\beta & \alpha & \beta\,\mathrm{center.x}+(1-\alpha)\,\mathrm{center.y}\end{bmatrix}$$
+
+        - Dấu của $\beta$ ngược với ma trận toán học ở trên vì trục y của ảnh hướng xuống: góc dương = xoay ngược chiều kim đồng hồ khi nhìn trên ảnh
 
     - Hàm để tính M
         - `M = cv.getRotationMatrix2D(center, angle, scale)`
 - Biến đổi Affine:
-    - ==Giữ tính chất song song của đường thẳng==
+    - ==Giữ tính chất song song của đường thẳng== (đường thẳng vẫn là đường thẳng)
         - Ví dụ: A//B thì A’//B’
     - Các bước biến đổi Affine: ==2x3==
-        - Chọn 3 điểm trên ảnh gốc
+        - Chọn 3 điểm (không thẳng hàng) trên ảnh gốc
         - Chọn 3 điểm tương ứng trên ảnh đích
         - Dùng `cv2.getAffineTransform()`
         - Áp dụng `cv2.warpAffine()`

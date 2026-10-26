@@ -246,11 +246,11 @@
 <p><span class="math display">\[g(p)=\begin{cases}0, &amp; p &gt; T\\M, &amp; p \le T\end{cases}\]</span></p>
 </li>
 <li>
-<p><code>cv2.THRESH_TRUNC:</code> ghim về ngưỡng nếu lớn hơn ngương còn giữ giá trị nếu nhỏ hơn</p>
+<p><code>cv2.THRESH_TRUNC:</code> ghim về ngưỡng nếu lớn hơn ngưỡng, còn giữ giá trị nếu nhỏ hơn</p>
 <p><span class="math display">\[g(p)=\begin{cases}T, &amp; p &gt; T\\p, &amp; p \le T\end{cases}\]</span></p>
 </li>
 <li>
-<p><code>cv2.THRESH_TOZERO:</code> Giữ giá trị nếu lớn hớn ngưỡng, ngược lại ghim về 0</p>
+<p><code>cv2.THRESH_TOZERO:</code> Giữ giá trị nếu lớn hơn ngưỡng, ngược lại ghim về 0</p>
 <p><span class="math display">\[g(p)=\begin{cases}p, &amp; p &gt; T\\0, &amp; p \le T\end{cases}\]</span></p>
 </li>
 <li>
@@ -310,11 +310,11 @@
 </tr>
 <tr>
 <td><code>blockSize</code></td>
-<td>Kích thước kernel duyệt - số lẻ lớn hơn 1</td>
+<td>Kích thước vùng lân cận - số lẻ lớn hơn 1</td>
 </tr>
 <tr>
 <td><code>C</code></td>
-<td>Bias tính ngưỡng</td>
+<td>Hằng số trừ đi khỏi giá trị trung bình cục bộ</td>
 </tr>
 </tbody>
 </table>
@@ -331,7 +331,10 @@
 <ul>
 <li><code>cv2.ADAPTIVE_THRESH_GAUSSIAN_C</code></li>
 </ul>
-<p><span class="math display">\[T(x,y)=\left(\frac{1}{N}\sum_{(i,j)\in\Omega(x,y)} w(i,j)*I(i,j)\right)-C\]</span></p>
+<p><span class="math display">\[T(x,y)=\left(\sum_{(i,j)\in\Omega(x,y)} w(i,j)\,I(i,j)\right)-C, \quad \sum w(i,j) = 1\]</span></p>
+<ul>
+<li>Trọng số Gaussian <span class="math">\(w\)</span> đã chuẩn hóa tổng bằng 1 nên không chia thêm cho <span class="math">\(N\)</span></li>
+</ul>
 <div class="highlight"><pre><span></span><span class="n">th2</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">adaptiveThreshold</span><span class="p">(</span>
     <span class="n">img</span><span class="p">,</span>
     <span class="mi">255</span><span class="p">,</span>
@@ -370,6 +373,9 @@
 <span class="n">ret3</span><span class="p">,</span> <span class="n">th3</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">blur</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">THRESH_BINARY</span> <span class="o">+</span> <span class="n">cv</span><span class="o">.</span><span class="n">THRESH_OTSU</span><span class="p">)</span>
 </pre></div>
 
+<ul>
+<li>Tham số ngưỡng (0) bị bỏ qua, ngưỡng Otsu tìm được trả về ở <code>ret3</code></li>
+</ul>
 </li>
 </ul>
 </li>
@@ -386,19 +392,19 @@
 <li><span class="math">\(\sigma_w^2(t)=q_1(t)\sigma_1^2(t)+q_2(t)\sigma_2^2(t)\)</span></li>
 </ul>
 </li>
-<li>Xác xuất tích tũy của hai lớp<ul>
+<li>Xác suất tích lũy của hai lớp<ul>
 <li><span class="math">\(q_1(t)=\sum_{i=0}^{t-1} P(i)\)</span></li>
 <li><span class="math">\(q_2(t)=\sum_{i=t}^{L-1} P(i)\)</span></li>
 </ul>
 </li>
 <li>Giá trị trung bình của hai lớp<ul>
-<li>Chia cho <span class="math">\(q_i(t)\)</span> là để chuẩn hóa về [0,1]</li>
+<li>Chia cho <span class="math">\(q_i(t)\)</span> để xác suất trong mỗi lớp có tổng bằng 1 (xác suất có điều kiện)</li>
 <li><span class="math display">\[\mu_1(t)=\sum_{i=0}^{t-1}\frac{i \cdot P(i)}{q_1(t)}\]</span></li>
 <li><span class="math display">\[\mu_2(t)=\sum_{i=t}^{L-1}\frac{i \cdot P(i)}{q_2(t)}\]</span></li>
 </ul>
 </li>
 <li>Phương sai của hai lớp<ul>
-<li>Chia cho <span class="math">\(q_i(t)\)</span> là để chuẩn hóa về [0,1]</li>
+<li>Chia cho <span class="math">\(q_i(t)\)</span> với cùng lý do như trên</li>
 <li><span class="math display">\[\sigma_1^2(t)=\sum_{i=0}^{t-1}\frac{(i - \mu_1(t))^2 \cdot P(i)}{q_1(t)}\]</span></li>
 <li><span class="math display">\[\sigma_2^2(t)=\sum_{i=t}^{L-1}\frac{(i - \mu_2(t))^2 \cdot P(i)}{q_2(t)}\]</span></li>
 </ul>
@@ -538,7 +544,7 @@
 <summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 13. Morphological Transform</summary>
 <div class="opencv-note-body">
 <ul>
-<li>Các phép hình thái học: <mark>Erosion, dilation, opening, closing, morphological gradient, top hat, back hat.</mark></li>
+<li>Các phép hình thái học: <mark>Erosion, dilation, opening, closing, morphological gradient, top hat, black hat.</mark></li>
 <li>Tổng quan:</li>
 </ul>
 <table>
@@ -583,7 +589,7 @@
 </tr>
 <tr>
 <td>Top Hat</td>
-<td>A−Opening(A</td>
+<td>A−Opening(A)</td>
 <td><code>cv.MORPH_TOPHAT</code></td>
 <td>Trích chi tiết sáng nhỏ.</td>
 </tr>
@@ -597,7 +603,7 @@
 </table>
 <ul>
 <li>Yêu cầu hai thành phần đầu vào:<ul>
-<li>Ảnh đầu vào: <mark>Ảnh nhị phân, vật thể tiền cảnh màu trắng và nền màu đen</mark></li>
+<li>Ảnh đầu vào: <mark>Thường là ảnh nhị phân, vật thể tiền cảnh màu trắng và nền màu đen</mark> (cũng áp dụng được cho ảnh xám)</li>
 <li>Structuring kernel: Kernel áp dụng trên ảnh</li>
 </ul>
 </li>
@@ -635,7 +641,7 @@
 <tr>
 <td><code>cv2.MORPH_CROSS</code></td>
 <td>Kernel hình chữ thập</td>
-<td>Khi muốn tác động thoe hướng ngang dọc hơn là chéo</td>
+<td>Khi muốn tác động theo hướng ngang dọc hơn là chéo</td>
 </tr>
 </tbody>
 </table>
@@ -655,7 +661,7 @@
 <li>Cơ chế:<ul>
 <li>Kernel trượt qua từng vị trí trên ảnh</li>
 <li><mark>Pixel trung tâm giữ giá trị trắng nếu toàn bộ vùng dưới kernel đều là màu trắng</mark></li>
-<li><mark>Nếu có ít nhật một giá trị trong vùng kernel là đen, pixel trung tâm bị gán về đen</mark></li>
+<li><mark>Nếu có ít nhất một giá trị trong vùng kernel là đen, pixel trung tâm bị gán về đen</mark></li>
 </ul>
 </li>
 <li>Kết quả:<ul>
@@ -700,7 +706,7 @@
 <p><img alt="" src="../img/opencv-notes/13-morphological-transform-6.png" /></p>
 <ul>
 <li><strong>Opening là erosion trước, sau đó dilation</strong></li>
-<li><em><code>Opening</code></em><code>(</code><em><code>A</code></em><code>)=</code><em><code>Dilation</code></em><code>(</code><em><code>Erosion</code></em><code>(</code><em><code>A</code></em><code>))</code></li>
+<li><span class="math">\(\text{Opening}(A)=\text{Dilation}(\text{Erosion}(A))\)</span></li>
 <li><code>opening = cv.morphologyEx(img, cv.MORPH_OPEN, kernel)</code></li>
 <li><mark>Ý nghĩa:</mark><ul>
 <li><mark>Erosion xóa nhiễu trắng nhỏ</mark></li>
@@ -717,8 +723,8 @@
 <p><img alt="" src="../img/opencv-notes/13-morphological-transform-7.png" /></p>
 <p><img alt="" src="../img/opencv-notes/13-morphological-transform-8.png" /></p>
 <ul>
-<li><strong>Closing là dilation trước, sau đo erosion</strong></li>
-<li><em><code>Closing</code></em><code>(</code><em><code>A</code></em><code>)=</code><em><code>Erosion</code></em><code>(</code><em><code>Dilation</code></em><code>(</code><em><code>A</code></em><code>))</code></li>
+<li><strong>Closing là dilation trước, sau đó erosion</strong></li>
+<li><span class="math">\(\text{Closing}(A)=\text{Erosion}(\text{Dilation}(A))\)</span></li>
 <li><code>closing = cv.morphologyEx(img, cv.MORPH_CLOSE, kernel)</code></li>
 <li><mark>Ý nghĩa:</mark><ul>
 <li><mark>Dilation lấp khe hở nhỏ hoặc lỗ đen nhỏ</mark></li>
@@ -736,7 +742,7 @@
 <p><img alt="" src="../img/opencv-notes/13-morphological-transform-9.png" /></p>
 <ul>
 <li><strong>Morphological Gradient là hiệu giữa ảnh dilation và ảnh erosion</strong></li>
-<li><em><code>Gradient</code></em><code>(</code><em><code>A</code></em><code>)=</code><em><code>Dilation</code></em><code>(</code><em><code>A</code></em><code>)−</code><em><code>Erosion</code></em><code>(</code><em><code>A</code></em><code>)</code></li>
+<li><span class="math">\(\text{Gradient}(A)=\text{Dilation}(A)-\text{Erosion}(A)\)</span></li>
 <li><code>gradient = cv.morphologyEx(img, cv.MORPH_GRADIENT, kernel)</code></li>
 <li><mark>Kết quả:</mark><ul>
 <li><mark>Thường là đường viền của vật thể</mark></li>
@@ -744,7 +750,7 @@
 </li>
 <li><mark>Ứng dụng:</mark><ul>
 <li><mark>Trích biên ngoài của vật thể</mark></li>
-<li><mark>Làm nổi bật outline ( đường viền ) trong ảnh nhị phân</mark></li>
+<li><mark>Làm nổi bật outline (đường viền) trong ảnh nhị phân</mark></li>
 </ul>
 </li>
 <li><mark><strong>Top Hat</strong></mark></li>
@@ -755,7 +761,7 @@
 <li><mark>Làm nổi bật part sáng trên nền tối</mark></li>
 <li><strong>Top Hat là hiệu giữa ảnh gốc và ảnh sau opening</strong></li>
 <li>
-<p><em><code>TopHat</code></em><code>(</code><em><code>A</code></em><code>)=</code><em><code>A</code></em><code>−</code><em><code>Opening</code></em><code>(</code><em><code>A</code></em><code>)</code></p>
+<p><span class="math">\(\text{TopHat}(A)=A-\text{Opening}(A)\)</span></p>
 <div class="highlight"><pre><span></span><span class="n">kernel_9x9</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
 <span class="n">tophat</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">morphologyEx</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">MORPH_TOPHAT</span><span class="p">,</span> <span class="n">kernel_9x9</span><span class="p">)</span>
 </pre></div>
@@ -764,8 +770,8 @@
 <li>
 <p><mark>Ứng dụng:</mark></p>
 <ul>
-<li><mark>Trích các chi tiết sáng nhỏ hơn kernel (opening xóa nhiễu trắng nhỏ lên trừ với ảnh gốc ra được nhiễu trắng nhỏ hay hole nhỏ)</mark></li>
-<li><mark>Phát hiện đốm sáng trên nền sáng không đồng đều</mark></li>
+<li><mark>Trích các chi tiết sáng nhỏ hơn kernel (opening xóa các chi tiết sáng nhỏ nên lấy ảnh gốc trừ đi sẽ còn lại đúng các chi tiết đó)</mark></li>
+<li><mark>Phát hiện đốm sáng trên nền có độ sáng không đồng đều</mark></li>
 <li><mark>Tăng cường chi tiết sáng nhỏ trên ảnh</mark></li>
 </ul>
 </li>
@@ -776,10 +782,10 @@
 <li>Làm việc với ảnh grayscale</li>
 <li><mark>Làm nổi bật part tối trên nền sáng</mark></li>
 <li><strong>Black Hat là hiệu giữa ảnh sau closing và ảnh gốc</strong></li>
-<li><em><code>BlackHat</code></em><code>(</code><em><code>A</code></em><code>)=</code><em><code>Closing</code></em><code>(</code><em><code>A</code></em><code>)−</code><em><code>A</code></em></li>
+<li><span class="math">\(\text{BlackHat}(A)=\text{Closing}(A)-A\)</span></li>
 <li><code>blackhat = cv.morphologyEx(img, cv.MORPH_BLACKHAT, kernel)</code></li>
 <li><mark>Ứng dụng:</mark><ul>
-<li><mark>Trích các chi tiết tối nhỏ ( do closing làm lấp lỗ đen nên khi trừ với ảnh gốc được lỗ đen)</mark></li>
+<li><mark>Trích các chi tiết tối nhỏ (closing lấp các lỗ đen nhỏ nên trừ đi ảnh gốc sẽ còn lại đúng các lỗ đó)</mark></li>
 <li><mark>Phát hiện vết nứt, lỗ thủng hoặc vùng tối trên nền vật thể sáng</mark></li>
 <li><mark>Làm nổi bật chi tiết tối trên nền không đồng đều</mark></li>
 </ul>

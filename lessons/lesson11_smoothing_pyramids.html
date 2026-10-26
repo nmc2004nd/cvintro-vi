@@ -447,9 +447,9 @@ cv2.GaussianBlur pixel:    139
 <summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 12. Smoothing</summary>
 <div class="opencv-note-body">
 <ul>
-<li>Tần số : độ biến thiên của các pixel:<ul>
-<li>0-1 → tần số thấp</li>
-<li>0-100 → tần số cao</li>
+<li>Tần số: tốc độ thay đổi giá trị pixel theo không gian<ul>
+<li>Pixel kề nhau thay đổi ít (ví dụ 0 → 1) → tần số thấp: vùng phẳng, mảng màu</li>
+<li>Pixel kề nhau thay đổi đột ngột (ví dụ 0 → 100) → tần số cao: cạnh, chi tiết nhỏ, nhiễu</li>
 </ul>
 </li>
 </ul>
@@ -490,6 +490,7 @@ cv2.GaussianBlur pixel:    139
 <li>Cộng các kết quả lại</li>
 <li>Gán kết quả cho pixel trung tâm</li>
 <li>Lặp lại cho toàn bộ ảnh</li>
+<li>Lưu ý: <code>filter2D</code> thực chất tính <strong>tương quan</strong> (correlation), không lật kernel; với kernel đối xứng thì kết quả giống tích chập</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">/</span> <span class="mi">25</span>
 <span class="n">dst</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">filter2D</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
@@ -520,12 +521,12 @@ cv2.GaussianBlur pixel:    139
 <tr>
 <td>Gaussian Blur</td>
 <td><code>cv2.GaussianBlur()</code></td>
-<td>Trong số cao với pixel trung tâm,giảm dần ra biên</td>
+<td>Trọng số cao với pixel trung tâm, giảm dần ra biên</td>
 </tr>
 <tr>
 <td>Median Blur</td>
 <td><code>cv2.medianBlur()</code></td>
-<td>Lây trung vị, tốt với nhiễu muối tiêu</td>
+<td>Lấy trung vị, tốt với nhiễu muối tiêu</td>
 </tr>
 <tr>
 <td>Bilateral Filter</td>
@@ -549,11 +550,11 @@ cv2.GaussianBlur pixel:    139
 <li><code>cv2.blur()</code> : tương đương <code>cv2.boxFilter(normalize = True)</code></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">dst</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">blur</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="c1"># dst = cv2.boxFilter(img, -1, (5, 5), normalize = False)</span>
+<span class="c1"># tương đương: dst = cv2.boxFilter(img, -1, (5, 5), normalize=True)</span>
 
 <span class="n">dst2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">boxFilter</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="c1"># -1 : ddepth</span>
-<span class="c1"># không chia trong số nên nếu quá 255 thì sẽ bão hòa ở 255</span>
+<span class="c1"># không chia trọng số (chỉ cộng) nên nếu quá 255 thì sẽ bão hòa ở 255</span>
 </pre></div>
 
 </li>
@@ -564,10 +565,10 @@ cv2.GaussianBlur pixel:    139
 <p>Hàm : <code>blur_gaussian = cv.GaussianBlur(src, ksize, sigmaX, sigmaY=0)</code></p>
 <ul>
 <li><code>src</code>: ảnh đầu vào</li>
-<li><code>ksize</code>: kích thước kernel số lẻ</li>
+<li><code>ksize</code>: kích thước kernel, số lẻ</li>
 <li><code>sigmaX</code>: độ lệch chuẩn theo trục X</li>
 <li><code>sigmaY</code>: độ lệch chuẩn theo trục Y</li>
-<li>nếu <code>sigma</code>= 0 thì OpenCV sẽ tự tính</li>
+<li>nếu <code>sigmaX = 0</code> thì OpenCV tự tính từ <code>ksize</code>; nếu<code>sigmaY = 0</code> thì lấy bằng <code>sigmaX</code></li>
 </ul>
 <p><code>blur_gaussian = cv2.GaussianBlur(img, (5, 5), 0)</code></p>
 </li>
@@ -578,7 +579,8 @@ cv2.GaussianBlur pixel:    139
 <ul>
 <li>Thay pixel trung tâm bằng trung vị của các pixel trong vùng kernel</li>
 <li>Hàm: <code>median = cv.medianBlur(src, ksize)</code></li>
-<li>Hiệu quả tốt với nhiễu muối tiêu do nhiễu muối tiêu là các pixel có giá trị nhỏ mà lọc trung vị lấy trung vị gắn cho pixel trung tâm lên không làm loang nhiễu</li>
+<li>Hiệu quả tốt với nhiễu muối tiêu vì nhiễu muối tiêu là các pixel lẻ có giá trị cực trị (0 hoặc 255); trung vị bỏ qua các giá trị ngoại lai này nên không làm loang nhiễu như lọc trung bình</li>
+<li><code>ksize</code> là số lẻ lớn hơn 1</li>
 </ul>
 </li>
 <li>Lọc song phương<ul>

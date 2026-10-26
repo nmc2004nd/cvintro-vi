@@ -380,17 +380,18 @@
 <li><mark>flag :</mark> Kiểu đọc ảnh<ul>
 <li><mark><code>cv2.IMREAD_COLOR</code></mark> - (default) - 1 - Đọc ảnh màu BGR</li>
 <li><mark><code>cv2.IMREAD_GRAYSCALE</code></mark> - 0 - Đọc ảnh xám</li>
-<li><mark><code>CV2.IMREAD_UNCHANGE</code></mark> - -1 - Đọc ảnh gốc giữ cả kênh alpha nếu có</li>
+<li><mark><code>cv2.IMREAD_UNCHANGED</code></mark> - -1 - Đọc ảnh gốc giữ cả kênh alpha nếu có</li>
 </ul>
 </li>
 </ul>
 </li>
-<li>Lưu ảnh bằng <code>cv2.imwwrite(name, img)</code></li>
-<li>Hiển thị ảnh bằng:<code>cv2.imshow(name_window, img)</code></li>
+<li>Lưu ảnh bằng <code>cv2.imwrite(name, img)</code></li>
+<li>Hiển thị ảnh bằng: <code>cv2.imshow(name_window, img)</code></li>
 <li>Chờ phím <code>cv2.waitKey(d)</code> :<ul>
 <li>d = 0 - Chờ đến khi nào người dùng nhập phím</li>
-<li>d - mili giây</li>
-<li>d = x → FPS = <span class="math">\(\frac{1000}{d}\)</span></li>
+<li>d &gt; 0 - chờ tối đa d mili giây</li>
+<li>Khi phát video với mỗi frame chờ d ms → FPS ≈ <span class="math">\(\frac{1000}{d}\)</span> (thực tế thấp hơn một chút vì còn thời gian xử lý frame)</li>
+<li><code>waitKey</code> chỉ hoạt động khi có ít nhất một cửa sổ <code>imshow</code> đang mở</li>
 </ul>
 </li>
 </ul>
@@ -403,36 +404,37 @@
 <summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 2. Reading videos</summary>
 <div class="opencv-note-body">
 <ul>
-<li>Đọc video bằng <code>cv2.VideoCapture(source)</code> - source thường là 0, 1<ul>
+<li>Đọc video bằng <code>cv2.VideoCapture(source)</code> - source là chỉ số camera (0, 1, ...) hoặc đường dẫn file video<ul>
 <li><code>cap = cv2.VideoCapture(0)</code></li>
 </ul>
 </li>
-<li>Kiểm tra khởi tạo thành công không <code>cap.isOpened</code></li>
-<li>Đọc tưng frame:<code>ret, frame = cap.read()</code><ul>
+<li>Kiểm tra khởi tạo thành công không <code>cap.isOpened()</code></li>
+<li>Đọc từng frame: <code>ret, frame = cap.read()</code><ul>
 <li><code>ret - True / False</code>: đọc thành công không</li>
 <li><code>frame</code>: ảnh</li>
 </ul>
 </li>
 <li>Giải phóng camera và đóng window<ul>
-<li><code>cv2.release()</code></li>
+<li><code>cap.release()</code></li>
 <li><code>cv2.destroyAllWindows()</code></li>
 </ul>
 </li>
-<li>Property: dùng hàm<code>cap.get(flag) or cap.set(flag)</code><ul>
-<li><code>cv2.CAP_RPOP_FRAME_WIDTH</code></li>
+<li>Property: dùng hàm<code>cap.get(flag)</code> hoặc <code>cap.set(flag, value)</code><ul>
+<li><code>cv2.CAP_PROP_FRAME_WIDTH</code></li>
 <li><code>cv2.CAP_PROP_FRAME_HEIGHT</code></li>
 <li><code>cv2.CAP_PROP_FPS</code></li>
-<li><code>cv2.CAP_PROP_POS_FRAME</code></li>
+<li><code>cv2.CAP_PROP_POS_FRAMES</code> - vị trí frame hiện tại</li>
 </ul>
 </li>
 <li>Ghi video:<ul>
 <li>Định nghĩa Fourcc - Four character code: XVID/MJPG/DIVX/X264<ul>
-<li><code>fourcc = cv2.VideoWriter_fourcc(*”XVID”)</code></li>
+<li><code>fourcc = cv2.VideoWriter_fourcc(*"XVID")</code></li>
 </ul>
 </li>
 <li>Khởi tạo class ghi:<ul>
 <li><code>out = cv.VideoWriter(filename, fourcc, fps, frame_size)</code></li>
-<li><code>out.write(frame)</code> : frame phải có size giống size đã khởi tạo, nếu không thì phải resize trước , <mark>size - WxH</mark></li>
+<li><code>out.write(frame)</code> : frame phải có size giống size đã khởi tạo, nếu không thì phải resize trước, <mark>size - (W, H)</mark></li>
+<li><code>out.release()</code> : đóng file khi ghi xong</li>
 </ul>
 </li>
 </ul>
@@ -446,11 +448,12 @@
 <details class="opencv-note" id="opencv-note-06-core-operations">
 <summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 6. Core Operations</summary>
 <div class="opencv-note-body">
-<p><mark>Nguyên tắc là OpenCV truy cập theo (x, y) - (col, row) khác với Numpy là (y, x) - (row, col)</mark></p>
-<p><mark>OpenCV đọc ảnh theo BGR khác matplot.plt đọc theo kiểu RGB</mark></p>
+<p><mark>Các hàm OpenCV nhận tọa độ điểm theo (x, y) - (col, row), còn truy cập mảng NumPy là img[y, x] - [row, col]</mark></p>
+<p><mark>OpenCV đọc ảnh theo BGR, còn matplotlib (plt) hiển thị theo RGB</mark></p>
 <ul>
 <li>Truy cập và thay đổi giá trị pixel<ul>
-<li><code>px = img[row, col]</code></li>
+<li>Đọc: <code>px = img[row, col]</code></li>
+<li>Ghi: <code>img[row, col] = [255, 255, 255]</code></li>
 </ul>
 </li>
 <li>Truy cập vào thuộc tính ảnh<ul>
@@ -458,7 +461,7 @@
 <li><code>img.shape - HxWxD</code> - Row-Column</li>
 </ul>
 </li>
-<li>Tổng số phần tử:<ul>
+<li>Tổng số phần tử (H × W × số kênh):<ul>
 <li><code>img.size</code></li>
 </ul>
 </li>
@@ -475,7 +478,7 @@
 <li>Tách màu và gộp kênh<ul>
 <li>Tách kênh: <code>b, g, r = cv.split(img)</code></li>
 <li>Gộp kênh: <code>img = cv.merge((b, g, r))</code></li>
-<li>Nên dùng hàm của openCV nếu có thể và hạn chế tách kênh theo .split và nên truy cập theo indexing</li>
+<li><code>cv.split()</code> khá tốn thời gian, nên dùng indexing của NumPy nếu được, ví dụ <code>b = img[:, :, 0]</code></li>
 </ul>
 </li>
 <li>
@@ -505,8 +508,8 @@
 <td><code>fedcba \| abcdefgh \| hgfedcb</code></td>
 </tr>
 <tr>
-<td><code>cv.BORDER_REFLECT_101 - default</code></td>
-<td>Phản chiếu ảnh ở biên trừ biên</td>
+<td><code>cv.BORDER_REFLECT_101</code> (mặc định của các hàm lọc)</td>
+<td>Phản chiếu nhưng không lặp lại pixel biên</td>
 <td><code>gfedcb \| abcdefgh \| gfedcba</code></td>
 </tr>
 <tr>

@@ -44,7 +44,7 @@
 <li><a href="#12-smoothing">12. Smoothing</a></li>
 <li><a href="#13-morphological-transform">13. Morphological Transform</a></li>
 <li><a href="#14-gradients">14. Gradients</a></li>
-<li><a href="#15-candy-edge">15. Candy edge</a></li>
+<li><a href="#15-canny-edge">15. Canny edge</a></li>
 <li><a href="#16-pyramids-and-image-blending">16. Pyramids and Image Blending</a></li>
 <li><a href="#17-contour">17. Contour</a></li>
         </ul>
@@ -58,17 +58,18 @@
 <li><mark>flag :</mark> Kiểu đọc ảnh<ul>
 <li><mark><code>cv2.IMREAD_COLOR</code></mark> - (default) - 1 - Đọc ảnh màu BGR</li>
 <li><mark><code>cv2.IMREAD_GRAYSCALE</code></mark> - 0 - Đọc ảnh xám</li>
-<li><mark><code>CV2.IMREAD_UNCHANGE</code></mark> - -1 - Đọc ảnh gốc giữ cả kênh alpha nếu có</li>
+<li><mark><code>cv2.IMREAD_UNCHANGED</code></mark> - -1 - Đọc ảnh gốc giữ cả kênh alpha nếu có</li>
 </ul>
 </li>
 </ul>
 </li>
-<li>Lưu ảnh bằng <code>cv2.imwwrite(name, img)</code></li>
-<li>Hiển thị ảnh bằng:<code>cv2.imshow(name_window, img)</code></li>
+<li>Lưu ảnh bằng <code>cv2.imwrite(name, img)</code></li>
+<li>Hiển thị ảnh bằng: <code>cv2.imshow(name_window, img)</code></li>
 <li>Chờ phím <code>cv2.waitKey(d)</code> :<ul>
 <li>d = 0 - Chờ đến khi nào người dùng nhập phím</li>
-<li>d - mili giây</li>
-<li>d = x → FPS = <span class="math">\(\frac{1000}{d}\)</span></li>
+<li>d &gt; 0 - chờ tối đa d mili giây</li>
+<li>Khi phát video với mỗi frame chờ d ms → FPS ≈ <span class="math">\(\frac{1000}{d}\)</span> (thực tế thấp hơn một chút vì còn thời gian xử lý frame)</li>
+<li><code>waitKey</code> chỉ hoạt động khi có ít nhất một cửa sổ <code>imshow</code> đang mở</li>
 </ul>
 </li>
 </ul>
@@ -79,36 +80,37 @@
 <p class="opencv-note-lesson">Gắn với: <a href="lessons/lesson01_images_as_arrays.html#opencv-note-02-reading-videos">Bài 1: Ảnh dưới dạng mảng (Images as Arrays)</a></p>
 <div class="opencv-note-body">
 <ul>
-<li>Đọc video bằng <code>cv2.VideoCapture(source)</code> - source thường là 0, 1<ul>
+<li>Đọc video bằng <code>cv2.VideoCapture(source)</code> - source là chỉ số camera (0, 1, ...) hoặc đường dẫn file video<ul>
 <li><code>cap = cv2.VideoCapture(0)</code></li>
 </ul>
 </li>
-<li>Kiểm tra khởi tạo thành công không <code>cap.isOpened</code></li>
-<li>Đọc tưng frame:<code>ret, frame = cap.read()</code><ul>
+<li>Kiểm tra khởi tạo thành công không <code>cap.isOpened()</code></li>
+<li>Đọc từng frame: <code>ret, frame = cap.read()</code><ul>
 <li><code>ret - True / False</code>: đọc thành công không</li>
 <li><code>frame</code>: ảnh</li>
 </ul>
 </li>
 <li>Giải phóng camera và đóng window<ul>
-<li><code>cv2.release()</code></li>
+<li><code>cap.release()</code></li>
 <li><code>cv2.destroyAllWindows()</code></li>
 </ul>
 </li>
-<li>Property: dùng hàm<code>cap.get(flag) or cap.set(flag)</code><ul>
-<li><code>cv2.CAP_RPOP_FRAME_WIDTH</code></li>
+<li>Property: dùng hàm<code>cap.get(flag)</code> hoặc <code>cap.set(flag, value)</code><ul>
+<li><code>cv2.CAP_PROP_FRAME_WIDTH</code></li>
 <li><code>cv2.CAP_PROP_FRAME_HEIGHT</code></li>
 <li><code>cv2.CAP_PROP_FPS</code></li>
-<li><code>cv2.CAP_PROP_POS_FRAME</code></li>
+<li><code>cv2.CAP_PROP_POS_FRAMES</code> - vị trí frame hiện tại</li>
 </ul>
 </li>
 <li>Ghi video:<ul>
 <li>Định nghĩa Fourcc - Four character code: XVID/MJPG/DIVX/X264<ul>
-<li><code>fourcc = cv2.VideoWriter_fourcc(*”XVID”)</code></li>
+<li><code>fourcc = cv2.VideoWriter_fourcc(*"XVID")</code></li>
 </ul>
 </li>
 <li>Khởi tạo class ghi:<ul>
 <li><code>out = cv.VideoWriter(filename, fourcc, fps, frame_size)</code></li>
-<li><code>out.write(frame)</code> : frame phải có size giống size đã khởi tạo, nếu không thì phải resize trước , <mark>size - WxH</mark></li>
+<li><code>out.write(frame)</code> : frame phải có size giống size đã khởi tạo, nếu không thì phải resize trước, <mark>size - (W, H)</mark></li>
+<li><code>out.release()</code> : đóng file khi ghi xong</li>
 </ul>
 </li>
 </ul>
@@ -124,8 +126,8 @@
 <li>Tham số chung<ul>
 <li><code>img</code></li>
 <li><code>color</code> - BGR</li>
-<li><code>thickness</code>- độ đày - (-1) tô full không gian trong</li>
-<li><code>lineType</code>:<code>cv2.Line_AA</code> kiểu răng cưa</li>
+<li><code>thickness</code> - độ dày - (-1) tô kín bên trong hình</li>
+<li><code>lineType</code>:<code>cv2.LINE_AA</code> - nét khử răng cưa (anti-aliased), nét mịn hơn</li>
 </ul>
 </li>
 <li>Line<ul>
@@ -154,7 +156,7 @@
 <li>Ellipse<ul>
 <li><code>cv.ellipse(img, center, axes, angle, startAngle, endAngle, color, thickness)</code><ul>
 <li>center: (x, y)</li>
-<li>axes (d1, d2) đọ dài hai trục</li>
+<li>axes: (a, b) - độ dài hai <strong>bán trục</strong> (nửa trục lớn, nửa trục nhỏ)</li>
 <li>angle: góc xoay</li>
 <li>startAngle: góc bắt đầu cung</li>
 <li>endAngle: góc kết thúc cung</li>
@@ -164,9 +166,9 @@
 </ul>
 </li>
 <li>Polylines<ul>
-<li><code>cv.polylines(img, [pts], True, color)</code></li>
+<li><code>cv.polylines(img, [pts], isClosed, color)</code> - <code>isClosed = True</code> thì nối điểm cuối về điểm đầu</li>
 <li><code>pts = np.array([[10, 5], [20, 30], [70, 20], [50, 10]], np.int32)</code></li>
-<li><code>pts = pts.reshape((-1, 1, 2))</code> size theo yêu cầu của OpenCV và vị trí pixel là các số nguyên</li>
+<li><code>pts = pts.reshape((-1, 1, 2))</code> shape (số điểm, 1, 2) theo yêu cầu của OpenCV, tọa độ phải là số nguyên <code>int32</code></li>
 </ul>
 </li>
 <li>
@@ -195,7 +197,7 @@
 <p class="opencv-note-lesson">Chưa gắn với bài học nào.</p>
 <div class="opencv-note-body">
 <ul>
-<li>Hàm <code>dir(cv2)</code> dùng để kiểm tra thuộc tính của cv2 hoặc các hàm khác</li>
+<li>Hàm <code>dir(cv2)</code> liệt kê thuộc tính của cv2, ví dụ xem các loại sự kiện chuột: <code>[i for i in dir(cv2) if 'EVENT' in i]</code></li>
 <li>
 <p>Hàm callback : hàm được gọi khi sự kiện chuột xảy ra</p>
 <div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">callback_name</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">flags</span><span class="p">,</span> <span class="n">param</span><span class="p">):</span>
@@ -203,18 +205,18 @@
 </pre></div>
 
 <ul>
-<li><code>event</code>: loại sư kiện chuột vừa xảy ra</li>
-<li><code>x, y</code>: tạo độ hiện tại của chuột</li>
+<li><code>event</code>: loại sự kiện chuột vừa xảy ra</li>
+<li><code>x, y</code>: tọa độ hiện tại của chuột</li>
 <li><code>flags</code>: trạng thái bổ sung</li>
-<li><code>param</code>: dữ liêu do người dùng truyền vào</li>
-<li>Tạo một của sổ và gọi callback khi event xảy ra</li>
+<li><code>param</code>: dữ liệu do người dùng truyền vào</li>
+<li>Tạo một cửa sổ và gọi callback khi event xảy ra</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">cv</span><span class="o">.</span><span class="n">namedWindow</span><span class="p">(</span><span class="s2">"Window Name"</span><span class="p">)</span>
 <span class="n">cv</span><span class="o">.</span><span class="n">setMouseCallback</span><span class="p">(</span><span class="s2">"Window Name"</span><span class="p">,</span> <span class="n">callback_name</span><span class="p">)</span>
 </pre></div>
 
 <ul>
-<li>Tên của cửa số phải giống nhau</li>
+<li>Tên của cửa sổ phải giống nhau</li>
 <li>Ứng dụng thực tế:</li>
 <li>Khoanh vùng đối tượng cần theo dõi.</li>
 <li>Chọn điểm mốc để cắt hoặc biến đổi ảnh.</li>
@@ -248,13 +250,13 @@
 
 </li>
 <li>
-<p>Tạo một của số để tạo trackbar</p>
+<p>Tạo một cửa sổ để chứa trackbar</p>
 <ul>
 <li><code>cv2.namedWindow("Color Mixer")</code></li>
 </ul>
 </li>
 <li>
-<p>Tạo các trackbar và gắn cho biến</p>
+<p>Tạo các trackbar: <code>cv2.createTrackbar(name, window, value, count, onChange)</code> - giá trị ban đầu <code>value</code>, giá trị lớn nhất<code>count</code></p>
 <div class="highlight"><pre><span></span><span class="n">cv2</span><span class="o">.</span><span class="n">createTrackbar</span><span class="p">(</span><span class="s2">"R"</span><span class="p">,</span> <span class="s2">"Color Mixer"</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">nothing</span><span class="p">)</span>
 <span class="n">cv2</span><span class="o">.</span><span class="n">createTrackbar</span><span class="p">(</span><span class="s2">"G"</span><span class="p">,</span> <span class="s2">"Color Mixer"</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">nothing</span><span class="p">)</span>
 <span class="n">cv2</span><span class="o">.</span><span class="n">createTrackbar</span><span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="s2">"Color Mixer"</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">nothing</span><span class="p">)</span>
@@ -262,7 +264,7 @@
 
 </li>
 <li>
-<p>Lấy giá trị từ trackbar- Dùng hàm <code>cv2.getTrackbarPos( name, nameWindow)</code></p>
+<p>Lấy giá trị từ trackbar - dùng hàm <code>cv2.getTrackbarPos(name, window)</code></p>
 <div class="highlight"><pre><span></span><span class="n">r</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getTrackbarPos</span><span class="p">(</span><span class="s2">"R"</span><span class="p">,</span> <span class="s2">"Color Mixer"</span><span class="p">)</span>
 <span class="n">g</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getTrackbarPos</span><span class="p">(</span><span class="s2">"G"</span><span class="p">,</span> <span class="s2">"Color Mixer"</span><span class="p">)</span>
 <span class="n">b</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">getTrackbarPos</span><span class="p">(</span><span class="s2">"B"</span><span class="p">,</span> <span class="s2">"Color Mixer"</span><span class="p">)</span>
@@ -276,11 +278,12 @@
 <h2>6. Core Operations</h2>
 <p class="opencv-note-lesson">Gắn với: <a href="lessons/lesson01_images_as_arrays.html#opencv-note-06-core-operations">Bài 1: Ảnh dưới dạng mảng (Images as Arrays)</a></p>
 <div class="opencv-note-body">
-<p><mark>Nguyên tắc là OpenCV truy cập theo (x, y) - (col, row) khác với Numpy là (y, x) - (row, col)</mark></p>
-<p><mark>OpenCV đọc ảnh theo BGR khác matplot.plt đọc theo kiểu RGB</mark></p>
+<p><mark>Các hàm OpenCV nhận tọa độ điểm theo (x, y) - (col, row), còn truy cập mảng NumPy là img[y, x] - [row, col]</mark></p>
+<p><mark>OpenCV đọc ảnh theo BGR, còn matplotlib (plt) hiển thị theo RGB</mark></p>
 <ul>
 <li>Truy cập và thay đổi giá trị pixel<ul>
-<li><code>px = img[row, col]</code></li>
+<li>Đọc: <code>px = img[row, col]</code></li>
+<li>Ghi: <code>img[row, col] = [255, 255, 255]</code></li>
 </ul>
 </li>
 <li>Truy cập vào thuộc tính ảnh<ul>
@@ -288,7 +291,7 @@
 <li><code>img.shape - HxWxD</code> - Row-Column</li>
 </ul>
 </li>
-<li>Tổng số phần tử:<ul>
+<li>Tổng số phần tử (H × W × số kênh):<ul>
 <li><code>img.size</code></li>
 </ul>
 </li>
@@ -305,7 +308,7 @@
 <li>Tách màu và gộp kênh<ul>
 <li>Tách kênh: <code>b, g, r = cv.split(img)</code></li>
 <li>Gộp kênh: <code>img = cv.merge((b, g, r))</code></li>
-<li>Nên dùng hàm của openCV nếu có thể và hạn chế tách kênh theo .split và nên truy cập theo indexing</li>
+<li><code>cv.split()</code> khá tốn thời gian, nên dùng indexing của NumPy nếu được, ví dụ <code>b = img[:, :, 0]</code></li>
 </ul>
 </li>
 <li>
@@ -335,8 +338,8 @@
 <td><code>fedcba \| abcdefgh \| hgfedcb</code></td>
 </tr>
 <tr>
-<td><code>cv.BORDER_REFLECT_101 - default</code></td>
-<td>Phản chiếu ảnh ở biên trừ biên</td>
+<td><code>cv.BORDER_REFLECT_101</code> (mặc định của các hàm lọc)</td>
+<td>Phản chiếu nhưng không lặp lại pixel biên</td>
 <td><code>gfedcb \| abcdefgh \| gfedcba</code></td>
 </tr>
 <tr>
@@ -365,8 +368,8 @@
 <li>
 <p>Cộng ảnh</p>
 <ul>
-<li>Dùng<code>cv2.add</code> nếu value mới lớn hơn 255 sẽ bão hòa về 255</li>
-<li>Dùng <code>x+y</code> nếu value mới lớn hơn 255 thì sẽ tràn số<code>x+y % 256</code></li>
+<li>Dùng <code>cv2.add</code> nếu value mới lớn hơn 255 sẽ bão hòa về 255</li>
+<li>Dùng <code>x+y</code> nếu value mới lớn hơn 255 thì sẽ tràn số <code>(x + y) % 256</code></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">([[</span><span class="mi">250</span><span class="p">]])</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">([[</span><span class="mi">10</span><span class="p">]])</span>
@@ -383,7 +386,7 @@
 <p>Trừ ảnh</p>
 <ul>
 <li>Dùng <code>cv2.subtract</code> nếu value mới nhỏ hơn 0 thì sẽ bão hòa về 0</li>
-<li>Dùng<code>x-y</code> nếu value mới nhỏ hơn 0 thì sẽ tràn số <code>abs(x-y) % 256</code></li>
+<li>Dùng<code>x-y</code> nếu value mới nhỏ hơn 0 thì sẽ tràn số <code>(x - y) % 256</code></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">([[</span><span class="mi">50</span><span class="p">]])</span>
 <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">([[</span><span class="mi">100</span><span class="p">]])</span>
@@ -398,23 +401,23 @@
 <li>
 <p>Nhân ảnh</p>
 <ul>
-<li>Dùng <code>cv2.multiply</code> nếu value mới lớn hơn 255 thì sẽ bão hòa về 0</li>
-<li>Dùng <code>x*y</code> nếu value mới lớn hớn 255 thì sẽ trần số <code>x*y % 256</code></li>
+<li>Dùng <code>cv2.multiply</code> nếu value mới lớn hơn 255 thì sẽ bão hòa về 255</li>
+<li>Dùng <code>x*y</code> nếu value mới lớn hơn 255 thì sẽ tràn số <code>(x * y) % 256</code></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Nhân bằng OpenCV:"</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
 <span class="c1"># Kết quả sẽ là 255 (bão hòa)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">"Nhân bằng NumPy:"</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
-<span class="c1"># Kết quả sẽ là 44 (tràn số) 300 mod 256 = 44</span>
+<span class="c1"># Kết quả sẽ là 136 (tràn số): 50 * 100 = 5000, 5000 mod 256 = 136</span>
 </pre></div>
 
 </li>
 <li>
 <p>Trộn hai ảnh với nhau</p>
 <ul>
-<li><span class="math">\(g(x) = (1 - alpha) * f_0(x) + alpha * f_1(x)\)</span></li>
-<li>Dùng hàm <code>cv2.addWeighted(img1, alpha, img2, beta, gama)</code></li>
-<li>Hai ảnh <code>img1</code>và <code>img2</code>phải cùng kích thước</li>
-<li>Dùng hàm <code>cv2.resize(img, W, H)</code> khác với <code>img.shape - HxWxD</code></li>
+<li><span class="math">\(g(x) = (1 - \alpha) f_0(x) + \alpha f_1(x)\)</span></li>
+<li>Dùng hàm <code>cv2.addWeighted(img1, alpha, img2, beta, gamma)</code> = <code>img1*alpha + img2*beta + gamma</code>, để ra công thức trên thì<code>beta = 1 - alpha</code></li>
+<li>Hai ảnh <code>img1</code> và <code>img2</code> phải cùng kích thước và cùng số kênh</li>
+<li>Dùng hàm <code>cv2.resize(img, (W, H))</code> - chú ý thứ tự (W, H) khác với <code>img.shape</code> là (H, W, D)</li>
 <li>Có thể tạo hiệu ứng <code>Fade in Fade out</code> bằng cách đổi <code>alpha từ 0-1</code></li>
 </ul>
 </li>
@@ -460,10 +463,10 @@
 <li>Mục tiêu là:<ul>
 <li>Vùng ROI: nền giữ nguyên và vùng logo bị mask thành đen - inv_mask</li>
 <li>Vùng Logo: nền bị mask thành đen và logo giữ nguyên - mask</li>
-<li>Sau đó dùng <code>add</code>hai vùng với nhau sẽ thu được vùng mới có nền ảnh gốc và logo là logo cần chèn</li>
+<li>Sau đó dùng <code>add</code> hai vùng với nhau sẽ thu được vùng mới có nền ảnh gốc và logo là logo cần chèn</li>
 </ul>
 </li>
-<li>Chuẩn bị mask: chuyển ảnh logo sang <code>grayscale</code>và dùng <code>threshold</code>để tách ngưỡng</li>
+<li>Chuẩn bị mask: chuyển ảnh logo sang <code>grayscale</code> và dùng <code>threshold</code> để tách ngưỡng</li>
 <li>Inv_mask được chuẩn bị bằng <code>bitwise_not(mask)</code></li>
 <li>Sau khi bitwise hai vùng xong ta thế vùng mới vào ảnh gốc là xong</li>
 </ul>
@@ -479,9 +482,9 @@
 <ul>
 <li><code>e1 = cv2.getTickCount()</code></li>
 <li><code>e2 = cv2.getTickCount()</code></li>
-<li><code>time_seconds = (e2 - e1) / cv2.getTickFrequency</code>
-Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh</li>
+<li><code>time_seconds = (e2 - e1) / cv2.getTickFrequency()</code></li>
 </ul>
+<p>Nên dùng các hàm của OpenCV vì chúng được tối ưu riêng cho dữ liệu ảnh</p>
 </div>
 </section>
 <section class="opencv-note-section" id="09-colour-space">
@@ -489,7 +492,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <p class="opencv-note-lesson">Gắn với: <a href="lessons/lesson18_color_spaces.html#opencv-note-09-colour-space">Bài 18: Không gian màu (Color Spaces)</a></p>
 <div class="opencv-note-body">
 <ul>
-<li>OpenCv cung cấp hơn 150 phương thức chuyển đổi không gian màu khác nhau.<ul>
+<li>OpenCV cung cấp hơn 150 phương thức chuyển đổi không gian màu khác nhau.<ul>
 <li>BGR to Gray</li>
 <li>BGR to RGB - cho hiển thị ảnh bằng matplotlib</li>
 <li>BGR to HSV</li>
@@ -500,8 +503,8 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <ul>
 <li><code>dst = cv2.cvtColor(src, code)</code></li>
 </ul>
-<div class="highlight"><pre><span></span><span class="n">gray</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
-<span class="n">hsv</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2HSV</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><span class="n">gray</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+<span class="n">hsv</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">COLOR_BGR2HSV</span><span class="p">)</span>
 </pre></div>
 
 </li>
@@ -523,7 +526,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <tr>
 <td>H</td>
 <td>Hue - tông màu</td>
-<td>0-179 map 0-360 do kiểu uint8</td>
+<td>0-179: H = độ / 2 (0-360°) để vừa kiểu uint8</td>
 </tr>
 <tr>
 <td>S</td>
@@ -542,19 +545,22 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <p>Tách lọc vật thể theo màu</p>
 <ul>
 <li>Dùng hàm <code>cv2.inRange(img_hsv, lower, upper)</code> để tạo mask nhị phân<ul>
-<li>Nếu giá trị pixel trong khoảng từ <code>lower</code>đến <code>upper</code>thì ghim thành 255 còn lại ghim về 0</li>
-<li>Xác định <code>lower</code>và <code>upper</code>dùng <code>trackbar</code>để tuning</li>
+<li>Nếu giá trị pixel trong khoảng từ <code>lower</code> đến <code>upper</code> thì ghim thành 255 còn lại ghim về 0</li>
+<li>Xác định <code>lower</code> và <code>upper</code> dùng <code>trackbar</code> để tuning</li>
 </ul>
 </li>
 <li>Dùng phép <code>bitwise_and(img, img, mask = mask)</code></li>
 </ul>
 </li>
 <li>Thông thường:<ul>
-<li><code>Lower</code>: <code>H-10, 100, 100</code></li>
-<li><code>Upper</code>: <code>H+10, 255, 255</code></li>
+<li><code>Lower</code>:<code>H-10, 100, 100</code></li>
+<li><code>Upper</code>:<code>H+10, 255, 255</code></li>
 </ul>
 </li>
-<li>Nếu muốn mask nhiều màu thì tạo mask tổng hợp bằng <code>bitwise_or</code>của các mask lẻ</li>
+<li>Nếu muốn mask nhiều màu thì tạo mask tổng hợp bằng <code>bitwise_or</code> của các mask lẻ<ul>
+<li>Màu đỏ nằm ở cả hai đầu dải H (gần 0 và gần 179) nên thường phải tạo 2 mask rồi <code>bitwise_or</code></li>
+</ul>
+</li>
 </ul>
 </div>
 </section>
@@ -646,7 +652,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </li>
 <li>Rotation - xoay ảnh</li>
 <li>
-<p>Ma trận xoay trong toán học : 2x2 → xoay quanh gốc tạo độ (0, 0)</p>
+<p>Ma trận xoay trong toán học : 2x2 → xoay quanh gốc tọa độ (0, 0)</p>
 <p><span class="math display">\[M= \begin{bmatrix} \cos\theta &amp; -\sin\theta\\ \sin\theta &amp; \cos\theta \end{bmatrix}\]</span></p>
 </li>
 <li>
@@ -657,7 +663,10 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li>Hệ số scale</li>
 </ul>
 <p><span class="math display">\[\begin{aligned}\alpha &amp;= \text{scale}\cdot\cos\theta\\\beta &amp;= \text{scale}\cdot\sin\theta\end{aligned}\]</span></p>
-<p><span class="math display">\[M=\begin{bmatrix}\alpha &amp; -\beta &amp; (1-\alpha)\,\mathrm{center.x}-\beta\,\mathrm{center.y}\\\beta &amp; \alpha &amp; \beta\,\mathrm{center.x}+(1-\alpha)\,\mathrm{center.y}\end{bmatrix}\]</span></p>
+<p><span class="math display">\[M=\begin{bmatrix}\alpha &amp; \beta &amp; (1-\alpha)\,\mathrm{center.x}-\beta\,\mathrm{center.y}\\-\beta &amp; \alpha &amp; \beta\,\mathrm{center.x}+(1-\alpha)\,\mathrm{center.y}\end{bmatrix}\]</span></p>
+<ul>
+<li>Dấu của <span class="math">\(\beta\)</span> ngược với ma trận toán học ở trên vì trục y của ảnh hướng xuống: góc dương = xoay ngược chiều kim đồng hồ khi nhìn trên ảnh</li>
+</ul>
 </li>
 <li>
 <p>Hàm để tính M</p>
@@ -666,14 +675,14 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </ul>
 </li>
 <li>Biến đổi Affine:</li>
-<li><mark>Giữ tính chất song song của đường thẳng</mark><ul>
+<li><mark>Giữ tính chất song song của đường thẳng</mark> (đường thẳng vẫn là đường thẳng)<ul>
 <li>Ví dụ: A//B thì A’//B’</li>
 </ul>
 </li>
 <li>
 <p>Các bước biến đổi Affine: <mark>2x3</mark></p>
 <ul>
-<li>Chọn 3 điểm trên ảnh gốc</li>
+<li>Chọn 3 điểm (không thẳng hàng) trên ảnh gốc</li>
 <li>Chọn 3 điểm tương ứng trên ảnh đích</li>
 <li>Dùng <code>cv2.getAffineTransform()</code></li>
 <li>Áp dụng <code>cv2.warpAffine()</code></li>
@@ -770,11 +779,11 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <p><span class="math display">\[g(p)=\begin{cases}0, &amp; p &gt; T\\M, &amp; p \le T\end{cases}\]</span></p>
 </li>
 <li>
-<p><code>cv2.THRESH_TRUNC:</code> ghim về ngưỡng nếu lớn hơn ngương còn giữ giá trị nếu nhỏ hơn</p>
+<p><code>cv2.THRESH_TRUNC:</code> ghim về ngưỡng nếu lớn hơn ngưỡng, còn giữ giá trị nếu nhỏ hơn</p>
 <p><span class="math display">\[g(p)=\begin{cases}T, &amp; p &gt; T\\p, &amp; p \le T\end{cases}\]</span></p>
 </li>
 <li>
-<p><code>cv2.THRESH_TOZERO:</code> Giữ giá trị nếu lớn hớn ngưỡng, ngược lại ghim về 0</p>
+<p><code>cv2.THRESH_TOZERO:</code> Giữ giá trị nếu lớn hơn ngưỡng, ngược lại ghim về 0</p>
 <p><span class="math display">\[g(p)=\begin{cases}p, &amp; p &gt; T\\0, &amp; p \le T\end{cases}\]</span></p>
 </li>
 <li>
@@ -834,11 +843,11 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </tr>
 <tr>
 <td><code>blockSize</code></td>
-<td>Kích thước kernel duyệt - số lẻ lớn hơn 1</td>
+<td>Kích thước vùng lân cận - số lẻ lớn hơn 1</td>
 </tr>
 <tr>
 <td><code>C</code></td>
-<td>Bias tính ngưỡng</td>
+<td>Hằng số trừ đi khỏi giá trị trung bình cục bộ</td>
 </tr>
 </tbody>
 </table>
@@ -855,7 +864,10 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <ul>
 <li><code>cv2.ADAPTIVE_THRESH_GAUSSIAN_C</code></li>
 </ul>
-<p><span class="math display">\[T(x,y)=\left(\frac{1}{N}\sum_{(i,j)\in\Omega(x,y)} w(i,j)*I(i,j)\right)-C\]</span></p>
+<p><span class="math display">\[T(x,y)=\left(\sum_{(i,j)\in\Omega(x,y)} w(i,j)\,I(i,j)\right)-C, \quad \sum w(i,j) = 1\]</span></p>
+<ul>
+<li>Trọng số Gaussian <span class="math">\(w\)</span> đã chuẩn hóa tổng bằng 1 nên không chia thêm cho <span class="math">\(N\)</span></li>
+</ul>
 <div class="highlight"><pre><span></span><span class="n">th2</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">adaptiveThreshold</span><span class="p">(</span>
     <span class="n">img</span><span class="p">,</span>
     <span class="mi">255</span><span class="p">,</span>
@@ -894,6 +906,9 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <span class="n">ret3</span><span class="p">,</span> <span class="n">th3</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">blur</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">THRESH_BINARY</span> <span class="o">+</span> <span class="n">cv</span><span class="o">.</span><span class="n">THRESH_OTSU</span><span class="p">)</span>
 </pre></div>
 
+<ul>
+<li>Tham số ngưỡng (0) bị bỏ qua, ngưỡng Otsu tìm được trả về ở <code>ret3</code></li>
+</ul>
 </li>
 </ul>
 </li>
@@ -910,19 +925,19 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li><span class="math">\(\sigma_w^2(t)=q_1(t)\sigma_1^2(t)+q_2(t)\sigma_2^2(t)\)</span></li>
 </ul>
 </li>
-<li>Xác xuất tích tũy của hai lớp<ul>
+<li>Xác suất tích lũy của hai lớp<ul>
 <li><span class="math">\(q_1(t)=\sum_{i=0}^{t-1} P(i)\)</span></li>
 <li><span class="math">\(q_2(t)=\sum_{i=t}^{L-1} P(i)\)</span></li>
 </ul>
 </li>
 <li>Giá trị trung bình của hai lớp<ul>
-<li>Chia cho <span class="math">\(q_i(t)\)</span> là để chuẩn hóa về [0,1]</li>
+<li>Chia cho <span class="math">\(q_i(t)\)</span> để xác suất trong mỗi lớp có tổng bằng 1 (xác suất có điều kiện)</li>
 <li><span class="math display">\[\mu_1(t)=\sum_{i=0}^{t-1}\frac{i \cdot P(i)}{q_1(t)}\]</span></li>
 <li><span class="math display">\[\mu_2(t)=\sum_{i=t}^{L-1}\frac{i \cdot P(i)}{q_2(t)}\]</span></li>
 </ul>
 </li>
 <li>Phương sai của hai lớp<ul>
-<li>Chia cho <span class="math">\(q_i(t)\)</span> là để chuẩn hóa về [0,1]</li>
+<li>Chia cho <span class="math">\(q_i(t)\)</span> với cùng lý do như trên</li>
 <li><span class="math display">\[\sigma_1^2(t)=\sum_{i=0}^{t-1}\frac{(i - \mu_1(t))^2 \cdot P(i)}{q_1(t)}\]</span></li>
 <li><span class="math display">\[\sigma_2^2(t)=\sum_{i=t}^{L-1}\frac{(i - \mu_2(t))^2 \cdot P(i)}{q_2(t)}\]</span></li>
 </ul>
@@ -937,9 +952,9 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <p class="opencv-note-lesson">Gắn với: <a href="lessons/lesson11_smoothing_pyramids.html#opencv-note-12-smoothing">Bài 11: Làm trơn và Kim tự tháp Gauss (Smoothing and Gaussian Pyramids)</a></p>
 <div class="opencv-note-body">
 <ul>
-<li>Tần số : độ biến thiên của các pixel:<ul>
-<li>0-1 → tần số thấp</li>
-<li>0-100 → tần số cao</li>
+<li>Tần số: tốc độ thay đổi giá trị pixel theo không gian<ul>
+<li>Pixel kề nhau thay đổi ít (ví dụ 0 → 1) → tần số thấp: vùng phẳng, mảng màu</li>
+<li>Pixel kề nhau thay đổi đột ngột (ví dụ 0 → 100) → tần số cao: cạnh, chi tiết nhỏ, nhiễu</li>
 </ul>
 </li>
 </ul>
@@ -980,6 +995,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li>Cộng các kết quả lại</li>
 <li>Gán kết quả cho pixel trung tâm</li>
 <li>Lặp lại cho toàn bộ ảnh</li>
+<li>Lưu ý: <code>filter2D</code> thực chất tính <strong>tương quan</strong> (correlation), không lật kernel; với kernel đối xứng thì kết quả giống tích chập</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">/</span> <span class="mi">25</span>
 <span class="n">dst</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">filter2D</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
@@ -1010,12 +1026,12 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <tr>
 <td>Gaussian Blur</td>
 <td><code>cv2.GaussianBlur()</code></td>
-<td>Trong số cao với pixel trung tâm,giảm dần ra biên</td>
+<td>Trọng số cao với pixel trung tâm, giảm dần ra biên</td>
 </tr>
 <tr>
 <td>Median Blur</td>
 <td><code>cv2.medianBlur()</code></td>
-<td>Lây trung vị, tốt với nhiễu muối tiêu</td>
+<td>Lấy trung vị, tốt với nhiễu muối tiêu</td>
 </tr>
 <tr>
 <td>Bilateral Filter</td>
@@ -1039,11 +1055,11 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li><code>cv2.blur()</code> : tương đương <code>cv2.boxFilter(normalize = True)</code></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">dst</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">blur</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
-<span class="c1"># dst = cv2.boxFilter(img, -1, (5, 5), normalize = False)</span>
+<span class="c1"># tương đương: dst = cv2.boxFilter(img, -1, (5, 5), normalize=True)</span>
 
 <span class="n">dst2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">boxFilter</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 <span class="c1"># -1 : ddepth</span>
-<span class="c1"># không chia trong số nên nếu quá 255 thì sẽ bão hòa ở 255</span>
+<span class="c1"># không chia trọng số (chỉ cộng) nên nếu quá 255 thì sẽ bão hòa ở 255</span>
 </pre></div>
 
 </li>
@@ -1054,10 +1070,10 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <p>Hàm : <code>blur_gaussian = cv.GaussianBlur(src, ksize, sigmaX, sigmaY=0)</code></p>
 <ul>
 <li><code>src</code>: ảnh đầu vào</li>
-<li><code>ksize</code>: kích thước kernel số lẻ</li>
+<li><code>ksize</code>: kích thước kernel, số lẻ</li>
 <li><code>sigmaX</code>: độ lệch chuẩn theo trục X</li>
 <li><code>sigmaY</code>: độ lệch chuẩn theo trục Y</li>
-<li>nếu <code>sigma</code>= 0 thì OpenCV sẽ tự tính</li>
+<li>nếu <code>sigmaX = 0</code> thì OpenCV tự tính từ <code>ksize</code>; nếu<code>sigmaY = 0</code> thì lấy bằng <code>sigmaX</code></li>
 </ul>
 <p><code>blur_gaussian = cv2.GaussianBlur(img, (5, 5), 0)</code></p>
 </li>
@@ -1068,7 +1084,8 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <ul>
 <li>Thay pixel trung tâm bằng trung vị của các pixel trong vùng kernel</li>
 <li>Hàm: <code>median = cv.medianBlur(src, ksize)</code></li>
-<li>Hiệu quả tốt với nhiễu muối tiêu do nhiễu muối tiêu là các pixel có giá trị nhỏ mà lọc trung vị lấy trung vị gắn cho pixel trung tâm lên không làm loang nhiễu</li>
+<li>Hiệu quả tốt với nhiễu muối tiêu vì nhiễu muối tiêu là các pixel lẻ có giá trị cực trị (0 hoặc 255); trung vị bỏ qua các giá trị ngoại lai này nên không làm loang nhiễu như lọc trung bình</li>
+<li><code>ksize</code> là số lẻ lớn hơn 1</li>
 </ul>
 </li>
 <li>Lọc song phương<ul>
@@ -1094,7 +1111,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <p class="opencv-note-lesson">Gắn với: <a href="lessons/lesson03_thresholding_morphology.html#opencv-note-13-morphological-transform">Bài 3: Phân ngưỡng, Co và Giãn (Thresholding, Erosion, and Dilation)</a></p>
 <div class="opencv-note-body">
 <ul>
-<li>Các phép hình thái học: <mark>Erosion, dilation, opening, closing, morphological gradient, top hat, back hat.</mark></li>
+<li>Các phép hình thái học: <mark>Erosion, dilation, opening, closing, morphological gradient, top hat, black hat.</mark></li>
 <li>Tổng quan:</li>
 </ul>
 <table>
@@ -1139,7 +1156,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </tr>
 <tr>
 <td>Top Hat</td>
-<td>A−Opening(A</td>
+<td>A−Opening(A)</td>
 <td><code>cv.MORPH_TOPHAT</code></td>
 <td>Trích chi tiết sáng nhỏ.</td>
 </tr>
@@ -1153,7 +1170,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </table>
 <ul>
 <li>Yêu cầu hai thành phần đầu vào:<ul>
-<li>Ảnh đầu vào: <mark>Ảnh nhị phân, vật thể tiền cảnh màu trắng và nền màu đen</mark></li>
+<li>Ảnh đầu vào: <mark>Thường là ảnh nhị phân, vật thể tiền cảnh màu trắng và nền màu đen</mark> (cũng áp dụng được cho ảnh xám)</li>
 <li>Structuring kernel: Kernel áp dụng trên ảnh</li>
 </ul>
 </li>
@@ -1191,7 +1208,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <tr>
 <td><code>cv2.MORPH_CROSS</code></td>
 <td>Kernel hình chữ thập</td>
-<td>Khi muốn tác động thoe hướng ngang dọc hơn là chéo</td>
+<td>Khi muốn tác động theo hướng ngang dọc hơn là chéo</td>
 </tr>
 </tbody>
 </table>
@@ -1211,7 +1228,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li>Cơ chế:<ul>
 <li>Kernel trượt qua từng vị trí trên ảnh</li>
 <li><mark>Pixel trung tâm giữ giá trị trắng nếu toàn bộ vùng dưới kernel đều là màu trắng</mark></li>
-<li><mark>Nếu có ít nhật một giá trị trong vùng kernel là đen, pixel trung tâm bị gán về đen</mark></li>
+<li><mark>Nếu có ít nhất một giá trị trong vùng kernel là đen, pixel trung tâm bị gán về đen</mark></li>
 </ul>
 </li>
 <li>Kết quả:<ul>
@@ -1256,7 +1273,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <p><img alt="" src="img/opencv-notes/13-morphological-transform-6.png" /></p>
 <ul>
 <li><strong>Opening là erosion trước, sau đó dilation</strong></li>
-<li><em><code>Opening</code></em><code>(</code><em><code>A</code></em><code>)=</code><em><code>Dilation</code></em><code>(</code><em><code>Erosion</code></em><code>(</code><em><code>A</code></em><code>))</code></li>
+<li><span class="math">\(\text{Opening}(A)=\text{Dilation}(\text{Erosion}(A))\)</span></li>
 <li><code>opening = cv.morphologyEx(img, cv.MORPH_OPEN, kernel)</code></li>
 <li><mark>Ý nghĩa:</mark><ul>
 <li><mark>Erosion xóa nhiễu trắng nhỏ</mark></li>
@@ -1273,8 +1290,8 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <p><img alt="" src="img/opencv-notes/13-morphological-transform-7.png" /></p>
 <p><img alt="" src="img/opencv-notes/13-morphological-transform-8.png" /></p>
 <ul>
-<li><strong>Closing là dilation trước, sau đo erosion</strong></li>
-<li><em><code>Closing</code></em><code>(</code><em><code>A</code></em><code>)=</code><em><code>Erosion</code></em><code>(</code><em><code>Dilation</code></em><code>(</code><em><code>A</code></em><code>))</code></li>
+<li><strong>Closing là dilation trước, sau đó erosion</strong></li>
+<li><span class="math">\(\text{Closing}(A)=\text{Erosion}(\text{Dilation}(A))\)</span></li>
 <li><code>closing = cv.morphologyEx(img, cv.MORPH_CLOSE, kernel)</code></li>
 <li><mark>Ý nghĩa:</mark><ul>
 <li><mark>Dilation lấp khe hở nhỏ hoặc lỗ đen nhỏ</mark></li>
@@ -1292,7 +1309,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <p><img alt="" src="img/opencv-notes/13-morphological-transform-9.png" /></p>
 <ul>
 <li><strong>Morphological Gradient là hiệu giữa ảnh dilation và ảnh erosion</strong></li>
-<li><em><code>Gradient</code></em><code>(</code><em><code>A</code></em><code>)=</code><em><code>Dilation</code></em><code>(</code><em><code>A</code></em><code>)−</code><em><code>Erosion</code></em><code>(</code><em><code>A</code></em><code>)</code></li>
+<li><span class="math">\(\text{Gradient}(A)=\text{Dilation}(A)-\text{Erosion}(A)\)</span></li>
 <li><code>gradient = cv.morphologyEx(img, cv.MORPH_GRADIENT, kernel)</code></li>
 <li><mark>Kết quả:</mark><ul>
 <li><mark>Thường là đường viền của vật thể</mark></li>
@@ -1300,7 +1317,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </li>
 <li><mark>Ứng dụng:</mark><ul>
 <li><mark>Trích biên ngoài của vật thể</mark></li>
-<li><mark>Làm nổi bật outline ( đường viền ) trong ảnh nhị phân</mark></li>
+<li><mark>Làm nổi bật outline (đường viền) trong ảnh nhị phân</mark></li>
 </ul>
 </li>
 <li><mark><strong>Top Hat</strong></mark></li>
@@ -1311,7 +1328,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li><mark>Làm nổi bật part sáng trên nền tối</mark></li>
 <li><strong>Top Hat là hiệu giữa ảnh gốc và ảnh sau opening</strong></li>
 <li>
-<p><em><code>TopHat</code></em><code>(</code><em><code>A</code></em><code>)=</code><em><code>A</code></em><code>−</code><em><code>Opening</code></em><code>(</code><em><code>A</code></em><code>)</code></p>
+<p><span class="math">\(\text{TopHat}(A)=A-\text{Opening}(A)\)</span></p>
 <div class="highlight"><pre><span></span><span class="n">kernel_9x9</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
 <span class="n">tophat</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">morphologyEx</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">MORPH_TOPHAT</span><span class="p">,</span> <span class="n">kernel_9x9</span><span class="p">)</span>
 </pre></div>
@@ -1320,8 +1337,8 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li>
 <p><mark>Ứng dụng:</mark></p>
 <ul>
-<li><mark>Trích các chi tiết sáng nhỏ hơn kernel (opening xóa nhiễu trắng nhỏ lên trừ với ảnh gốc ra được nhiễu trắng nhỏ hay hole nhỏ)</mark></li>
-<li><mark>Phát hiện đốm sáng trên nền sáng không đồng đều</mark></li>
+<li><mark>Trích các chi tiết sáng nhỏ hơn kernel (opening xóa các chi tiết sáng nhỏ nên lấy ảnh gốc trừ đi sẽ còn lại đúng các chi tiết đó)</mark></li>
+<li><mark>Phát hiện đốm sáng trên nền có độ sáng không đồng đều</mark></li>
 <li><mark>Tăng cường chi tiết sáng nhỏ trên ảnh</mark></li>
 </ul>
 </li>
@@ -1332,10 +1349,10 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li>Làm việc với ảnh grayscale</li>
 <li><mark>Làm nổi bật part tối trên nền sáng</mark></li>
 <li><strong>Black Hat là hiệu giữa ảnh sau closing và ảnh gốc</strong></li>
-<li><em><code>BlackHat</code></em><code>(</code><em><code>A</code></em><code>)=</code><em><code>Closing</code></em><code>(</code><em><code>A</code></em><code>)−</code><em><code>A</code></em></li>
+<li><span class="math">\(\text{BlackHat}(A)=\text{Closing}(A)-A\)</span></li>
 <li><code>blackhat = cv.morphologyEx(img, cv.MORPH_BLACKHAT, kernel)</code></li>
 <li><mark>Ứng dụng:</mark><ul>
-<li><mark>Trích các chi tiết tối nhỏ ( do closing làm lấp lỗ đen nên khi trừ với ảnh gốc được lỗ đen)</mark></li>
+<li><mark>Trích các chi tiết tối nhỏ (closing lấp các lỗ đen nhỏ nên trừ đi ảnh gốc sẽ còn lại đúng các lỗ đó)</mark></li>
 <li><mark>Phát hiện vết nứt, lỗ thủng hoặc vùng tối trên nền vật thể sáng</mark></li>
 <li><mark>Làm nổi bật chi tiết tối trên nền không đồng đều</mark></li>
 </ul>
@@ -1363,23 +1380,18 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <tbody>
 <tr>
 <td><code>cv.Sobel()</code></td>
-<td><code>src</code>, <code>ddepth</code>, <code>dx</code>, <code>dy</code>, <code>ksize</code></td>
+<td><code>src</code>,<code>ddepth</code>,<code>dx</code>,<code>dy</code>,<code>ksize</code></td>
 <td>Tính đạo hàm bậc một. Cho phép tách biệt rõ rệt hướng cạnh ngang hoặc cạnh dọc. Chống nhiễu tốt nhờ tích hợp Gaussian.</td>
 </tr>
 <tr>
 <td><code>cv.Scharr()</code></td>
-<td><code>src</code>, <code>ddepth</code>, <code>dx</code>, <code>dy</code></td>
-<td>Phiên bản tối ưu hơn của Sobel với kernel 3×33×3. Thường cho kết quả đạo hàm chính xác hơn Sobel 3×33×3.</td>
+<td><code>src</code>,<code>ddepth</code>,<code>dx</code>,<code>dy</code></td>
+<td>Phiên bản tối ưu hơn của Sobel với kernel 3×3. Thường cho kết quả đạo hàm chính xác hơn Sobel 3×3.</td>
 </tr>
 <tr>
 <td><code>cv.Laplacian()</code></td>
-<td><code>src</code>, <code>ddepth</code>, <code>ksize</code></td>
+<td><code>src</code>,<code>ddepth</code>,<code>ksize</code></td>
 <td>Tính đạo hàm bậc hai tổng hợp. Phát hiện nhanh toàn bộ đường biên theo mọi hướng cùng lúc, nhưng nhạy cảm với nhiễu hơn Sobel.</td>
-</tr>
-<tr>
-<td></td>
-<td></td>
-<td></td>
 </tr>
 </tbody>
 </table>
@@ -1397,17 +1409,17 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li>Đạo hàm theo y (dy) thì làm mượt Gaussian theo x → <span class="math">\(Ga_x = [1, 2, 1]\)</span></li>
 <li>Với Scharr thì <span class="math">\(Ga_y = [3, 10, 3]^T\)</span> và <span class="math">\(Ga_x = [3, 10, 3]\)</span></li>
 <li>Sobel xấp xỉ:<ul>
-<li><mark>Nhận dạng tốt với hướng ở các góc 45, 90</mark></li>
+<li><mark>Chính xác nhất với cạnh ngang/dọc (0°, 90°), sai số góc lớn hơn ở các hướng chéo</mark></li>
 <li><mark>Hay phát hiện cạnh giả do nhiễu</mark></li>
 <li><mark>Cạnh dày</mark></li>
-<li><span class="math">\(K_x = Ga_y * dx = \begin{bmatrix}-1 &amp; 0 &amp; 1 \\-2 &amp; 0 &amp; 2 \\-1 &amp; 0 &amp; 1\end{bmatrix}\)</span><code>: x column dọc → tìm cạnh dọc</code></li>
-<li><span class="math">\(K_y = dy *Ga_x = \begin{bmatrix}-1 &amp; -2 &amp; -1 \\0 &amp; 0 &amp; 0 \\1 &amp; 2 &amp; 1\end{bmatrix}\)</span><code>: y row ngang → tìm cạnh ngang</code></li>
+<li><span class="math">\(K_x = Ga_y * dx = \begin{bmatrix}-1 &amp; 0 &amp; 1 \\-2 &amp; 0 &amp; 2 \\-1 &amp; 0 &amp; 1\end{bmatrix}\)</span>: đạo hàm theo x (theo cột) → tìm cạnh dọc</li>
+<li><span class="math">\(K_y = dy *Ga_x = \begin{bmatrix}-1 &amp; -2 &amp; -1 \\0 &amp; 0 &amp; 0 \\1 &amp; 2 &amp; 1\end{bmatrix}\)</span>: đạo hàm theo y (theo hàng) → tìm cạnh ngang</li>
 </ul>
 </li>
-<li>Scharr: <strong>tùy vào quy ước của dx dy mà đảo vị trí</strong><ul>
-<li><mark>Nhận dạng tốt với mọi hướng</mark></li>
-<li><span class="math display">\[K_x = Ga_y * dx = \begin{bmatrix}3 &amp; 0 &amp; -3 \\10 &amp; 0 &amp; -10 \\3 &amp; 0 &amp; -3\end{bmatrix}\]</span></li>
-<li><span class="math display">\[K_y = dy *Ga_x = \begin{bmatrix}3 &amp; 10 &amp; 3 \\0 &amp; 0 &amp; 0 \\-3 &amp; -10 &amp; -3\end{bmatrix}\]</span></li>
+<li>Scharr (cùng quy ước dấu với Sobel ở trên, giống kernel của OpenCV):<ul>
+<li><mark>Sai số góc nhỏ hơn nhiều, chính xác ở mọi hướng</mark></li>
+<li><span class="math display">\[K_x = Ga_y * dx = \begin{bmatrix}-3 &amp; 0 &amp; 3 \\-10 &amp; 0 &amp; 10 \\-3 &amp; 0 &amp; 3\end{bmatrix}\]</span></li>
+<li><span class="math display">\[K_y = dy *Ga_x = \begin{bmatrix}-3 &amp; -10 &amp; -3 \\0 &amp; 0 &amp; 0 \\3 &amp; 10 &amp; 3\end{bmatrix}\]</span></li>
 </ul>
 </li>
 </ul>
@@ -1432,7 +1444,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li><span class="math display">\[\Delta img = \frac{\partial^2 img}{\partial x^2} + \frac{\partial^2 img}{\partial y^2}\]</span></li>
 <li>Mỗi thành phần đều được xấp xỉ bằng cách tính dựa trên các toán tử Sobel</li>
 <li>
-<p>Với<code>ksize = 1</code></p>
+<p>Với <code>ksize = 1</code></p>
 <p><span class="math display">\[\begin{bmatrix}0 &amp; 1 &amp; 0 \\1 &amp; -4 &amp; 1 \\0 &amp; 1 &amp; 0\end{bmatrix}\]</span></p>
 </li>
 </ul>
@@ -1457,6 +1469,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li><code>ddepth = cv2.CV_64F</code> hoặc <code>cv2.CV_16S</code></li>
 <li>Lấy giá trị tuyệt đối bằng hàm <code>np.absolute</code></li>
 <li>Sau đó ép kiểu ma trận ngược lại về dạng <code>np.uint8</code></li>
+<li>Cẩn thận: giá trị tuyệt đối có thể lớn hơn 255, <code>np.uint8()</code> sẽ <strong>tràn số</strong> (quay vòng) thay vì bão hòa → nên <code>np.clip(..., 0, 255)</code> hoặc <code>cv2.normalize</code> trước, hoặc dùng giải pháp 2</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">sobelx64f</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 <span class="n">abs_sobel64f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">sobelx64f</span><span class="p">)</span>
@@ -1467,7 +1480,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li>
 <p><mark>Giải pháp 2:</mark></p>
 <ul>
-<li>Dùng thắng hàm <code>cv2.convertScaleAbs</code></li>
+<li>Dùng thẳng hàm <code>cv2.convertScaleAbs</code> (lấy trị tuyệt đối rồi bão hòa về <code>uint8</code>)</li>
 <li>Sau đó tính <code>G = cv2.addWeighted</code></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="c1"># Sobel operator and converting the result to uint8</span>
@@ -1498,9 +1511,9 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </ul>
 </div>
 </section>
-<section class="opencv-note-section" id="15-candy-edge">
-<h2>15. Candy edge</h2>
-<p class="opencv-note-lesson">Gắn với: <a href="lessons/lesson12_differentiation_edges.html#opencv-note-15-candy-edge">Bài 12: Đạo hàm và Phát hiện biên (Differentiation and Edge Detection)</a></p>
+<section class="opencv-note-section" id="15-canny-edge">
+<h2>15. Canny edge</h2>
+<p class="opencv-note-lesson">Gắn với: <a href="lessons/lesson12_differentiation_edges.html#opencv-note-15-canny-edge">Bài 12: Đạo hàm và Phát hiện biên (Differentiation and Edge Detection)</a></p>
 <div class="opencv-note-body">
 <table>
 <thead>
@@ -1535,21 +1548,22 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </table>
 <ul>
 <li>
-<p>Quy trình của thuật toán Candy</p>
+<p>Quy trình của thuật toán Canny</p>
 <ul>
 <li>GD1: Giảm nhiễu<ul>
 <li>Cho ảnh grayscale đầu vào qua bộ lọc Gaussian 5x5</li>
+<li>Lưu ý: <code>cv2.Canny</code> <strong>không</strong> tự làm mờ, bước này phải tự gọi <code>GaussianBlur</code> trước</li>
 </ul>
 </li>
 <li>GD2: Tìm gradient cường độ ảnh<ul>
 <li><span class="math">\(G = \sqrt{G_x^2 + G_y^2}\)</span> or <span class="math">\(G \approx |G_x| + |G_y|\)</span></li>
 <li><span class="math">\(\theta = \text{atan2}(G_y, G_x)\)</span></li>
 <li>Hướng của gradient luôn vuông góc với đường biên của cạnh</li>
-<li>Giá trị góc này sẽ được làm tròn về 1 trong 4 hướng: 0 (ngang) , 90 (dọc) , 45 (chéo) , 135 (chéo)</li>
+<li>Giá trị góc này sẽ được làm tròn về 1 trong 4 hướng: 0°, 45°, 90°, 135°</li>
 </ul>
 </li>
 <li>GD3: Triệt tiêu phi cực đại - Loại trừ cạnh dày<ul>
-<li>Tại mỗi pixel A kiểm tra xem nó <span class="math">\(G_A\)</span> có max trong vùng lân cận dọc theo Gradient không</li>
+<li>Tại mỗi pixel A kiểm tra xem <span class="math">\(G_A\)</span> có max trong vùng lân cận dọc theo Gradient không</li>
 <li>Nếu <span class="math">\(G_A\)</span> max thì sẽ giữ lại</li>
 <li>Nếu <span class="math">\(G_A\)</span> không phải là max thì là cạnh giả đặt về 0 ( nền đen)</li>
 </ul>
@@ -1557,11 +1571,11 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li>
 <p>GD4: Ngưỡng trễ:</p>
 <ul>
-<li>Chọn hai ngưỡng <code>minVal</code>và <code>maxVal</code></li>
+<li>Chọn hai ngưỡng <code>minVal</code> và <code>maxVal</code></li>
 <li>Cạnh chắc chắn (Sure-edge): <span class="math">\(G_A\)</span> &gt; <code>maxVal</code></li>
 <li>Không phải cạnh (Non-edge): <span class="math">\(G_A\)</span> &lt; <code>minVal</code></li>
-<li>Cạnh yếu (Weak-edge): <code>minVal</code>&lt; <span class="math">\(G_A\)</span> &lt; <code>maxVal</code><ul>
-<li>Nếu A kết nối với với một cạnh chắc chắn thì nó được thăng cấp thành cạnh</li>
+<li>Cạnh yếu (Weak-edge): <code>minVal</code> &lt; <span class="math">\(G_A\)</span> &lt; <code>maxVal</code><ul>
+<li>Nếu A kết nối với một cạnh chắc chắn thì nó được thăng cấp thành cạnh</li>
 <li>Nếu A bị cô lập với cạnh chắc chắn thì xóa bỏ nó</li>
 </ul>
 </li>
@@ -1570,7 +1584,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </ul>
 </li>
 </ul>
-<p><img alt="" src="img/opencv-notes/15-candy-edge-1.png" /></p>
+<p><img alt="" src="img/opencv-notes/15-canny-edge-1.png" /></p>
 </li>
 </ul>
 </li>
@@ -1601,17 +1615,17 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </tr>
 <tr>
 <td><code>apertureSize</code></td>
-<td>Kích thước của mặt nạ Sobel dùng để tính gradient ở giai đoạn 2. Mặc định bằng <code>3</code>.</td>
+<td>Kích thước của mặt nạ Sobel dùng để tính gradient ở giai đoạn 2. Mặc định bằng <code>3</code>.</td>
 </tr>
 <tr>
 <td><code>L2gradient</code></td>
-<td>Quyết định phương trình tính độ lớn gradient G<em>G</em>. Mặc định là <code>False</code>.</td>
+<td>Quyết định công thức tính độ lớn gradient <span class="math">\(G\)</span>. Mặc định là <code>False</code>.</td>
 </tr>
 </tbody>
 </table>
 <ul>
 <li><span class="math">\(G = \sqrt{G_x^2 + G_y^2}\)</span> nếu <code>L2gradient = True</code></li>
-<li><span class="math">\(G \approx |G_x| + |G_y|\)</span> nếu <code>L2gradient = Fasle</code></li>
+<li><span class="math">\(G \approx |G_x| + |G_y|\)</span> nếu <code>L2gradient = False</code></li>
 </ul>
 </li>
 </ul>
@@ -1632,22 +1646,22 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <tbody>
 <tr>
 <td><code>cv.pyrDown(src)</code></td>
-<td>Lọc Gaussian →→ bỏ các hàng/cột xen kẽ.</td>
-<td>Thu nhỏ: giảm chiều rộng và chiều cao đi một nửa, tức còn 1/41/4 diện tích.</td>
+<td>Lọc Gaussian → bỏ các hàng/cột xen kẽ.</td>
+<td>Thu nhỏ: giảm chiều rộng và chiều cao đi một nửa, tức còn 1/4 diện tích.</td>
 </tr>
 <tr>
 <td><code>cv.pyrUp(src)</code></td>
-<td>Chèn thêm hàng/cột trống 00 →→ lọc Gaussian để nội suy.</td>
-<td>Phóng to: nhân đôi chiều rộng và chiều cao, tức tăng 44 lần diện tích. Ảnh bị mờ nhẹ.</td>
+<td>Chèn thêm hàng/cột toàn 0 → lọc Gaussian để nội suy.</td>
+<td>Phóng to: nhân đôi chiều rộng và chiều cao, tức tăng 4 lần diện tích. Ảnh bị mờ nhẹ.</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li>Vấn đề là nếu chỉ làm việc với ảnh có kích thước cố định thì trong bài toán nhận diện vật thể qua camera mà không thể biết được vật cần nhận diện xuất hiện với kích thước như nào</li>
+<li>Vấn đề là nếu chỉ làm việc với ảnh có kích thước cố định thì trong bài toán nhận diện vật thể qua camera mà không thể biết được vật cần nhận diện xuất hiện với kích thước như thế nào</li>
 <li>Giải pháp:<ul>
 <li>Dùng Pyramids tạo ra tập hợp các ảnh giống nhau có độ phân giải giảm dần, xếp chồng lên nhau</li>
 <li>Ảnh gốc có độ phân giải cao nhất nằm ở đáy</li>
-<li>Ảnh nhỏ nhất nằm ở định</li>
+<li>Ảnh nhỏ nhất nằm ở đỉnh</li>
 </ul>
 </li>
 <li>Có hai loại Pyramids:<ul>
@@ -1656,11 +1670,11 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </ul>
 </li>
 <li><mark><strong>Gaussian Pyramid</strong></mark><ul>
-<li>Sample bằng cách loại bỏ xen kẽ cột và hàng ở tầng ngay trên nó</li>
+<li>Mỗi tầng được tạo từ tầng ngay dưới nó (lớn hơn) bằng cách lọc Gaussian rồi bỏ xen kẽ hàng và cột</li>
 <li>Ban đầu MxN → <span class="math">\(\frac{M}{2} \times \frac{N}{2}\)</span></li>
 <li><code>cv.pyrDown()</code>: Thu nhỏ ảnh xuống một tầng, giảm 4 lần diện tích.</li>
 <li><code>cv.pyrUp()</code>: Phóng to ảnh lên một tầng, tăng 4 lần diện tích.</li>
-<li>Lưu ý do khi DownSample thì các chi tiết có tần số cao có thể biến mất vĩnh viễn và phép phóng to chỉ là phép nội suy làm mở ảnh</li>
+<li>Lưu ý do khi DownSample thì các chi tiết có tần số cao có thể biến mất vĩnh viễn và phép phóng to chỉ là phép nội suy làm mờ ảnh</li>
 </ul>
 </li>
 <li><mark><strong>Laplacian Pyramid</strong></mark><ul>
@@ -1698,7 +1712,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </ol>
 </li>
 <li>Lặp cho đến khi trở về kích thước ban đầu để thu được ảnh blend mượt, không xuất hiện đường nối rõ như khi ghép trực tiếp.</li>
-<li>Lý do nó giữ được màu sắc và các chi tiết thấp do Gaussian tầng thấp nhất và Laplacian là giống nhau</li>
+<li>Lý do vết nối mượt: mỗi dải tần số được trộn ở đúng tỷ lệ của nó. Thành phần tần số thấp (màu sắc, độ sáng ở tầng Gaussian nhỏ nhất) được trộn trên một vùng chuyển tiếp rộng, còn chi tiết tần số cao (các tầng Laplacian lớn) được trộn trên vùng hẹp nên vẫn sắc nét</li>
 </ul>
 </li>
 </ul>
@@ -1723,21 +1737,21 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <tr>
 <td><code>cv.findContours()</code></td>
 <td>Trích xuất thông tin: quét ma trận pixel nhị phân để gom cụm tọa độ hình học.</td>
-<td><code>image</code>, <code>mode</code>, <code>method</code>.</td>
+<td><code>image</code>,<code>mode</code>,<code>method</code>.</td>
 </tr>
 <tr>
 <td><code>cv.drawContours()</code></td>
 <td>Trực quan hóa đồ họa: vẽ các đường viền từ dạng dữ liệu số lên màn hình.</td>
-<td><code>target_img</code>, <code>contours_list</code>, <code>contourIdx</code>, <code>color</code>, <code>thickness</code>.</td>
+<td><code>target_img</code>,<code>contours_list</code>,<code>contourIdx</code>,<code>color</code>,<code>thickness</code>.</td>
 </tr>
 </tbody>
 </table>
 <ul>
 <li>Contour là đường cong khép kín nối tất cả các điểm liên tục dọc theo ranh giới của một hình khối có cùng màu sắc hoặc cùng cường độ sáng</li>
 <li><mark>Quy tắc khi tìm kiếm contour</mark><ul>
-<li><mark>Luôn sử dụng ảnh nhị phân (Binary Image) → trước khi tìm kiếm contour cần áp dụng tách ngưỡng (<code>Thresholding</code>) hoặc phát hiện cạnh<code>Candy</code></mark></li>
+<li><mark>Luôn sử dụng ảnh nhị phân (Binary Image) → trước khi tìm kiếm contour cần áp dụng tách ngưỡng (<code>Thresholding</code>) hoặc phát hiện cạnh<code>Canny</code></mark></li>
 <li><mark>Tìm vật thể trắng trên nền đen</mark></li>
-<li><mark>Không làm hỏng ảnh gốc với hàm</mark> <mark><code>cv2.findContours()</code></mark></li>
+<li><mark>Từ OpenCV 3.2 <code>cv2.findContours()</code> không còn sửa ảnh đầu vào; với bản cũ hơn nên truyền bản sao <code>thresh.copy()</code> để không làm hỏng ảnh gốc</mark></li>
 </ul>
 </li>
 </ul>
@@ -1817,7 +1831,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <tbody>
 <tr>
 <td><code>cv.moments()</code></td>
-<td>Ma trận hằng số moment của ảnh.</td>
+<td>Dictionary các giá trị moment (<code>m00</code>,<code>m10</code>,<code>m01</code>, ...).</td>
 <td>Tính toán trọng tâm hình học của vật thể.</td>
 </tr>
 <tr>
@@ -1837,12 +1851,12 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </tr>
 <tr>
 <td><code>cv.convexHull()</code></td>
-<td>Tọa độ lưới bao lồi bên ngoài.</td>
+<td>Các đỉnh của bao lồi bên ngoài.</td>
 <td>Xử lý nhận diện cử chỉ bàn tay, ngón tay.</td>
 </tr>
 <tr>
 <td><code>cv.boundingRect()</code></td>
-<td>Tọa độ chữ nhật thẳng <code>(x, y, w, h)</code>.</td>
+<td>Tọa độ chữ nhật thẳng <code>(x, y, w, h)</code>.</td>
 <td>Khoanh vùng ROI (Region of Interest) để cắt ảnh vật thể.</td>
 </tr>
 <tr>
@@ -1867,7 +1881,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 
 <ul>
 <li>
-<p>Trích xuất tạo độ trọng tâm (Centroid) <span class="math">\(C_x, C_y\)</span> của vật thể theo công thức:</p>
+<p>Trích xuất tọa độ trọng tâm (Centroid) <span class="math">\(C_x, C_y\)</span> của vật thể theo công thức:</p>
 <ul>
 <li><span class="math display">\[C_x = \frac{M_{10}}{M_{00}}, C_y = \frac{M_{01}}{M_{00}}\]</span></li>
 </ul>
@@ -1876,13 +1890,16 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <span class="n">cy</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="s1">'m01'</span><span class="p">]</span> <span class="o">/</span> <span class="n">M</span><span class="p">[</span><span class="s1">'m00'</span><span class="p">])</span>
 </pre></div>
 
+<ul>
+<li>Cẩn thận <code>M['m00'] = 0</code> (contour suy biến, diện tích bằng 0) sẽ gây lỗi chia cho 0 → nên kiểm tra trước</li>
+</ul>
 </li>
 </ul>
 </li>
 <li>
 <p>Diện tích và chu vi đường viền</p>
 <ul>
-<li>Diện tích contours -<code>cv2.contourArea()</code><ul>
+<li>Diện tích contour - <code>cv2.contourArea()</code><ul>
 <li><code>area = cv.contourArea(cnt)</code></li>
 </ul>
 </li>
@@ -1898,15 +1915,15 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <p>Phép xấp xỉ đa giác đường viền</p>
 <p><img alt="" src="img/opencv-notes/17-contour-2.png" /></p>
 <ul>
-<li><code>cv2.approxPolyDP(cnt, epsilon, bool)</code></li>
-<li>Phép này giúp biến đổi một đường công ngoằn nghèo có nhiều đỉnh thành khối hình học có ít đỉnh hơn</li>
+<li><code>cv2.approxPolyDP(cnt, epsilon, closed)</code></li>
+<li>Phép này giúp biến đổi một đường cong ngoằn ngoèo có nhiều đỉnh thành khối hình học có ít đỉnh hơn</li>
 <li><code>epsilon</code> : Khoảng cách tối đa cho phép đường viền gốc đến đường viền xấp xỉ<ul>
 <li><span class="math">\(\epsilon\)</span> quá lớn → Hình xấp xỉ bị thô và mất nhiều chi tiết</li>
 <li><span class="math">\(\epsilon\)</span> quá nhỏ → Hình xấp xỉ bám quá sát ảnh gốc, không nén được số đỉnh</li>
 </ul>
 </li>
 </ul>
-<div class="highlight"><pre><span></span><span class="c1"># Thực nghiệm đặt epsilon bằng 10% chiều dài chu vi đường viền</span>
+<div class="highlight"><pre><span></span><span class="c1"># Ví dụ trong tài liệu: epsilon = 10% chu vi (thực tế hay dùng 1-5% để giữ hình dạng tốt hơn)</span>
 <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">cv</span><span class="o">.</span><span class="n">arcLength</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
 <span class="n">approx</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">approxPolyDP</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">epsilon</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>  <span class="c1"># Đối số 3: đường cong khép kín</span>
 </pre></div>
@@ -1921,10 +1938,10 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <p><img alt="" src="img/opencv-notes/17-contour-3.png" /></p>
 <ul>
 <li><code>hull = cv.convexHull(points[, hull[, clockwise[, returnPoints]]])</code><ul>
-<li><code>points</code>: Tập hợp đường viền <code>cnt</code>truyền vào</li>
-<li><code>clockwise</code>: Cờ định hướng. Nếu <code>True</code>, bao lồi được sắp xếp theo chiều kim đồng hồ ngược</li>
+<li><code>points</code>: Tập hợp đường viền<code>cnt</code>truyền vào</li>
+<li><code>clockwise</code>: Cờ định hướng. Nếu<code>True</code>, các đỉnh bao lồi được sắp theo chiều kim đồng hồ,<code>False</code> thì ngược chiều kim đồng hồ</li>
 <li><code>returnPoints</code> :<ul>
-<li>Mặc định là True → Trả về tạo độ các đỉnh bao lồi.</li>
+<li>Mặc định là True → Trả về tọa độ các đỉnh bao lồi.</li>
 <li>False trả về chỉ số index của các điểm đó trong mảng cnt.</li>
 <li>Đặt False nếu muốn tính toán convexity defects</li>
 </ul>
@@ -1944,9 +1961,9 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </li>
 <li>Bounding Rectangle</li>
 <li>
-<p>Hình hộp chữ nhật thẳng đứng -<code>cv2.boundingRect</code></p>
+<p>Hình chữ nhật bao thẳng đứng - <code>cv2.boundingRect</code></p>
 <ul>
-<li>Hình hộp thẳng theo lưới tạo độ không quan tâm đến góc xoay của vật thể</li>
+<li>Hình chữ nhật thẳng theo lưới tọa độ không quan tâm đến góc xoay của vật thể</li>
 <li><strong>Diện tích hộp này thường lớn hơn diện tích thực tế của vật thể</strong></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
@@ -1958,12 +1975,12 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <p>Hộp bao chữ nhật xoay quanh có diện tích tối thiểu - <code>cv2.minAreaRect</code></p>
 <ul>
 <li>Ôm sát vật thể bằng cách xoay theo góc nghiêng của vật thể</li>
-<li>Hàm trả về Box2D: tâm (<span class="math">\(c_x\)</span><code>,</code><span class="math">\(c_y\)</span>), kích thước (<code>width, height</code>) và góc xoay</li>
+<li>Hàm trả về Box2D: <code>((cx, cy), (width, height), angle)</code> - tâm, kích thước và góc xoay</li>
 <li>Để vẽ hộp này cần phải chuyển cấu trúc trên thành 4 đỉnh tọa độ thông qua hàm <code>cv2.boxPoints</code></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">rect</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">minAreaRect</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
 <span class="n">box</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">boxPoints</span><span class="p">(</span><span class="n">rect</span><span class="p">)</span>     <span class="c1"># Lấy 4 đỉnh tọa độ</span>
-<span class="n">box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>          <span class="c1"># Chuyển đổi sang kiểu số nguyên gốc tọa độ</span>
+<span class="n">box</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>           <span class="c1"># Chuyển tọa độ sang số nguyên để vẽ</span>
 <span class="n">cv</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">[</span><span class="n">box</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># Vẽ hộp xoay màu đỏ</span>
 </pre></div>
 
@@ -1971,7 +1988,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </ul>
 </li>
 <li>
-<p>Đường tròn, elip và đường thằng khớp tối ưu</p>
+<p>Đường tròn, elip và đường thẳng khớp tối ưu</p>
 <ul>
 <li>
 <p>Đường tròn ngoại tiếp tối thiểu</p>
@@ -1983,7 +2000,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <div class="highlight"><pre><span></span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="n">radius</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">minEnclosingCircle</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
 <span class="n">center</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">))</span>
 <span class="n">radius</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">radius</span><span class="p">)</span>
-<span class="n">cv</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">2</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
 </li>
@@ -2005,13 +2022,14 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li>Dựa vào bình phương tối thiểu để fit line</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="p">[</span><span class="n">vx</span><span class="p">,</span> <span class="n">vy</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">]</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">fitLine</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">DIST_L2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span>
-    <span class="nb">print</span> <span class="p">(</span><span class="sa">f</span><span class="s2">"Đường thẳng bao contour: vx=</span><span class="si">{</span><span class="n">vx</span><span class="si">}</span><span class="s2">, vy=</span><span class="si">{</span><span class="n">vy</span><span class="si">}</span><span class="s2">, x=</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">, y=</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
-    <span class="c1"># X = vx * t + x</span>
-    <span class="c1"># Y = vy * t + y</span>
-    <span class="c1"># lefty giải pt tại X = 0, righty giải pt tại X = img.shape[1]</span>
-    <span class="n">lefty</span> <span class="o">=</span> <span class="nb">float</span><span class="p">((</span><span class="o">-</span><span class="n">x</span> <span class="o">*</span> <span class="n">vy</span> <span class="o">/</span> <span class="n">vx</span><span class="p">)</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span>
-    <span class="n">righty</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(((</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">vy</span> <span class="o">/</span> <span class="n">vx</span><span class="p">)</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span>
-    <span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">righty</span><span class="p">)),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">lefty</span><span class="p">)),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span> <span class="c1"># -1 là ids pixel = 0</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Đường thẳng khớp contour: vx=</span><span class="si">{</span><span class="n">vx</span><span class="si">}</span><span class="s2">, vy=</span><span class="si">{</span><span class="n">vy</span><span class="si">}</span><span class="s2">, x=</span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">, y=</span><span class="si">{</span><span class="n">y</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+<span class="c1"># (vx, vy): vector chỉ phương, (x, y): một điểm trên đường thẳng</span>
+<span class="c1"># X = vx * t + x</span>
+<span class="c1"># Y = vy * t + y</span>
+<span class="c1"># lefty: giải pt tại X = 0, righty: giải pt tại X = img.shape[1] - 1 (cột cuối cùng)</span>
+<span class="n">lefty</span> <span class="o">=</span> <span class="nb">float</span><span class="p">((</span><span class="o">-</span><span class="n">x</span> <span class="o">*</span> <span class="n">vy</span> <span class="o">/</span> <span class="n">vx</span><span class="p">)</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">righty</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(((</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">x</span><span class="p">)</span> <span class="o">*</span> <span class="n">vy</span> <span class="o">/</span> <span class="n">vx</span><span class="p">)</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">righty</span><span class="p">)),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">lefty</span><span class="p">)),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 
 </li>
@@ -2030,7 +2048,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <tbody>
 <tr>
 <td><code>Aspect Ratio</code></td>
-<td>W/H của hộp bao thẳng đứng.</td>
+<td>W/H của hộp bao thẳng đứng.</td>
 <td>Phân biệt xe máy, thường có hộp bao hẹp và tỷ lệ đứng, với xe ô tô, thường có hộp rộng và tỷ lệ ngang.</td>
 </tr>
 <tr>
@@ -2050,17 +2068,17 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </tr>
 <tr>
 <td><code>cv.minMaxLoc()</code></td>
-<td>Lọc điểm cực trị độ sáng qua <code>mask</code>.</td>
+<td>Lọc điểm cực trị độ sáng qua <code>mask</code>.</td>
 <td>Tìm điểm phản xạ chói sáng nhất trên bề mặt sản phẩm để kiểm thử chất lượng lỗi.</td>
 </tr>
 <tr>
 <td><code>cv.mean()</code></td>
-<td>Trung bình cộng cường độ pixel qua <code>mask</code>.</td>
+<td>Trung bình cộng cường độ pixel qua <code>mask</code>.</td>
 <td>Nhận diện màu sắc của một quả trái cây trên băng chuyền để phân loại độ chín.</td>
 </tr>
 <tr>
 <td><code>Extreme Points</code></td>
-<td>Các điểm có x hoặc y nhỏ nhất/lớn nhất trên contour.</td>
+<td>Các điểm có x hoặc y nhỏ nhất/lớn nhất trên contour.</td>
 <td>Xác định kích thước biên ngoài cùng hoặc điểm mốc để căn chỉnh vật thể.</td>
 </tr>
 </tbody>
@@ -2082,7 +2100,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li>
 <p><strong>Độ phủ / mức độ mở rộng (Extent)</strong></p>
 <ul>
-<li>Tỷ số giữa diện tích của đường viện và diện tích của boundingArea</li>
+<li>Tỷ số giữa diện tích của đường viền và diện tích của hình chữ nhật bao (bounding rect)</li>
 <li>Thể hiện mức độ lấp đầy của vật thể trong khung hình chữ nhật bao quanh nó</li>
 <li><span class="math display">\[\text{Extent} = \frac{\text{Contour Area}}{\text{Bounding Rect Area}}\]</span></li>
 </ul>
@@ -2097,8 +2115,8 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li>
 <p><strong>Độ đặc/ độ rắn (Solidity)</strong></p>
 <ul>
-<li>Tỷ số giữa diện tích của đường viền vật thể và diện tích bảo lồi (ConvexHull)</li>
-<li>Thuộc tính phản ảnh độ lồi lõm của cấu trúc hiện tại</li>
+<li>Tỷ số giữa diện tích của đường viền vật thể và diện tích bao lồi (Convex Hull)</li>
+<li>Thuộc tính phản ánh độ lồi lõm của cấu trúc hiện tại</li>
 <li>Một đa giác lồi thuần túy sẽ có <code>Solidity = 1</code></li>
 <li><span class="math display">\[\text{Solidity} = \frac{\text{Contour Area}}{\text{Convex Hull Area}}\]</span></li>
 </ul>
@@ -2113,7 +2131,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li>
 <p><strong>Đường kính tương đương (Equivalent Diameter)</strong></p>
 <ul>
-<li>Là đường kính của một hình tròn lý tưởng có diện tích chính xác bằng chính xác diện tích của đường viền vật thể</li>
+<li>Là đường kính của một hình tròn lý tưởng có diện tích bằng chính xác diện tích của đường viền vật thể</li>
 <li><span class="math display">\[\text{Equivalent Diameter} = \sqrt{\frac{4 \times \text{Area}}{\pi}}\]</span></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">area</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">contourArea</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
@@ -2122,11 +2140,11 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 
 </li>
 <li>
-<p><strong>Hường và trục hình học (Orientation)</strong></p>
+<p><strong>Hướng và trục hình học (Orientation)</strong></p>
 <ul>
-<li>Hướng là góc nghiêng trục của vật thể được định nghĩa trong không gian</li>
+<li>Hướng là góc nghiêng trục chính của vật thể, lấy từ elip khớp với contour</li>
 </ul>
-<div class="highlight"><pre><span></span><span class="c1"># Trả về tọa độ tâm (x, y), độ dài hai trục (MA, ma), và góc nghiêng (angle)</span>
+<div class="highlight"><pre><span></span><span class="c1"># Trả về tọa độ tâm (x, y), độ dài hai trục (đường kính, không phải bán trục) và góc nghiêng (angle)</span>
 <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">MA</span><span class="p">,</span> <span class="n">ma</span><span class="p">),</span> <span class="n">angle</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">fitEllipse</span><span class="p">(</span><span class="n">cnt</span><span class="p">)</span>
 </pre></div>
 
@@ -2134,7 +2152,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </ul>
 </li>
 <li>
-<p><strong>Trích xuất pixel và Thông kê ma trận ảnh vùng ROI</strong></p>
+<p><strong>Trích xuất pixel và thống kê giá trị pixel trong vùng ROI</strong></p>
 <ul>
 <li>
 <p><strong>Mask và tọa độ điểm pixel thành phần</strong></p>
@@ -2163,7 +2181,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </li>
 <li>
 <p><strong>Cường độ sáng / màu sắc trung bình</strong></p>
-<div class="highlight"><pre><span></span><span class="c1"># Đối với ảnh màu, hàm trả về tuple tương ứng cho các kênh màu [B, G, R, Alpha]</span>
+<div class="highlight"><pre><span></span><span class="c1"># Hàm luôn trả về tuple 4 phần tử; với ảnh BGR là (B, G, R, 0)</span>
 <span class="n">mean_val</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">mask</span><span class="p">)</span>
 </pre></div>
 
@@ -2204,7 +2222,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 </tr>
 <tr>
 <td><code>cv.pointPolygonTest()</code></td>
-<td>Khoảng cách hình học có dấu (+, −, 0).</td>
+<td>Khoảng cách hình học có dấu (+, −, 0).</td>
 <td>Camera an ninh hoặc geofencing: kiểm tra xem tọa độ của người hoặc phương tiện có đang xâm nhập vào vùng đa giác cấm hay không.</td>
 </tr>
 <tr>
@@ -2222,14 +2240,14 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li>Bất kì đoạn nào của vật thể bị lõm sâu vào trong so với đường ConvexHull được coi là một điểm khuyết lồi</li>
 <li>Để tính các điểm khuyết lồi:<ul>
 <li>Dùng hàm <code>cv2.convexityDefects()</code></li>
-<li>Hàm này yêu cầu index của các điểm thay vì tạo độ, trong hàm <code>cv2.convexHull(returnPoints = False)</code></li>
+<li>Hàm này yêu cầu index của các điểm thay vì tọa độ → bao lồi phải tính bằng <code>cv2.convexHull(cnt, returnPoints=False)</code></li>
 </ul>
 </li>
 <li><code>cv2.convexityDefects()</code> trả về:<ul>
 <li><strong>Start Point</strong>: Chỉ số của điểm ranh giới nơi vết lõm bắt đầu</li>
 <li><strong>End Point</strong>: Chỉ số của điểm ranh giới nơi vết lõm kết thúc</li>
 <li><strong>Farthest Point</strong>: Chỉ số của điểm nằm sâu nhất trong vết lõm, tức là có khoảng cách xa nhất tới đường bao lồi</li>
-<li><strong>Farthest Distance</strong>: Giá trị khoảng cách xấp xỉ từ điểm sâu nhất đó tới đường bao lồi</li>
+<li><strong>Farthest Distance</strong>: Khoảng cách từ điểm sâu nhất đó tới đường bao lồi, lưu dạng số nguyên nhân 256 → khoảng cách thật = <code>d / 256</code></li>
 </ul>
 </li>
 </ul>
@@ -2252,10 +2270,10 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
     <span class="n">start</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">cnt</span><span class="p">[</span><span class="n">s</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">end</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">cnt</span><span class="p">[</span><span class="n">e</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
     <span class="n">far</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">cnt</span><span class="p">[</span><span class="n">f</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-    <span class="c1"># Vẽ các điểm khuyết lồi</span>
+    <span class="c1"># Vẽ cạnh bao lồi đi qua vết lõm</span>
     <span class="n">cv2</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
     <span class="c1"># Vẽ các điểm khuyết lồi</span>
-    <span class="n">cv2</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">far</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span>
+    <span class="n">cv2</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">far</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 
 </li>
@@ -2263,20 +2281,12 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <p><strong>Kiểm tra điểm trong đa giác (Point Polygon Test)</strong></p>
 <ul>
 <li>Hàm <code>cv2.pointPolygonTest(cnt, point, measureDist)</code> : dùng để tính khoảng cách ngắn nhất từ 1 điểm tọa độ tới đường viền đa giác</li>
-<li><code>measureDist</code>: False thì kiểm tra nhanh vị trí tương đối (+1, -1, 0)</li>
-<li>
-<ul>
-<li>: Điểm đang nằm hoàn toàn bên trong đường viền</li>
+<li><code>measureDist = True</code>: trả về khoảng cách có dấu;<code>False</code>: chỉ trả về +1, -1, 0 (nhanh hơn)</li>
+<li>Dương: điểm nằm bên trong đường viền</li>
+<li>Âm: điểm nằm ngoài đường viền</li>
+<li>0: điểm nằm ngay trên đường viền</li>
 </ul>
-</li>
-<li>
-<ul>
-<li>:Điểm đang nằm ngoài đường viền</li>
-</ul>
-</li>
-<li>0: Điểm nằm ngay trên đường biên cấu thành đường viền</li>
-</ul>
-<div class="highlight"><pre><span></span><span class="c1"># Ví dụ kiểm tra vị trí tương đối của điểm tọa độ (50, 50) so với đường viền cnt</span>
+<div class="highlight"><pre><span></span><span class="c1"># Ví dụ tính khoảng cách có dấu từ điểm (50, 50) tới đường viền cnt</span>
 <span class="n">distance</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">pointPolygonTest</span><span class="p">(</span><span class="n">cnt</span><span class="p">,</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">measureDist</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 
@@ -2288,7 +2298,7 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <li>Score càng gần 0 thì hai hình càng giống nhau</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="c1"># Phép toán so sánh hai đường viền</span>
-<span class="n">similarity_score</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">matchShapes</span><span class="p">(</span><span class="n">cnt1</span><span class="p">,</span> <span class="n">cnt2</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">similarity_score</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">matchShapes</span><span class="p">(</span><span class="n">cnt1</span><span class="p">,</span> <span class="n">cnt2</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">cv</span><span class="o">.</span><span class="n">CONTOURS_MATCH_I1</span><span class="p">,</span> <span class="n">parameter</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">similarity_score</span><span class="p">)</span>
 </pre></div>
 
@@ -2308,69 +2318,69 @@ Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh<
 <tr>
 <td><code>cv.RETR_LIST</code></td>
 <td>Đúng 1 tầng (Phẳng)</td>
-<td><strong>Có</strong> (Nhưng coi như ngang hàng biên ngoài).</td>
+<td><strong>Có</strong> (Nhưng coi như ngang hàng biên ngoài).</td>
 <td>Đếm tổng số lượng, xử lý hình khối độc lập, tối ưu tốc độ.</td>
 </tr>
 <tr>
 <td><code>cv.RETR_EXTERNAL</code></td>
 <td>Đúng 1 tầng (Rìa ngoài)</td>
-<td><strong>Không</strong> (Bỏ qua hoàn toàn chi tiết bên trong).</td>
+<td><strong>Không</strong> (Bỏ qua hoàn toàn chi tiết bên trong).</td>
 <td>Trích xuất khuôn hình/bóng của vật thể, tách nền nhanh.</td>
 </tr>
 <tr>
 <td><code>cv.RETR_CCOMP</code></td>
 <td>Đúng 2 tầng (Biên &amp; Lỗ)</td>
-<td><strong>Có</strong> (Phân tách rõ ràng biên và lỗ thủng).</td>
+<td><strong>Có</strong> (Phân tách rõ ràng biên và lỗ thủng).</td>
 <td>Xử lý các vật thể có lỗ đục (như nhận diện các con ốc vít, long đền).</td>
 </tr>
 <tr>
 <td><code>cv.RETR_TREE</code></td>
 <td>Vô số tầng (Mạng lưới cây)</td>
-<td><strong>Có</strong> (Lập gia phả chi tiết từ ngoài vào trong).</td>
+<td><strong>Có</strong> (Lập gia phả chi tiết từ ngoài vào trong).</td>
 <td>Phân tích cấu trúc lồng nhau phức tạp, quét mã vạch, mã QR.</td>
 </tr>
 </tbody>
 </table>
 <ul>
-<li>Thông thường hàm <code>cv2.findContours()</code> để phát hiện các vật thể độc lập. Tuy nhiên trong thực tế gặp nhiều trường hợp các hình khối nằm lồng vào trong bên nhau<ul>
+<li>Thông thường dùng hàm <code>cv2.findContours()</code> để phát hiện các vật thể độc lập. Tuy nhiên trong thực tế gặp nhiều trường hợp các hình khối nằm lồng vào bên trong nhau<ul>
 <li><strong>Đường viền Cha (Parent Contour)</strong>: Đường bao bọc phía ngoài</li>
 <li><strong>Đường viền Con (Child Contour)</strong>: Đường nằm trọn vẹn ở phía bên trong</li>
 <li><strong>Cùng cấp bậc (Same Hierarchy Level)</strong>: Các đường viền nằm độc lập ở cùng một tầng không gian</li>
 </ul>
 </li>
 <li><span class="math display">\[\text{Hierarchy Array} = \begin{bmatrix} \text{Next}, &amp; \text{Previous}, &amp; \text{First\_Child}, &amp; \text{Parent} \end{bmatrix}\]</span><ul>
-<li><code>Next</code> <strong>(Đường viền tiếp theo):</strong> Chỉ số (index) của đường viền tiếp theo <strong>nằm cùng một cấp bậc</strong> phân cấp với đường viền hiện tại.</li>
-<li><code>Previous</code> <strong>(Đường viền trước đó):</strong> Chỉ số của đường viền nằm ngay trước nó <strong>trên cùng một cấp bậc</strong>.</li>
-<li><code>First_Child</code> <strong>(Con đầu lòng):</strong> Chỉ số của đường viền con <strong>đầu tiên</strong> nằm lồng bên trong nó (nếu có nhiều con, chỉ lấy đứa đầu tiên).</li>
-<li><code>Parent</code> <strong>(Đường viền cha):</strong> Chỉ số của đường viền cha trực tiếp bao bọc lấy nó ở tầng ngay phía trên.</li>
-<li><strong>Quy ước:</strong> Nếu tại vị trí nào đó không tồn tại đường viền thỏa mãn (không có cha, không có con, hoặc không có anh em cùng cấp ở trước/sau), OpenCV sẽ gán giá trị mặc định là <code>1</code>.</li>
+<li><code>Next</code> <strong>(Đường viền tiếp theo):</strong> Chỉ số (index) của đường viền tiếp theo <strong>nằm cùng một cấp bậc</strong> phân cấp với đường viền hiện tại.</li>
+<li><code>Previous</code> <strong>(Đường viền trước đó):</strong> Chỉ số của đường viền nằm ngay trước nó <strong>trên cùng một cấp bậc</strong>.</li>
+<li><code>First_Child</code> <strong>(Con đầu lòng):</strong> Chỉ số của đường viền con <strong>đầu tiên</strong> nằm lồng bên trong nó (nếu có nhiều con, chỉ lấy đứa đầu tiên).</li>
+<li><code>Parent</code> <strong>(Đường viền cha):</strong> Chỉ số của đường viền cha trực tiếp bao bọc lấy nó ở tầng ngay phía trên.</li>
+<li><strong>Quy ước:</strong> Nếu tại vị trí nào đó không tồn tại đường viền thỏa mãn (không có cha, không có con, hoặc không có anh em cùng cấp ở trước/sau), OpenCV sẽ gán giá trị <code>-1</code>.</li>
 </ul>
 </li>
 <li><strong>Contour Retrieval Modes</strong><ul>
 <li><code>cv2.RETR_LIST</code><ul>
-<li><strong>Luật xử lý:</strong> Đây là chế độ đơn giản nhất. Nó thu thập <strong>tuyệt đối tất cả mọi đường viền</strong> nhưng <strong>không thiết lập bất kỳ mối quan hệ cha-con nào</strong>. Cha và con hoàn toàn bình đẳng và bị ép nằm chung ở một cấp phân cấp duy nhất.</li>
-<li><strong>Hệ quả ma trận:</strong> Giá trị cột số 3 (<code>First_Child</code>) và cột số 4 (<code>Parent</code>) luôn luôn bằng <code>1</code>.</li>
-<li><strong>Ứng dụng:</strong> Hãy luôn chọn <code>cv.RETR_LIST</code> nếu ứng dụng của bạn chỉ cần đếm số lượng vật thể hoặc tính diện tích mà không quan tâm chúng có lồng nhau hay không, vì chế độ này chạy rất nhanh và tiết kiệm tài nguyên.</li>
+<li><strong>Luật xử lý:</strong> Đây là chế độ đơn giản nhất. Nó thu thập <strong>tuyệt đối tất cả mọi đường viền</strong> nhưng <strong>không thiết lập bất kỳ mối quan hệ cha-con nào</strong>. Cha và con hoàn toàn bình đẳng và bị ép nằm chung ở một cấp phân cấp duy nhất.</li>
+<li><strong>Hệ quả ma trận:</strong> Giá trị cột số 3 (<code>First_Child</code>) và cột số 4 (<code>Parent</code>) luôn luôn bằng<code>-1</code>.</li>
+<li><strong>Ứng dụng:</strong> Hãy luôn chọn <code>cv.RETR_LIST</code> nếu ứng dụng của bạn chỉ cần đếm số lượng vật thể hoặc tính diện tích mà không quan tâm chúng có lồng nhau hay không, vì chế độ này chạy rất nhanh và tiết kiệm tài nguyên.</li>
 </ul>
 </li>
 <li><code>cv2.RETR_EXTERNAL</code><ul>
-<li><strong>Luật xử lý:</strong> Chế độ này <strong>chỉ thu thập các đường viền nằm ở rìa ngoài cùng</strong>, loại bỏ sạch sẽ tất cả các đường viền con nằm lồng bên trong. (Có thể hiểu vui là luật này chỉ quan tâm đến vị trưởng tộc cao nhất trong gia đình).</li>
-<li><strong>Hệ quả ma trận:</strong> Chỉ lưu các cấu trúc thuộc tầng <code>hierarchy-0</code>. Mọi phần tử con bên trong đều có giá trị bằng <code>1</code> hoặc bị phớt lờ.</li>
-<li><strong>Ứng dụng:</strong> Cực kỳ hữu ích khi bạn muốn cắt lấy biên dạng tổng thể của một vật thể phức tạp và muốn loại bỏ các chi tiết đục lỗ, hoa văn rỗng ở bên trong vật thể đó</li>
+<li><strong>Luật xử lý:</strong> Chế độ này <strong>chỉ thu thập các đường viền nằm ở rìa ngoài cùng</strong>, loại bỏ sạch sẽ tất cả các đường viền con nằm lồng bên trong. (Có thể hiểu vui là luật này chỉ quan tâm đến vị trưởng tộc cao nhất trong gia đình).</li>
+<li><strong>Hệ quả ma trận:</strong> Chỉ trả về các đường viền ở tầng ngoài cùng; đường viền con không được trả về nên <code>First_Child</code> và <code>Parent</code> luôn bằng <code>-1</code>.</li>
+<li><strong>Ứng dụng:</strong> Cực kỳ hữu ích khi bạn muốn cắt lấy biên dạng tổng thể của một vật thể phức tạp và muốn loại bỏ các chi tiết đục lỗ, hoa văn rỗng ở bên trong vật thể đó</li>
 </ul>
 </li>
 <li><code>cv2.RETR_CCOMP</code><ul>
-<li><strong>Luật xử lý:</strong> Thu thập tất cả các đường viền nhưng ép cấu trúc về dạng <strong>phân cấp đúng 2 tầng cố định</strong>:<ul>
-<li><strong>Tầng 1 (Hierarchy-1):</strong> Chứa các đường biên ngoài cùng của vật thể.</li>
-<li><strong>Tầng 2 (Hierarchy-2):</strong> Chứa đường biên của các lỗ thủng (holes) nằm bên trong vật thể đó.</li>
-<li><em>Nếu bên trong lỗ thủng lại chứa một vật thể con khác?</em> Vật thể con đó sẽ tự động được đưa ngược lên xếp ở Tầng 1, và lỗ thủng của nó lại nằm ở Tầng 2.</li>
+<li><strong>Luật xử lý:</strong> Thu thập tất cả các đường viền nhưng ép cấu trúc về dạng <strong>phân cấp đúng 2 tầng cố định</strong>:<ul>
+<li><strong>Tầng 1 (Hierarchy-1):</strong> Chứa các đường biên ngoài cùng của vật thể.</li>
+<li><strong>Tầng 2 (Hierarchy-2):</strong> Chứa đường biên của các lỗ thủng (holes) nằm bên trong vật thể đó.</li>
+<li><em>Nếu bên trong lỗ thủng lại chứa một vật thể con khác?</em> Vật thể con đó sẽ tự động được đưa ngược lên xếp ở Tầng 1, và lỗ thủng của nó lại nằm ở Tầng 2.</li>
 </ul>
 </li>
 </ul>
 </li>
 <li><code>cv2.RETR_TREE</code><ul>
-<li><strong>Luật xử lý:</strong> Đây là chế độ toàn diện và hoàn hảo nhất. Nó thiết lập một <strong>cây phả hệ đầy đủ nhiều tầng bậc</strong>, ghi nhận chính xác tuyệt đối mối quan hệ từ ông bà, cha mẹ, con cái, cháu chắt lồng ghép sâu bao nhiêu tầng tùy ý vào bên trong.</li>
-<li><strong>Ứng dụng:</strong> Sử dụng khi cần phân tích các cấu trúc đồ họa phức tạp đan xen lồng nhau, như nhận diện cấu trúc các linh kiện trên bo mạch điện tử hoặc phân tích văn bản nhiều lớp ký tự<br><br></li>
+<li><strong>Luật xử lý:</strong> Đây là chế độ toàn diện và hoàn hảo nhất. Nó thiết lập một <strong>cây phả hệ đầy đủ nhiều tầng bậc</strong>, ghi nhận chính xác tuyệt đối mối quan hệ từ ông bà, cha mẹ, con cái, cháu chắt lồng ghép sâu bao nhiêu tầng tùy ý vào bên trong.</li>
+<li><strong>Ứng dụng:</strong> Sử dụng khi cần phân tích các cấu trúc đồ họa phức tạp đan xen lồng nhau, như nhận diện cấu trúc các linh kiện trên bo mạch điện tử hoặc phân tích văn bản nhiều lớp ký tự</li>
 </ul>
 </li>
 </ul>

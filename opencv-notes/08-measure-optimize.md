@@ -7,5 +7,6 @@ after:
 
 - `e1 = cv2.getTickCount()`
 - `e2 = cv2.getTickCount()`
-- `time_seconds = (e2 - e1) / cv2.getTickFrequency`
-Nên dung các hàm của Opencv vì nó tối ưu riêng cho dữ liệu ảnh
+- `time_seconds = (e2 - e1) / cv2.getTickFrequency()`
+
+Nên dùng các hàm của OpenCV vì chúng được tối ưu riêng cho dữ liệu ảnh

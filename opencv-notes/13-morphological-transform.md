@@ -3,7 +3,7 @@ title: 13. Morphological Transform
 lesson: lesson03_thresholding_morphology
 after:
 ---
-- Các phép hình thái học: ==Erosion, dilation, opening, closing, morphological gradient, top hat, back hat.==
+- Các phép hình thái học: ==Erosion, dilation, opening, closing, morphological gradient, top hat, black hat.==
 - Tổng quan:
 
 | Phép toán | Công thức | Hàm OpenCV | Ứng dụng |
@@ -13,11 +13,11 @@ after:
 | Opening | Erosion rồi Dilation | `cv.MORPH_OPEN` | Xóa nhiễu trắng nhỏ. |
 | Closing | Dilation rồi Erosion | `cv.MORPH_CLOSE` | Lấp lỗ đen nhỏ. |
 | Gradient | Dilation(A)−Erosion(A) | `cv.MORPH_GRADIENT` | Trích biên vật thể. |
-| Top Hat | A−Opening(A | `cv.MORPH_TOPHAT` | Trích chi tiết sáng nhỏ. |
+| Top Hat | A−Opening(A) | `cv.MORPH_TOPHAT` | Trích chi tiết sáng nhỏ. |
 | Black Hat | Closing(A)−A | `cv.MORPH_BLACKHAT` | Trích chi tiết tối nhỏ. |
 
 - Yêu cầu hai thành phần đầu vào:
-    - Ảnh đầu vào: ==Ảnh nhị phân, vật thể tiền cảnh màu trắng và nền màu đen==
+    - Ảnh đầu vào: ==Thường là ảnh nhị phân, vật thể tiền cảnh màu trắng và nền màu đen== (cũng áp dụng được cho ảnh xám)
     - Structuring kernel: Kernel áp dụng trên ảnh
 - Quy ước xử lý:
     - ==Vật thể cần xử lý nên là màu trắng 255 hoặc 1==
@@ -31,7 +31,7 @@ after:
         |---|---|---|
         | `cv2.MORPH_RECT` | Kernel hình chữ nhật | Vật thể dạng khối, cạnh vuông |
         | `cv2.MORPH_ELLIPSE` | Kernel hình ellip hoặc hình tròn | Vật thể tròn, oval, lỗ tròn |
-        | `cv2.MORPH_CROSS` | Kernel hình chữ thập | Khi muốn tác động thoe hướng ngang dọc hơn là chéo |
+        | `cv2.MORPH_CROSS` | Kernel hình chữ thập | Khi muốn tác động theo hướng ngang dọc hơn là chéo |
 
 - ==**Erosion - Phép bào mòn ảnh**==
 
@@ -48,7 +48,7 @@ after:
     - Cơ chế:
         - Kernel trượt qua từng vị trí trên ảnh
         - ==Pixel trung tâm giữ giá trị trắng nếu toàn bộ vùng dưới kernel đều là màu trắng==
-        - ==Nếu có ít nhật một giá trị trong vùng kernel là đen, pixel trung tâm bị gán về đen==
+        - ==Nếu có ít nhất một giá trị trong vùng kernel là đen, pixel trung tâm bị gán về đen==
     - Kết quả:
         - Vật thể trắng bị nhỏ lại
         - Biên vật thể bị bào mòn
@@ -83,7 +83,7 @@ after:
     ![](img/opencv-notes/13-morphological-transform-6.png)
 
     - **Opening là erosion trước, sau đó dilation**
-    - *`Opening`*`(`*`A`*`)=`*`Dilation`*`(`*`Erosion`*`(`*`A`*`))`
+    - $\text{Opening}(A)=\text{Dilation}(\text{Erosion}(A))$
     - `opening = cv.morphologyEx(img, cv.MORPH_OPEN, kernel)`
     - ==Ý nghĩa:==
         - ==Erosion xóa nhiễu trắng nhỏ==
@@ -97,8 +97,8 @@ after:
 
     ![](img/opencv-notes/13-morphological-transform-8.png)
 
-    - **Closing là dilation trước, sau đo erosion**
-    - *`Closing`*`(`*`A`*`)=`*`Erosion`*`(`*`Dilation`*`(`*`A`*`))`
+    - **Closing là dilation trước, sau đó erosion**
+    - $\text{Closing}(A)=\text{Erosion}(\text{Dilation}(A))$
     - `closing = cv.morphologyEx(img, cv.MORPH_CLOSE, kernel)`
     - ==Ý nghĩa:==
         - ==Dilation lấp khe hở nhỏ hoặc lỗ đen nhỏ==
@@ -112,13 +112,13 @@ after:
     ![](img/opencv-notes/13-morphological-transform-9.png)
 
     - **Morphological Gradient là hiệu giữa ảnh dilation và ảnh erosion**
-    - *`Gradient`*`(`*`A`*`)=`*`Dilation`*`(`*`A`*`)−`*`Erosion`*`(`*`A`*`)`
+    - $\text{Gradient}(A)=\text{Dilation}(A)-\text{Erosion}(A)$
     - `gradient = cv.morphologyEx(img, cv.MORPH_GRADIENT, kernel)`
     - ==Kết quả:==
         - ==Thường là đường viền của vật thể==
     - ==Ứng dụng:==
         - ==Trích biên ngoài của vật thể==
-        - ==Làm nổi bật outline ( đường viền ) trong ảnh nhị phân==
+        - ==Làm nổi bật outline (đường viền) trong ảnh nhị phân==
 - ==**Top Hat**==
 
     ![](img/opencv-notes/13-morphological-transform-10.png)
@@ -126,7 +126,7 @@ after:
     - Làm việc với ảnh grayscale
     - ==Làm nổi bật part sáng trên nền tối==
     - **Top Hat là hiệu giữa ảnh gốc và ảnh sau opening**
-    - *`TopHat`*`(`*`A`*`)=`*`A`*`−`*`Opening`*`(`*`A`*`)`
+    - $\text{TopHat}(A)=A-\text{Opening}(A)$
 
         ```python
         kernel_9x9 = np.ones((9, 9), np.uint8)
@@ -134,8 +134,8 @@ after:
         ```
 
     - ==Ứng dụng:==
-        - ==Trích các chi tiết sáng nhỏ hơn kernel (opening xóa nhiễu trắng nhỏ lên trừ với ảnh gốc ra được nhiễu trắng nhỏ hay hole nhỏ)==
-        - ==Phát hiện đốm sáng trên nền sáng không đồng đều==
+        - ==Trích các chi tiết sáng nhỏ hơn kernel (opening xóa các chi tiết sáng nhỏ nên lấy ảnh gốc trừ đi sẽ còn lại đúng các chi tiết đó)==
+        - ==Phát hiện đốm sáng trên nền có độ sáng không đồng đều==
         - ==Tăng cường chi tiết sáng nhỏ trên ảnh==
 - ==**Black Hat**==
 
@@ -144,9 +144,9 @@ after:
     - Làm việc với ảnh grayscale
     - ==Làm nổi bật part tối trên nền sáng==
     - **Black Hat là hiệu giữa ảnh sau closing và ảnh gốc**
-    - *`BlackHat`*`(`*`A`*`)=`*`Closing`*`(`*`A`*`)−`*`A`*
+    - $\text{BlackHat}(A)=\text{Closing}(A)-A$
     - `blackhat = cv.morphologyEx(img, cv.MORPH_BLACKHAT, kernel)`
     - ==Ứng dụng:==
-        - ==Trích các chi tiết tối nhỏ ( do closing làm lấp lỗ đen nên khi trừ với ảnh gốc được lỗ đen)==
+        - ==Trích các chi tiết tối nhỏ (closing lấp các lỗ đen nhỏ nên trừ đi ảnh gốc sẽ còn lại đúng các lỗ đó)==
         - ==Phát hiện vết nứt, lỗ thủng hoặc vùng tối trên nền vật thể sáng==
         - ==Làm nổi bật chi tiết tối trên nền không đồng đều==

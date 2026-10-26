@@ -442,6 +442,165 @@ cv2.GaussianBlur pixel:    139
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 12-smoothing -->
+<details class="opencv-note" id="opencv-note-12-smoothing">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 12. Smoothing</summary>
+<div class="opencv-note-body">
+<ul>
+<li>Tần số : độ biến thiên của các pixel:<ul>
+<li>0-1 → tần số thấp</li>
+<li>0-100 → tần số cao</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Loại bộ lọc</th>
+<th>Vai trò</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Low-Pass Filter</td>
+<td>Làm mịn ảnh, giảm nhiễu, làm mờ chi tiết nhỏ</td>
+</tr>
+<tr>
+<td>High-Pass Filter</td>
+<td>Làm nổi bật cạnh, biên và chi tiết tần số cao</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p>Tích chập 2D</p>
+<ul>
+<li><code>dst = cv.filter2D(src, ddepth, kernel)</code><ul>
+<li><code>src</code>: ảnh đầu vào</li>
+<li><code>ddepth:</code> độ sâu ảnh đầu ra. Dùng -1 để giữ giống ảnh gốc</li>
+<li><code>kernel:</code> ma trận lọc để tích chập</li>
+<li><code>dst:</code> ảnh kết quả sau khi lọc</li>
+</ul>
+</li>
+<li>
+<p>Cơ chế hoạt động</p>
+<ul>
+<li>Duyệt kernel qua từng vùng ảnh</li>
+<li>Nhân từng phần tử trong kernel với pixel tương ứng</li>
+<li>Cộng các kết quả lại</li>
+<li>Gán kết quả cho pixel trung tâm</li>
+<li>Lặp lại cho toàn bộ ảnh</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">/</span> <span class="mi">25</span>
+<span class="n">dst</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">filter2D</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">kernel</span><span class="p">)</span>
+</pre></div>
+
+</li>
+</ul>
+</li>
+<li>
+<p>Các kĩ thuật làm mờ ảnh</p>
+<ul>
+<li>Giảm nhiễu và làm mịn chi tiết, nhưng cũng có thể làm mềm cạnh vật thể</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Bộ lọc</th>
+<th>Hàm OpenCV</th>
+<th>Đặc điểm chính</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Averaging/ Box Filter</td>
+<td><code>cv2.blur(), cv2.boxFilter()</code></td>
+<td>Lấy trung bình vùng lân cận</td>
+</tr>
+<tr>
+<td>Gaussian Blur</td>
+<td><code>cv2.GaussianBlur()</code></td>
+<td>Trong số cao với pixel trung tâm,giảm dần ra biên</td>
+</tr>
+<tr>
+<td>Median Blur</td>
+<td><code>cv2.medianBlur()</code></td>
+<td>Lây trung vị, tốt với nhiễu muối tiêu</td>
+</tr>
+<tr>
+<td>Bilateral Filter</td>
+<td><code>cv2.bilateralFilter()</code></td>
+<td>Giảm nhiễu, giữ cạnh tốt, nhưng chạy chậm</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Lọc trung bình</p>
+<ul>
+<li>
+<p>Kernel 3x3</p>
+<p><span class="math display">\[M=\frac{1}{9} \begin{bmatrix} 1 &amp; 1 &amp; 1\\ 1 &amp; 1 &amp; 1\\ 1 &amp; 1 &amp; 1 \end{bmatrix}\]</span></p>
+</li>
+<li>
+<p>Hàm : <code>blur = cv.blur(img, (5, 5))</code></p>
+</li>
+<li>Kernel càng lớn ảnh càng mờ</li>
+<li><code>cv2.blur()</code> : tương đương <code>cv2.boxFilter(normalize = True)</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">dst</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">blur</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="c1"># dst = cv2.boxFilter(img, -1, (5, 5), normalize = False)</span>
+
+<span class="n">dst2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">boxFilter</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="c1"># -1 : ddepth</span>
+<span class="c1"># không chia trong số nên nếu quá 255 thì sẽ bão hòa ở 255</span>
+</pre></div>
+
+</li>
+<li>
+<p>Lọc Gaussian</p>
+<ul>
+<li>
+<p>Hàm : <code>blur_gaussian = cv.GaussianBlur(src, ksize, sigmaX, sigmaY=0)</code></p>
+<ul>
+<li><code>src</code>: ảnh đầu vào</li>
+<li><code>ksize</code>: kích thước kernel số lẻ</li>
+<li><code>sigmaX</code>: độ lệch chuẩn theo trục X</li>
+<li><code>sigmaY</code>: độ lệch chuẩn theo trục Y</li>
+<li>nếu <code>sigma</code>= 0 thì OpenCV sẽ tự tính</li>
+</ul>
+<p><code>blur_gaussian = cv2.GaussianBlur(img, (5, 5), 0)</code></p>
+</li>
+</ul>
+</li>
+<li>
+<p>Lọc trung vị</p>
+<ul>
+<li>Thay pixel trung tâm bằng trung vị của các pixel trong vùng kernel</li>
+<li>Hàm: <code>median = cv.medianBlur(src, ksize)</code></li>
+<li>Hiệu quả tốt với nhiễu muối tiêu do nhiễu muối tiêu là các pixel có giá trị nhỏ mà lọc trung vị lấy trung vị gắn cho pixel trung tâm lên không làm loang nhiễu</li>
+</ul>
+</li>
+<li>Lọc song phương<ul>
+<li>Hàm <code>blur_bilateral = cv.bilateralFilter(src, d, sigmaColor, sigmaSpace)</code><ul>
+<li><code>src</code>: ảnh đầu vào</li>
+<li><code>d</code>: Đường kính vùng lân cận được xét</li>
+<li><code>sigmaColor</code>: Mức lọc theo khác biệt màu/cường độ</li>
+<li><code>sigmaSpace</code>: Mức lọc theo khoảng cách không gian</li>
+</ul>
+</li>
+<li>Ý tưởng chính<ul>
+<li>Gaussian theo không gian: Pixel gần nhau có độ ảnh hưởng nhiều hơn</li>
+<li>Gaussian theo cường độ màu: Pixel có màu gần giống nhau có ảnh hưởng nhiều hơn</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#12-smoothing">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 12-smoothing -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=674259a6"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

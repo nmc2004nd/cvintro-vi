@@ -279,6 +279,161 @@
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 14-gradients -->
+<details class="opencv-note" id="opencv-note-14-gradients">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 14. Gradients</summary>
+<div class="opencv-note-body">
+<ul>
+<li>Trích xuất gradients của ảnh, để tìm đường biên (outline - có độ biến thiên giá trị pixel cao) đặc trưng bằng các bộ lọc thông cao (High-pass filters)</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Cú pháp hàm</th>
+<th>Tham số cốt lõi cần nhớ</th>
+<th>Đặc trưng thuật toán</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv.Sobel()</code></td>
+<td><code>src</code>, <code>ddepth</code>, <code>dx</code>, <code>dy</code>, <code>ksize</code></td>
+<td>Tính đạo hàm bậc một. Cho phép tách biệt rõ rệt hướng cạnh ngang hoặc cạnh dọc. Chống nhiễu tốt nhờ tích hợp Gaussian.</td>
+</tr>
+<tr>
+<td><code>cv.Scharr()</code></td>
+<td><code>src</code>, <code>ddepth</code>, <code>dx</code>, <code>dy</code></td>
+<td>Phiên bản tối ưu hơn của Sobel với kernel 3×33×3. Thường cho kết quả đạo hàm chính xác hơn Sobel 3×33×3.</td>
+</tr>
+<tr>
+<td><code>cv.Laplacian()</code></td>
+<td><code>src</code>, <code>ddepth</code>, <code>ksize</code></td>
+<td>Tính đạo hàm bậc hai tổng hợp. Phát hiện nhanh toàn bộ đường biên theo mọi hướng cùng lúc, nhưng nhạy cảm với nhiễu hơn Sobel.</td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p><mark><strong>Gradient bằng Sobel và Scharr</strong></mark></p>
+<ul>
+<li>Kết hợp giữa:<ul>
+<li>Làm mịn Gaussian</li>
+<li>Phép đạo hàm sai biệt</li>
+<li><code>Derivative×Gaussian</code></li>
+<li><span class="math">\(\frac{\partial I}{\partial x} = I(x+1, y) - I(x-1, y)\)</span> → <span class="math">\(dx = [-1, 0, 1]\)</span></li>
+<li><span class="math">\(\frac{\partial I}{\partial y} = I(x, y+1) - I(x, y-1)\)</span> → <span class="math">\(dy = [-1, 0, 1]^T\)</span></li>
+<li>Đạo hàm theo x (dx) thì làm mượt Gaussian theo y → <span class="math">\(Ga_y = [1, 2, 1]^T\)</span></li>
+<li>Đạo hàm theo y (dy) thì làm mượt Gaussian theo x → <span class="math">\(Ga_x = [1, 2, 1]\)</span></li>
+<li>Với Scharr thì <span class="math">\(Ga_y = [3, 10, 3]^T\)</span> và <span class="math">\(Ga_x = [3, 10, 3]\)</span></li>
+<li>Sobel xấp xỉ:<ul>
+<li><mark>Nhận dạng tốt với hướng ở các góc 45, 90</mark></li>
+<li><mark>Hay phát hiện cạnh giả do nhiễu</mark></li>
+<li><mark>Cạnh dày</mark></li>
+<li><span class="math">\(K_x = Ga_y * dx = \begin{bmatrix}-1 &amp; 0 &amp; 1 \\-2 &amp; 0 &amp; 2 \\-1 &amp; 0 &amp; 1\end{bmatrix}\)</span><code>: x column dọc → tìm cạnh dọc</code></li>
+<li><span class="math">\(K_y = dy *Ga_x = \begin{bmatrix}-1 &amp; -2 &amp; -1 \\0 &amp; 0 &amp; 0 \\1 &amp; 2 &amp; 1\end{bmatrix}\)</span><code>: y row ngang → tìm cạnh ngang</code></li>
+</ul>
+</li>
+<li>Scharr: <strong>tùy vào quy ước của dx dy mà đảo vị trí</strong><ul>
+<li><mark>Nhận dạng tốt với mọi hướng</mark></li>
+<li><span class="math display">\[K_x = Ga_y * dx = \begin{bmatrix}3 &amp; 0 &amp; -3 \\10 &amp; 0 &amp; -10 \\3 &amp; 0 &amp; -3\end{bmatrix}\]</span></li>
+<li><span class="math display">\[K_y = dy *Ga_x = \begin{bmatrix}3 &amp; 10 &amp; 3 \\0 &amp; 0 &amp; 0 \\-3 &amp; -10 &amp; -3\end{bmatrix}\]</span></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><span class="math">\(G = \sqrt{G_x^2 + G_y^2}\)</span> hoặc có thể tăng tốc độ bằng <span class="math">\(G \approx |G_x| + |G_y|\)</span></li>
+<li><span class="math display">\[\theta = \operatorname{atan2}(G_y, G_x)\times\frac{180}{\pi}\]</span></li>
+<li><mark>Có khả năng chống nhiễu hạt tốt</mark></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="c1"># Lưu ý: Sử dụng kiểu dữ liệu cv.CV_64F để giữ lại các giá trị âm (tránh mất biên)</span>
+<span class="c1"># ksize = -1, OpenCV sẽ kích hoạt bộ lọc Scharr kích thước 3×3</span>
+<span class="n">sobelx</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># xorder=1, yorder=0 -&gt; Chỉ tìm cạnh dọc</span>
+<span class="n">sobely</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># xorder=0, yorder=1 -&gt; Chỉ tìm cạnh ngang</span>
+</pre></div>
+
+</li>
+<li>
+<p><mark><strong>Gradient bằng Laplacian</strong></mark></p>
+<ul>
+<li>
+<p>Tính toán đạo hàm bậc hai của ảnh dựa trên phương trình:</p>
+<ul>
+<li><span class="math display">\[\Delta img = \frac{\partial^2 img}{\partial x^2} + \frac{\partial^2 img}{\partial y^2}\]</span></li>
+<li>Mỗi thành phần đều được xấp xỉ bằng cách tính dựa trên các toán tử Sobel</li>
+<li>
+<p>Với<code>ksize = 1</code></p>
+<p><span class="math display">\[\begin{bmatrix}0 &amp; 1 &amp; 0 \\1 &amp; -4 &amp; 1 \\0 &amp; 1 &amp; 0\end{bmatrix}\]</span></p>
+</li>
+</ul>
+</li>
+<li>
+<p><code>laplacian = cv.Laplacian(img, cv.CV_64F)</code></p>
+</li>
+<li><mark><strong>Vấn đề: Mất cạnh hoặc tràn số</strong></mark></li>
+<li>Kiểu dữ liệu đầu ra của đạo hàm</li>
+<li>Gradient có thể mang dấu âm dương tùy vào dx, dy:<ul>
+<li>Đen→Trắng : +</li>
+<li>Trắng→Đen: -</li>
+</ul>
+</li>
+<li>Do đó nếu ép kiểu <code>np.uint8</code> hoặc <code>cv2.CV_8U</code><ul>
+<li>Mọi số âm sẽ bị ép cứng về 0 → điều này sẽ làm mất cạnh thuộc vùng dịch chuyển Trắng → Đen</li>
+</ul>
+</li>
+<li>
+<p><mark>Giải pháp 1:</mark></p>
+<ul>
+<li><code>ddepth = cv2.CV_64F</code> hoặc <code>cv2.CV_16S</code></li>
+<li>Lấy giá trị tuyệt đối bằng hàm <code>np.absolute</code></li>
+<li>Sau đó ép kiểu ma trận ngược lại về dạng <code>np.uint8</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">sobelx64f</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ksize</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">abs_sobel64f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">absolute</span><span class="p">(</span><span class="n">sobelx64f</span><span class="p">)</span>
+<span class="n">sobel_8u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">(</span><span class="n">abs_sobel64f</span><span class="p">)</span>
+</pre></div>
+
+</li>
+<li>
+<p><mark>Giải pháp 2:</mark></p>
+<ul>
+<li>Dùng thắng hàm <code>cv2.convertScaleAbs</code></li>
+<li>Sau đó tính <code>G = cv2.addWeighted</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="c1"># Sobel operator and converting the result to uint8</span>
+<span class="n">sobelx</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ksize</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">sobely</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">Sobel</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">CV_64F</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">ksize</span> <span class="o">=</span> <span class="mi">5</span><span class="p">)</span>
+
+<span class="n">sobelx_1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">convertScaleAbs</span><span class="p">(</span><span class="n">sobelx</span><span class="p">)</span>
+<span class="n">sobely_1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">convertScaleAbs</span><span class="p">(</span><span class="n">sobely</span><span class="p">)</span>
+
+<span class="c1"># Combining the two gradients</span>
+<span class="n">sobel_combined_1</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">addWeighted</span><span class="p">(</span><span class="n">sobelx_1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">sobely_1</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+<ul>
+<li>Cũng có thể dùng L2 norm sau đó normalize :</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="c1"># Using the L2 norm to combine the gradients</span>
+<span class="n">sobel_combined_2</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">magnitude</span><span class="p">(</span><span class="n">sobelx</span><span class="p">,</span> <span class="n">sobely</span><span class="p">)</span>
+<span class="n">sobel_combined_2_normalized</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">sobel_combined_2</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">NORM_MINMAX</span><span class="p">)</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/14-gradients-1.png" /></p>
+<p><img alt="" src="../img/opencv-notes/14-gradients-2.png" /></p>
+<p><img alt="" src="../img/opencv-notes/14-gradients-3.png" /></p>
+</li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#14-gradients">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 14-gradients -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=b8293efa"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -388,6 +543,127 @@
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 15-candy-edge -->
+<details class="opencv-note" id="opencv-note-15-candy-edge">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 15. Candy edge</summary>
+<div class="opencv-note-body">
+<table>
+<thead>
+<tr>
+<th>Đặc tính hình học</th>
+<th>Toán tử Sobel</th>
+<th>Thuật toán Canny</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bản chất kiến trúc</td>
+<td>Phép toán lọc đạo hàm bậc một, gồm 1 bước chính.</td>
+<td>Quy trình xử lý đa giai đoạn: lọc nhiễu, khử cực đại và ngưỡng trễ.</td>
+</tr>
+<tr>
+<td>Độ dày đường biên</td>
+<td>Dày và nhòe, thường có nhiều pixel chồng lấn.</td>
+<td>Mỏng tuyệt đối, rộng đúng 1 pixel nhờ bước NMS.</td>
+</tr>
+<tr>
+<td>Khả năng chống nhiễu</td>
+<td>Trung bình, dễ bị sót các hạt nhiễu sáng rải rác.</td>
+<td>Tốt, lọc bỏ nhiễu cô lập nhờ bước hysteresis.</td>
+</tr>
+<tr>
+<td>Kết quả đầu ra</td>
+<td>Ảnh xám chứa biên độ dốc thực tế.</td>
+<td>Ảnh nhị phân thuần túy, cạnh trắng trên nền đen.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p>Quy trình của thuật toán Candy</p>
+<ul>
+<li>GD1: Giảm nhiễu<ul>
+<li>Cho ảnh grayscale đầu vào qua bộ lọc Gaussian 5x5</li>
+</ul>
+</li>
+<li>GD2: Tìm gradient cường độ ảnh<ul>
+<li><span class="math">\(G = \sqrt{G_x^2 + G_y^2}\)</span> or <span class="math">\(G \approx |G_x| + |G_y|\)</span></li>
+<li><span class="math">\(\theta = \text{atan2}(G_y, G_x)\)</span></li>
+<li>Hướng của gradient luôn vuông góc với đường biên của cạnh</li>
+<li>Giá trị góc này sẽ được làm tròn về 1 trong 4 hướng: 0 (ngang) , 90 (dọc) , 45 (chéo) , 135 (chéo)</li>
+</ul>
+</li>
+<li>GD3: Triệt tiêu phi cực đại - Loại trừ cạnh dày<ul>
+<li>Tại mỗi pixel A kiểm tra xem nó <span class="math">\(G_A\)</span> có max trong vùng lân cận dọc theo Gradient không</li>
+<li>Nếu <span class="math">\(G_A\)</span> max thì sẽ giữ lại</li>
+<li>Nếu <span class="math">\(G_A\)</span> không phải là max thì là cạnh giả đặt về 0 ( nền đen)</li>
+</ul>
+</li>
+<li>
+<p>GD4: Ngưỡng trễ:</p>
+<ul>
+<li>Chọn hai ngưỡng <code>minVal</code>và <code>maxVal</code></li>
+<li>Cạnh chắc chắn (Sure-edge): <span class="math">\(G_A\)</span> &gt; <code>maxVal</code></li>
+<li>Không phải cạnh (Non-edge): <span class="math">\(G_A\)</span> &lt; <code>minVal</code></li>
+<li>Cạnh yếu (Weak-edge): <code>minVal</code>&lt; <span class="math">\(G_A\)</span> &lt; <code>maxVal</code><ul>
+<li>Nếu A kết nối với với một cạnh chắc chắn thì nó được thăng cấp thành cạnh</li>
+<li>Nếu A bị cô lập với cạnh chắc chắn thì xóa bỏ nó</li>
+</ul>
+</li>
+<li>Hệ quả:<ul>
+<li>Loại bỏ các đốm nhỏ nhiễu pixel, cạnh giả</li>
+</ul>
+</li>
+</ul>
+<p><img alt="" src="../img/opencv-notes/15-candy-edge-1.png" /></p>
+</li>
+</ul>
+</li>
+<li>
+<p>Hàm <code>cv2.Canny(image, threshold1, threshold2, apertureSize=3, L2gradient=False)</code></p>
+</li>
+<li>
+<p>Nhớ áp dụng bộ lọc <code>blur = cv2.GaussianBlur(img, (5, 5), 0)</code></p>
+<table>
+<thead>
+<tr>
+<th>Tham số</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>image</code></td>
+<td>Ảnh đầu vào, thường là ảnh xám 8-bit.</td>
+</tr>
+<tr>
+<td><code>threshold1</code></td>
+<td>Giá trị ngưỡng thấp (<code>minVal</code>).</td>
+</tr>
+<tr>
+<td><code>threshold2</code></td>
+<td>Giá trị ngưỡng cao (<code>maxVal</code>).</td>
+</tr>
+<tr>
+<td><code>apertureSize</code></td>
+<td>Kích thước của mặt nạ Sobel dùng để tính gradient ở giai đoạn 2. Mặc định bằng <code>3</code>.</td>
+</tr>
+<tr>
+<td><code>L2gradient</code></td>
+<td>Quyết định phương trình tính độ lớn gradient G<em>G</em>. Mặc định là <code>False</code>.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><span class="math">\(G = \sqrt{G_x^2 + G_y^2}\)</span> nếu <code>L2gradient = True</code></li>
+<li><span class="math">\(G \approx |G_x| + |G_y|\)</span> nếu <code>L2gradient = Fasle</code></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#15-candy-edge">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 15-candy-edge -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=4db89191"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -750,6 +1026,7 @@ accumulator peak:  center=(100, 100), radius=51
 </div>
 </div>
 </div>
+
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=05e078d4"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

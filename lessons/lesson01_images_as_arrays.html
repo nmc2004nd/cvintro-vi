@@ -370,6 +370,165 @@
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 01-reading-image -->
+<details class="opencv-note" id="opencv-note-01-reading-image">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 1. Reading image</summary>
+<div class="opencv-note-body">
+<ul>
+<li>Đọc ảnh bằng <code>cv2.imread(path, flag)</code> :<ul>
+<li><mark>path</mark> : Đường dẫn đến ảnh cần đọc</li>
+<li><mark>flag :</mark> Kiểu đọc ảnh<ul>
+<li><mark><code>cv2.IMREAD_COLOR</code></mark> - (default) - 1 - Đọc ảnh màu BGR</li>
+<li><mark><code>cv2.IMREAD_GRAYSCALE</code></mark> - 0 - Đọc ảnh xám</li>
+<li><mark><code>CV2.IMREAD_UNCHANGE</code></mark> - -1 - Đọc ảnh gốc giữ cả kênh alpha nếu có</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Lưu ảnh bằng <code>cv2.imwwrite(name, img)</code></li>
+<li>Hiển thị ảnh bằng:<code>cv2.imshow(name_window, img)</code></li>
+<li>Chờ phím <code>cv2.waitKey(d)</code> :<ul>
+<li>d = 0 - Chờ đến khi nào người dùng nhập phím</li>
+<li>d - mili giây</li>
+<li>d = x → FPS = <span class="math">\(\frac{1000}{d}\)</span></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#01-reading-image">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 01-reading-image -->
+<!-- opencv-note:begin 02-reading-videos -->
+<details class="opencv-note" id="opencv-note-02-reading-videos">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 2. Reading videos</summary>
+<div class="opencv-note-body">
+<ul>
+<li>Đọc video bằng <code>cv2.VideoCapture(source)</code> - source thường là 0, 1<ul>
+<li><code>cap = cv2.VideoCapture(0)</code></li>
+</ul>
+</li>
+<li>Kiểm tra khởi tạo thành công không <code>cap.isOpened</code></li>
+<li>Đọc tưng frame:<code>ret, frame = cap.read()</code><ul>
+<li><code>ret - True / False</code>: đọc thành công không</li>
+<li><code>frame</code>: ảnh</li>
+</ul>
+</li>
+<li>Giải phóng camera và đóng window<ul>
+<li><code>cv2.release()</code></li>
+<li><code>cv2.destroyAllWindows()</code></li>
+</ul>
+</li>
+<li>Property: dùng hàm<code>cap.get(flag) or cap.set(flag)</code><ul>
+<li><code>cv2.CAP_RPOP_FRAME_WIDTH</code></li>
+<li><code>cv2.CAP_PROP_FRAME_HEIGHT</code></li>
+<li><code>cv2.CAP_PROP_FPS</code></li>
+<li><code>cv2.CAP_PROP_POS_FRAME</code></li>
+</ul>
+</li>
+<li>Ghi video:<ul>
+<li>Định nghĩa Fourcc - Four character code: XVID/MJPG/DIVX/X264<ul>
+<li><code>fourcc = cv2.VideoWriter_fourcc(*”XVID”)</code></li>
+</ul>
+</li>
+<li>Khởi tạo class ghi:<ul>
+<li><code>out = cv.VideoWriter(filename, fourcc, fps, frame_size)</code></li>
+<li><code>out.write(frame)</code> : frame phải có size giống size đã khởi tạo, nếu không thì phải resize trước , <mark>size - WxH</mark></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#02-reading-videos">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 02-reading-videos -->
+<!-- opencv-note:begin 06-core-operations -->
+<details class="opencv-note" id="opencv-note-06-core-operations">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 6. Core Operations</summary>
+<div class="opencv-note-body">
+<p><mark>Nguyên tắc là OpenCV truy cập theo (x, y) - (col, row) khác với Numpy là (y, x) - (row, col)</mark></p>
+<p><mark>OpenCV đọc ảnh theo BGR khác matplot.plt đọc theo kiểu RGB</mark></p>
+<ul>
+<li>Truy cập và thay đổi giá trị pixel<ul>
+<li><code>px = img[row, col]</code></li>
+</ul>
+</li>
+<li>Truy cập vào thuộc tính ảnh<ul>
+<li>Kích thước ảnh:<ul>
+<li><code>img.shape - HxWxD</code> - Row-Column</li>
+</ul>
+</li>
+<li>Tổng số phần tử:<ul>
+<li><code>img.size</code></li>
+</ul>
+</li>
+<li>Kiểu dữ liệu<ul>
+<li><code>img.dtype</code></li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Vùng quan tâm ROI<ul>
+<li><code>img[y1:y2, x1:x2]</code></li>
+</ul>
+</li>
+<li>Tách màu và gộp kênh<ul>
+<li>Tách kênh: <code>b, g, r = cv.split(img)</code></li>
+<li>Gộp kênh: <code>img = cv.merge((b, g, r))</code></li>
+<li>Nên dùng hàm của openCV nếu có thể và hạn chế tách kênh theo .split và nên truy cập theo indexing</li>
+</ul>
+</li>
+<li>
+<p>Tạo viền cho ảnh: Border</p>
+<p><img alt="" src="../img/opencv-notes/06-core-operations-1.png" /></p>
+<ul>
+<li><code>dst = cv.copyMakeBorder(src, top, bottom, left, right, borderType, value)</code></li>
+<li>
+<p>borderType:</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Cách lặp</th>
+<th>Ví dụ</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv.BORDER_CONSTANT</code></td>
+<td>Tạo viền màu cố định</td>
+<td><code>iiiiii \| abcdefgh \| iiiiiii</code></td>
+</tr>
+<tr>
+<td><code>cv.BORDER_REFLECT</code></td>
+<td>Phản chiếu ảnh ở biên</td>
+<td><code>fedcba \| abcdefgh \| hgfedcb</code></td>
+</tr>
+<tr>
+<td><code>cv.BORDER_REFLECT_101 - default</code></td>
+<td>Phản chiếu ảnh ở biên trừ biên</td>
+<td><code>gfedcb \| abcdefgh \| gfedcba</code></td>
+</tr>
+<tr>
+<td><code>cv.BORDER_REPLICATE</code></td>
+<td>Lặp pixel ở biên</td>
+<td><code>aaaaaa \| abcdefgh \| hhhhhhh</code></td>
+</tr>
+<tr>
+<td><code>cv.BORDER_WRAP</code></td>
+<td>Lấy phần đối diện bù vào</td>
+<td><code>cdefgh \| abcdefgh \| abcdefg</code></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#06-core-operations">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 06-core-operations -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=9eaf929e"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

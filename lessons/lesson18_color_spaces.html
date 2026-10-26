@@ -429,6 +429,82 @@ resulting L*a*b* distances: min=3.0, median=17.3, max=38.1
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 09-colour-space -->
+<details class="opencv-note" id="opencv-note-09-colour-space">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 9. Colour Space</summary>
+<div class="opencv-note-body">
+<ul>
+<li>OpenCv cung cấp hơn 150 phương thức chuyển đổi không gian màu khác nhau.<ul>
+<li>BGR to Gray</li>
+<li>BGR to RGB - cho hiển thị ảnh bằng matplotlib</li>
+<li>BGR to HSV</li>
+</ul>
+</li>
+<li>
+<p>Hàm dùng để chuyển đổi:</p>
+<ul>
+<li><code>dst = cv2.cvtColor(src, code)</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">gray</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+<span class="n">hsv</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2HSV</span><span class="p">)</span>
+</pre></div>
+
+</li>
+<li>
+<p>Không gian màu HSV</p>
+<ul>
+<li>Dùng kiểu dữ liệu <code>uint8</code></li>
+</ul>
+<p><img alt="" src="../img/opencv-notes/09-colour-space-1.jpg" /></p>
+<table>
+<thead>
+<tr>
+<th>Kênh</th>
+<th>Ý nghĩa</th>
+<th>Dải giá trị trong OpenCV</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H</td>
+<td>Hue - tông màu</td>
+<td>0-179 map 0-360 do kiểu uint8</td>
+</tr>
+<tr>
+<td>S</td>
+<td>Saturation - độ bão hòa màu</td>
+<td>0-255</td>
+</tr>
+<tr>
+<td>V</td>
+<td>Value - độ sáng</td>
+<td>0-255</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Tách lọc vật thể theo màu</p>
+<ul>
+<li>Dùng hàm <code>cv2.inRange(img_hsv, lower, upper)</code> để tạo mask nhị phân<ul>
+<li>Nếu giá trị pixel trong khoảng từ <code>lower</code>đến <code>upper</code>thì ghim thành 255 còn lại ghim về 0</li>
+<li>Xác định <code>lower</code>và <code>upper</code>dùng <code>trackbar</code>để tuning</li>
+</ul>
+</li>
+<li>Dùng phép <code>bitwise_and(img, img, mask = mask)</code></li>
+</ul>
+</li>
+<li>Thông thường:<ul>
+<li><code>Lower</code>: <code>H-10, 100, 100</code></li>
+<li><code>Upper</code>: <code>H+10, 255, 255</code></li>
+</ul>
+</li>
+<li>Nếu muốn mask nhiều màu thì tạo mask tổng hợp bằng <code>bitwise_or</code>của các mask lẻ</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#09-colour-space">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 09-colour-space -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=72e35984"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

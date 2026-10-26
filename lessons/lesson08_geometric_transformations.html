@@ -439,6 +439,193 @@
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 10-geometric-transform -->
+<details class="opencv-note" id="opencv-note-10-geometric-transform">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 10. Geometric Transform</summary>
+<div class="opencv-note-body">
+<ul>
+<li>Các phép biến đổi hình ảnh:<ul>
+<li>Resize, tịnh tiến, xoay, biến đổi affine,</li>
+<li>Phối cảnh (PerspectiveTransform)</li>
+</ul>
+</li>
+<li>
+<p>Tổng quan:</p>
+<table>
+<thead>
+<tr>
+<th>Hàm</th>
+<th>Matrix</th>
+<th>Ứng dụng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv2.warpAffine()</code></td>
+<td>2x3</td>
+<td>Scaling, translation, rotation, affine transform</td>
+</tr>
+<tr>
+<td><code>cv2.warpPerspective()</code></td>
+<td>3x3</td>
+<td>Perspective transform, nắn thẳng ảnh bị nghiêng phối cảnh</td>
+</tr>
+</tbody>
+</table>
+</li>
+<li>
+<p>Hàm chung</p>
+<ul>
+<li><code>dst = cv2.warpAffine(src, M, dsize)</code></li>
+<li><code>dst = cv2.warpPerspective(src, M, dsize)</code></li>
+<li>Lưu ý: <code>dsize : (WxH)</code> khác với <code>shape (HxWxD)</code></li>
+</ul>
+</li>
+<li>
+<p>Resize</p>
+<ul>
+<li><code>resized = cv.resize(src, dsize, fx=0, fy=0, interpolation=cv.INTER_LINEAR)</code></li>
+<li>có thể scale theo kích thước <code>dsize = (WxH)</code> và <code>fx =0, fy = 0</code></li>
+<li>có thể scale theo tỷ số tỷ lệ : <code>fx, fy</code> và <code>dsize = None</code></li>
+<li>
+<p>Các phương pháp nội suy:</p>
+<table>
+<thead>
+<tr>
+<th>Interpolation</th>
+<th>Khi nên dùng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv2.INTER_AREA</code></td>
+<td>Thu nhỏ ảnh</td>
+</tr>
+<tr>
+<td><code>cv2.INTER_LINEAR</code></td>
+<td>Phóng to ảnh, mặc định trong OpenCV</td>
+</tr>
+<tr>
+<td><code>cv2.INTER_CUBIC</code></td>
+<td>Phóng to ảnh chất lượng cao hơn nhưng chậm hơn</td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</li>
+<li>
+<p>Translation - tịnh tiến ảnh</p>
+<ul>
+<li>Tịnh tiến ảnh theo trục x và y</li>
+<li>
+<p>Ma trận tịnh tiến</p>
+<p><span class="math display">\[M= \begin{bmatrix} 1 &amp; 0 &amp; dx\\ 0 &amp; 1 &amp; dy \end{bmatrix}\]</span></p>
+</li>
+<li>
+<p>Hàm dùng: <code>dst = cv2.warpAffine(img, M, dsize)</code></p>
+</li>
+<li>Rotation - xoay ảnh</li>
+<li>
+<p>Ma trận xoay trong toán học : 2x2 → xoay quanh gốc tạo độ (0, 0)</p>
+<p><span class="math display">\[M= \begin{bmatrix} \cos\theta &amp; -\sin\theta\\ \sin\theta &amp; \cos\theta \end{bmatrix}\]</span></p>
+</li>
+<li>
+<p>Chọn các tham số:</p>
+<ul>
+<li>Tâm xoay</li>
+<li>Góc xoay</li>
+<li>Hệ số scale</li>
+</ul>
+<p><span class="math display">\[\begin{aligned}\alpha &amp;= \text{scale}\cdot\cos\theta\\\beta &amp;= \text{scale}\cdot\sin\theta\end{aligned}\]</span></p>
+<p><span class="math display">\[M=\begin{bmatrix}\alpha &amp; -\beta &amp; (1-\alpha)\,\mathrm{center.x}-\beta\,\mathrm{center.y}\\\beta &amp; \alpha &amp; \beta\,\mathrm{center.x}+(1-\alpha)\,\mathrm{center.y}\end{bmatrix}\]</span></p>
+</li>
+<li>
+<p>Hàm để tính M</p>
+<ul>
+<li><code>M = cv.getRotationMatrix2D(center, angle, scale)</code></li>
+</ul>
+</li>
+<li>Biến đổi Affine:</li>
+<li><mark>Giữ tính chất song song của đường thẳng</mark><ul>
+<li>Ví dụ: A//B thì A’//B’</li>
+</ul>
+</li>
+<li>
+<p>Các bước biến đổi Affine: <mark>2x3</mark></p>
+<ul>
+<li>Chọn 3 điểm trên ảnh gốc</li>
+<li>Chọn 3 điểm tương ứng trên ảnh đích</li>
+<li>Dùng <code>cv2.getAffineTransform()</code></li>
+<li>Áp dụng <code>cv2.warpAffine()</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+
+<span class="n">pts1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">([</span>
+    <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span>
+<span class="p">])</span>
+
+<span class="n">pts2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">([</span>
+    <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">200</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">250</span><span class="p">],</span>
+<span class="p">])</span>
+
+<span class="n">M</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">getAffineTransform</span><span class="p">(</span><span class="n">pts1</span><span class="p">,</span> <span class="n">pts2</span><span class="p">)</span>
+<span class="n">dst</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">warpAffine</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">))</span>
+</pre></div>
+
+</li>
+</ul>
+</li>
+<li>
+<p>Biến đổi phối cảnh (Perspective Transform)</p>
+<ul>
+<li>Không giữ tính chất song song nhưng đường thẳng vẫn là đường thẳng</li>
+<li>Ứng dụng:<ul>
+<li>Nắn thẳng giấy tờ bị chụp nghiêng</li>
+<li>Nắn tem nhãn, mã vạch, QR code</li>
+<li>Căn chỉnh bảng mạch PCB trên băng truyền</li>
+<li>Trích vùng biển báo, mặt phẳng, bảng số hoặc lưới Sudoku</li>
+</ul>
+</li>
+<li>
+<p>Các bước biến đổi phối cảnh:</p>
+<ul>
+<li>Chọn 4 điểm trên ảnh gốc</li>
+<li>Chọn 4 điểm tương ứng trên ảnh mới</li>
+<li>Đảm bảo không có 3 điểm nào trong 4 điểm bị thẳng hàng</li>
+<li>Dùng <code>cv2.getPerspectiveTransform()</code></li>
+<li>Áp dụng bằng <code>cv2.warpPerspective()</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">pts1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">([</span>
+    <span class="p">[</span><span class="mi">56</span><span class="p">,</span> <span class="mi">65</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">368</span><span class="p">,</span> <span class="mi">52</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">28</span><span class="p">,</span> <span class="mi">387</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">389</span><span class="p">,</span> <span class="mi">390</span><span class="p">],</span>
+<span class="p">])</span>
+
+<span class="n">pts2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">([</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span>
+    <span class="p">[</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">],</span>
+<span class="p">])</span>
+
+<span class="n">M</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">getPerspectiveTransform</span><span class="p">(</span><span class="n">pts1</span><span class="p">,</span> <span class="n">pts2</span><span class="p">)</span>
+<span class="n">dst</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">warpPerspective</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">300</span><span class="p">))</span>
+</pre></div>
+
+</li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#10-geometric-transform">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 10-geometric-transform -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=66de1eef"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

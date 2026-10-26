@@ -1,0 +1,75 @@
+---
+title: 7. Arithmetic Operations
+lesson: lesson02_image_arithmetic
+after:
+---
+- Cộng ảnh
+    - Dùng` cv2.add` nếu value mới lớn hơn 255 sẽ bão hòa về 255
+    - Dùng `x+y` nếu value mới lớn hơn 255 thì sẽ tràn số` x+y % 256`
+
+    ```python
+    x = np.uint8([[250]])
+    y = np.uint8([[10]])
+    # [] not image scalar: [[]]: image 1 pixel, 1 channel, uint8
+
+    print("Cộng bằng OpenCV:", cv2.add(x, y))
+    # Kết quả sẽ là 255 (bão hòa)
+    print("Cộng bằng NumPy:", x + y)
+    # Kết quả sẽ là 4 (tràn số) : 260 mod 256 = 4
+    ```
+
+- Trừ ảnh
+    - Dùng `cv2.subtract` nếu value mới nhỏ hơn 0 thì sẽ bão hòa về 0
+    - Dùng`x-y` nếu value mới nhỏ hơn 0 thì sẽ tràn số `abs(x-y) % 256`
+
+    ```python
+    x = np.uint8([[50]])
+    y = np.uint8([[100]])
+
+    print("Trừ bằng OpenCV:", cv2.subtract(x, y))
+    # Kết quả sẽ là 0 (bão hòa)
+    print("Trừ bằng NumPy:", x - y)
+    # Kết quả sẽ là 206 (tràn số)  : 50 - 100 mod 256 = 206
+    ```
+
+- Nhân ảnh
+    - Dùng `cv2.multiply` nếu value mới lớn hơn 255 thì sẽ bão hòa về 0
+    - Dùng `x*y` nếu value mới lớn hớn 255 thì sẽ trần số `x*y % 256`
+
+    ```python
+    print("Nhân bằng OpenCV:", cv2.multiply(x, y))
+    # Kết quả sẽ là 255 (bão hòa)
+    print("Nhân bằng NumPy:", x * y)
+    # Kết quả sẽ là 44 (tràn số) 300 mod 256 = 44
+    ```
+
+- Trộn hai ảnh với nhau
+    - $g(x) = (1 - alpha) * f_0(x) + alpha * f_1(x)$
+    - Dùng hàm `cv2.addWeighted(img1, alpha, img2, beta, gama)`
+    - Hai ảnh `img1 `và `img2 `phải cùng kích thước
+    - Dùng hàm `cv2.resize(img, W, H)` khác với `img.shape - HxWxD`
+    - Có thể tạo hiệu ứng `Fade in Fade out` bằng cách đổi `alpha từ 0-1`
+- Phép toán Bitwise cần ==mask==
+
+| Hàm | Ý nghĩa |
+|---|---|
+| `cv.bitwise_and()` | Giữ lại vùng pixel thỏa mask hoặc vùng chung giữa hai ảnh. |
+| `cv.bitwise_or()` | Gộp vùng pixel từ hai ảnh. |
+| `cv.bitwise_not()` | Đảo ngược giá trị pixel hoặc mask. |
+| `cv.bitwise_xor()` | Giữ vùng khác nhau giữa hai ảnh hoặc hai mask. |
+
+- Ứng dụng
+    1. Trích xuất một vùng ảnh bất kỳ.
+    2. Làm việc với ROI không phải hình chữ nhật.
+    3. Tạo mask cho vật thể có hình dạng phức tạp.
+    4. Chèn logo hoặc đối tượng vào ảnh nền mà không làm biến đổi màu sắc.
+- Phân tích ý tưởng chèn logo bằng mask:
+    - Chuẩn bị ảnh logo
+    - Chuẩn bị vùng ROI trong ảnh có kích thước bằng kích thước ảnh logo
+    - Mục tiêu là:
+        - Vùng ROI: nền giữ nguyên và vùng logo bị mask thành đen - inv_mask
+        - Vùng Logo: nền bị mask thành đen và logo giữ nguyên - mask
+        - Sau đó dùng `add `hai vùng với nhau sẽ thu được vùng mới có nền ảnh gốc và logo là logo cần chèn
+    - Chuẩn bị mask: chuyển ảnh logo sang `grayscale `và dùng `threshold `để tách ngưỡng
+    - Inv_mask được chuẩn bị bằng `bitwise_not(mask)`
+    - Sau khi bitwise hai vùng xong ta thế vùng mới vào ảnh gốc là xong

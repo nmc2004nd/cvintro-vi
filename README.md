@@ -48,6 +48,15 @@ Mở <http://localhost:3000>.
 
 Bản dịch được thực hiện cho mục đích học tập, phi thương mại, với lòng biết ơn tác giả đã chia sẻ tài liệu. Mọi sai sót trong bản dịch là của người dịch, không phải của tác giả. **Nếu tác giả có bất kỳ yêu cầu nào (chỉnh sửa, ghi công khác, hoặc gỡ bỏ), vui lòng mở một [Issue](https://github.com/nmc2004nd/cvintro-vi/issues) — người dịch sẽ thực hiện ngay.**
 
+## Ghi chú OpenCV
+
+Ngoài bản dịch, repo có thêm ghi chú cá nhân dựa trên tài liệu [OpenCV-Python Tutorials](https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html). Phần này **không** thuộc bản gốc.
+
+- Nguồn: `opencv-notes/*.md`, mỗi file là một chủ đề. Phần đầu file khai báo `lesson` (bài học để chèn vào) và `after` (một đoạn chữ trong heading; ghi chú nằm ở cuối mục đó, để trống thì nằm trước phần Bài tập).
+- Cú pháp Markdown thông thường, thêm `==chữ==` để tô đỏ nhấn mạnh và `$...$`, `$$...$$` cho công thức.
+- Ảnh đặt trong `img/opencv-notes/`.
+- Sau khi sửa, chạy `python3 tools/build_opencv_notes.py` để chèn lại vào các bài và cập nhật `opencv-notes.html` (cần `markdown` và `pygments`).
+
 ## Trích dẫn
 
 Nếu thấy tài liệu hữu ích, vui lòng trích dẫn **bản gốc**:

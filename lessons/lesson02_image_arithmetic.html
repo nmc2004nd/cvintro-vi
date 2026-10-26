@@ -365,6 +365,122 @@ grass pixel (BGR), before -&gt; after: [72 94 75] -&gt; [72 94 75]
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 07-arithmetic-operations -->
+<details class="opencv-note" id="opencv-note-07-arithmetic-operations">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 7. Arithmetic Operations</summary>
+<div class="opencv-note-body">
+<ul>
+<li>
+<p>Cộng ảnh</p>
+<ul>
+<li>Dùng<code>cv2.add</code> nếu value mới lớn hơn 255 sẽ bão hòa về 255</li>
+<li>Dùng <code>x+y</code> nếu value mới lớn hơn 255 thì sẽ tràn số<code>x+y % 256</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">([[</span><span class="mi">250</span><span class="p">]])</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">([[</span><span class="mi">10</span><span class="p">]])</span>
+<span class="c1"># [] not image scalar: [[]]: image 1 pixel, 1 channel, uint8</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Cộng bằng OpenCV:"</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+<span class="c1"># Kết quả sẽ là 255 (bão hòa)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Cộng bằng NumPy:"</span><span class="p">,</span> <span class="n">x</span> <span class="o">+</span> <span class="n">y</span><span class="p">)</span>
+<span class="c1"># Kết quả sẽ là 4 (tràn số) : 260 mod 256 = 4</span>
+</pre></div>
+
+</li>
+<li>
+<p>Trừ ảnh</p>
+<ul>
+<li>Dùng <code>cv2.subtract</code> nếu value mới nhỏ hơn 0 thì sẽ bão hòa về 0</li>
+<li>Dùng<code>x-y</code> nếu value mới nhỏ hơn 0 thì sẽ tràn số <code>abs(x-y) % 256</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">([[</span><span class="mi">50</span><span class="p">]])</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">([[</span><span class="mi">100</span><span class="p">]])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Trừ bằng OpenCV:"</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+<span class="c1"># Kết quả sẽ là 0 (bão hòa)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Trừ bằng NumPy:"</span><span class="p">,</span> <span class="n">x</span> <span class="o">-</span> <span class="n">y</span><span class="p">)</span>
+<span class="c1"># Kết quả sẽ là 206 (tràn số)  : 50 - 100 mod 256 = 206</span>
+</pre></div>
+
+</li>
+<li>
+<p>Nhân ảnh</p>
+<ul>
+<li>Dùng <code>cv2.multiply</code> nếu value mới lớn hơn 255 thì sẽ bão hòa về 0</li>
+<li>Dùng <code>x*y</code> nếu value mới lớn hớn 255 thì sẽ trần số <code>x*y % 256</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">"Nhân bằng OpenCV:"</span><span class="p">,</span> <span class="n">cv2</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">))</span>
+<span class="c1"># Kết quả sẽ là 255 (bão hòa)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"Nhân bằng NumPy:"</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="n">y</span><span class="p">)</span>
+<span class="c1"># Kết quả sẽ là 44 (tràn số) 300 mod 256 = 44</span>
+</pre></div>
+
+</li>
+<li>
+<p>Trộn hai ảnh với nhau</p>
+<ul>
+<li><span class="math">\(g(x) = (1 - alpha) * f_0(x) + alpha * f_1(x)\)</span></li>
+<li>Dùng hàm <code>cv2.addWeighted(img1, alpha, img2, beta, gama)</code></li>
+<li>Hai ảnh <code>img1</code>và <code>img2</code>phải cùng kích thước</li>
+<li>Dùng hàm <code>cv2.resize(img, W, H)</code> khác với <code>img.shape - HxWxD</code></li>
+<li>Có thể tạo hiệu ứng <code>Fade in Fade out</code> bằng cách đổi <code>alpha từ 0-1</code></li>
+</ul>
+</li>
+<li>Phép toán Bitwise cần <mark>mask</mark></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Hàm</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv.bitwise_and()</code></td>
+<td>Giữ lại vùng pixel thỏa mask hoặc vùng chung giữa hai ảnh.</td>
+</tr>
+<tr>
+<td><code>cv.bitwise_or()</code></td>
+<td>Gộp vùng pixel từ hai ảnh.</td>
+</tr>
+<tr>
+<td><code>cv.bitwise_not()</code></td>
+<td>Đảo ngược giá trị pixel hoặc mask.</td>
+</tr>
+<tr>
+<td><code>cv.bitwise_xor()</code></td>
+<td>Giữ vùng khác nhau giữa hai ảnh hoặc hai mask.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Ứng dụng<ol>
+<li>Trích xuất một vùng ảnh bất kỳ.</li>
+<li>Làm việc với ROI không phải hình chữ nhật.</li>
+<li>Tạo mask cho vật thể có hình dạng phức tạp.</li>
+<li>Chèn logo hoặc đối tượng vào ảnh nền mà không làm biến đổi màu sắc.</li>
+</ol>
+</li>
+<li>Phân tích ý tưởng chèn logo bằng mask:<ul>
+<li>Chuẩn bị ảnh logo</li>
+<li>Chuẩn bị vùng ROI trong ảnh có kích thước bằng kích thước ảnh logo</li>
+<li>Mục tiêu là:<ul>
+<li>Vùng ROI: nền giữ nguyên và vùng logo bị mask thành đen - inv_mask</li>
+<li>Vùng Logo: nền bị mask thành đen và logo giữ nguyên - mask</li>
+<li>Sau đó dùng <code>add</code>hai vùng với nhau sẽ thu được vùng mới có nền ảnh gốc và logo là logo cần chèn</li>
+</ul>
+</li>
+<li>Chuẩn bị mask: chuyển ảnh logo sang <code>grayscale</code>và dùng <code>threshold</code>để tách ngưỡng</li>
+<li>Inv_mask được chuẩn bị bằng <code>bitwise_not(mask)</code></li>
+<li>Sau khi bitwise hai vùng xong ta thế vùng mới vào ảnh gốc là xong</li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#07-arithmetic-operations">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 07-arithmetic-operations -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=800dbca7"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

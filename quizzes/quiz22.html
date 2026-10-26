@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 22 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson22_stereo_matching.html">&larr; Quay lại Bài 22</a></p>
+        <h1>Trắc nghiệm Bài 22: So khớp ảnh nổi</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao so khớp ảnh nổi trên một cặp ảnh đã nắn thẳng chỉ cần tìm kiếm 1D thay vì tìm kiếm 2D đầy đủ?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Vì phép nắn thẳng đặt điểm tương ứng trên cùng một hàng ở cả hai ảnh</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Vì theo thiết kế camera, ảnh nổi luôn được chụp ở dạng xám, không bao giờ ở dạng màu</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Vì theo định nghĩa của phép nắn thẳng, độ chênh lệch luôn đúng bằng 0 với một cặp đã nắn thẳng</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Vì so khớp khối vốn bị giới hạn ở tìm kiếm 1D, bất kể có nắn thẳng hay không</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Hình học epipolar cho một cặp ảnh nổi đã nắn thẳng đảm bảo điểm khớp nằm trên cùng một hàng, thu gọn việc tìm kiếm từ 2D xuống quét 1D.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Theo <code>Z = f * B / d</code>, điều gì xảy ra với độ sâu ước lượng khi độ chênh lệch <code>d</code> tăng?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Độ sâu tăng tỉ lệ thuận khi độ chênh lệch tăng, theo một quan hệ tuyến tính trực tiếp</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Độ sâu giảm -- vật ở gần có độ chênh lệch lớn, vật ở xa có độ chênh lệch nhỏ</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Độ sâu hoàn toàn không liên quan đến giá trị độ chênh lệch, chỉ phụ thuộc vào tiêu cự</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Độ sâu trở thành số âm khi độ chênh lệch vượt quá khoảng cách đường cơ sở của camera</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Độ sâu tỉ lệ nghịch với độ chênh lệch: các bề mặt gần hơn dịch nhiều hơn (d lớn hơn) và do đó có Z nhỏ hơn.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Kiểm tra nhất quán trái-phải làm gì trong so khớp ảnh nổi?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Nó chuyển bản đồ độ chênh lệch sang màu thuần túy để trực quan hóa, không ảnh hưởng gì đến độ chính xác</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Nó làm mờ bản đồ độ chênh lệch sau đó để loại bỏ nhiễu còn sót, làm trơn mất chi tiết mịn</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Nó so khớp cả trái-sang-phải lẫn phải-sang-trái, rồi chỉ giữ các điểm ảnh mà hai kết quả đồng ý với nhau</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Nó đơn giản là nhân đôi khoảng tìm kiếm độ chênh lệch dùng để so khớp, không kiểm tra tính nhất quán</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một điểm ảnh mà hai chiều so khớp bất đồng quá khoảng một điểm ảnh bị đánh dấu là không đáng tin cậy, đặc biệt hiệu quả trong việc bắt các vùng bị che khuất.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Sự đánh đổi khi tăng kích thước cửa sổ so khớp khối trong so khớp ảnh nổi là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Cửa sổ lớn hơn luôn tốt hơn hẳn, không có nhược điểm thực sự nào, bất kể nội dung cảnh</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Kích thước cửa sổ về cơ bản không ảnh hưởng đến kết quả độ chênh lệch cuối cùng, chỉ ảnh hưởng thời gian chạy</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Cửa sổ lớn hơn chỉ ảnh hưởng đến tốc độ chạy, không bao giờ ảnh hưởng đến giá trị độ chênh lệch tại bất kỳ điểm ảnh nào</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Cửa sổ lớn hơn chống chịu nhiễu tốt hơn nhưng làm nhòe qua các điểm gián đoạn độ sâu</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một cửa sổ lớn hơn lấy trung bình trên nhiều điểm ảnh hơn (chống nhiễu) nhưng trộn các điểm ảnh từ hai độ sâu thực khác nhau gần cạnh vật thể (ranh giới bị nhòe); một cửa sổ nhỏ hơn có sự đánh đổi ngược lại.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz21.html">&larr; Trắc nghiệm Bài 21</a></div>
+            <div class="lesson-nav-next"><a href="quiz23.html">Trắc nghiệm Bài 23 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

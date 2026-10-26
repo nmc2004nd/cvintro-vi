@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 14 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson14_nonlinear_filters.html">&larr; Quay lại Bài 14</a></p>
+        <h1>Trắc nghiệm Bài 14: Các bộ lọc phi tuyến</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao bộ lọc trung vị đặc biệt hiệu quả với nhiễu muối tiêu, so với làm mờ Gauss?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Một ngoại lai cực đoan duy nhất hầu như không làm trung vị dịch chuyển, trong khi nó kéo trung bình về phía nó</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Bộ lọc trung vị là tuyến tính, nên nó lấy trung bình loại bỏ nhiễu chính xác hơn</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Lọc trung vị chỉ hoạt động đúng trên ảnh nhị phân, không bao giờ trên ảnh xám</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Làm mờ Gauss không thể xử lý ảnh 8-bit nếu không chuyển đổi trước</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một điểm ảnh ngoại lai sai lệch nghiêm trọng làm lệch giá trị trung bình rất nhiều nhưng hầu như không ảnh hưởng đến trung vị, vì trung vị chỉ chọn giá trị ở thứ hạng giữa.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trên một ảnh xám, phép co tương ứng với thao tác nào trong một vùng lân cận?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Lấy giá trị lớn nhất trong vùng lân cận</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Lấy giá trị nhỏ nhất trong vùng lân cận</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Lấy giá trị trung bình trong vùng lân cận</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Lấy giá trị trung vị trong vùng lân cận</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Phép co ảnh xám tổng quát hóa phép co nhị phân thành một bộ lọc min: mỗi điểm ảnh trở thành giá trị nhỏ nhất trong vùng lân cận của nó.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong công thức bộ lọc song phương, mỗi điểm ảnh lân cận được đánh trọng số theo hai yếu tố nào?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Khoảng cách theo hàng và theo cột của nó tới điểm ảnh trung tâm, xét độc lập</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Giá trị cường độ của nó và vị trí của nó trong ảnh (nửa trên hay nửa dưới)</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Nó gần đến đâu về không gian, và cường độ của nó giống điểm ảnh trung tâm đến đâu</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Chỉ cường độ của nó giống điểm ảnh trung tâm đến đâu, hoàn toàn bỏ qua vị trí</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Bộ lọc song phương kết hợp một hàm Gauss không gian (<code>G_sigma_s</code>) với một hàm Gauss khoảng giá trị/cường độ (<code>G_sigma_r</code>), nên chỉ các lân cận vừa gần vừa có cường độ tương tự mới có trọng số cao.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao bộ lọc song phương bảo toàn được một biên bậc trong khi làm mờ Gauss làm trơn xuyên qua nó?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Bộ lọc song phương dùng bán kính không gian lớn hơn làm mờ Gauss</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Bộ lọc song phương chỉ hoạt động đúng trên ảnh nhị phân, không bao giờ trên ảnh xám</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Theo thiết kế, làm mờ Gauss luôn hoàn toàn bỏ qua cường độ điểm ảnh</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Các điểm ảnh ở hai bên biên có cường độ rất khác nhau</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Dù các điểm ảnh ở phía bên kia biên có thể gần về không gian, chênh lệch cường độ của chúng làm trọng số khoảng giá trị gần bằng 0, nên chúng hầu như không đóng góp gì vào đầu ra.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz13.html">&larr; Trắc nghiệm Bài 13</a></div>
+            <div class="lesson-nav-next"><a href="quiz15.html">Trắc nghiệm Bài 15 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

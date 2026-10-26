@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 31 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson31_neural_network_fundamentals.html">&larr; Quay lại Bài 31</a></p>
+        <h1>Trắc nghiệm Bài 31: Nền tảng mạng nơ-ron</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao bài học dùng hàm sigmoid thay vì phân ngưỡng trực tiếp điểm số thô z = w^T x + b để huấn luyện?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Độ chính xác thô phẳng gần như ở mọi nơi và không có gradient hữu ích</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Sigmoid làm mô hình chạy nhanh hơn đo được trong khi huấn luyện, bằng cách bỏ qua bước đạo hàm</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Sigmoid là bắt buộc để tính tích vô hướng giữa trọng số và đầu vào</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Phân ngưỡng trực tiếp sẽ khiến mọi dự đoán luôn bằng 1, bất kể đầu vào</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Độ chính xác cứng nhảy vọt không liên tục tại ranh giới với gradient bằng 0 gần như ở mọi nơi, nên hạ gradient không có gì để đi theo; sigmoid thay vào đó nén điểm số thành một xác suất mượt.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong entropy chéo nhị phân, điều gì xảy ra với hàm mất mát khi nhãn thực là 1 nhưng xác suất dự đoán p gần 0?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Hàm mất mát tiến về 0, thưởng cho phỏng đoán sai một cách tự tin</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Hàm mất mát bùng nổ về vô cùng -- sai một cách tự tin bị phạt nặng</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Hàm mất mát hoàn toàn không bị ảnh hưởng bởi mức độ tự tin của dự đoán sai</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Hàm mất mát trở thành âm, triệt tiêu các số hạng khác trong lô</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Mức phạt cho nhãn thực 1 là -log(p), tăng không giới hạn khi p tiến về 0.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Bài học dùng hai phương pháp độc lập nào để xác minh các công thức gradient lan truyền ngược tự suy ra là đúng?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Chạy mô hình hai lần liên tiếp và so sánh hai đầu ra để kiểm tra tính nhất quán</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Chỉ kiểm tra rằng hàm mất mát tính được luôn dương trong suốt quá trình huấn luyện</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Kiểm tra gradient bằng sai phân hữu hạn số, và so sánh với autograd của PyTorch</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">So sánh độ chính xác huấn luyện với một đường cơ sở đoán ngẫu nhiên ở mỗi epoch</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Bài học nhiễu loạn mỗi tham số một lượng rất nhỏ để ước lượng gradient bằng số, và riêng biệt để .backward() của PyTorch tự động tính nó -- cả hai đều khớp với công thức tự suy ra.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao hạ gradient lại làm *tệ hơn* tìm kiếm vét cạn trên tập dữ liệu vành-khuyên-và-đĩa, hội tụ về độ chính xác gần mức đoán ngẫu nhiên?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Hạ gradient luôn thất bại trên bất kỳ tập dữ liệu nào có ít hơn 1000 điểm</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Tốc độ học đơn giản là quá nhỏ để làm trọng số di chuyển chút nào</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Hàm kích hoạt sigmoid không thể dùng với nhiều hơn 60 điểm dữ liệu</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Tập dữ liệu gần như đối xứng quanh gốc tọa độ</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Vì vành khuyên và hình đĩa đều có tâm tại gốc tọa độ, tín hiệu huấn luyện từ mọi điểm gần như triệt tiêu theo mọi hướng, nên bộ tối ưu dừng lại gần w=0 thay vì tìm một nghiệm ngóc ngách bất đối xứng.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz30.html">&larr; Trắc nghiệm Bài 30</a></div>
+            <div class="lesson-nav-next"><a href="quiz32.html">Trắc nghiệm Bài 32 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

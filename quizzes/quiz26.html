@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 26 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson26_image_formation.html">&larr; Quay lại Bài 26</a></p>
+        <h1>Trắc nghiệm Bài 26: Sự hình thành ảnh</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong công thức chiếu lỗ kim <code>x = f*X/Z</code>, <code>y = f*Y/Z</code>, điều gì quyết định vị trí ảnh của một điểm 3D thay đổi bao nhiêu khi độ sâu <code>Z</code> của nó tăng (với <code>X</code>, <code>Y</code> cố định)?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Tăng <code>Z</code> thu nhỏ các tọa độ chiếu về phía tâm</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Vị trí ảnh hoàn toàn không phụ thuộc vào độ sâu <code>Z</code></button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Tăng <code>Z</code> đẩy điểm chiếu ra xa tâm ảnh hơn</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Độ sâu <code>Z</code> chỉ ảnh hưởng đến màu của điểm ảnh, không bao giờ ảnh hưởng đến vị trí</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Cả <code>x</code> lẫn <code>y</code> đều được chia cho <code>Z</code>, nên các điểm xa hơn (<code>Z</code> lớn hơn) chiếu gần tâm ảnh hơn -- hiệu ứng phối cảnh thông thường.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Theo bài học này, tại sao các vật gần hơn hoặc xa hơn mặt phẳng tiêu lại bị nhòe (vòng tròn nhòe)?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Vì bộ lọc màu Bayer của cảm biến thất bại riêng ở các khoảng cách đó, không phải thấu kính</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Vì một thấu kính chỉ lấy nét sắc cho một khoảng cách cụ thể</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Vì hiệu chỉnh gamma làm méo một cách có hệ thống các vùng mất nét, không phải bản thân thấu kính</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Vì nén JPEG làm mờ các vật ở xa nhiều hơn các vật ở gần, trong quá trình mã hóa</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Chỉ các điểm ở mặt phẳng tiêu mới hội tụ về một điểm sắc nét trên cảm biến; các điểm gần/xa hơn trải ra trên một đĩa có kích thước tăng theo khoảng cách tới mặt phẳng tiêu.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Điều gì xảy ra nếu một bức khảm Bayer thô được khử khảm với giả định sai về mẫu bộ lọc (ví dụ BGGR bị coi là RGGB)?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">OpenCV báo lỗi và từ chối tiếp tục khử khảm với một mẫu sai</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Kết quả giống hệt nhau trong cả hai trường hợp, vì theo thiết kế khử khảm không phụ thuộc vào mẫu</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Nó thất bại âm thầm: mọi điểm ảnh vẫn nhận được giá trị, nhưng màu sắc sai nghiêm trọng và có hệ thống</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Chỉ kênh độ sáng bị ảnh hưởng; các kênh màu vẫn đúng bất kể thế nào</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Vì mọi điểm ảnh đều nhận được *một* giá trị nào đó bất kể mẫu được giả định, một mẫu sai tạo ra một ảnh trông có vẻ hợp lý nhưng lệch màu mạnh thay vì một thất bại hiển nhiên.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao lấy trung bình ngây thơ hai giá trị điểm ảnh đã mã hóa gamma (ví dụ để trộn hoặc làm mờ) lại sai về mặt vật lý?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Theo định nghĩa, mã hóa gamma chỉ ảnh hưởng đến ảnh màu, không bao giờ ảnh hưởng đến ảnh xám</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Nó thực ra không sai; các giá trị đã mã hóa luôn có thể lấy trung bình trực tiếp mà không mất mát</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Hiệu chỉnh gamma đã bị loại bỏ hoàn toàn khỏi mọi định dạng ảnh và cảm biến hiện đại</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Mã hóa gamma là phi tuyến, nên lấy trung bình các giá trị đã mã hóa không giống với lấy trung bình cường độ ánh sáng thực</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Cách đúng là giải mã về ánh sáng tuyến tính, lấy trung bình ở đó, rồi mã hóa lại; lấy trung bình trực tiếp trong không gian đã mã hóa thể hiện thiếu độ sáng trộn thực, như ví dụ đen/trắng của bài học cho thấy.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz25.html">&larr; Trắc nghiệm Bài 25</a></div>
+            <div class="lesson-nav-next"><a href="quiz27.html">Trắc nghiệm Bài 27 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

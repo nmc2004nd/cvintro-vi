@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 7 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson07_distance_measures.html">&larr; Quay lại Bài 7</a></p>
+        <h1>Trắc nghiệm Bài 7: Các độ đo khoảng cách</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Metric khoảng cách điểm-tới-điểm nào tạo ra các đường đồng mức cách đều hình thoi?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Khoảng cách Manhattan / khối phố (<code>D4</code>)</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Khoảng cách bàn cờ (<code>D8</code>)</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Khoảng cách Euclid thông thường</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Phép xấp xỉ khoảng cách chamfer</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Khoảng cách Manhattan (<code>|dx| + |dy|</code>) tạo thành hình thoi; bàn cờ tạo thành hình vuông; Euclid tạo thành hình tròn.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao ước lượng mã chuỗi Freeman đơn thuần <code>L = N_e + sqrt(2)*N_o</code> lại ước lượng thừa một cách có hệ thống độ dài thực của một đường cong trơn?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Vì công thức mã chuỗi đếm hai lần mọi điểm ảnh biên mà nó thăm, làm tổng tăng gấp đôi</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Đường biên đã số hóa đi zig-zag qua nhiều bước bậc thang ngắn cộng lại dài hơn độ dài cung thực</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Vì trọng số chéo <code>sqrt(2)</code> dùng trong công thức quá nhỏ để có ảnh hưởng gì</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Thực ra nó ước lượng thiếu đáng kể độ dài thực, chứ không phải ước lượng thừa như thường giả định</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Đường biên của một hình tròn đã số hóa luân phiên qua nhiều bước zig-zag ngắn, cộng lại dài hơn cung thực trơn.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Lợi thế tính toán then chốt của biến đổi khoảng cách chamfer so với biến đổi khoảng cách Euclid chính xác là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Nó chỉ hoạt động trên ảnh màu đã phân ngưỡng, không bao giờ trên ảnh xám, do một giới hạn nội bộ của OpenCV</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Nó hoàn toàn bỏ qua các điểm ảnh nền, tính khoảng cách chỉ từ mặt nạ tiền cảnh</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Nó xấp xỉ kết quả bằng hai lượt quét mành nhanh</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Nó không cần bất kỳ hàm khoảng cách nào, thay vào đó dựa vào các mẹo đếm điểm ảnh đơn giản</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Biến đổi chamfer lan truyền các khoảng cách cục bộ trong hai lượt quét mành, một phép xấp xỉ nhanh cho biến đổi khoảng cách Euclid chính xác tốn kém hơn.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Khoảng cách bàn cờ <code>D8</code> tương ứng với điều gì về mặt vật lý?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Khoảng cách đường thẳng (Euclid) thông thường giữa hai điểm</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Diện tích của hình vuông nhỏ nhất bao quanh cả hai điểm</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Số nước đi của quân tốt cần thiết để di chuyển giữa hai ô</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Số nước đi của quân vua trên bàn cờ giữa hai ô</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> <code>D8 = max(|dx|, |dy|)</code> là độ dài đường đi ngắn nhất khi cho phép bước chéo (liên thông 8), như quân vua trong cờ vua.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz06.html">&larr; Trắc nghiệm Bài 6</a></div>
+            <div class="lesson-nav-next"><a href="quiz08.html">Trắc nghiệm Bài 8 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

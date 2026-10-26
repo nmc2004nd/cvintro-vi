@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 18 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson18_color_spaces.html">&larr; Quay lại Bài 18</a></p>
+        <h1>Trắc nghiệm Bài 18: Không gian màu</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao bài học ưa dùng <code>Y = 0.299 R + 0.587 G + 0.114 B</code> hơn phép trung bình đơn thuần <code>(R + G + B)/3</code> để chuyển sang ảnh xám?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Hệ thị giác con người nhạy với màu lục hơn</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Phép trung bình đơn thuần không hợp lệ về mặt toán học với mảng ảnh 8-bit</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Phép trung bình đơn thuần chỉ cho kết quả đúng trên ảnh vốn đã là ảnh xám</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Trên thực tế không có khác biệt thực sự nào giữa hai công thức</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một phép trung bình đơn thuần không phân biệt được màu lục và màu lam về mặt cảm nhận; đánh trọng số nghiêng về màu lục (như thị giác con người) cho ước lượng độ sáng tốt hơn nhiều.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong HSV, bạn nên phân ngưỡng trên kênh nào để phân đoạn một đối tượng theo màu một cách bền vững, ngay cả khi có dải chuyển sáng trên bề mặt của nó?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Value, vì nó nắm bắt trực tiếp độ sáng</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Hue, vì nó nắm bắt một thứ có màu gì, không phụ thuộc vào độ sáng</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Saturation, vì nó nắm bắt màu rực hay nhạt đến đâu</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Cả ba kênh như nhau, lấy trung bình cùng nhau</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Hue nắm bắt một thứ có màu gì, không phụ thuộc vào việc nó trông sáng hay nhạt đến đâu, nên nó giữ nhất quán ngay cả khi độ sáng thay đổi trên đối tượng.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao nén video/JPEG loại bỏ độ phân giải của các kênh chroma (<code>Cb</code>, <code>Cr</code>) mạnh tay hơn so với luma (<code>Y</code>)?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Theo mặc định, các kênh chroma chiếm nhiều chỗ lưu trữ hơn luma, trước bất kỳ bước lấy mẫu thưa nào</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Luma hoàn toàn không thể nén trong bất kỳ trường hợp nào, khác với chroma</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Hệ thị giác con người phân giải chi tiết không gian mịn trong luma tốt hơn nhiều so với trong chroma</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)"><code>Cb</code> và <code>Cr</code> đơn giản là các bản sao dư thừa của <code>Y</code>, không mang thông tin mới nào</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Lấy mẫu thưa độ màu khai thác thực tế rằng mất cùng một lượng chi tiết ít gây khó chịu hơn nhiều ở màu sắc so với ở độ sáng.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao không gian màu L*a*b* được thiết kế như vậy?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Để nó dùng ít bộ nhớ hơn thấy rõ cho mỗi điểm ảnh so với RGB</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Để việc chuyển sang ảnh xám nhanh hơn về mặt tính toán so với từ RGB</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Để các kênh sắc độ và độ sáng luôn bằng nhau về mặt số học</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Để khoảng cách Euclid giữa hai màu L*a*b* xấp xỉ khác biệt màu cảm nhận được</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Các khoảng cách RGB bằng nhau có thể tương ứng với các khác biệt cảm nhận chênh lệch rất lớn tùy vị trí trong không gian màu; Lab được thiết kế để khoảng cách Euclid bám theo cảm nhận nhất quán hơn nhiều.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz17.html">&larr; Trắc nghiệm Bài 17</a></div>
+            <div class="lesson-nav-next"><a href="quiz19.html">Trắc nghiệm Bài 19 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

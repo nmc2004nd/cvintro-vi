@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 38 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson38_transfer_learning.html">&larr; Quay lại Bài 38</a></p>
+        <h1>Trắc nghiệm Bài 38: Học chuyển giao</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Ý tưởng then chốt đằng sau học chuyển giao, như được trình bày trong bài này, là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Dùng lại một mạng đã được huấn luyện trên một nhiệm vụ nguồn khác, giàu dữ liệu</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Huấn luyện một mạng hoàn toàn mới từ đầu trên nhiệm vụ đích, nhưng với nhiều epoch hơn</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Luôn dùng kích thước lô lớn nhất có thể cho nhiệm vụ đích</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Sao chép thủ công trọng số giữa hai nhiệm vụ không liên quan mà không có tiền huấn luyện nào</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Học chuyển giao né tránh các nhiệm vụ đích đói dữ liệu bằng cách dùng lại các đặc trưng cấp thấp chung chung đã học trên một nhiệm vụ nguồn giàu dữ liệu, thay vì học mọi thứ từ đầu.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Khác biệt then chốt giữa chiến lược 'mạng xương sống đóng băng' và 'tinh chỉnh' trong bài này là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Tinh chỉnh thực ra hoàn toàn không dùng trọng số đã tiền huấn luyện, thay vào đó bắt đầu từ đầu</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Mạng xương sống đóng băng huấn luyện một bộ phân loại trên các đặc trưng cố định; tinh chỉnh cập nhật cả mạng xương sống</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Mạng xương sống đóng băng đòi hỏi nhiều ảnh huấn luyện đích hơn hẳn so với tinh chỉnh</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Trên thực tế không có khác biệt thực sự nào giữa hai chiến lược, dù tên gọi khác nhau</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Mạng xương sống đóng băng chỉ huấn luyện phần đầu mới; tinh chỉnh cập nhật cả mạng xương sống, nhưng một cách cẩn thận, với tốc độ học nhỏ cho mạng xương sống để tránh phá hỏng những gì nó đã học.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao tinh chỉnh dùng tốc độ học cho mạng xương sống nhỏ hơn khoảng 30 lần so với tốc độ học của phần đầu phân loại?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Để làm toàn bộ quá trình huấn luyện chạy nhanh hơn đo được, bất kể kích thước tập dữ liệu</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Vì theo thiết lập mặc định, PyTorch đòi hỏi các tốc độ học khác nhau cho các lớp khác nhau</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Một cập nhật mạng xương sống lớn chỉ từ 30 mẫu đích sẽ quá khớp nhúm ảnh đó</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Vì theo kiến trúc, mạng xương sống đơn giản là có nhiều tham số hơn phần đầu phân loại</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một tốc độ học mạng xương sống nhỏ hơn nhiều bảo vệ các đặc trưng đã tiền huấn luyện khỏi bị xóa sạch bởi các cập nhật nhiễu từ một tập dữ liệu đích nhỏ xíu.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Theo lưu ý của bài học, tại sao phép so sánh giữa mạng xương sống đóng băng đồ chơi và ResNet-18 tiền huấn luyện trên ImageNet thật không phải là một thí nghiệm được kiểm soát hoàn hảo?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">ResNet-18 ngay từ đầu chưa bao giờ thực sự được huấn luyện trên ImageNet</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Mạng xương sống đồ chơi hóa ra thực sự lớn hơn ResNet-18</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Phép so sánh âm thầm dùng các ảnh đích khác nhau cho mỗi chiến lược</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">1.000 lớp của ImageNet đã bao gồm mèo và vài loại phương tiện</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Vì ImageNet đã chứa ảnh mèo và phương tiện, một phần lợi thế của ResNet-18 là do chồng lấn lớp trực tiếp, không thuần túy do tiền huấn luyện đa năng phong phú hơn.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz37.html">&larr; Trắc nghiệm Bài 37</a></div>
+            <div class="lesson-nav-next"><a href="quiz39.html">Trắc nghiệm Bài 39 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 9 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson09_warping_interpolation.html">&larr; Quay lại Bài 9</a></p>
+        <h1>Trắc nghiệm Bài 9: Biến dạng ảnh, Ánh xạ ngược và Nội suy song tuyến tính</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Ánh xạ xuôi (đẩy mỗi điểm ảnh nguồn tới vị trí sau biến đổi của nó) có vấn đề cơ bản nào?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Nó có thể để lại khoảng trống (lỗ hổng) trong ảnh đích mà không được gán giá trị</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Nó quá chậm để chạy trên ảnh lớn trong thực tế</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Nó chỉ hoạt động đúng với phép tịnh tiến, không với phép xoay</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Nó đòi hỏi phép biến đổi phải khả nghịch, khác với ánh xạ ngược</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Khi một phép biến đổi phóng to hoặc xoay ảnh, các vị trí đích tản ra và một số điểm ảnh đích không nhận được điểm ảnh nguồn nào.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao ánh xạ ngược tránh được vấn đề lỗ hổng mà ánh xạ xuôi gặp phải?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Nó chỉ hoạt động đúng trên ảnh xám, không bao giờ trên ảnh màu, do cách OpenCV xử lý các kênh</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Nó duyệt qua một lưới đích đầy đủ và tra cứu vị trí nguồn của mỗi điểm ảnh</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Nó làm tròn mọi tọa độ về số nguyên gần nhất trước khi biến đổi, bỏ đi chi tiết lẻ</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Nó bỏ qua hoàn toàn các điểm ảnh gần biên ảnh, để tránh mọi phép tra cứu ngoài phạm vi khi ánh xạ</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Vì mọi điểm ảnh đích đều được thăm và ánh xạ ngược qua <code>M_inv</code>, mọi điểm ảnh đầu ra chắc chắn nhận được một giá trị.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao ánh xạ ngược lại cần nội suy?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Vì ma trận nghịch đảo không phải lúc nào cũng xác định với mọi ma trận biến đổi có thể</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Vì OpenCV mặc định yêu cầu nội suy, ngay cả khi không thực sự cần thiết</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Vì <code>M_inv</code> áp dụng lên một điểm ảnh đích hầu như không bao giờ rơi đúng vào một tọa độ nguồn nguyên</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Vì ảnh nguồn luôn có kích thước nhỏ hơn khung ảnh đích</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Tọa độ ánh xạ ngược nói chung là số lẻ, nên phải ước lượng một giá trị từ các điểm ảnh nguồn xung quanh.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Sự đánh đổi then chốt giữa nội suy láng giềng gần nhất và nội suy song tuyến tính là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Láng giềng gần nhất mượt hơn nhưng chạy chậm hơn nội suy song tuyến tính</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Nội suy song tuyến tính bị vỡ khối hơn nhưng chạy nhanh hơn láng giềng gần nhất</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Không có khác biệt thực sự nào giữa chúng với các phép biến đổi phóng to</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Láng giềng gần nhất bị vỡ khối/rỗ điểm; song tuyến tính mượt hơn nhưng hơi mờ hơn</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Song tuyến tính trộn 4 điểm ảnh lân cận, loại bỏ hiện tượng răng cưa vỡ khối mà láng giềng gần nhất tạo ra, với cái giá là ảnh mềm hơn.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz08.html">&larr; Trắc nghiệm Bài 8</a></div>
+            <div class="lesson-nav-next"><a href="quiz10.html">Trắc nghiệm Bài 10 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

@@ -1,0 +1,20 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+This repository is an unofficial Vietnamese translation of
+"Introduction to Computer Vision: Lecture Notes with Working Python Code"
+by Stan Birchfield (arXiv:2609.39627, https://sbirchfield.github.io/cvintro/),
+which is licensed under CC BY 4.0.
+
+Changes: the explanatory text, titles, quizzes and page interface were
+translated into Vietnamese, and page paths were adjusted so the site runs
+standalone. Technical content, code, figures, animations and outputs are
+unchanged and remain the work of the original author.
+
+The translation is distributed under the same license:
+Creative Commons Attribution 4.0 International.
+
+You are free to share and adapt this material for any purpose, provided you
+give appropriate credit (to the original author, and to this translation),
+provide a link to the license, and indicate if changes were made.
+
+Full legal code: https://creativecommons.org/licenses/by/4.0/legalcode

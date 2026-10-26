@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 37 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson37_classic_architectures.html">&larr; Quay lại Bài 37</a></p>
+        <h1>Trắc nghiệm Bài 37: Các kiến trúc kinh điển</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Điều gì khiến bộ đánh giá chuẩn ILSVRC (xây dựng trên một tập con của ImageNet) quan trọng đến vậy cho việc so sánh các kiến trúc?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Mọi nhóm đều huấn luyện trên cùng dữ liệu và được chấm điểm trên cùng tập kiểm tra được giữ lại</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Nó là tập dữ liệu đầu tiên có ảnh màu, khác với các bộ đánh giá chuẩn trước đó</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Nó chỉ cho phép mỗi kiến trúc nộp bài một lần, mãi mãi, không được nộp lại</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Theo quy định, nó yêu cầu mọi mô hình có chính xác cùng số tham số</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một cuộc thi chung, được chuẩn hóa -- không chỉ một tập dữ liệu có nhãn lớn -- là thứ cho phép so sánh công bằng các kiến trúc khác nhau và thúc đẩy tiến bộ nhanh chóng.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Theo bài học, tại sao xếp chồng thêm lớp lại làm một mạng sâu *đơn thuần* (không có kết nối dư) tệ hơn, chứ không tốt hơn?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Thêm lớp luôn chỉ làm tăng thời gian huấn luyện, hoàn toàn không ảnh hưởng đến độ chính xác</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Lan truyền ngược nhân gradient với Jacobian của mỗi lớp, nên các hệ số nhỏ thu nhỏ nó về không</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Theo cách xây dựng, các mạng sâu hơn luôn quá khớp, bất kể kích thước tập dữ liệu</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Về mặt vật lý, GPU không có khả năng thực thi nhiều hơn 20 lớp tuần tự liên tiếp</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Đây là bài toán gradient biến mất: phép nhân lặp lại với các hệ số nhỏ theo từng lớp đẩy gradient về 0, nên các lớp sớm ngừng học.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Về mặt cấu trúc, tại sao một kết nối dư (<code>x_{l+1} = x_l + F(x_l)</code>) ngăn gradient biến mất qua nhiều lớp?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Nó loại bỏ hoàn toàn sự cần thiết của bất kỳ hàm kích hoạt nào, ở bất cứ đâu trong mạng</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Nó tự động nhân đôi tốc độ học trong khi huấn luyện, không phụ thuộc vào bộ tối ưu</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Jacobian của nó là I + dF/dx_l, nên một số hạng đơn vị luôn sống sót qua chuỗi phép nhân</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Nó thay hoàn toàn lan truyền ngược bằng một thuật toán tối ưu khác, như RANSAC</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Ma trận đơn vị trong Jacobian không bao giờ bị thu nhỏ bởi một đạo hàm kích hoạt nhỏ, khác với mạng đơn thuần nơi Jacobian của mọi lớp thuần túy là <code>dF/dx_l</code>.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Hai tham số học được <code>gamma</code> và <code>beta</code> làm gì trong chuẩn hóa theo lô, sau khi các giá trị kích hoạt của một kênh được chuẩn hóa về trung bình 0 và độ lệch chuẩn 1?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Chúng vứt bỏ hoàn toàn các giá trị đã chuẩn hóa và tính lại chúng từ đầu</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Chúng điều khiển kích thước lô nhỏ dùng trong khi huấn luyện</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Chúng chuyển các giá trị kích hoạt đã chuẩn hóa trở lại thành số nguyên 8-bit</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Chúng cho phép mạng co giãn lại và dịch chuyển các giá trị kích hoạt đã chuẩn hóa</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> gamma (co giãn) và beta (dịch chuyển) được áp dụng bên trên các giá trị kích hoạt đã chuẩn hóa về 0/1, để mạng vẫn có thể khôi phục một trung bình/tỉ lệ khác nếu điều đó thực sự hữu ích.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz36.html">&larr; Trắc nghiệm Bài 36</a></div>
+            <div class="lesson-nav-next"><a href="quiz38.html">Trắc nghiệm Bài 38 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

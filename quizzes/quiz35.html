@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 35 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson35_training_a_cnn.html">&larr; Quay lại Bài 35</a></p>
+        <h1>Trắc nghiệm Bài 35: Huấn luyện một CNN</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong ví dụ quá khớp với chỉ 12 ảnh huấn luyện, các đường cong hàm mất mát huấn luyện và kiểm định cho thấy mẫu hình gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Hàm mất mát huấn luyện tiến về 0 trong khi hàm mất mát kiểm định chạm đáy ở giữa quá trình huấn luyện</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Cả hai đường cong cùng giảm và không bao giờ tách rời nhau ở bất kỳ điểm nào</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Cả hai đường cong tăng đều trong suốt toàn bộ quá trình huấn luyện, không có ngoại lệ</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Hàm mất mát kiểm định luôn thấp hơn hàm mất mát huấn luyện ở mọi epoch</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Mạng ghi nhớ hoàn hảo 12 ảnh huấn luyện trong khi hàm mất mát kiểm định đạt cực tiểu rồi tệ đi khi mô hình quá khớp thêm.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tăng cường dữ liệu giúp chống quá khớp trên một tập dữ liệu nhỏ như thế nào?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Nó xóa hoàn toàn các mẫu huấn luyện khó nhất khỏi tập dữ liệu, trước khi huấn luyện bắt đầu</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Nó tạo thêm sự đa dạng huấn luyện qua các phép biến đổi giữ nguyên nhãn như lật và xoay</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Nó tự động tăng tốc độ học của bộ tối ưu khi huấn luyện tiến triển</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Nó loại bỏ hoàn toàn sự cần thiết của một tập kiểm định được giữ lại trong khi huấn luyện</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Áp dụng các phép biến đổi giữ nguyên nhãn ngẫu nhiên lên các ảnh hiện có cho mô hình nhiều mẫu hiệu dụng hơn hẳn để học, thay vì ghi nhớ một nhúm ảnh chính xác.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Suy giảm trọng số làm gì để chống quá khớp?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Nó xóa một phần ngẫu nhiên các ảnh huấn luyện ở mỗi epoch huấn luyện</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Nó tăng năng lực tổng thể của mô hình đang được huấn luyện, thêm nhiều lớp hơn</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Nó thêm một mức phạt tỉ lệ với độ lớn trọng số, ngăn cản các trọng số lớn</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Nó buộc mọi trọng số trong mạng phải đúng bằng 0 khi khởi tạo</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Phạt độ lớn trọng số lớn làm cho việc ghi nhớ các chi tiết nhiễu cụ thể của một tập dữ liệu nhỏ tốn kém hơn so với việc tìm một hàm đơn giản hơn, mượt hơn.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong dropout đảo ngược, điều gì xảy ra với các giá trị kích hoạt sống sót (không bị đưa về 0) trong khi huấn luyện, và tại sao?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Chúng được giữ nguyên hoàn toàn, đúng như đã tính, không co giãn lại</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Chúng được đặt thành đúng 1, bất kể giá trị tính được ban đầu</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Chúng được nhân đôi giá trị, bất kể xác suất dropout được dùng</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Chúng được co giãn lại theo 1/(1-p) để giữ đầu ra kỳ vọng của lớp ở cùng tỉ lệ</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Co giãn lại theo 1/(1-p) giữ độ lớn kích hoạt kỳ vọng nhất quán giữa lúc huấn luyện (có dropout) và lúc đánh giá (không có dropout).</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz34.html">&larr; Trắc nghiệm Bài 34</a></div>
+            <div class="lesson-nav-next"><a href="quiz36.html">Trắc nghiệm Bài 36 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

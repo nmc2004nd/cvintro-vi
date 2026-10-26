@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 16 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson16_wavelets_gabor.html">&larr; Quay lại Bài 16</a></p>
+        <h1>Trắc nghiệm Bài 16: Wavelet và Bộ lọc Gabor</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Biến đổi Fourier (Bài 15) không cho bạn biết điều gì, mà wavelet và bộ lọc Gabor được thiết kế để nắm bắt?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Các tần số xuất hiện ở đâu trong ảnh</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Độ sáng trung bình tổng thể của ảnh, cộng trên mọi điểm ảnh</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Giá trị các kênh màu của ảnh tại từng vị trí điểm ảnh riêng lẻ</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Kích thước của ảnh tính theo điểm ảnh, cả chiều rộng lẫn chiều cao</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Các hàm cơ sở sóng sin trải rộng trên toàn ảnh, nên biến đổi Fourier mất khả năng định vị không gian; wavelet và bộ lọc Gabor thay vào đó dùng các dao động cục bộ về không gian.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong biến đổi wavelet Haar, các hệ số xấp xỉ (<code>a_k</code>) và chi tiết (<code>d_k</code>) biểu thị gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Giá trị lớn nhất và nhỏ nhất của mỗi cặp mẫu</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Một trung bình cục bộ và một hiệu cục bộ của mỗi cặp mẫu</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Phần thực và phần ảo của một hệ số Fourier duy nhất</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Hai phép chiếu ngẫu nhiên không liên quan của tín hiệu đầu vào</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> <code>a_k</code> là tổng (đã co giãn) của một cặp mẫu, tức một trung bình cục bộ; <code>d_k</code> là hiệu (đã co giãn), tức một chi tiết cục bộ.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong phép phân rã wavelet 2D một tầng của một ảnh, dải con LH phản hồi với điều gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 1)">Một bản sao mờ độ phân giải một nửa của toàn bộ ảnh</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 1)">Các biên chạy theo một hướng cụ thể, vì nó là thông thấp theo một trục và thông cao theo trục kia</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 1)">Chi tiết chéo và các góc, vì nó là thông cao theo cả hai trục</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 1)">Các vùng đồng đều, không có kết cấu, vì nó là thông thấp theo cả hai trục</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> LH là thông thấp theo một trục và thông cao theo trục kia, khiến nó nhạy với các biên theo một hướng -- khác với HH (chi tiết chéo/góc, thông cao cả hai chiều) hay LL (xấp xỉ độ phân giải thấp bị mờ, thông thấp cả hai chiều). Ánh xạ chính xác từ trục sang hướng (LH = biên ngang hay biên dọc) phụ thuộc vào quy ước hàng/cột được dùng.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Phản hồi của một bộ lọc Gabor cho bạn biết gì khi bộ lọc được điều chỉnh theo một hướng và áp dụng lên các thanh vẽ ở vài hướng khác nhau?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Nó phản hồi như nhau với mọi hướng, bất kể hướng điều chỉnh của nó</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Nó chỉ phản hồi với các thanh vẽ màu, không bao giờ với thanh vẽ xám</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Nó phản hồi mạnh nhất với hướng vuông góc với hướng điều chỉnh của chính nó</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Nó phản hồi mạnh nhất với thanh có hướng khớp với hướng điều chỉnh của bộ lọc</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Ma trận phản hồi trong bài học trội đường chéo: phản hồi đỉnh của mỗi bộ lọc rơi vào thanh khớp với hướng điều chỉnh của chính nó, minh họa tính chọn lọc theo hướng.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz15.html">&larr; Trắc nghiệm Bài 15</a></div>
+            <div class="lesson-nav-next"><a href="quiz17.html">Trắc nghiệm Bài 17 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

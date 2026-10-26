@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 13 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson13_laplacian_pyramids.html">&larr; Quay lại Bài 13</a></p>
+        <h1>Trắc nghiệm Bài 13: Đạo hàm bậc hai và Toán tử Laplace</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Biên xuất hiện ở đâu trong đạo hàm bậc hai của cường độ ảnh, khác với đạo hàm bậc nhất?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Tại một điểm cắt không -- nơi đạo hàm bậc hai đổi từ dương sang âm hoặc ngược lại</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Tại một đỉnh nhọn, cùng vị trí như trong đạo hàm bậc nhất của cường độ</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Theo định nghĩa toán học, đạo hàm bậc hai hoàn toàn không thể dùng để tìm biên</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Tại giá trị lớn nhất của cường độ ảnh gốc, bất kể đạo hàm</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Đạo hàm bậc nhất đạt đỉnh tại biên; đạo hàm bậc hai cắt qua 0 đúng tại vị trí biên.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao bộ phát hiện Marr-Hildreth làm trơn ảnh bằng bộ lọc Gauss trước khi lấy đạo hàm?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Để tăng độ tương phản tổng thể của ảnh trước khi lấy đạo hàm thêm</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Vì đạo hàm bậc hai khuếch đại nhiễu tần số cao còn mạnh hơn</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Theo thiết kế, làm trơn thực ra hoàn toàn không phải là một phần của phương pháp Marr-Hildreth</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Để làm ảnh thành hình vuông trước khi áp dụng toán tử Laplace lên nó</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Cách khắc phục của Marr và Hildreth là làm trơn trước, rồi lấy đạo hàm -- tương đương với tích chập với một kernel Laplace-của-Gauss kết hợp duy nhất.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Hiệu của Gauss (DoG) xấp xỉ cái gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Histogram của ảnh, tính lại ở hai tỉ lệ làm mờ khác nhau</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Độ lớn gradient Sobel, tính ở hai tỉ lệ làm mờ khác nhau</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Một Laplace của Gauss (LoG) đã nhân hệ số, với chi phí tính toán rẻ hơn nhiều</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Bộ tích lũy Hough, tính từ hai bản sao đã làm mờ của ảnh</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Trừ hai lần làm mờ Gauss ở các tỉ lệ khác nhau xấp xỉ một LoG đã nhân hệ số chỉ bằng hai lần làm mờ và một phép trừ, thay vì một kernel đạo hàm bậc hai tường minh.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Kim tự tháp Laplace lưu gì ở mỗi tầng mà kim tự tháp Gauss không lưu, cho phép tái tạo chính xác?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Một bản sao ảnh gốc ở độ phân giải đầy đủ, lưu nguyên vẹn</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Một histogram phân phối cường độ của mỗi tầng kim tự tháp</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Không có gì thêm -- kim tự tháp Laplace và Gauss lưu thông tin giống hệt nhau</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Hiệu giữa một tầng Gauss và tầng thô hơn được tăng mẫu trở lại để khớp với nó</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Mỗi tầng Laplace nắm bắt chính xác những gì làm mờ/giảm mẫu sẽ loại bỏ, nên cộng ngược lên theo kim tự tháp sẽ tái tạo chính xác ảnh gốc.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz12.html">&larr; Trắc nghiệm Bài 12</a></div>
+            <div class="lesson-nav-next"><a href="quiz14.html">Trắc nghiệm Bài 14 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

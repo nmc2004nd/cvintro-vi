@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 39 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson39_visualizing_cnns.html">&larr; Quay lại Bài 39</a></p>
+        <h1>Trắc nghiệm Bài 39: Trực quan hóa và Thấu hiểu CNN</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Một bản đồ nổi bật trực quan hóa điều gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Gradient của điểm số lớp được dự đoán theo mọi điểm ảnh đầu vào</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Các giá trị điểm ảnh thô của ảnh đầu vào, giữ nguyên hoàn toàn</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Bản thân các trọng số kernel tích chập, được trực quan hóa trực tiếp</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Nhãn lớp mà mô hình dự đoán, được vẽ chồng lên ảnh dưới dạng chữ</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một điểm ảnh có độ lớn gradient lớn là điểm mà dự đoán của mạng nhạy nhất với nó -- một điểm ảnh mà nó đang 'nhìn vào'.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao bản đồ nhiệt Grad-CAM thô hơn (độ phân giải thấp hơn) bản đồ nổi bật?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Grad-CAM chỉ hoạt động đúng trên ảnh xám, không bao giờ trên ảnh màu</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Grad-CAM hoạt động trên bản đồ đặc trưng của một lớp tích chập</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Grad-CAM cố tình làm mờ đầu ra của chính nó vì lý do thẩm mỹ</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Bản đồ nổi bật thực ra mới là cái thô hơn trong hai cái, không phải Grad-CAM</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Độ phân giải của Grad-CAM khớp với lớp tích chập mà nó dùng, thô hơn độ phân giải đầu vào đầy đủ mà một bản đồ nổi bật hoạt động trên đó.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trên các ảnh kiểm tra *sạch* (không có dấu hiệu), tại sao Grad-CAM vẫn bắt được sự phụ thuộc của <code>model_shortcut</code> vào dấu hiệu đáng tin cậy hơn hẳn so với bản đồ nổi bật thô?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Bản đồ nổi bật hoàn toàn không tính được trên các ảnh sạch, không có dấu hiệu, chỉ trên các ảnh có dấu hiệu</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Grad-CAM được huấn luyện đặc biệt từ trước để phát hiện dấu hiệu, khác với bản đồ nổi bật</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Grad-CAM gộp gradient trên cả một kênh bản đồ đặc trưng, làm trơn nhiễu cấp điểm ảnh</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Thực ra không có khác biệt đo được nào giữa hai phương pháp trên ảnh sạch</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Bài học báo cáo đỉnh của Grad-CAM rơi vào vùng dấu hiệu 92% số lần trên ảnh sạch so với chỉ 56% của bản đồ nổi bật, nhờ phép gộp cấp kênh của Grad-CAM làm trơn nhiễu điểm ảnh.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. t-SNE làm gì khác so với một phép chiếu tuyến tính như PCA (Bài 6)?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">t-SNE đòi hỏi dữ liệu huấn luyện có nhãn, trong khi PCA hoàn toàn không cần nhãn</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">PCA chỉ có thể áp dụng cho ảnh, không bao giờ trực tiếp cho các vector đặc trưng tổng quát</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">t-SNE và PCA về mặt toán học là các phép toán giống hệt nhau bên trong, chỉ đổi tên</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">t-SNE tối ưu một cách tường minh để bảo toàn các vùng lân cận cục bộ trong phép chiếu</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> t-SNE nhấn mạnh việc bảo toàn điểm nào gần với điểm nào về mặt cục bộ, đó là lý do các ảnh cùng lớp có thể kết thúc ở dạng tụ cụm thấy rõ ngay cả khi chưa bao giờ thấy nhãn của chúng.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz38.html">&larr; Trắc nghiệm Bài 38</a></div>
+            <div class="lesson-nav-next"><a href="quiz40.html">Trắc nghiệm Bài 40 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

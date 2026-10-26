@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 19 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson19_clustering.html">&larr; Quay lại Bài 19</a></p>
+        <h1>Trắc nghiệm Bài 19: Phân cụm — k-Means, GMM và DBSCAN</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Khác biệt then chốt giữa k-means và mô hình hỗn hợp Gauss (GMM) là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">GMM cho phép các cụm hình elip và gán mềm; k-means chỉ cho phép các cụm tròn, gán cứng</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">k-means luôn vượt GMM trên mọi tập dữ liệu, bất kể hình dạng hay kích thước cụm</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">GMM không thể xử lý nhiều hơn 2 cụm cùng lúc, khác với k-means không có giới hạn đó</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Không có khác biệt đáng kể nào; chúng là cùng một thuật toán dưới hai cái tên khác nhau</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> GMM tổng quát hóa k-means bằng cách cho mỗi cụm hình dạng hiệp phương sai riêng và tính xác suất thuộc về cho mọi điểm, thay vì một nhãn cứng duy nhất.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao k-means thất bại trên hai vòng tròn đồng tâm, cho độ chính xác ngang mức đoán ngẫu nhiên?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">k-means chỉ xử lý được dữ liệu 3D, không phải dữ liệu 2D như tập dữ liệu hai vòng dùng ở đây</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Quy tắc cập nhật của k-means chỉ có thể chia không gian thành các vùng lồi, dựa trên tâm</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Tập dữ liệu hai vòng đơn giản là có quá nhiều điểm để k-means xử lý hiệu quả</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">k-means đòi hỏi dữ liệu huấn luyện có nhãn, thứ mà tập dữ liệu hai vòng hoàn toàn không có</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Gán mỗi điểm cho tâm gần nhất chỉ có thể tạo ra các ranh giới đường thẳng giữa các cụm, không thể tách vòng này khỏi vòng kia.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong DBSCAN, điều gì khiến một điểm là <code>core point</code> (điểm lõi)?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Nó là điểm duy nhất gần tâm cụm thực nhất</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Nó có mật độ cao nhất trong số mọi điểm của toàn bộ tập dữ liệu</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Có ít nhất <code>min_samples</code> điểm khác nằm trong khoảng cách <code>eps</code> từ nó</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Nó đơn giản là điểm đầu tiên được thuật toán thăm</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một điểm lõi được định nghĩa hoàn toàn bằng mật độ cục bộ: đủ số lân cận trong một bán kính cố định, hoàn toàn không có khái niệm tâm cụm.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. DBSCAN có thể làm gì mà cả k-means lẫn GMM đều không làm được, khi các điểm lộn xộn/nhiễu được thêm vào tập dữ liệu?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Chạy nhanh hơn hẳn k-means trên mọi tập dữ liệu, có điểm lộn xộn hay không</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Tự động tìm ra đúng số cụm mọi lúc</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Đảm bảo một phép phân cụm tối ưu toàn cục bất kể khởi tạo</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Gán nhãn một điểm là "nhiễu", thay vì bị ép gán nó vào một cụm nào đó</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> k-means và GMM gán mọi điểm vào một cụm nào đó bất kể thế nào; DBSCAN có một hạng mục nhiễu tường minh cho các điểm không thuộc vùng đủ dày đặc nào.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz18.html">&larr; Trắc nghiệm Bài 18</a></div>
+            <div class="lesson-nav-next"><a href="quiz20.html">Trắc nghiệm Bài 20 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

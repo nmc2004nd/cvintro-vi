@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 44 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson44_precision_and_parallel_training.html">&larr; Quay lại Bài 44</a></p>
+        <h1>Trắc nghiệm Bài 44: Độ chính xác số và Huấn luyện song song</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao ép kiểu một giá trị gradient rất nhỏ (ví dụ khoảng `1e-11`) từ fp32 sang fp16 lại khiến huấn luyện thất bại, thay vì chỉ mất một chút độ chính xác?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Khoảng số mũ hạn chế của fp16 nghĩa là các giá trị nhỏ xíu làm tròn thành đúng 0 thay vì một giá trị nhỏ</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">fp16 làm tròn mọi giá trị về lũy thừa của hai gần nhất, luôn là một sai số tương đối lớn bất kể độ lớn</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Theo định dạng của nó, fp16 về cơ bản hoàn toàn không có khả năng lưu số âm</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">PyTorch báo lỗi và dừng huấn luyện ngay khoảnh khắc điều này xảy ra, mọi lần</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Dưới mức sàn biểu diễn được của fp16, tràn dưới nghĩa là mất mát thông tin hoàn toàn (đúng 0.0), không chỉ là giảm độ chính xác — và gradient trong các mạng sigmoid sâu thường xuyên rơi vào khoảng bị tràn dưới đó.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Hai biện pháp bảo vệ nào mà huấn luyện độ chính xác hỗn hợp dùng để giữ tốc độ của fp16 mà không gặp vấn đề tràn dưới?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Huấn luyện nhiều epoch hơn hẳn trong khi dùng tốc độ học nhỏ hơn, không thay đổi gì khác</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Giữ trọng số chủ fp32 hấp thụ các cập nhật nhỏ, và co giãn hàm mất mát để giữ gradient trong khoảng biểu diễn được</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Tự động chuyển sang độ chính xác kép (fp64) mỗi khi một gradient bị tràn dưới</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Luôn làm tròn mọi gradient lên giá trị fp16 khác không biểu diễn được gần nhất</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Trọng số chủ fp32 tránh việc các cập nhật bị làm tròn mất, và co giãn hàm mất mát khai thác việc gradient tuyến tính theo hàm mất mát để đẩy các giá trị lẽ ra bị tràn dưới trở lại khoảng biểu diễn được của fp16.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong ví dụ song song dữ liệu, chia một lô thành 4 mảnh, tính gradient độc lập cho mỗi mảnh, rồi lấy trung bình chúng sau đó cho ra một kết quả:</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Chỉ là một phép xấp xỉ thô của gradient trên một thiết bị, hữu ích nhưng không chính xác trong thực tế</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Luôn lớn hơn gradient trên một thiết bị đúng 4 lần, mọi lần</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Khớp với gradient trên toàn lô, trên một thiết bị trong phạm vi sai số làm tròn dấu phẩy động thông thường</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Chỉ hoạt động đúng nếu mô hình hoàn toàn không có hàm kích hoạt phi tuyến nào, ở bất cứ đâu</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Đây là toàn bộ lập luận về tính đúng đắn của song song dữ liệu: các gradient theo từng mảnh được lấy trung bình sau đó bằng gradient tính trên toàn bộ lô cùng lúc, sai khác ~1e-8 do làm tròn.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Khác biệt then chốt giữa thứ giới hạn song song dữ liệu và thứ giới hạn song song mô hình (đường ống) ở quy mô lớn là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Cả hai đều bị giới hạn bởi chính xác cùng một nút thắt cổ chai: bộ nhớ GPU có sẵn, trong mọi trường hợp</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Song song dữ liệu hoàn toàn không có nút thắt cổ chai thực sự nào, ở bất kỳ quy mô nào, dù lớn đến đâu</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Song song mô hình bị giới hạn bởi tràn trên khi co giãn hàm mất mát, cùng vấn đề như huấn luyện fp16</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Song song dữ liệu bị giới hạn bởi giao tiếp, tức bước all-reduce lấy trung bình gradient</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Cái giá của song song dữ liệu là bước giao tiếp all-reduce; cái giá của song song mô hình (đường ống) là các thiết bị ngồi chơi trừ khi nhiều vi lô giữ cho mọi giai đoạn đều bận rộn.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz43.html">&larr; Trắc nghiệm Bài 43</a></div>
+            <div class="lesson-nav-next"></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

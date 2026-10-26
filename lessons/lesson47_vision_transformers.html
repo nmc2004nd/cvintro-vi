@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 47: Vision Transformer (ViT) - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/pygments.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <script>
+    window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']] }
+    };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <div class="notebook-links">
+            <a href="https://colab.research.google.com/github/sbirchfield/sbirchfield.github.io/blob/main/cvintro/notebooks/lesson47_vision_transformers.ipynb" target="_blank" rel="noopener">
+                <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open in Colab">
+            </a>
+            <a href="../notebooks/lesson47_vision_transformers.ipynb" download>
+                <img src="https://img.shields.io/badge/Download-.ipynb-F37626?logo=jupyter&logoColor=white" alt="Download .ipynb">
+            </a>
+        </div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=8619f310"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="B%C3%A0i-47:-Vision-Transformer-(ViT)">Bài 47: Vision Transformer (ViT)<a class="anchor-link" href="#B%C3%A0i-47:-Vision-Transformer-(ViT)">¶</a></h1><p>Bộ mã hóa Transformer ở Bài 46 hoạt động trên một chuỗi vector. Một ảnh không phải là một chuỗi — nên <strong>Vision Transformer</strong> ("An Image is Worth 16x16 Words", <a href="../references.html#dosovitskiy-2020">Dosovitskiy et al., 2020</a><span class="landmark-paper">★</span>) biến nó thành một chuỗi: cắt ảnh thành các mảng (patch) kích thước cố định, làm phẳng và nhúng tuyến tính mỗi mảng thành một vector, rồi đưa chuỗi thu được thẳng vào một bộ mã hóa Transformer thông thường, đúng như đã xây dựng ở Bài 46. Không có tích chập ở đâu cả. Bài này xây dựng quy trình đó, rồi chạy chính xác phép thử tổng quát hóa tịnh tiến ở Bài 34 để cho thấy chính xác một Transformer từ bỏ những gì khi bỏ đi thiên kiến quy nạp có sẵn của tích chập.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered" id="cell-id=80542b81">
+<div class="input">
+<div class="prompt input_prompt">In [1]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=2c42e54a"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Chia-m%E1%BA%A3ng:-bi%E1%BA%BFn-m%E1%BB%99t-%E1%BA%A3nh-th%C3%A0nh-m%E1%BB%99t-chu%E1%BB%97i">Chia mảng: biến một ảnh thành một chuỗi<a class="anchor-link" href="#Chia-m%E1%BA%A3ng:-bi%E1%BA%BFn-m%E1%BB%99t-%E1%BA%A3nh-th%C3%A0nh-m%E1%BB%99t-chu%E1%BB%97i">¶</a></h2><p>Chia một ảnh <code>16x16</code> thành các mảng <code>4x4</code>, cho ra một chuỗi 16 mảng, mỗi mảng được làm phẳng thành một vector 16 số. Điều này chính xác tương đương với một phép tích chập có bước nhảy với kernel cùng kích thước với bước nhảy (<code>nn.Conv2d(..., kernel_size=P, stride=P)</code>) — cả hai đều trượt một cửa sổ không chồng lấn và áp dụng cùng một ánh xạ tuyến tính lên mỗi cửa sổ — đó là cách phép nhúng mảng của ViT thường được cài đặt trong thực tế.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered" id="cell-id=0b2a28a0">
+<div class="input">
+<div class="prompt input_prompt">In [2]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">patchify</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">patch_size</span><span class="p">):</span>
+    <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">H</span><span class="p">,</span> <span class="n">W</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="n">patch_size</span>
+    <span class="n">patches</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">unfold</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span><span class="o">.</span><span class="n">unfold</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>  <span class="c1"># (B, C, H/P, W/P, P, P)</span>
+    <span class="n">patches</span> <span class="o">=</span> <span class="n">patches</span><span class="o">.</span><span class="n">contiguous</span><span class="p">()</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">P</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span><span class="o">.</span><span class="n">permute</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">patches</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">B</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">C</span> <span class="o">*</span> <span class="n">P</span> <span class="o">*</span> <span class="n">P</span><span class="p">)</span>  <span class="c1"># (B, num_patches, C*P*P)</span>
+
+<span class="n">img</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">patches</span> <span class="o">=</span> <span class="n">patchify</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">patch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'image </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s1"> -&gt; patch sequence </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">patches</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s1">  '</span>
+      <span class="sa">f</span><span class="s1">'(</span><span class="si">{</span><span class="p">(</span><span class="mi">16</span><span class="w"> </span><span class="o">//</span><span class="w"> </span><span class="mi">4</span><span class="p">)</span><span class="w"> </span><span class="o">**</span><span class="w"> </span><span class="mi">2</span><span class="si">}</span><span class="s1"> patches of </span><span class="si">{</span><span class="mi">1</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">4</span><span class="si">}</span><span class="s1"> values each)'</span><span class="p">)</span>
+
+<span class="n">patch_dim</span><span class="p">,</span> <span class="n">embed_dim</span> <span class="o">=</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">8</span>
+<span class="n">linear_embed</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">patch_dim</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">)</span>
+<span class="n">conv_embed</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="n">conv_embed</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">copy_</span><span class="p">(</span><span class="n">linear_embed</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">embed_dim</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">))</span>
+    <span class="n">conv_embed</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">copy_</span><span class="p">(</span><span class="n">linear_embed</span><span class="o">.</span><span class="n">bias</span><span class="p">)</span>
+
+<span class="n">out_linear</span> <span class="o">=</span> <span class="n">linear_embed</span><span class="p">(</span><span class="n">patches</span><span class="p">)</span>
+<span class="n">out_conv</span> <span class="o">=</span> <span class="n">conv_embed</span><span class="p">(</span><span class="n">img</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'linear-on-patches vs. strided-conv max abs diff: </span><span class="si">{</span><span class="p">(</span><span class="n">out_linear</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">out_conv</span><span class="p">)</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">:</span><span class="s1">.2e</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>image (2, 1, 16, 16) -&gt; patch sequence (2, 16, 16)  (16 patches of 16 values each)
+linear-on-patches vs. strided-conv max abs diff: 2.38e-07
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=b2abe808"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Token-%5BCLS%5D,-v%C3%A0-l%E1%BA%AFp-r%C3%A1p-m%E1%BB%99t-ViT-%C4%91%E1%BA%A7y-%C4%91%E1%BB%A7">Token [CLS], và lắp ráp một ViT đầy đủ<a class="anchor-link" href="#Token-%5BCLS%5D,-v%C3%A0-l%E1%BA%AFp-r%C3%A1p-m%E1%BB%99t-ViT-%C4%91%E1%BA%A7y-%C4%91%E1%BB%A7">¶</a></h2><p>Để biến một chuỗi các nhúng mảng thành một dự đoán duy nhất cho cả ảnh, ViT chèn thêm một token "phân loại" học được vào đầu chuỗi trước khi chạy bộ mã hóa Transformer (Bài 46) — sau khi chú ý đã cho nó thu thập thông tin từ mọi mảng, đầu ra cuối cùng của token đó chính là thứ mà phần đầu phân loại đọc. Mã hóa vị trí (Bài 46) được cộng vào để thứ tự mảng (tức <em>vị trí</em> mảng) không vô hình đối với cơ chế chú ý.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered" id="cell-id=d269aebd">
+<div class="input">
+<div class="prompt input_prompt">In [3]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">positional_encoding</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="n">pos</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">T</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">D</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span>
+    <span class="n">angle_rates</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="p">(</span><span class="mi">10000</span> <span class="o">**</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="p">(</span><span class="n">i</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">/</span> <span class="n">D</span><span class="p">))</span>
+    <span class="n">angles</span> <span class="o">=</span> <span class="n">pos</span> <span class="o">*</span> <span class="n">angle_rates</span>
+    <span class="n">pe</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">D</span><span class="p">)</span>
+    <span class="n">pe</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">angles</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">::</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">pe</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">angles</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">::</span><span class="mi">2</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">pe</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TinyViT</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img_size</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">patch_size</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">in_ch</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">embed_dim</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">n_heads</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">patch_size</span> <span class="o">=</span> <span class="n">patch_size</span>
+        <span class="n">n_patches</span> <span class="o">=</span> <span class="p">(</span><span class="n">img_size</span> <span class="o">//</span> <span class="n">patch_size</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">patch_dim</span> <span class="o">=</span> <span class="n">in_ch</span> <span class="o">*</span> <span class="n">patch_size</span> <span class="o">*</span> <span class="n">patch_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">embed</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">patch_dim</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">cls_token</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.02</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">register_buffer</span><span class="p">(</span><span class="s1">'pos_enc'</span><span class="p">,</span> <span class="n">positional_encoding</span><span class="p">(</span><span class="n">n_patches</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">embed_dim</span><span class="p">))</span>
+        <span class="n">layer</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">TransformerEncoderLayer</span><span class="p">(</span><span class="n">embed_dim</span><span class="p">,</span> <span class="n">n_heads</span><span class="p">,</span> <span class="n">dim_feedforward</span><span class="o">=</span><span class="n">embed_dim</span> <span class="o">*</span> <span class="mi">2</span><span class="p">,</span>
+                                            <span class="n">batch_first</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">TransformerEncoder</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">num_layers</span><span class="o">=</span><span class="n">n_layers</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">head</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="n">embed_dim</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="n">patchify</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">patch_size</span><span class="p">)</span>
+        <span class="n">tok</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">embed</span><span class="p">(</span><span class="n">p</span><span class="p">)</span>
+        <span class="bp">cls</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cls_token</span><span class="o">.</span><span class="n">expand</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">tok</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="bp">cls</span><span class="p">,</span> <span class="n">tok</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">pos_enc</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">encoder</span><span class="p">(</span><span class="n">tok</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="n">out</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># classify from the [CLS] token's output</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">TinyViT</span><span class="p">()</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+<span class="n">out</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'TinyViT: input </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s1"> -&gt; output </span><span class="si">{</span><span class="nb">tuple</span><span class="p">(</span><span class="n">out</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span><span class="si">}</span><span class="s1">  (one logit per image)'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>TinyViT: input (3, 1, 16, 16) -&gt; output (3,)  (one logit per image)
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=a3bf1a12"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Thi%C3%AAn-ki%E1%BA%BFn-quy-n%E1%BA%A1p-c%E1%BB%A7a-t%C3%ADch-ch%E1%BA%ADp-mang-l%E1%BA%A1i-g%C3%AC-cho-b%E1%BA%A1n">Thiên kiến quy nạp của tích chập mang lại gì cho bạn<a class="anchor-link" href="#Thi%C3%AAn-ki%E1%BA%BFn-quy-n%E1%BA%A1p-c%E1%BB%A7a-t%C3%ADch-ch%E1%BA%ADp-mang-l%E1%BA%A1i-g%C3%AC-cho-b%E1%BA%A1n">¶</a></h2><p>Bài 34 đã huấn luyện một CNN và một MLP dựa trên làm phẳng trên các hình dấu-cộng-và-hình-tròn ở một khoảng vị trí, rồi kiểm tra cả hai ở các vị trí <em>chưa thấy</em> — CNN tổng quát hóa được (phép gộp cực đại toàn cục làm nó bất biến tịnh tiến chính xác); MLP dựa trên làm phẳng thì không (trọng số lớp đầu tiên của nó bị gắn với tọa độ điểm ảnh tuyệt đối). Hãy chạy lại chính xác thí nghiệm đó, thay <code>TinyViT</code> vào chỗ MLP.</p>
+<p>Một ViT cũng không có tính bất biến tịnh tiến có sẵn — cả phép nhúng mảng lẫn mã hóa vị trí đều đặc thù theo vị trí, giống như đầu vào đã làm phẳng của MLP. Cơ chế thực tế chính mà ViT dùng để bù đắp là quy mô: tiền huấn luyện trên các tập dữ liệu khổng lồ cho phép cơ chế chú ý <em>học</em> được thứ gì đó giống tính bất biến tịnh tiến từ dữ liệu, thay vì nhận được nó miễn phí từ kiến trúc như CNN. Trên tập dữ liệu nhỏ bé trong khóa học này, hãy kỳ vọng việc học đó thất bại.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered" id="cell-id=a0f686af">
+<div class="input">
+<div class="prompt input_prompt">In [4]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">make_image</span><span class="p">(</span><span class="n">shape_type</span><span class="p">,</span> <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">16</span><span class="p">):</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">shape_type</span> <span class="o">==</span> <span class="s1">'plus'</span><span class="p">:</span>
+        <span class="n">img</span><span class="p">[</span><span class="n">cy</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">cy</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">cx</span><span class="o">-</span><span class="mi">3</span><span class="p">:</span><span class="n">cx</span><span class="o">+</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+        <span class="n">img</span><span class="p">[</span><span class="n">cy</span><span class="o">-</span><span class="mi">3</span><span class="p">:</span><span class="n">cy</span><span class="o">+</span><span class="mi">4</span><span class="p">,</span> <span class="n">cx</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="n">cx</span><span class="o">+</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">yy</span><span class="p">,</span> <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">size</span><span class="p">]</span>
+        <span class="n">img</span><span class="p">[((</span><span class="n">xx</span><span class="o">-</span><span class="n">cx</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">yy</span><span class="o">-</span><span class="n">cy</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">9</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="k">return</span> <span class="n">img</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_dataset</span><span class="p">(</span><span class="n">rng_local</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">position_range</span><span class="p">):</span>
+    <span class="n">imgs</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">shape_type</span> <span class="o">=</span> <span class="n">rng_local</span><span class="o">.</span><span class="n">choice</span><span class="p">([</span><span class="s1">'plus'</span><span class="p">,</span> <span class="s1">'circle'</span><span class="p">])</span>
+        <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span> <span class="o">=</span> <span class="n">rng_local</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="o">*</span><span class="n">position_range</span><span class="p">),</span> <span class="n">rng_local</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="o">*</span><span class="n">position_range</span><span class="p">)</span>
+        <span class="n">imgs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">make_image</span><span class="p">(</span><span class="n">shape_type</span><span class="p">,</span> <span class="n">cx</span><span class="p">,</span> <span class="n">cy</span><span class="p">))</span>
+        <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mf">0.0</span> <span class="k">if</span> <span class="n">shape_type</span> <span class="o">==</span> <span class="s1">'plus'</span> <span class="k">else</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">imgs</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="n">data_rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span> <span class="o">=</span> <span class="n">make_dataset</span><span class="p">(</span><span class="n">data_rng</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">11</span><span class="p">))</span>   <span class="c1"># training positions</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">make_dataset</span><span class="p">(</span><span class="n">data_rng</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>       <span class="c1"># UNSEEN positions</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CNNClassifier</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(),</span> <span class="n">nn</span><span class="o">.</span><span class="n">AdaptiveMaxPool2d</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">train_and_eval</span><span class="p">(</span><span class="n">model_cls</span><span class="p">,</span> <span class="n">Xtr</span><span class="p">,</span> <span class="n">ytr</span><span class="p">,</span> <span class="n">Xte</span><span class="p">,</span> <span class="n">yte</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">):</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">model_cls</span><span class="p">()</span>
+    <span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">binary_cross_entropy_with_logits</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">Xtr</span><span class="p">),</span> <span class="n">ytr</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="n">train_acc</span> <span class="o">=</span> <span class="p">((</span><span class="n">model</span><span class="p">(</span><span class="n">Xtr</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span> <span class="o">==</span> <span class="n">ytr</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+        <span class="n">test_acc</span> <span class="o">=</span> <span class="p">((</span><span class="n">model</span><span class="p">(</span><span class="n">Xte</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span> <span class="o">==</span> <span class="n">yte</span><span class="p">)</span><span class="o">.</span><span class="n">float</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">train_acc</span><span class="p">,</span> <span class="n">test_acc</span>
+
+<span class="n">Xtr_t</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X_train</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">ytr_t</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y_train</span><span class="p">)</span>
+<span class="n">Xte_t</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span> <span class="n">yte_t</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">y_test</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">seed</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+    <span class="n">vit_train</span><span class="p">,</span> <span class="n">vit_test</span> <span class="o">=</span> <span class="n">train_and_eval</span><span class="p">(</span><span class="n">TinyViT</span><span class="p">,</span> <span class="n">Xtr_t</span><span class="p">,</span> <span class="n">ytr_t</span><span class="p">,</span> <span class="n">Xte_t</span><span class="p">,</span> <span class="n">yte_t</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">cnn_train</span><span class="p">,</span> <span class="n">cnn_test</span> <span class="o">=</span> <span class="n">train_and_eval</span><span class="p">(</span><span class="n">CNNClassifier</span><span class="p">,</span> <span class="n">Xtr_t</span><span class="p">,</span> <span class="n">ytr_t</span><span class="p">,</span> <span class="n">Xte_t</span><span class="p">,</span> <span class="n">yte_t</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'seed=</span><span class="si">{</span><span class="n">seed</span><span class="si">}</span><span class="s1">: ViT train=</span><span class="si">{</span><span class="n">vit_train</span><span class="si">:</span><span class="s1">.1%</span><span class="si">}</span><span class="s1"> test(unseen positions)=</span><span class="si">{</span><span class="n">vit_test</span><span class="si">:</span><span class="s1">.1%</span><span class="si">}</span><span class="s1">   '</span>
+          <span class="sa">f</span><span class="s1">'|   CNN train=</span><span class="si">{</span><span class="n">cnn_train</span><span class="si">:</span><span class="s1">.1%</span><span class="si">}</span><span class="s1"> test(unseen positions)=</span><span class="si">{</span><span class="n">cnn_test</span><span class="si">:</span><span class="s1">.1%</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>seed=0: ViT train=100.0% test(unseen positions)=50.7%   |   CNN train=100.0% test(unseen positions)=100.0%
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>seed=1: ViT train=100.0% test(unseen positions)=50.7%   |   CNN train=100.0% test(unseen positions)=100.0%
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>seed=2: ViT train=99.7% test(unseen positions)=26.0%   |   CNN train=100.0% test(unseen positions)=100.0%
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=dbc06358"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Cả hai mô hình đều khớp hoàn hảo các vị trí huấn luyện, nhưng ViT sụp đổ về mức đoán ngẫu nhiên (hoặc tệ hơn) trên các vị trí chưa thấy lần nào cũng vậy, trong khi CNN tổng quát hóa hoàn hảo — tái tạo gần như chính xác khoảng cách MLP-và-CNN ở Bài 34, với ViT đóng vai MLP. Đây là phát hiện thực nghiệm đã được ghi nhận rõ đằng sau các ViT thực tế: chúng cần hoặc nhiều dữ liệu huấn luyện hơn hẳn, hoặc tăng cường dữ liệu mạnh, hoặc một kiến trúc lai đưa trở lại một phần cấu trúc tích chập, để bắt kịp hiệu quả dữ liệu của CNN trên các tập dữ liệu nhỏ đến trung bình — vì tính bất biến tịnh tiến của CNN là một sự đảm bảo cứng về kiến trúc, trong khi của ViT phải được học từ các mẫu. Ở quy mô hàng trăm triệu ảnh, ViT bắt kịp hoặc vượt CNN một cách dễ dàng; ở quy mô hàng trăm ảnh, thì không.</p>
+<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<li>Tăng kích thước tập huấn luyện trong <code>make_dataset(data_rng, 300, ...)</code> từ 300 lên 3000 ảnh ở cùng các vị trí huấn luyện. Độ chính xác trên vị trí chưa thấy của ViT có cải thiện đáng kể, một phần, hay hoàn toàn không — và điều đó gợi ý gì về việc ViT cần thêm <em>bao nhiêu</em> dữ liệu để bù đắp cho thiên kiến quy nạp còn thiếu của nó?</li>
+<li>Giảm <code>patch_size</code> từ 4 xuống 2 (mảng mịn hơn, chuỗi dài hơn). Chia mảng mịn hơn có giúp ViT tổng quát hóa tốt hơn sang các vị trí chưa thấy không, hay kiểu thất bại này không liên quan đến độ phân giải mảng?</li>
+<li>Một kiến trúc "lai (hybrid)" đưa bản đồ đặc trưng của một CNN nhỏ (thay vì các mảng điểm ảnh thô) vào một bộ mã hóa Transformer, lấy lại được một phần thiên kiến quy nạp không gian của CNN. Hãy phác thảo cách bạn sửa <code>TinyViT.forward</code> để chia mảng <em>đầu ra</em> của một chồng <code>nn.Conv2d</code> nhỏ thay vì ảnh thô.</li>
+</ol>
+</div>
+</div>
+</div>
+
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="lesson46_transformer_architecture.html">&larr; Bài 46: Kiến trúc Transformer</a></div>
+            <div class="lesson-nav-next"><a href="lesson48_autoencoders.html">Bài 48: Bộ tự mã hóa &rarr;</a></div>
+        </div>
+    </div>
+</body>
+</html>

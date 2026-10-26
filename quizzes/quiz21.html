@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 21 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson21_optical_flow.html">&larr; Quay lại Bài 21</a></p>
+        <h1>Trắc nghiệm Bài 21: Luồng quang học và Ước lượng chuyển động</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Bài toán khẩu độ là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Chuyển động dọc theo một biên (thay vì vuông góc với nó) không tạo ra thay đổi cục bộ nào thấy được</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Một khiếm khuyết của thấu kính camera làm mờ riêng các vật chuyển động nhanh trong điều kiện thiếu sáng</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Thực tế rằng luồng quang học chỉ hoạt động đúng trên video xám, không bao giờ trên video màu</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Một giới hạn chỉ xuất hiện trong Horn-Schunck, không bao giờ trong công thức của Lucas-Kanade</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Nhìn qua một cửa sổ nhỏ vào một biên đang di chuyển, chỉ chuyển động vuông góc với biên là thấy được; chuyển động dọc theo biên là vô hình về mặt cục bộ.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong Lucas-Kanade, tại sao ước lượng luồng tại một góc thường đáng tin cậy trong khi tại một biên thì không?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Các góc luôn sáng hơn các biên về cường độ, bất kể hướng gradient hay độ tương phản cục bộ</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Cùng ma trận M (tensor cấu trúc) phải có điều kiện tốt để giải hệ phương trình luồng</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Trong các chuỗi video thực, biên thực sự di chuyển nhanh hơn góc, do cấu trúc một chiều của chúng</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Theo thiết kế tường minh của thuật toán, Lucas-Kanade hoàn toàn không thể xử lý các điểm ảnh biên, chỉ các góc thực sự</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Giải hệ Lucas-Kanade đòi hỏi M khả nghịch; một góc (hai giá trị riêng lớn) có điều kiện tốt, trong khi một biên (một giá trị riêng nhỏ) có điều kiện kém -- lại là bài toán khẩu độ.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao <code>cv2.calcOpticalFlowPyrLK</code> dùng một kim tự tháp ảnh và lặp, thay vì giải một lần?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Chỉ để tiết kiệm bộ nhớ, hoàn toàn không có lợi ích gì về độ chính xác</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Vì ảnh màu cần nhiều lượt để xử lý đúng</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Vì phép xấp xỉ tuyến tính (Taylor) bên dưới chỉ đúng với chuyển động nhỏ</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Kim tự tháp chỉ dùng để hiển thị, không dùng cho phép tính luồng thực sự</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Ước lượng thô trên một tầng kim tự tháp nhỏ, mờ trước, rồi tinh chỉnh từng tầng, cho phép khôi phục chuyển động lớn dù phép xấp xỉ tuyến tính chỉ đúng cục bộ, mỗi lần một bước nhỏ.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Số hạng trơn của Horn-Schunck cho phép các ước lượng luồng làm được điều gì mà các cửa sổ thuần cục bộ của Lucas-Kanade không làm được?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Chạy nhanh hơn hẳn Lucas-Kanade trong mọi tình huống, bất kể nội dung ảnh</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Tránh hoàn toàn bài toán khẩu độ, ngay cả với một điểm ảnh biên cô lập duy nhất không có lân cận nào</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Hoạt động mà hoàn toàn không dựa vào giả định độ sáng không đổi, khác với mọi phương pháp khác ở đây</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Lan truyền luồng đáng tin cậy từ các biên vào các vùng phẳng, không kết cấu, vốn không có thông tin cục bộ của riêng chúng</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Số hạng trơn ràng buộc luồng của mỗi điểm ảnh với luồng của các lân cận, cho phép thông tin lan từ các vùng có gradient mạnh vào các vùng phẳng không có số hạng dữ liệu của riêng chúng.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz20.html">&larr; Trắc nghiệm Bài 20</a></div>
+            <div class="lesson-nav-next"><a href="quiz22.html">Trắc nghiệm Bài 22 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

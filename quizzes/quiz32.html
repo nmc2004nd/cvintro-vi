@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 32 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson32_multilayer_perceptrons.html">&larr; Quay lại Bài 32</a></p>
+        <h1>Trắc nghiệm Bài 32: Perceptron nhiều lớp</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao xếp chồng hai lớp thuần tuyến tính (không có hàm phi tuyến xen giữa) không bổ sung thêm năng lực biểu diễn nào so với một lớp?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Hợp của hai phép chiếu tuyến tính về mặt đại số chỉ là một phép chiếu tuyến tính kết hợp duy nhất</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Hai lớp tuyến tính luôn huấn luyện chậm hơn đo được so với một lớp, do thêm phép nhân ma trận</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Về mặt kỹ thuật, PyTorch không cho phép xếp chồng hai lớp tuyến tính mà không có hàm kích hoạt xen giữa</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Các lớp tuyến tính chỉ có thể xếp chồng nếu chúng có chính xác cùng độ rộng ở mọi lớp</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Không có hàm phi tuyến, z = w2^T(W1 x + b1) + b2 rút gọn về mặt đại số thành một w'^T x + b' duy nhất, chính xác lại là nơ-ron đơn lẻ ở Bài 31.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Hàm phi tuyến ReLU đóng vai trò gì trong lớp ẩn của một MLP?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Nó không có tác dụng thực sự nào và chỉ được đưa vào theo quy ước, không phải vì cần thiết</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Nó phá vỡ sự sụp đổ vốn sẽ thu gọn các lớp tuyến tính xếp chồng thành một phép chiếu</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Nó biến toàn bộ mạng thành một mô hình học không giám sát không có nhãn</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Trong lan truyền ngược, nó chỉ ảnh hưởng đến các số hạng độ lệch, không bao giờ ảnh hưởng đến chính các ma trận trọng số</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Vì ReLU không phải là hàm tuyến tính, w2^T ReLU(W1 x + b1) + b2 không thể viết lại thành bất kỳ phép chiếu tuyến tính đơn lẻ nào, khác với trường hợp toàn tuyến tính.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong phép quét năng lực, H=1 (một đơn vị ẩn duy nhất) đạt được gì trên bài toán vành-khuyên-và-đĩa, bất kể huấn luyện bao lâu?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Luôn đạt 100% độ chính xác, bất kể seed ngẫu nhiên</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Đúng 0% độ chính xác mỗi lần được huấn luyện</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Một mức trần gần với giới hạn tuyến tính ~74% của Bài 30</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Độ chính xác cải thiện không giới hạn nếu có đủ epoch huấn luyện</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một đơn vị ẩn chỉ cung cấp một đường cắt thẳng duy nhất, nên nó thừa hưởng cùng mức trần biểu diễn như một phép chiếu tuyến tính đơn lẻ -- một giới hạn năng lực, không phải thất bại tối ưu hóa.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Khi đầu ra 4D của lớp ẩn đã huấn luyện được chiếu xuống 2D bằng PCA để trực quan hóa, bài học quan sát được gì về hai lớp?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Chúng vẫn đan xen y như trong không gian đầu vào ban đầu, không thay đổi</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Chúng sụp đổ vào nhau thành một cụm chồng lấn duy nhất, mất hết cấu trúc lớp</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Phép trực quan hóa hóa ra giống hệt đồ thị không gian đầu vào thô, đến từng điểm ảnh</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Chúng bị kéo ra xa nhau thành gần như tách được tuyến tính, ngay cả trong hình chụp 2D mất mát thông tin này</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Lớp ẩn định hình lại không gian để các lớp trở nên gần như tách được tuyến tính, minh họa rằng nhiệm vụ của mỗi lớp là làm cho công việc của lớp tiếp theo dễ dàng hơn.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz31.html">&larr; Trắc nghiệm Bài 31</a></div>
+            <div class="lesson-nav-next"><a href="quiz33.html">Trắc nghiệm Bài 33 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

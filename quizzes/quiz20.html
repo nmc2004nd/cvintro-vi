@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 20 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson20_feature_detection_matching.html">&larr; Quay lại Bài 20</a></p>
+        <h1>Trắc nghiệm Bài 20: Phát hiện và So khớp đặc trưng</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tensor cấu trúc <code>M</code> xây dựng từ gradient ảnh tương tự chính xác với khái niệm nào trước đó?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Ma trận hiệp phương sai mô-men ở Bài 6, được xây dựng từ gradient</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Bộ tích lũy Hough ở Bài 12, áp dụng ở đây cho các hướng gradient cục bộ</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Bảng lượng tử hóa DCT ở Bài 17, áp dụng ở đây cho một cửa sổ cục bộ</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Kim tự tháp Laplace ở Bài 13, áp dụng ở đây cho một cửa sổ cục bộ</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Cả hai đều là ma trận kiểu hiệp phương sai 2x2; Bài 6 xây dựng một ma trận từ tọa độ điểm ảnh, bài này xây dựng cùng loại ma trận đó từ gradient ảnh cục bộ.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Cả hai giá trị riêng của tensor cấu trúc đều lớn cho biết điều gì về một điểm?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Nó nằm trong một vùng phẳng, ít kết cấu với gradient nhỏ theo mọi hướng</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Nó là một góc -- gradient mạnh theo mọi hướng</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Nó nằm trên một biên thẳng, với gradient chỉ mạnh theo một hướng</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Nó nằm hoàn toàn ngoài phạm vi hợp lệ của ảnh</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một góc có gradient mạnh theo mọi hướng, đó chính xác là ý nghĩa của việc M có hai giá trị riêng lớn.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao các bộ phát hiện góc Harris và Shi-Tomasi KHÔNG bất biến với tỉ lệ, tạo động lực cho SIFT?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Chúng chỉ hoạt động đúng trên ảnh xám, không bao giờ trên ảnh màu</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Chúng đòi hỏi dữ liệu huấn luyện được gán nhãn thủ công mới hoạt động được</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Chúng hoạt động ở một kích thước cửa sổ cố định duy nhất</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Chúng không thể chạy trên ảnh lớn hơn 100x100 điểm ảnh</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một góc nhọn trở thành một đường cong thoải ở một kích thước cửa sổ cố định khi ảnh được thu nhỏ đủ nhiều, nên một bộ phát hiện tỉ lệ cố định sẽ bỏ sót nó.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Phép kiểm tra tỉ số của Lowe làm gì khi so khớp các bộ mô tả SIFT?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Nó loại bỏ hoàn toàn mọi cặp khớp cách nhau xa hơn một khoảng cách điểm ảnh cố định</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Nó chỉ giữ các cặp khớp rơi vào đúng cùng một kênh màu</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Nó đòi hỏi hai ảnh phải có đúng cùng kích thước điểm ảnh</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Nó chỉ giữ một cặp khớp nếu ứng viên tốt nhất gần hơn đáng kể so với ứng viên tốt thứ hai</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> So sánh khoảng cách của cặp khớp tốt nhất với cặp tốt thứ hai loại bỏ các cặp khớp mơ hồ, nơi hai ứng viên tốt gần như ngang nhau.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz19.html">&larr; Trắc nghiệm Bài 19</a></div>
+            <div class="lesson-nav-next"><a href="quiz21.html">Trắc nghiệm Bài 21 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

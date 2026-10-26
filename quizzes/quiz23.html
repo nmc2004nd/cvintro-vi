@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 23 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson23_model_fitting_ransac.html">&larr; Quay lại Bài 23</a></p>
+        <h1>Trắc nghiệm Bài 23: Khớp mô hình, Ước lượng bền vững và RANSAC</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao bình phương tối thiểu thông thường (OLS) cho ra một phép khớp đường thẳng bị lệch khi cả tọa độ x lẫn y đều có nhiễu?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">OLS chỉ đo sai số theo phương thẳng đứng</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">OLS chỉ dùng được với tọa độ điểm ảnh giá trị nguyên</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">OLS cần ít nhất 100 điểm dữ liệu để cho ra một phép khớp hợp lệ</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">OLS luôn ước lượng thừa độ dốc, bất kể hướng của nhiễu</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Bình phương tối thiểu toàn phần (TLS) đo khoảng cách vuông góc và đối xử với cả hai tọa độ một cách đối xứng, phù hợp hơn khi cả x lẫn y mang nhiễu tương đương.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao phép khớp bình phương tối thiểu thông thường thất bại thảm hại khi có ngoại lai?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Bình phương tối thiểu hoàn toàn không tính được khi có ngoại lai -- nó báo lỗi ngay lập tức</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Nó cực tiểu hóa bình phương phần dư, nên một ngoại lai nằm xa chi phối toàn bộ sai số</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Ngoại lai chỉ ảnh hưởng đến số hạng chặn, không bao giờ ảnh hưởng đến độ dốc, bất kể vị trí của chúng</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Theo thiết kế, bình phương phần dư thực ra làm ngoại lai đóng góp ít hơn, chứ không phải nhiều hơn</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Bình phương một phần dư lớn khiến nó chi phối tổng chi phí, nên phép khớp di chuyển ra xa các điểm đúng để giảm số hạng bình phương khổng lồ đó.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Chiến lược cốt lõi mà RANSAC dùng để khớp một mô hình khi có ngoại lai là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Nó lấy trung bình mọi mô hình ứng viên có thể trên toàn bộ tập dữ liệu cùng lúc, đánh trọng số theo độ tin cậy</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Nó chỉ loại bỏ một điểm dữ liệu cực đoan nhất và chạy lại bình phương tối thiểu nhiều lần</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Nó lặp đi lặp lại việc chọn tập con ngẫu nhiên nhỏ nhất có thể đủ để xác định một mô hình ứng viên</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Nó đòi hỏi người dùng phải gán nhãn thủ công những điểm nào là ngoại lai từ trước, trước khi khớp</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> RANSAC khớp từ các mẫu ngẫu nhiên tối thiểu và chọn ứng viên nào có tập đồng thuận lớn nhất, rồi thực hiện một lần khớp lại bình phương tối thiểu cuối cùng chỉ trên các điểm trong.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Theo công thức số vòng lặp RANSAC, tại sao khớp một phép đồng nhất (kích thước mẫu tối thiểu 4) cần nhiều vòng lặp hơn hẳn so với khớp một đường thẳng (kích thước mẫu tối thiểu 2) ở cùng tỉ lệ ngoại lai?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Phép đồng nhất vốn chậm hơn đường thẳng khi đánh giá trên máy tính</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Đường thẳng thực ra cần nhiều vòng lặp hơn phép đồng nhất, chứ không phải ít hơn</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Số vòng lặp hoàn toàn không phụ thuộc vào kích thước mẫu tối thiểu</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Xác suất rút được một mẫu toàn điểm trong là <code>w^n</code></button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Vì khả năng có một mẫu toàn điểm trong là w lũy thừa kích thước mẫu, một mẫu tối thiểu lớn hơn (4 so với 2) làm cho việc rút được mẫu toàn điểm trong khó xảy ra hơn nhiều, đòi hỏi nhiều lần thử hơn hẳn cho cùng độ tin cậy.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz22.html">&larr; Trắc nghiệm Bài 22</a></div>
+            <div class="lesson-nav-next"><a href="quiz24.html">Trắc nghiệm Bài 24 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

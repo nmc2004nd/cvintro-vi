@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 15 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson15_fourier_frequency_filtering.html">&larr; Quay lại Bài 15</a></p>
+        <h1>Trắc nghiệm Bài 15: Biến đổi Fourier và Lọc trong miền tần số</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Biến đổi Fourier 2D phân rã một ảnh thành gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Một tổng các vân sóng hình sin 2D ở các tần số và hướng khác nhau</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Một tập các khối hình chữ nhật không chồng lấn, như lưới 8x8 của JPEG</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Một kim tự tháp các bản sao ngày càng mờ hơn và được giảm mẫu</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Một giá trị độ sáng trung bình duy nhất tính cho mỗi hàng</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> DFT 2D biểu diễn lại ảnh thành tổng các vân sóng hình sin, mỗi vân có tần số, hướng, độ lớn và pha riêng.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao một vân sóng hình sin giá trị thực tạo ra hai chấm sáng (không phải một) trong phổ Fourier của nó?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Vì sai số làm tròn số tích lũy trong cài đặt FFT</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Theo công thức Euler, một sóng sin thực là tổng của hai hàm mũ phức ở +f và -f</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Vì ảnh được chụp bằng hai camera riêng biệt</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)"><code>cv2</code> luôn nhân đôi các đỉnh phổ thuần túy để hiển thị</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Theo công thức Euler, một hình sin thực phân rã thành hai hàm mũ phức ở các tần số +f và -f, nên phổ của nó cho thấy hai gai đối xứng.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Điều gì gây ra hiện tượng rung thấy rõ khi áp dụng một bộ lọc thông thấp lý tưởng (cắt đột ngột) trong miền tần số?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Ảnh chưa được chuyển sang ảnh xám trước khi biến đổi</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)"><code>np.fft.fft2</code> luôn gây ra các nhiễu làm tròn đáng kể</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Một ngưỡng cắt tần số đột ngột tương ứng với tích chập với một kernel sinc trong không gian</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Mặt nạ miền tần số chưa được căn giữa đúng trước khi nhân</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Theo định lý tích chập, một ngưỡng cắt đột ngột lý tưởng trong miền tần số tương ứng với một hàm sinc trong không gian, mà các gợn sóng vô hạn của nó gây ra hiện tượng Gibbs.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Theo định lý tích chập, nhân từng phần tử các biến đổi Fourier của hai ảnh rồi biến đổi ngược tương đương với phép toán nào trong miền không gian?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Cắt hai ảnh xuống cùng một kích thước chung</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Trừ hai ảnh cho nhau, từng điểm ảnh một</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Xếp chồng hai ảnh thành các kênh riêng biệt</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Tích chập hai ảnh trong miền không gian</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Định lý tích chập phát biểu rằng tích chập trong miền không gian bằng phép nhân từng phần tử trong miền tần số, và ngược lại.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz14.html">&larr; Trắc nghiệm Bài 14</a></div>
+            <div class="lesson-nav-next"><a href="quiz16.html">Trắc nghiệm Bài 16 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

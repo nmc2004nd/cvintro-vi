@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 10 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson10_convolution.html">&larr; Quay lại Bài 10</a></p>
+        <h1>Trắc nghiệm Bài 10: Tích chập</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Khác biệt then chốt giữa tích chập thực sự và tương quan là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Tích chập lật kernel 180 độ trước khi trượt nó</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Tương quan chỉ hoạt động đúng trên ảnh xám, không bao giờ trên ảnh màu</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Tích chập đòi hỏi kernel vuông; tương quan thì không</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Không có khác biệt; hai thuật ngữ có thể thay thế nhau trong mọi trường hợp</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Tích chập lật kernel trước khi trượt; với kernel đối xứng điều này không tạo ra khác biệt, nhưng với kernel bất đối xứng (như Sobel) thì có.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. <code>cv2.filter2D</code> tính tích chập hay tương quan?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Tích chập, lật kernel trước khi trượt nó qua ảnh</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Tương quan, dù thường được gọi chung là "tích chập" trong hầu hết các thư viện ảnh</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Không cái nào -- nó thực ra tính một biến đổi Fourier bên trong</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Nó luân phiên giữa hai phép tùy theo kích thước kernel</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Hầu hết các thư viện ảnh, kể cả <code>cv2.filter2D</code> của OpenCV, thực ra cài đặt tương quan dù thường được gọi chung là "tích chập".</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Một kernel 2D khả tách có nghĩa là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Nó chỉ có thể áp dụng lên các kênh màu riêng biệt, không bao giờ lên ảnh xám</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Nó luôn phải được chia thành hai lượt, bất kể cấu trúc bên trong của nó</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Nó có thể viết dưới dạng tích ngoài của hai kernel 1D, biến khối lượng công việc O(n^2) thành O(2n)</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Nó không có tác động đo được nào lên ảnh thu được</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một kernel khả tách như kernel Gauss có thể được áp dụng thành một lượt 1D theo x rồi một lượt 1D theo y, rẻ hơn nhiều so với kernel 2D đầy đủ.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong ví dụ phát hiện biên Sobel, tại sao sự phân biệt tích chập và tương quan thực sự quan trọng?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Vì Sobel chỉ hoạt động đúng với tương quan, không bao giờ với tích chập thực sự</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Vì kernel Sobel đối xứng, nên lật nó không có tác dụng thấy được</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Nó không bao giờ quan trọng với bất kỳ kernel nào, đối xứng hay không</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Vì kernel Sobel bất đối xứng</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Với kernel đối xứng (hộp, Gauss) việc lật không thay đổi gì, nhưng các kernel bất đối xứng như Sobel cho kết quả khác nhau giữa tích chập và tương quan.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz09.html">&larr; Trắc nghiệm Bài 9</a></div>
+            <div class="lesson-nav-next"><a href="quiz11.html">Trắc nghiệm Bài 11 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

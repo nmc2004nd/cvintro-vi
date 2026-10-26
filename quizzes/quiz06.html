@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 6 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson06_eigen_covariance.html">&larr; Quay lại Bài 6</a></p>
+        <h1>Trắc nghiệm Bài 6: Vector riêng và Giá trị riêng của Ma trận Hiệp phương sai Mô-men</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Với một ma trận đối xứng 2x2 (như các ma trận hiệp phương sai xây dựng trong bài này), các vector riêng của nó có tính chất đặc biệt gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Chúng vuông góc với nhau, với các giá trị riêng là số thực</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Chúng luôn giống hệt nhau, bất kể ma trận nào</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Chúng là số phức mỗi khi ma trận đối xứng</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Một ma trận đối xứng 2x2 chỉ luôn có một vector riêng</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một ma trận đối xứng 2x2 luôn có hai vector riêng vuông góc (trực giao) với các giá trị riêng là số thực.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong ma trận hiệp phương sai xây dựng từ các mô-men trung tâm của một đốm, các vector riêng biểu thị gì về mặt hình học?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Cường độ của ba kênh màu của đốm</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Hướng trục chính và trục phụ của đốm</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Tọa độ (x, y) trọng tâm của đốm</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Các hướng ngẫu nhiên không có ý nghĩa hình học cụ thể nào</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Chéo hóa ma trận hiệp phương sai xoay vào hệ tọa độ mà ở đó độ trải của đốm theo x và y không còn trộn lẫn -- chính là trục chính/trục phụ của nó.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Độ lệch tâm gần 0 cho biết điều gì về một hình?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Nó rất thuôn dài, như một đường mảnh hay hình cây kim</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Nó có một hoặc nhiều lỗ ở đâu đó bên trong hình</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Nó gần như tròn (trục chính và trục phụ có độ dài gần bằng nhau)</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Nó không phải một hình nhị phân hợp lệ và các mô-men không xác định</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Độ lệch tâm nằm trong khoảng từ 0 (hình tròn) đến gần 1 (một hình rất mảnh, thuôn dài).</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Bài học này lưu ý rằng việc phân rã riêng ma trận hiệp phương sai của dữ liệu tổng quát (không nhất thiết là ảnh) được gọi là kỹ thuật gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Biến đổi Fourier, phân rã dữ liệu thành các hình sin</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Phương pháp Otsu, áp dụng cho ma trận hiệp phương sai của dữ liệu</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Biến đổi Hough, áp dụng cho ma trận hiệp phương sai của dữ liệu</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Phân tích thành phần chính (PCA)</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> PCA là cùng phép chéo hóa đó áp dụng cho ma trận hiệp phương sai của dữ liệu tổng quát, xếp hạng các vector riêng theo giá trị riêng thành các thành phần chính.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz05.html">&larr; Trắc nghiệm Bài 5</a></div>
+            <div class="lesson-nav-next"><a href="quiz07.html">Trắc nghiệm Bài 7 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

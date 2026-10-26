@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 3 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson03_thresholding_morphology.html">&larr; Quay lại Bài 3</a></p>
+        <h1>Trắc nghiệm Bài 3: Phân ngưỡng, Co và Giãn</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Phân ngưỡng làm gì với một ảnh xám?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Chuyển mọi điểm ảnh trên một ngưỡng thành trắng và nhỏ hơn hoặc bằng ngưỡng thành đen (hoặc ngược lại)</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Làm mờ ảnh bằng một bộ lọc thông thấp để loại bỏ nhiễu tần số cao, không phụ thuộc vào giá trị của từng điểm ảnh</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Chuyển ảnh sang một không gian màu khác như HSV, giữ nguyên toàn bộ thông tin độ sáng gốc</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Tính histogram cường độ điểm ảnh trên toàn ảnh, không sửa đổi điểm ảnh nào</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Phân ngưỡng là một phép so sánh từng điểm ảnh với một giá trị ngưỡng, tạo ra một ảnh nhị phân.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Phương pháp Otsu dùng tiêu chí nào để tự động chọn ngưỡng?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Nó chọn giá trị điểm ảnh gần nhất với cường độ trung vị của ảnh</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Nó cực tiểu hóa phương sai trong lớp (tương đương, cực đại hóa phương sai giữa các lớp)</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Nó luôn dùng một ngưỡng cố định là 128, bất kể ảnh nào</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Nó tìm ngưỡng làm cực đại số điểm ảnh trắng</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Otsu duyệt qua mọi ngưỡng có thể để tìm ngưỡng tách histogram tốt nhất thành hai lớp có phương sai thấp.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Phép co có tác dụng gì với một vùng trắng trong ảnh nhị phân?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Mở rộng vùng trắng ra ngoài, lấp các lỗ nhỏ gần đường biên của nó</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Giữ nguyên kích thước vùng, chỉ làm mượt các cạnh của nó</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Thu nhỏ nó, loại bỏ các đốm nhỏ</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Đảo ngược đen và trắng ở mọi nơi trong ảnh</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Phép co chỉ giữ một điểm ảnh màu trắng nếu toàn bộ phần tử cấu trúc nằm gọn trong vùng trắng, nên các vùng bị thu nhỏ.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. "Phép mở" (co rồi giãn) thường được dùng để làm gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Lấp các lỗ đen nhỏ xuất hiện bên trong một vùng trắng vốn đặc</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Tăng độ tương phản tổng thể của ảnh trước khi phân ngưỡng</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Phát hiện biên bằng cách tính độ lớn gradient của ảnh</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Loại bỏ các đốm trắng nhỏ trong khi khôi phục kích thước của các vùng lớn hơn</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Phép co trước tiên xóa sạch các đốm nhỏ; phép giãn theo sau mở rộng các vùng (lớn hơn) còn sống sót trở lại gần kích thước ban đầu.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz02.html">&larr; Trắc nghiệm Bài 2</a></div>
+            <div class="lesson-nav-next"><a href="quiz04.html">Trắc nghiệm Bài 4 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

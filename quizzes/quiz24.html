@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 24 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson24_projective_geometry.html">&larr; Quay lại Bài 24</a></p>
+        <h1>Trắc nghiệm Bài 24: Hình học xạ ảnh</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao một phép đồng nhất (ma trận 3x3 trên tọa độ thuần nhất) biểu diễn được phép tịnh tiến, trong khi một ma trận 2x2 đơn thuần thì không?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Tọa độ thuần nhất thêm một tọa độ thứ ba, cho phép ma trận dịch chuyển các điểm qua hàng/cột bổ sung</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Do kích thước lớn hơn, ma trận 3x3 luôn khả nghịch, trong khi ma trận 2x2 thì không</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Về bản chất, phép tịnh tiến không bao giờ biểu diễn được bằng bất kỳ ma trận nào, thuần nhất hay không</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Một phép đồng nhất chỉ hoạt động đúng trên các ảnh đã được tịnh tiến từ trước</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Biểu diễn một điểm 2D dưới dạng (x, y, 1) cho phép một ma trận 3x3 mã hóa trực tiếp phép tịnh tiến, khác với một ma trận 2x2 chỉ tác động lên (x, y).</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Cụ thể điều gì khiến một phép đồng nhất phá hủy tính song song, khác với một phép affine?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Dùng tọa độ dấu phẩy động thay vì tọa độ nguyên</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Một hàng dưới cùng khác không <code>(g, h)</code> trong ma trận 3x3</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Áp dụng phép biến đổi lên ảnh nhiều hơn một lần liên tiếp</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Chỉ riêng sự có mặt của một số hạng tịnh tiến khác không trong ma trận</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Hàng dưới cùng của một phép affine luôn là (0, 0, 1); (g, h) khác không của một phép đồng nhất đưa vào hiệu ứng phép chia khiến các đường song song hội tụ.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Mẹo điểm-ở-vô-cực xác định điểm tụ như thế nào?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Bằng cách lấy trung bình các điểm đầu mút của mọi đoạn thẳng nhìn thấy được trong ảnh, đánh trọng số như nhau</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Bằng cách tính trọng tâm của toàn ảnh, hoàn toàn bỏ qua các đường thẳng</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Bằng cách áp dụng phép đồng nhất lên điểm thuần nhất biểu diễn hướng chung của các đường thẳng</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Do một quy ước tọa độ, nó chỉ hoạt động với đường thẳng đứng, không bao giờ với đường nằm ngang</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một điểm có tọa độ thuần nhất thứ ba bằng 0 biểu diễn một hướng ở vô cực; biến đổi nó bằng H rơi đúng vào nơi ảnh của hai đường song song hội tụ.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong hai tình huống nào một phép đồng nhất duy nhất liên hệ chính xác hai bức ảnh của một cảnh?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Bất kỳ hai bức ảnh nào chụp từ bất kỳ hai vị trí camera nào, của bất kỳ cảnh nào, không hạn chế</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Chỉ khi hai bức ảnh được chụp với chính xác cùng thiết lập camera và độ phơi sáng</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Chỉ khi cảnh được chụp hoàn toàn không chứa đường thẳng nào, theo cách dựng cảnh</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Chụp một bề mặt phẳng, hoặc chụp bất kỳ cảnh nào từ một camera chỉ xoay tại chỗ</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một phép đồng nhất mô hình hóa chính xác quan hệ mặt-phẳng-sang-mặt-phẳng (một cảnh phẳng) hoặc phép xoay camera thuần túy quanh một tâm cố định; một camera tịnh tiến nhìn một cảnh thực sự 3D thì không có phép đồng nhất chính xác duy nhất nào liên hệ các góc nhìn.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz23.html">&larr; Trắc nghiệm Bài 23</a></div>
+            <div class="lesson-nav-next"><a href="quiz25.html">Trắc nghiệm Bài 25 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

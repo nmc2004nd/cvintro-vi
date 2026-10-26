@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 34 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson34_convolutional_neural_networks.html">&larr; Quay lại Bài 34</a></p>
+        <h1>Trắc nghiệm Bài 34: Mạng nơ-ron tích chập (CNN)</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Việc chia sẻ trọng số của một lớp tích chập khắc phục hai vấn đề nào, so với một lớp kết nối đầy đủ áp dụng lên ảnh đã làm phẳng?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Nó giảm số tham số bằng cách dùng lại cùng một bộ lọc nhỏ ở mọi nơi, và mang lại tính đẳng biến tịnh tiến</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Nó làm cho huấn luyện hoàn toàn tất định và loại bỏ sự cần thiết của khởi tạo ngẫu nhiên</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Nó vứt bỏ cấu trúc không gian và đòi hỏi học lại cùng một đặc trưng ở mỗi vị trí một cách độc lập</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Nó loại bỏ sự cần thiết của bất kỳ hàm mất mát nào trong khi huấn luyện tích chập</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Giới hạn mỗi đầu ra vào một mảng cục bộ và chia sẻ trọng số của mảng đó qua các vị trí vừa thu nhỏ số tham số vừa khiến các phát hiện dịch chuyển nhất quán theo đầu vào.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Với một bộ lọc tích chập 3x3 áp dụng lên ảnh RGB 3 kênh, bộ lọc đơn lẻ đó thực sự có bao nhiêu trọng số?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">9, cùng số trọng số như với một ảnh xám có cùng kích thước kernel</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">27, vì bộ lọc trải 3x3 về không gian trên cả 3 kênh đầu vào cùng lúc</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">3, đúng một trọng số cho mỗi kênh màu, hoàn toàn bỏ qua kernel không gian</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Nó phụ thuộc hoàn toàn vào độ phân giải không gian của ảnh, không phải số kênh</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một bộ lọc tích chập thực ra là 3x3xC_in, nên trên 3 kênh đầu vào một 'bộ lọc 3x3' thực ra có 3x3x3=27 trọng số, được cộng thành một giá trị đầu ra ở mỗi vị trí.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Gộp cực đại bổ sung gì cho một CNN, ngoài việc thu nhỏ kích thước không gian của bản đồ đặc trưng?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Tính bất biến chính xác với bất kỳ phép biến đổi nào của đầu vào</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Khả năng bỏ qua hoàn toàn bước tích chập, tiết kiệm tính toán</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Một chút bất biến tịnh tiến cục bộ</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Một sự đảm bảo rằng mạng thu được không thể quá khớp</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Chỉ giữ giá trị lớn nhất trong mỗi cửa sổ nghĩa là các dịch chuyển vị trí nhỏ bên trong cửa sổ đó không làm thay đổi đầu ra đã gộp.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong phép thử tổng quát hóa với vị trí chưa thấy, tại sao MLP dựa trên làm phẳng cho kết quả gần mức đoán ngẫu nhiên với các hình đặt ở góc chưa từng thấy trong huấn luyện, trong khi CNN thì không?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">MLP đơn giản là có nhiều tham số huấn luyện được hơn CNN, khiến nó quá khớp nhanh hơn</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">CNN tình cờ được huấn luyện nhiều epoch hơn MLP trong phép so sánh này</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Do lớp đầu vào của nó, MLP chỉ hoạt động đúng trên ảnh xám, không bao giờ trên ảnh màu</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">MLP đã ghi nhớ những điểm ảnh cụ thể nào thường bật với mỗi lớp ở các vị trí huấn luyện</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Làm phẳng gắn quyết định của MLP với các vị trí điểm ảnh cụ thể, trong khi phép gộp toàn cục của CNN thu gọn vị trí không gian, cho phép nó nhận ra hình dạng bất kể chúng xuất hiện ở đâu.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz33.html">&larr; Trắc nghiệm Bài 33</a></div>
+            <div class="lesson-nav-next"><a href="quiz35.html">Trắc nghiệm Bài 35 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

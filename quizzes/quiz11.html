@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 11 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson11_smoothing_pyramids.html">&larr; Quay lại Bài 11</a></p>
+        <h1>Trắc nghiệm Bài 11: Làm trơn và Kim tự tháp Gauss</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Hiện tượng nhiễu nào có thể xảy ra khi giảm mẫu một ảnh bằng cách chỉ giữ lại mỗi điểm ảnh thứ k, mà không làm mờ trước?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Chồng phổ (aliasing) -- chi tiết tuần hoàn mịn bị gập thành một mẫu tần số thấp giả tạo</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Ảnh trở nên lớn hơn thay vì nhỏ hơn sau thao tác</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Các kênh màu bị hoán đổi một cách khó lường trong quá trình lấy mẫu thưa</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Ảnh không bị ảnh hưởng miễn là bước nhảy k là số chẵn</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Chi tiết đều đặn mịn (như các đường vữa của gạch) dao động nhanh hơn mức mà khoảng cách điểm ảnh mới biểu diễn được sẽ bị chồng phổ thành các mẫu giả trông như nhiễu.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao làm mờ trước khi giảm mẫu lại ngăn được chồng phổ?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Nó loại bỏ điểm ảnh ngẫu nhiên thay vì theo một mẫu lấy mẫu cố định, dễ đoán</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Nó loại bỏ chi tiết mịn trước khi lấy mẫu thưa, thay vì giữ lại hoặc bỏ đi nó ngẫu nhiên theo từng điểm ảnh</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Nó tăng độ tương phản tổng thể của ảnh trước khi lấy mẫu thưa, không phụ thuộc vào nội dung tần số</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Nó chuyển ảnh sang ảnh xám trước khi lấy mẫu thưa, bỏ đi mọi thông tin màu</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Làm trơn chi tiết mịn trước khi lấy mẫu thưa tránh được hiệu ứng gập gây ra chồng phổ.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Điều gì xảy ra nếu kích thước kernel Gauss quá nhỏ so với <code>sigma</code> được yêu cầu?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">OpenCV báo lỗi và từ chối tạo kernel, dừng chương trình</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Ảnh cuối cùng bị làm mờ mạnh hơn nhiều so với giá trị sigma được chỉ định</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Kernel bị âm thầm biến đổi thành thứ gần với trung bình hộp đơn thuần</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Không có gì thay đổi -- kích thước kernel không có liên hệ thực sự nào với sigma trong cài đặt của OpenCV</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một kernel quá nhỏ không thể biểu diễn một đường cong chuông rộng, nên <code>cv2.getGaussianKernel</code> chuẩn hóa lại nó thành thứ gần với trung bình hộp.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Kim tự tháp Gauss là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Một bản sao đã làm mờ duy nhất của ảnh, lưu ở một độ phân giải cố định không xử lý gì thêm</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Một histogram cường độ điểm ảnh tính trên nhiều tỉ lệ của cùng một ảnh</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Một chồng ảnh có độ phân giải tăng dần, thay vì giảm dần, qua từng tầng</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Một chồng các phiên bản ngày càng nhỏ hơn, mờ hơn, tạo ra bằng cách lặp lại việc làm mờ và giảm mẫu</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Mỗi tầng kim tự tháp là một phiên bản kích thước một nửa, đã được khử răng cưa đúng cách của tầng trước, tạo ra bằng làm-mờ-rồi-giảm-mẫu.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz10.html">&larr; Trắc nghiệm Bài 10</a></div>
+            <div class="lesson-nav-next"><a href="quiz12.html">Trắc nghiệm Bài 12 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

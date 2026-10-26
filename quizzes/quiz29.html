@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 29 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson29_structure_from_motion.html">&larr; Quay lại Bài 29</a></p>
+        <h1>Trắc nghiệm Bài 29: Cấu trúc từ chuyển động</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tam giác đạc tính gì, khi cho hai ma trận chiếu camera và một cặp điểm 2D đã khớp?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Vị trí 3D của điểm chiếu ra cả hai vị trí 2D quan sát được</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Ma trận hiệu chỉnh nội K của camera, khôi phục từ ảnh bàn cờ</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Ma trận cơ bản F liên hệ hai góc nhìn, sai khác một hệ số tỉ lệ chưa biết</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Bộ mô tả đặc trưng tối ưu cho điểm đã khớp, dùng để so khớp lại</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Tam giác đạc giao hai tia (mỗi camera một tia) có thể đã tạo ra các quan sát 2D đã khớp, khôi phục điểm 3D qua DLT/SVD.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Mục đích của phép kiểm tra chirality (yêu cầu độ sâu dương ở cả hai camera) sau tam giác đạc là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Chỉ để tăng tốc phép tính SVD dùng trong tam giác đạc, không gì khác</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Để bắt các cặp khớp nhầm vượt qua RANSAC nhưng tam giác đạc ra điểm nằm phía sau camera</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Để chuyển trực tiếp phép tái tạo từ đám mây điểm thưa sang dày đặc</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Để ước lượng riêng tiêu cự chưa biết của camera từ các cặp khớp</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Ràng buộc epipolar không loại trừ được các điểm tam giác đạc ra phía sau camera; yêu cầu độ sâu dương ở cả hai góc nhìn là một bộ lọc bổ sung miễn phí bắt được các cặp khớp xấu như vậy.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao phép tái tạo từ tư thế *ước lượng được* cần được nhân với độ dài đường cơ sở thực trước khi nó khớp với phép tái tạo từ tư thế thực?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Vì các tư thế ước lượng được dùng một hệ tọa độ hoàn toàn khác</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Vì tam giác đạc luôn ước lượng thiếu khoảng cách theo một hệ số cố định đã biết</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Vì <code>recoverPose</code> chỉ trả về một *hướng* tịnh tiến</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Bước co giãn này không cần thiết và chỉ được làm ở đây để minh họa</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Vì <code>t</code> từ <code>recoverPose</code> có độ dài đơn vị, mọi điểm được tam giác đạc đều nhỏ hơn thực tế một hệ số cố định; co giãn lại theo đường cơ sở thực khắc phục tỉ lệ thực (dùng kiến thức bên ngoài, vì riêng hai góc nhìn không cung cấp được).</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tinh chỉnh bó làm gì để phân biệt một hệ thống SfM đa góc nhìn thực thụ với quy trình hai góc nhìn đơn giản trong bài này?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Nó thay hoàn toàn việc so khớp đặc trưng bằng một mạng nơ-ron huấn luyện đầu-cuối</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Nó thực hiện khử khảm trên mỗi ảnh đầu vào trước khi bắt đầu so khớp</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Nó chuyển trực tiếp đám mây điểm thưa thành một lưới dày đặc mà không cần tính toán gì thêm</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Nó tinh chỉnh mọi tư thế camera và điểm 3D cùng nhau trong một bài toán tối ưu bình phương tối thiểu phi tuyến lớn duy nhất</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Khi thêm nhiều góc nhìn, sai số tư thế theo từng góc nhìn cộng dồn; tinh chỉnh bó tinh chỉnh đồng thời mọi tư thế camera và điểm 3D cùng lúc để cực tiểu hóa tổng sai số chiếu lại, khắc phục sự cộng dồn đó.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz28.html">&larr; Trắc nghiệm Bài 28</a></div>
+            <div class="lesson-nav-next"><a href="quiz30.html">Trắc nghiệm Bài 30 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

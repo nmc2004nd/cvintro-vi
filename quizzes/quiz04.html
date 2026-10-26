@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 4 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson04_floodfill_connected_components.html">&larr; Quay lại Bài 4</a></p>
+        <h1>Trắc nghiệm Bài 4: Tô loang và Thành phần liên thông</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Khác biệt chính giữa tô loang và gán nhãn thành phần liên thông là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Tô loang phát triển một vùng từ một điểm hạt giống duy nhất; thành phần liên thông tìm tất cả các vùng riêng biệt trong ảnh cùng lúc</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Bên trong chúng làm chính xác cùng một việc, chỉ được cung cấp qua các tên hàm và tài liệu khác nhau</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Thành phần liên thông chỉ hoạt động đúng trên ảnh màu, không bao giờ trên ảnh xám, do một giới hạn cứng của OpenCV</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Tô loang gán nhãn đồng thời mọi đốm trong ảnh với một ID duy nhất, không cần hạt giống, trong một lượt duy nhất</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Tô loang cần một hạt giống cho mỗi vùng, trong khi <code>cv2.connectedComponentsWithStats</code> quét toàn bộ ảnh và gán nhãn mọi đốm cùng lúc.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong thuật toán <code>flood_fill_stack</code> kinh điển dựa trên ngăn xếp, điều gì xảy ra khi một điểm ảnh được lấy ra khỏi ngăn xếp?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Nó được tô màu ngay lập tức và đẩy trở lại ngăn xếp, bất kể nó đã được thăm trước đó hay chưa</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Nếu nó là tiền cảnh và chưa được tô, nó được đánh dấu đã tô và 4 lân cận liên thông của nó được đẩy vào ngăn xếp</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Thuật toán kết thúc ngay lập tức, vì lấy ra một điểm ảnh luôn có nghĩa là việc tô đã hoàn tất</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Nó bị xóa khỏi mảng ảnh và được coi là nền từ đó trở đi</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Các điểm ảnh được lấy ra mà là nền hoặc đã được tô thì đơn giản bị bỏ qua; nếu không chúng được đánh dấu đã tô và các lân cận của chúng được thêm vào biên.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. <code>cv2.connectedComponentsWithStats</code> gán nhãn gì là thành phần <code>0</code>?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Đốm lớn nhất trong ảnh theo diện tích điểm ảnh</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Đốm nhỏ nhất trong ảnh theo diện tích điểm ảnh</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Nền</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Một mã lỗi nghĩa là không tìm thấy đốm nào trong ảnh</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Nhãn 0 luôn là nền, nên số đốm thực sự là <code>num_labels - 1</code>.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. <code>cv2.connectedComponentsWithStats</code> cung cấp thêm thông tin gì bên cạnh các nhãn, mà hầu như không tốn thêm chi phí tính toán?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Một bộ phân loại đã huấn luyện dự đoán danh mục hình dạng của mỗi đốm</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Các mô-men Hu của mỗi đốm, bất biến với phép xoay và co giãn</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Ảnh xám gốc chưa phân ngưỡng, không thay đổi</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Hộp bao, diện tích và trọng tâm của mỗi đốm</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Bài học lưu ý rằng các thống kê này về cơ bản là miễn phí, có được ngay trong cùng lượt gán nhãn.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz03.html">&larr; Trắc nghiệm Bài 3</a></div>
+            <div class="lesson-nav-next"><a href="quiz05.html">Trắc nghiệm Bài 5 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

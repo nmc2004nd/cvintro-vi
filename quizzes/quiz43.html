@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 43 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson43_instance_segmentation.html">&larr; Quay lại Bài 43</a></p>
+        <h1>Trắc nghiệm Bài 43: Phân đoạn thực thể</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Phân đoạn ngữ nghĩa không phân biệt được điều gì, mà phân đoạn thực thể bổ sung thêm?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Những điểm ảnh nào thuộc về đối tượng *cụ thể này* so với một đối tượng khác cùng lớp</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Màu chính xác của mỗi đối tượng trong cảnh, đến từng giá trị RGB chính xác</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Một đối tượng nhất định đang chuyển động hay đứng yên, giữa các khung hình</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Tên lớp chính xác được gán cho mỗi điểm ảnh, không có thông tin thực thể</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Phân đoạn ngữ nghĩa chỉ gán một lớp cho mỗi điểm ảnh; nó không có khái niệm danh tính riêng biệt, nên hai đối tượng cùng lớp chạm nhau gộp thành một vùng được gán nhãn.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Bài này biến mạng phân đoạn ở Bài 42 thành một mạng phân đoạn thực thể như thế nào?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Bằng cách huấn luyện một kiến trúc hoàn toàn mới, không liên quan từ đầu, không dùng lại gì</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Bằng cách thêm một phần đầu thứ hai dự đoán, cho mỗi điểm ảnh, một độ lệch về phía tâm thực thể của nó</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Bằng cách đơn giản chạy cùng mạng ngữ nghĩa hai lần liên tiếp, trên cùng đầu vào</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Bằng cách tăng tổng số lớp ngữ nghĩa mà mạng dự đoán, không gì khác</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Mạng giữ phần đầu ngữ nghĩa ban đầu và có thêm một phần đầu thứ hai được huấn luyện để hồi quy độ lệch theo từng điểm ảnh tới tâm thực thể; phân cụm các phiếu thu được (kiểu Hough) khôi phục từng thực thể riêng lẻ.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong thí nghiệm phần đầu mặt nạ đồ chơi, tại sao phần đầu mặt nạ có thể đạt IoU theo từng thực thể cao dù mọi vùng cắt kiểm tra đều chứa một hình tròn lân cận nhìn thấy được?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Vì theo lựa chọn thiết kế, các vùng cắt đơn giản là quá nhỏ để chứa một hình lân cận</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Vì trong tiền xử lý, hình tròn lân cận luôn bị xóa trước khi cắt</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Vì việc phát hiện đã giải quyết 'ở đâu' — phần đầu mặt nạ chỉ trả lời một câu hỏi đơn giản hơn, cục bộ hơn</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Vì phần đầu mặt nạ âm thầm thấy mặt nạ thực thể chuẩn lúc kiểm tra, như một lối tắt</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Cho một hộp đã căn giữa trên một thực thể, nhiệm vụ của phần đầu mặt nạ thu hẹp thành một câu hỏi cục bộ trong cùng hộp, đó là lý do nhánh mặt nạ thực tế của Mask R-CNN có thể nhỏ và nhanh — một hộp tốt đã làm phần lớn công việc.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Thành phần mới duy nhất mà Mask R-CNN thêm vào Faster R-CNN (Bài 41) là gì, và nó đòi hỏi thay đổi nào khác?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Một mạng đề xuất vùng hoàn toàn mới, cộng với một mạng xương sống lớn hơn đáng kể, từ đầu</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Một giai đoạn phát hiện thứ ba, cộng với nhân đôi tổng số hộp neo được dùng</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Không có gì cả — Mask R-CNN chỉ là Faster R-CNN với một hàm mất mát khác, ngoài ra không thay đổi gì</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Một nhánh dự đoán mặt nạ song song trên mỗi hộp được phát hiện, cộng với thay RoIPool bằng RoIAlign</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Mask R-CNN giữ nguyên RPN, bộ phân loại và hồi quy hộp của Faster R-CNN, thêm một nhánh mặt nạ cho mỗi hộp, và đổi RoIPool sang RoIAlign vì phép lượng tử hóa tọa độ vốn hầu như không ảnh hưởng đến phân loại lại làm lệch thấy rõ các mặt nạ chính xác đến từng điểm ảnh.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz42.html">&larr; Trắc nghiệm Bài 42</a></div>
+            <div class="lesson-nav-next"><a href="quiz44.html">Trắc nghiệm Bài 44 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

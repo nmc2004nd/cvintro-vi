@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 12 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson12_differentiation_edges.html">&larr; Quay lại Bài 12</a></p>
+        <h1>Trắc nghiệm Bài 12: Đạo hàm và Phát hiện biên</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao các kernel Sobel và Prewitt kết hợp phép lấy hiệu theo một phương với phép làm trơn theo phương vuông góc?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Để làm toán tử chống chịu nhiễu, khác với một phép hiệu [-1, 0, 1] đơn thuần</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Để làm kernel thu được có hình vuông</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Để tăng độ phân giải không gian của ảnh trước khi lấy đạo hàm</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Đó thuần túy là một quy ước lịch sử không có tác dụng thực tế nào với nhiễu</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Lấy trung bình theo hàng/cột trong khi lấy hiệu làm giảm đáng kể phản hồi với nhiễu so với một kernel hiệu đơn thuần.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong bộ phát hiện biên Canny, mục đích của triệt tiêu điểm không cực đại là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Làm trơn ảnh bằng kernel Gauss trước khi lấy đạo hàm, giảm độ nhạy với nhiễu</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Làm mảnh các gờ gradient rộng xuống thành các đường rộng một điểm ảnh</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Loại bỏ ngay lập tức mọi điểm ảnh dưới ngưỡng cao, không kiểm tra gì thêm</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Chuyển ảnh thành mặt nạ nhị phân trước khi tính gradient tại mọi điểm ảnh</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Triệt tiêu điểm không cực đại chỉ giữ độ lớn gradient của một điểm ảnh nếu nó là cực đại cục bộ dọc theo hướng gradient, tạo ra các biên mảnh.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Phân ngưỡng trễ của Canny làm gì với các điểm ảnh nằm giữa ngưỡng thấp và ngưỡng cao?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Loại bỏ tất cả ngay lập tức, bất kể các lân cận hay tính liên thông cục bộ của chúng</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Luôn giữ chúng lại như các biên thật, bất kể có liên thông với một biên mạnh hay không</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Chỉ giữ chúng lại nếu chúng nối liền với một điểm ảnh biên chắc chắn (trên ngưỡng cao)</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Chuyển chúng thành trung bình của hai giá trị ngưỡng, coi chúng là không chắc chắn</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Bước trễ liên kết các đoạn biên yếu-nhưng-thật nối với các biên mạnh, trong khi triệt tiêu các phản hồi nhiễu cô lập.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong biến đổi Hough, khi các đường sin trong không gian (rho, theta) của vài điểm biên đều cắt nhau tại cùng một điểm thì có nghĩa là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Các điểm biên đó là nhiễu và nên bị loại hoàn toàn khỏi bộ tích lũy</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Ảnh chứa một hình tròn thay vì một đường thẳng tại vị trí cụ thể đó</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Bộ tích lũy đã bị tràn số tại đúng ô đó</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Các điểm biên đó thẳng hàng, và giao điểm cho ra tham số của đường thẳng chung của chúng</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Mỗi điểm biên vẽ một đường sin gồm mọi đường thẳng đi qua nó; các đường sin của các điểm thẳng hàng cắt nhau tại (rho, theta) của đường thẳng chung của chúng.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz11.html">&larr; Trắc nghiệm Bài 11</a></div>
+            <div class="lesson-nav-next"><a href="quiz13.html">Trắc nghiệm Bài 13 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

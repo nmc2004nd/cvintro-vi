@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 30 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson30_projection.html">&larr; Quay lại Bài 30</a></p>
+        <h1>Trắc nghiệm Bài 30: Phép chiếu &mdash; Ý tưởng trung tâm</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Theo bài học này, PCA (Bài 6) và phép chiếu camera (P = K[R|t]) có điểm chung gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Cả hai đều là ví dụ của cùng một phép toán bên dưới: y = w^T x + b, một phép chiếu tuyến tính</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Cả hai đều cần dữ liệu huấn luyện có nhãn mới tính được</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Không cái nào liên quan đến phép nhân ma trận ở bất kỳ bước nào</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">PCA và phép chiếu camera là các phép toán không liên quan, không có cấu trúc chung</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Cả hai đều tính một phép chiếu qua tích vô hướng giữa một hướng cố định và tọa độ đầu vào; chúng chỉ khác nhau ở cách hướng đó được chọn.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Bài học cho thấy tích chập, biến đổi Fourier và phép đồng nhất thực ra đều là cùng một phép toán nào?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Các hàm kích hoạt phi tuyến áp dụng theo từng phần tử lên mỗi đầu ra</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Một phép nhân ma trận, tức một dàn các phép chiếu tuyến tính đồng thời</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Các cập nhật hạ gradient áp dụng lên mỗi tham số học được</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Các quy trình lấy mẫu ngẫu nhiên dùng để khởi tạo trọng số</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Mỗi giá trị đầu ra trong cả ba đều là tích vô hướng giữa đầu vào và một hàng/kernel/hàm cơ sở cố định, chính xác là điều mà một hàng của phép nhân ma trận tính.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Một bộ phân loại phép chiếu tuyến tính đơn lẻ không bao giờ làm được điều gì, bất kể w và b được chọn thế nào?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Tách hai lớp vốn đã tách được tuyến tính</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Tính một tích vô hướng đơn giản giữa hai vector</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Tách một vành khuyên các điểm khỏi hình đĩa các điểm mà nó bao quanh</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Được trực quan hóa trong 1D sau khi chiếu dữ liệu xuống</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một phép chiếu đơn lẻ chỉ có thể tạo ra ranh giới quyết định là đường thẳng (siêu phẳng), và không đường thẳng nào tách được một vành khuyên khỏi hình đĩa mà nó bao quanh.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong ví dụ phân loại, điều gì quyết định một điểm rơi vào phía nào của ranh giới quyết định?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Chỉ riêng khoảng cách của điểm tới gốc tọa độ của ảnh</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Lớp nào tình cờ có nhiều mẫu huấn luyện hơn</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Giá trị các kênh màu thô của điểm, không liên quan đến w hay b</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Dấu của điểm số chiếu <code>w^T x + b</code></button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Các điểm được phân loại bằng cách phân ngưỡng điểm số chiếu tại 0: điểm số dương nghĩa là một lớp, âm nghĩa là lớp kia.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz29.html">&larr; Trắc nghiệm Bài 29</a></div>
+            <div class="lesson-nav-next"><a href="quiz31.html">Trắc nghiệm Bài 31 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

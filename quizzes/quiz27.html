@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 27 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson27_camera_calibration.html">&larr; Quay lại Bài 27</a></p>
+        <h1>Trắc nghiệm Bài 27: Hiệu chỉnh camera</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Theo bài học này, hiệu chỉnh camera khôi phục hai loại tham số nào?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Tham số nội (K) và các hệ số méo</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Chỉ tiêu cự và độ phân giải ảnh, không gì khác</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Chỉ phép xoay và tịnh tiến của bàn cờ</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Các thiết lập cân bằng màu và phơi sáng mà camera dùng</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Hiệu chỉnh khôi phục ma trận tham số nội lỗ kim lý tưởng <code>K</code> cùng với các hệ số méo hướng tâm/tiếp tuyến mô tả cách một thấu kính thực lệch khỏi lý tưởng đó.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao bài học tạo nhiều góc nhìn bàn cờ tổng hợp từ các góc khác nhau thay vì chỉ một?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Một góc nhìn duy nhất luôn đủ để khôi phục chính xác K và độ méo, không có nhiễu</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Nhiều góc nhìn hơn từ nhiều góc độ đa dạng hơn cung cấp nhiều ràng buộc hơn, trung bình hóa nhiễu của bộ phát hiện</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Hàm <code>calibrateCamera</code> của OpenCV đòi hỏi đúng 40 góc nhìn mới chạy được</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Nhiều góc nhìn chỉ cần thiết để ước lượng kích thước vật lý của bàn cờ, không gì khác</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Với các phát hiện góc có nhiễu, một góc nhìn duy nhất không ràng buộc đủ bài toán; nhiều góc nhìn đa dạng trung bình hóa nhiễu và xác định tốt hơn cả K lẫn độ méo.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Méo hướng tâm <code>k1</code> và <code>k2</code> làm gì với các đường thẳng trong cảnh, khi được chụp qua một thấu kính thực?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Không gì cả -- méo hướng tâm chỉ ảnh hưởng đến màu sắc, không bao giờ ảnh hưởng đến hình học</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Nó luôn làm các đường dài hơn, mà không làm cong chúng</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Nó uốn chúng thành các đường cong (méo thùng hoặc méo gối, tùy dấu)</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Nó loại bỏ hoàn toàn các đường thẳng khỏi ảnh chụp</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Các số hạng méo hướng tâm trong mô hình méo làm cong các đường thẳng; dấu của <code>k1</code>/<code>k2</code> quyết định chúng cong ra ngoài (méo thùng) hay vào trong (méo gối).</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Sau khi áp dụng <code>cv2.undistortPoints</code> với phép hiệu chỉnh *ước lượng được* (không phải thực), tại sao các đường lưới không thẳng lại hoàn hảo?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Vì <code>undistortPoints</code> chỉ hoạt động đúng trên ảnh màu, không bao giờ trên ảnh xám</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Vì <code>undistortPoints</code> cố tình để lại một chút méo vì lý do thẩm mỹ</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Vì theo cách dựng, các đường lưới thực ra chưa bao giờ bị méo ngay từ đầu</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Vì bản thân K và các hệ số méo ước lượng được chỉ đúng gần đúng</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Hiệu chỉnh từ các phát hiện góc có nhiễu chỉ xấp xỉ K/độ méo thực, nên khử méo bằng giá trị ước lượng để lại một độ cong còn sót mờ nhạt.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz26.html">&larr; Trắc nghiệm Bài 26</a></div>
+            <div class="lesson-nav-next"><a href="quiz28.html">Trắc nghiệm Bài 28 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

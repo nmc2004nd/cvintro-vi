@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 1 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson01_images_as_arrays.html">&larr; Quay lại Bài 1</a></p>
+        <h1>Trắc nghiệm Bài 1: Ảnh dưới dạng mảng</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Ba chiều của một mảng ảnh màu, theo thứ tự, là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)"><code>(height, width, channels)</code></button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)"><code>(channels, height, width)</code></button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)"><code>(width, height, channels)</code></button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)"><code>(channels, width, height)</code></button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> <code>array.shape</code> của một ảnh màu là <code>(height, width, channels)</code> -- hàng trước, rồi đến cột, rồi đến kênh màu.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong cách đánh chỉ số NumPy <code>img[row, col]</code>, <code>row</code> tương ứng với gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">x, vị trí theo chiều ngang, vì row chỉ là một tên gọi khác của chỉ số cột</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">y, vị trí theo chiều dọc</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Kênh màu, vì row đánh chỉ số chiều sâu trong một mảng 3D</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Không có ý nghĩa gì -- row và col có thể hoán đổi cho nhau trong NumPy</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Trục đầu tiên của mảng là hàng, đi xuống dọc theo ảnh -- đó là y, không phải x.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. <code>cv2.imread</code> đọc một ảnh màu với các kênh theo thứ tự nào?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">RGB, cùng thứ tự mà Matplotlib và hầu hết các thư viện khác dùng</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Ảnh xám theo mặc định, cần một cờ màu tường minh</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">BGR</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Thứ tự bảng chữ cái của tên các kênh</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> OpenCV dùng thứ tự BGR, ngược với RGB mà Matplotlib và hầu hết các thư viện khác mong đợi.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Đưa thẳng một ảnh đọc bằng <code>cv2.imread</code> vào <code>plt.imshow</code> mà không chuyển đổi thường cho ra kết quả gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Một ảnh giống hệt những gì OpenCV hiển thị, vì cả hai thư viện giả định cùng thứ tự kênh</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Một ảnh xám, vì Matplotlib mặc định loại bỏ thông tin màu</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Một lỗi khi chạy, vì Matplotlib từ chối các mảng mà nó không nhận ra là RGB</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Một ảnh bị hoán đổi kênh đỏ và kênh lam</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Matplotlib hiểu mảng là RGB, nên một mảng BGR hiển thị với màu đỏ và lam bị đảo ngược.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"></div>
+            <div class="lesson-nav-next"><a href="quiz02.html">Trắc nghiệm Bài 2 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

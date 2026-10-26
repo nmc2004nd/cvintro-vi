@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 41 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson41_object_detection_regression.html">&larr; Quay lại Bài 41</a></p>
+        <h1>Trắc nghiệm Bài 41: Phát hiện đối tượng như một bài toán hồi quy</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Bộ phát hiện của bài này biểu diễn hộp mà nó dự đoán như thế nào?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Bốn con số (cx, cy, width, height), được chuẩn hóa về [0, 1] theo kích thước ảnh</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Một mặt nạ phân đoạn theo từng điểm ảnh phủ toàn bộ ảnh</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Chỉ một nhãn lớp, hoàn toàn không có thông tin vị trí nào</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Tọa độ bốn góc biểu diễn theo đơn vị điểm ảnh tuyệt đối</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Phần đầu hồi quy của mạng đưa ra (cx, cy, w, h) qua một sigmoid, giữ mọi giá trị trong khoảng chuẩn hóa hợp lệ [0, 1].</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao IoU được dùng để đánh giá bộ phát hiện thay vì chỉ xem bốn con số dự đoán gần với bốn con số thực đến đâu?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">IoU tính nhanh hơn bất kỳ phép so sánh số đơn thuần nào</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">IoU đo trực tiếp mức độ hộp dự đoán và hộp thực chồng lấn nhau</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">IoU chỉ luôn được dùng trong khi huấn luyện, không bao giờ để đánh giá</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Bốn con số của hộp không thể so sánh trực tiếp một cách có ý nghĩa, vì bất kỳ lý do nào</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Hai hộp có thể có tọa độ trông tương tự nhưng mức chồng lấn rất khác nhau (hoặc ngược lại), nên IoU là thước đo phản ánh điều thực sự quan trọng cho việc định vị.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao bộ phát hiện hồi quy đơn giản của bài này chỉ luôn dự đoán được đúng một đối tượng mỗi ảnh?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Về mặt kỹ thuật, PyTorch không có khả năng đưa ra nhiều hơn 4 con số</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Nó đơn giản là chưa bao giờ được huấn luyện trên cảnh nhiều đối tượng nào</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Đầu ra của nó là một vector kích thước cố định gồm đúng 4 con số</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Bản thân hàm kích hoạt sigmoid giới hạn mạng ở một dự đoán</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một đầu ra 4 con số cố định không có cách nào biểu diễn một số lượng đối tượng thay đổi; các bộ phát hiện nhiều đối tượng thực tế cần một kiến trúc khác (ô lưới, đề xuất vùng, v.v.).</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Khác biệt kiến trúc then chốt giữa các bộ phát hiện hai giai đoạn (họ R-CNN) và một giai đoạn (YOLO, SSD) là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Theo thiết kế, các bộ phát hiện một giai đoạn luôn dùng nhiều tham số hơn hẳn các bộ hai giai đoạn</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Về mặt cấu trúc, các bộ phát hiện hai giai đoạn hoàn toàn không thể dùng mạng tích chập</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Không có khác biệt kiến trúc thực sự nào; trên thực tế hai thuật ngữ có thể thay thế nhau</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Các bộ phát hiện hai giai đoạn trước tiên tạo ra các đề xuất vùng rồi phân loại/hồi quy từng đề xuất</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Các phương pháp hai giai đoạn (ví dụ Faster R-CNN) đề-xuất-rồi-phân-loại; các phương pháp một giai đoạn (YOLO, SSD) dự đoán trực tiếp hộp và lớp theo từng ô lưới trong một lượt duy nhất, đánh đổi một chút độ chính xác lấy tốc độ.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz40.html">&larr; Trắc nghiệm Bài 40</a></div>
+            <div class="lesson-nav-next"><a href="quiz42.html">Trắc nghiệm Bài 42 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

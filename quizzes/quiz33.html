@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 33 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson33_optimization.html">&larr; Quay lại Bài 33</a></p>
+        <h1>Trắc nghiệm Bài 33: Tối ưu hóa</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trên bề mặt hàm mất mát hình bát hẹp, dốc theo y, tại sao hạ gradient đơn thuần lại đi zigzag thay vì hội tụ mượt mà?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Một kích thước bước giúp tiến triển dọc theo trục x thoải lại vượt quá đích dọc theo trục y dốc</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Về mặt toán học, hạ gradient đơn thuần hoàn toàn không thể xử lý bất kỳ bề mặt hàm mất mát 2D nào</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Hàm mất mát đang được cực tiểu hóa không có cực tiểu nào để hội tụ về</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Tốc độ học bị đặt nhầm thành đúng 0 cho lần chạy cụ thể này</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Một kích thước bước dùng chung duy nhất không thể đồng thời phù hợp cho cả hướng thoải lẫn hướng dốc, gây ra đường zigzag đặc trưng.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Cơ chế then chốt đằng sau lợi ích của quán tính trên cái bát hẹp là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Nó đặt tốc độ học thành đúng 0 sau một số bước cố định</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Nó tích lũy một vận tốc tức thời nên các gradient nhất quán được cộng dồn</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Nó loại bỏ hoàn toàn sự cần thiết của hàm mất mát trong khi huấn luyện</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Nó chỉ luôn làm chậm tiến trình huấn luyện, không bao giờ tăng tốc</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Lợi ích thực sự của quán tính là tăng tốc dọc theo các hướng chỉ nhất quán, không phải giảm chấn dao động, vì một beta duy nhất không thể điều chỉnh cho từng trục.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Adam khác quán tính thế nào trong cách xử lý trục dốc và trục thoải của cái bát?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Adam hoàn toàn bỏ qua hướng gradient, chỉ dùng độ lớn của nó ở mỗi bước</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Adam về mặt chức năng giống hệt quán tính, chỉ dưới một tên gọi và ký hiệu khác</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Adam chia bước cho một ước lượng tích lũy của bình phương gradient của từng tham số</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Adam chỉ hoạt động đúng trên các bề mặt hàm mất mát thuần 1 chiều, khác với quán tính</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Chia cho sqrt(v) theo từng tham số tự động thu nhỏ bước trên trục dốc và tăng bước trên trục thoải, khác với hệ số dùng chung duy nhất của quán tính.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao khởi tạo mọi trọng số đúng bằng 0 lại thất bại thảm hại với một lớp ẩn có nhiều hơn một đơn vị?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">Trọng số bằng 0 gây ra lỗi sập ngay lập tức trong PyTorch</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">Mạng khởi tạo bằng 0 thực ra huấn luyện nhanh hơn mạng khởi tạo ngẫu nhiên</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">Khởi tạo bằng 0 chỉ thất bại riêng khi dùng bộ tối ưu Adam</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Mọi đơn vị ẩn tính cùng một hàm giống hệt và nhận cùng một gradient giống hệt</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Với trọng số giống hệt và gradient giống hệt, mọi đơn vị cập nhật giống hệt nhau mãi mãi, nên mô hình bị kẹt ở việc tính một hàm tầm thường duy nhất bất kể huấn luyện bao lâu.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz32.html">&larr; Trắc nghiệm Bài 32</a></div>
+            <div class="lesson-nav-next"><a href="quiz34.html">Trắc nghiệm Bài 34 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

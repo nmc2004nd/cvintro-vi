@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bài 57: Depth Anything - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/pygments.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <script>
+    window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']] }
+    };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <div class="notebook-links">
+            <a href="https://colab.research.google.com/github/sbirchfield/sbirchfield.github.io/blob/main/cvintro/notebooks/lesson57_depth_anything.ipynb" target="_blank" rel="noopener">
+                <img src="https://colab.research.google.com/assets/colab-badge.svg" alt="Open in Colab">
+            </a>
+            <a href="../notebooks/lesson57_depth_anything.ipynb" download>
+                <img src="https://img.shields.io/badge/Download-.ipynb-F37626?logo=jupyter&logoColor=white" alt="Download .ipynb">
+            </a>
+        </div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=26ac9960"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="B%C3%A0i-57:-Depth-Anything">Bài 57: Depth Anything<a class="anchor-link" href="#B%C3%A0i-57:-Depth-Anything">¶</a></h1><p>Bài 56 đã cho thấy điểm yếu trung tâm của độ sâu đơn mắt: một mạng được huấn luyện trên một tập dữ liệu nhỏ, hẹp chỉ học được các tiên nghiệm đúng <em>bên trong</em> phân phối của tập dữ liệu đó, và bị đánh lừa một cách tự tin bên ngoài nó. <strong>Depth Anything</strong> (<a href="../references.html#yang-2024-depthanything">Yang et al., 2024</a>) là một mô hình nền tảng độ sâu đơn mắt được xây dựng đặc biệt để thu hẹp khoảng cách đó, dùng <strong>tự huấn luyện trên dữ liệu không nhãn (self-training on unlabeled data)</strong>: một mô hình giáo viên gán nhãn giả (pseudo-label) cho một kho ảnh không nhãn khổng lồ, và một học sinh huấn luyện trên dữ liệu có nhãn cộng với các nhãn giả đó, ở một quy mô (hơn 60 triệu ảnh không nhãn) mà không tập dữ liệu độ sâu chú thích thủ công nào tiến gần được. Bài này xây dựng quy trình đó — và kết quả của nó là một phát hiện tiêu cực thực sự, hữu ích: gán nhãn giả từ một giáo viên bị thiên lệch, tự nó, không khắc phục được sự thiên lệch. Hiểu <em>tại sao</em> là điều thực sự giải thích những gì Depth Anything làm đúng mà một phiên bản ngây thơ của cùng ý tưởng không làm được.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered" id="cell-id=f3d12ded">
+<div class="input">
+<div class="prompt input_prompt">In [1]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=b4c29825"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Thi%E1%BA%BFt-l%E1%BA%ADp:-m%E1%BB%99t-t%E1%BA%ADp-c%C3%B3-nh%C3%A3n-nh%E1%BB%8F,-m%E1%BB%99t-kho-kh%C3%B4ng-nh%C3%A3n-l%E1%BB%9Bn,-m%E1%BB%99t-kho%E1%BA%A3ng-c%C3%A1ch-ph%C3%A2n-ph%E1%BB%91i">Thiết lập: một tập có nhãn nhỏ, một kho không nhãn lớn, một khoảng cách phân phối<a class="anchor-link" href="#Thi%E1%BA%BFt-l%E1%BA%ADp:-m%E1%BB%99t-t%E1%BA%ADp-c%C3%B3-nh%C3%A3n-nh%E1%BB%8F,-m%E1%BB%99t-kho-kh%C3%B4ng-nh%C3%A3n-l%E1%BB%9Bn,-m%E1%BB%99t-kho%E1%BA%A3ng-c%C3%A1ch-ph%C3%A2n-ph%E1%BB%91i">¶</a></h2><p>Dùng lại các cảnh độ sâu theo tín hiệu kích thước ở Bài 56. Tập <strong>có nhãn</strong> nhỏ (20 cảnh) và chỉ bao phủ một khoảng độ sâu hẹp (0.4-0.6). Kho <strong>không nhãn</strong> lớn hơn nhiều (150 cảnh, không có nhãn độ sâu — chỉ có ảnh) và, giống như các bộ sưu tập ảnh không nhãn trong thế giới thực, trải rộng <em>toàn bộ</em> khoảng điều kiện (độ sâu 0.2-0.9). Tập <strong>kiểm tra</strong> cũng khớp với toàn bộ khoảng đó — cố tình bao gồm các độ sâu mà tập có nhãn chưa bao giờ cho thấy.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered" id="cell-id=72eb14e2">
+<div class="input">
+<div class="prompt input_prompt">In [2]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">SIZE</span> <span class="o">=</span> <span class="mi">32</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_scene</span><span class="p">(</span><span class="n">rng</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">SIZE</span><span class="p">,</span> <span class="n">n_objects</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">depth_range</span><span class="o">=</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">)):</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">depth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">((</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">depths_used</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">*</span><span class="n">depth_range</span><span class="p">,</span> <span class="n">n_objects</span><span class="p">)</span>
+    <span class="n">depths_used</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">depths_used</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="mi">6</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">d</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">cy</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">size</span> <span class="o">*</span> <span class="p">(</span><span class="mf">0.3</span> <span class="o">+</span> <span class="mf">0.6</span> <span class="o">*</span> <span class="n">d</span><span class="p">))</span>
+        <span class="n">cx</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">size</span> <span class="o">-</span> <span class="n">r</span><span class="p">)</span>
+        <span class="n">yy</span><span class="p">,</span> <span class="n">xx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">size</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">size</span><span class="p">]</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="p">((</span><span class="n">xx</span> <span class="o">-</span> <span class="n">cx</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">yy</span> <span class="o">-</span> <span class="n">cy</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">r</span> <span class="o">**</span> <span class="mi">2</span>
+        <span class="n">img</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.8</span>
+        <span class="n">depth</span><span class="p">[</span><span class="n">m</span><span class="p">]</span> <span class="o">=</span> <span class="n">d</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">img</span> <span class="o">+</span> <span class="n">rng</span><span class="o">.</span><span class="n">normal</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">,</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">img</span><span class="p">,</span> <span class="n">depth</span>
+
+<span class="n">label_rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">N_LABELED</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">X_labeled</span><span class="p">,</span> <span class="n">D_labeled</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_LABELED</span><span class="p">):</span>
+    <span class="n">im</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">make_scene</span><span class="p">(</span><span class="n">label_rng</span><span class="p">,</span> <span class="n">n_objects</span><span class="o">=</span><span class="n">label_rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="n">depth_range</span><span class="o">=</span><span class="p">(</span><span class="mf">0.4</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">))</span>
+    <span class="n">X_labeled</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">im</span><span class="p">);</span> <span class="n">D_labeled</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+<span class="n">X_labeled</span><span class="p">,</span> <span class="n">D_labeled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X_labeled</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">D_labeled</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="n">unlabeled_rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="n">N_UNLABELED</span> <span class="o">=</span> <span class="mi">150</span>
+<span class="n">X_unlabeled</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_UNLABELED</span><span class="p">):</span>
+    <span class="n">im</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">make_scene</span><span class="p">(</span><span class="n">unlabeled_rng</span><span class="p">,</span> <span class="n">n_objects</span><span class="o">=</span><span class="n">unlabeled_rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">depth_range</span><span class="o">=</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">))</span>
+    <span class="n">X_unlabeled</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="n">X_unlabeled</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X_unlabeled</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="n">test_rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
+<span class="n">N_TEST</span> <span class="o">=</span> <span class="mi">100</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">D_test</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N_TEST</span><span class="p">):</span>
+    <span class="n">im</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">make_scene</span><span class="p">(</span><span class="n">test_rng</span><span class="p">,</span> <span class="n">n_objects</span><span class="o">=</span><span class="n">test_rng</span><span class="o">.</span><span class="n">integers</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">depth_range</span><span class="o">=</span><span class="p">(</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.9</span><span class="p">))</span>
+    <span class="n">X_test</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">im</span><span class="p">);</span> <span class="n">D_test</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">d</span><span class="p">)</span>
+<span class="n">X_test</span><span class="p">,</span> <span class="n">D_test</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">D_test</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'labeled:   </span><span class="si">{</span><span class="n">N_LABELED</span><span class="si">}</span><span class="s1"> scenes, depth range [0.4, 0.6]'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'unlabeled: </span><span class="si">{</span><span class="n">N_UNLABELED</span><span class="si">}</span><span class="s1"> scenes, depth range [0.2, 0.9], no depth labels'</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'test:      </span><span class="si">{</span><span class="n">N_TEST</span><span class="si">}</span><span class="s1"> scenes, depth range [0.2, 0.9]'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>labeled:   20 scenes, depth range [0.4, 0.6]
+unlabeled: 150 scenes, depth range [0.2, 0.9], no depth labels
+test:      100 scenes, depth range [0.2, 0.9]
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=47b2dca4"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Gi%C3%A1o-vi%C3%AAn,-nh%C3%A3n-gi%E1%BA%A3,-h%E1%BB%8Dc-sinh">Giáo viên, nhãn giả, học sinh<a class="anchor-link" href="#Gi%C3%A1o-vi%C3%AAn,-nh%C3%A3n-gi%E1%BA%A3,-h%E1%BB%8Dc-sinh">¶</a></h2><p>Huấn luyện một <strong>giáo viên</strong> (U-Net ở Bài 42) chỉ trên tập có nhãn nhỏ. Dùng nó để gán nhãn giả cho mọi ảnh trong kho không nhãn. Huấn luyện một <strong>học sinh</strong>, cùng kiến trúc, trên tập có nhãn cộng với kho đã gán nhãn giả kết hợp lại — chính xác là công thức cốt lõi của Depth Anything.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered" id="cell-id=41b907a9">
+<div class="input">
+<div class="prompt input_prompt">In [3]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class="highlight hl-ipython3"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">UNetTiny</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">enc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">up</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Upsample</span><span class="p">(</span><span class="n">scale_factor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">'nearest'</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dec1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">32</span> <span class="o">+</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">1</span><span class="p">),</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enc1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">f2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">enc2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">f1</span><span class="p">))</span>
+        <span class="n">d1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dec1</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">up</span><span class="p">(</span><span class="n">f2</span><span class="p">),</span> <span class="n">f1</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">out</span><span class="p">(</span><span class="n">d1</span><span class="p">))</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">train_model</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">D</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">manual_seed</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">UNetTiny</span><span class="p">()</span>
+    <span class="n">opt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">lr</span><span class="p">)</span>
+    <span class="n">Xt</span><span class="p">,</span> <span class="n">Dt</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">D</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">mse_loss</span><span class="p">(</span><span class="n">model</span><span class="p">(</span><span class="n">Xt</span><span class="p">),</span> <span class="n">Dt</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">opt</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">model</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">eval_mae</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">D</span><span class="p">):</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="n">pred</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">pred</span> <span class="o">-</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">D</span><span class="p">))</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+<span class="n">teacher</span> <span class="o">=</span> <span class="n">train_model</span><span class="p">(</span><span class="n">X_labeled</span><span class="p">,</span> <span class="n">D_labeled</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">teacher_mae</span> <span class="o">=</span> <span class="n">eval_mae</span><span class="p">(</span><span class="n">teacher</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">D_test</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'teacher (small labeled set only) test MAE: </span><span class="si">{</span><span class="n">teacher_mae</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="n">pseudo_labels</span> <span class="o">=</span> <span class="n">teacher</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span><span class="n">X_unlabeled</span><span class="p">)</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+
+<span class="n">X_combined</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">X_labeled</span><span class="p">,</span> <span class="n">X_unlabeled</span><span class="p">])</span>
+<span class="n">D_combined</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">D_labeled</span><span class="p">,</span> <span class="n">pseudo_labels</span><span class="p">])</span>
+<span class="n">student</span> <span class="o">=</span> <span class="n">train_model</span><span class="p">(</span><span class="n">X_combined</span><span class="p">,</span> <span class="n">D_combined</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="n">student_mae</span> <span class="o">=</span> <span class="n">eval_mae</span><span class="p">(</span><span class="n">student</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">D_test</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">'student (labeled + pseudo-labeled) test MAE: </span><span class="si">{</span><span class="n">student_mae</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>teacher (small labeled set only) test MAE: 0.0644
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>student (labeled + pseudo-labeled) test MAE: 0.0644
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered" id="cell-id=5e1f75ce"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="T%E1%BA%A1i-sao-t%E1%BB%B1-hu%E1%BA%A5n-luy%E1%BB%87n-kh%C3%B4ng-gi%C3%BAp-%C3%ADch?">Tại sao tự huấn luyện không giúp ích?<a class="anchor-link" href="#T%E1%BA%A1i-sao-t%E1%BB%B1-hu%E1%BA%A5n-luy%E1%BB%87n-kh%C3%B4ng-gi%C3%BAp-%C3%ADch?">¶</a></h2><p>Sai số của học sinh về cơ bản không thay đổi so với của giáo viên. Đây không phải lỗi — đó là kết quả được kỳ vọng của tự huấn luyện ngây thơ, và đáng để hiểu chính xác tại sao. Các nhãn giả cho kho không nhãn đến <em>hoàn toàn</em> từ giáo viên, và giáo viên chưa bao giờ được cho thấy một độ sâu nào ngoài [0.4, 0.6]. Với bất kỳ cảnh không nhãn nào có độ sâu thực, chẳng hạn, 0.8, nhãn giả của giáo viên không phải là một phiên bản nhiễu của đáp án đúng — nó là chính lỗi ngoại suy có hệ thống của giáo viên từ thí nghiệm đánh lừa ở Bài 56, được áp dụng một cách tự tin rồi trao cho học sinh như thể đó là dữ liệu chuẩn. Huấn luyện trên đó chỉ dạy học sinh tái tạo lỗi của giáo viên một cách hiệu quả hơn. Không có thông tin thực sự mới nào về các độ sâu trong [0.6, 0.9] từng đi vào quy trình — tự huấn luyện phân phối lại những gì một mô hình đã biết, và không thể tạo ra những gì nó không biết.</p>
+<h2 id="%C4%90i%E1%BB%81u-g%C3%AC-th%E1%BB%B1c-s%E1%BB%B1-khi%E1%BA%BFn-Depth-Anything-ho%E1%BA%A1t-%C4%91%E1%BB%99ng">Điều gì thực sự khiến Depth Anything hoạt động<a class="anchor-link" href="#%C4%90i%E1%BB%81u-g%C3%AC-th%E1%BB%B1c-s%E1%BB%B1-khi%E1%BA%BFn-Depth-Anything-ho%E1%BA%A1t-%C4%91%E1%BB%99ng">¶</a></h2><p>Khoảng cách giữa thất bại đồ chơi này và thành công thực sự, đã được ghi nhận rõ của Depth Anything đến từ ba thành phần mà thiết lập của bài này cố tình thiếu:</p>
+<ul>
+<li><strong>Độ bao phủ phân phối thực sự.</strong> Kho không nhãn của Depth Anything không phải là một phân phối tổng hợp hẹp chỉ lệch nhẹ khỏi tập có nhãn — nó là 62 triệu ảnh <em>thật</em> trải rộng trên một phạm vi khổng lồ các cảnh, điều kiện ánh sáng và loại đối tượng. Lỗi của giáo viên trên bất kỳ ảnh không nhãn đơn lẻ nào vẫn là lỗi thật, nhưng khi lấy trung bình trên lượng đa dạng thực sự đó, tín hiệu huấn luyện của học sinh ít bị thiên lệch có hệ thống hơn nhiều so với kho đồ chơi 150 ảnh, một tín hiệu duy nhất của bài này.</li>
+<li><strong>Một mạng xương sống tiền huấn luyện mạnh.</strong> Giáo viên không phải là một CNN nhỏ huấn luyện từ đầu trên một nhúm mẫu có nhãn — nó bắt đầu từ một mạng xương sống DINOv2 (Bài 50) đã mang các tiên nghiệm thị giác phong phú, đa năng học được từ dữ liệu không nhãn ở một quy mô hoàn toàn khác, trước khi từng thấy một nhãn độ sâu nào.</li>
+<li><strong>Nhiễu loạn mạnh trong khi huấn luyện học sinh.</strong> Depth Anything đặc biệt đưa vào các phép tăng cường ảnh mạnh (và, trong các biến thể sau, thêm các hàm mất mát phụ trợ) khi huấn luyện học sinh trên dữ liệu gán nhãn giả, để học sinh không thể đơn giản ghi nhớ đầu ra chính xác của giáo viên — nó phải học thứ gì đó vững hơn để tái tạo chúng dưới sự biến dạng, đó mới là điều thực sự vắt ra được khả năng tổng quát hóa mới từ quá trình này, thay vì chỉ sao chép giáo viên.</li>
+</ul>
+<p>Không thành phần nào trong số này khắc phục được vấn đề cơ bản của quy trình đồ chơi này (không có thông tin thực sự mới nào về các độ sâu trong [0.6, 0.9] ở bất cứ đâu trong tập dữ liệu này), nhưng ở quy mô thực, "thông tin thực sự mới" hiếm khi hoàn toàn vắng mặt trong một kho không nhãn đủ lớn và đa dạng — đó chính xác là điều kiện mà tự huấn luyện cần để đáng thực hiện.</p>
+<h3 id="B%C3%A0i-t%E1%BA%ADp">Bài tập<a class="anchor-link" href="#B%C3%A0i-t%E1%BA%ADp">¶</a></h3><ol>
+<li>Đổi <code>depth_range</code> của kho không nhãn để khớp chính xác với <code>(0.4, 0.6)</code> của tập có nhãn, thay vì toàn bộ khoảng <code>(0.2, 0.9)</code>. Tự huấn luyện <em>giờ</em> có giúp ích không — và điều đó có ủng hộ khẳng định rằng giá trị của tự huấn luyện phụ thuộc hoàn toàn vào việc các nhãn thực (không quan sát được) của kho không nhãn có thực sự khác với những gì giáo viên đã tin hay không?</li>
+<li>Thêm nhiễu điểm ảnh Gauss vào các ảnh không nhãn <em>trước khi</em> tạo nhãn giả nhưng huấn luyện học sinh trên các ảnh <em>sạch</em> với các nhãn suy ra từ ảnh nhiễu đó (hoặc ngược lại) — một sự thay thế thô sơ cho mẹo nhiễu loạn của Depth Anything. Việc ép sự không khớp này giữa thứ được gán nhãn giả và thứ được huấn luyện có làm thay đổi MAE kiểm tra của học sinh không?</li>
+<li>Huấn luyện lại giáo viên trên một tập có nhãn bao phủ toàn bộ khoảng độ sâu <code>(0.2, 0.9)</code> (cùng 20 mẫu, chỉ lấy mẫu lại với <code>depth_range=(0.2, 0.9)</code>) thay vì khoảng hẹp. Tự huấn luyện có giúp giáo viên <em>này</em> cải thiện thêm trên cùng tập kiểm tra không, khi giờ ngay từ đầu không có khoảng cách thông tin cơ bản nào?</li>
+</ol>
+</div>
+</div>
+</div>
+
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="lesson56_monocular_depth_estimation.html">&larr; Bài 56: Ước lượng độ sâu đơn mắt</a></div>
+            <div class="lesson-nav-next"><a href="lesson58_stereo_foundationstereo.html">Bài 58: Độ sâu ảnh nổi với các mô hình nền tảng &rarr;</a></div>
+        </div>
+    </div>
+</body>
+</html>

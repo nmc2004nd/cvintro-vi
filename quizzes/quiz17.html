@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trắc nghiệm Bài 17 - Nhập môn Thị giác Máy tính</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/notebook.css">
+    <link rel="stylesheet" href="../css/quiz.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
+                <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
+                <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
+                <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container notebook-container">
+        <p class="quiz-breadcrumb"><a href="../lessons/lesson17_compression.html">&larr; Quay lại Bài 17</a></p>
+        <h1>Trắc nghiệm Bài 17: Nén ảnh &mdash; Không mất mát và Có mất mát</h1>
+        <p class="quiz-score" id="quiz-score">Điểm: 0 / 4</p>
+        <div id="quiz-questions">
+            <div class="quiz-question" data-q="0">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Mã hóa loạt dài (RLE) nén tốt loại nội dung ảnh nào?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(0, 0, 0)">Ảnh có các vùng phẳng lớn với giá trị hằng số</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(0, 1, 0)">Ảnh chụp có nhiễu hạt mịn khắp khung hình</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(0, 2, 0)">Bất kỳ ảnh nào, bất kể nội dung của nó</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(0, 3, 0)">Chỉ những ảnh đã được nén JPEG</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> RLE lưu các cặp (giá trị, độ dài loạt) cho các điểm ảnh giống nhau liên tiếp, nên nó tỏa sáng trên các vùng phẳng nhưng chẳng có ích gì khi giá trị điểm ảnh hiếm khi lặp lại, như trong ảnh chụp có nhiễu.</p>
+            </div>
+            <div class="quiz-question" data-q="1">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Entropy Shannon biểu thị điều gì trong bối cảnh nén ảnh không mất mát?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(1, 0, 1)">Số bit chính xác mà mã hóa Huffman sẽ luôn đạt được, không có ngoại lệ</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(1, 1, 1)">Cận dưới lý thuyết về số bit trung bình trên mỗi điểm ảnh cho bất kỳ bộ mã nào chỉ dựa trên phân phối giá trị</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(1, 2, 1)">Kích thước tệp lớn nhất có thể mà ảnh có sau khi nén</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(1, 3, 1)">Số giá trị điểm ảnh khác nhau có mặt ở bất kỳ đâu trong ảnh</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Entropy H = -sum(p_i * log2(p_i)) là số bit trung bình trên mỗi điểm ảnh tối thiểu về lý thuyết mà bất kỳ mã tiền tố nào dựa trên xác suất ký hiệu có thể đạt được; mã hóa Huffman tiến gần, nhưng không phải lúc nào cũng đạt đúng, cận này.</p>
+            </div>
+            <div class="quiz-question" data-q="2">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Trong nén JPEG, tác dụng chính của việc lượng tử hóa (chia và làm tròn) các hệ số DCT của một khối 8x8 là gì?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(2, 0, 2)">Nó chuyển ảnh sang ảnh xám trước khi bất kỳ bước xử lý JPEG nào khác diễn ra</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(2, 1, 2)">Nó tăng độ phân giải không gian của khối ảnh vượt quá kích thước ban đầu</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(2, 2, 2)">Nó đưa nhiều hệ số, đặc biệt là các hệ số tần số cao, về đúng bằng 0</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(2, 3, 2)">Nó loại bỏ hoàn toàn sự cần thiết của bước mã hóa Huffman sau đó</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Lượng tử hóa chia các hệ số cho các giá trị từ một bảng lượng tử hóa rồi làm tròn, đưa nhiều hệ số năng lượng thấp (chủ yếu là tần số cao) về 0 để chúng hầu như không tốn chỗ lưu trữ.</p>
+            </div>
+            <div class="quiz-question" data-q="3">
+                <p class="quiz-question-text"><span class="quiz-q-number"></span>. Tại sao JPEG nói chung là lựa chọn tồi để nén đồ họa như ảnh chụp màn hình hay văn bản, so với PNG?</p>
+                <div class="quiz-choices">
+                    <button class="quiz-choice" data-c="0" onclick="checkAnswer(3, 0, 3)">JPEG hoàn toàn không thể mã hóa ảnh chứa bất kỳ cạnh sắc nào</button>
+                    <button class="quiz-choice" data-c="1" onclick="checkAnswer(3, 1, 3)">PNG thực ra luôn là một định dạng có mất mát, đó là lý do nó trông đẹp hơn</button>
+                    <button class="quiz-choice" data-c="2" onclick="checkAnswer(3, 2, 3)">JPEG chỉ hỗ trợ ảnh xám, không bao giờ hỗ trợ đầy đủ màu</button>
+                    <button class="quiz-choice" data-c="3" onclick="checkAnswer(3, 3, 3)">Các cạnh sắc trải năng lượng ra mọi tần số DCT</button>
+                </div>
+                <p class="quiz-explanation"><strong>Giải thích:</strong> Năng lượng của một cạnh sắc trải ra mọi tần số DCT (giống mẫu hình chữ thập trong phổ Fourier), nên cùng mức lượng tử hóa mà ảnh chụp chịu được lại tạo ra hiện tượng rung và vỡ khối thấy rõ quanh các cạnh và chữ của đồ họa.</p>
+            </div>
+        </div>
+        <div class="lesson-nav">
+            <div class="lesson-nav-prev"><a href="quiz16.html">&larr; Trắc nghiệm Bài 16</a></div>
+            <div class="lesson-nav-next"><a href="quiz18.html">Trắc nghiệm Bài 18 &rarr;</a></div>
+        </div>
+    </div>
+    <script>
+    let score = 0;
+    const answered = new Set();
+
+    function shuffleChildren(container) {
+        const children = Array.from(container.children);
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+        children.forEach(child => container.appendChild(child));
+        return children;
+    }
+
+    function shuffleQuiz() {
+        const container = document.getElementById('quiz-questions');
+        const questions = shuffleChildren(container);
+        questions.forEach((q, i) => {
+            q.querySelector('.quiz-q-number').textContent = i + 1;
+            shuffleChildren(q.querySelector('.quiz-choices'));
+        });
+    }
+    shuffleQuiz();
+
+    function checkAnswer(qIndex, choiceIndex, correctIndex) {
+        if (answered.has(qIndex)) return;
+        answered.add(qIndex);
+
+        const buttons = document.querySelectorAll(`[data-q="${qIndex}"] .quiz-choice`);
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            const c = parseInt(btn.dataset.c, 10);
+            if (c === correctIndex) btn.classList.add('quiz-correct');
+            else if (c === choiceIndex) btn.classList.add('quiz-incorrect');
+        });
+
+        document.querySelector(`[data-q="${qIndex}"] .quiz-explanation`).style.display = 'block';
+
+        if (choiceIndex === correctIndex) score += 1;
+        document.getElementById('quiz-score').textContent = `Điểm: ${score} / 4`;
+    }
+    </script>
+</body>
+</html>

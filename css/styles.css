@@ -484,6 +484,15 @@ footer {
     font-weight: 600;
 }
 
+.opencv-note-body :not(pre) > code {
+    padding: 1px 6px;
+    border-radius: 4px;
+    background-color: #eef2f8;
+    border: 1px solid #d9e1ec;
+    color: #1d4f91;
+    font-size: 0.9em;
+}
+
 .opencv-note-body img {
     max-width: 100%;
     height: auto;

@@ -417,6 +417,128 @@ mean IoU: 0.836
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 23-grabcut -->
+<details class="opencv-note" id="opencv-note-23-grabcut">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 23. GrabCut <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li>Thuật toán <mark>tách tiền cảnh (foreground) với rất ít tương tác</mark>: người dùng chỉ cần vẽ một khung chữ nhật quanh vật thể, có thể sửa thêm bằng vài nét vẽ</li>
+<li>Do Carsten Rother, Vladimir Kolmogorov, Andrew Blake (Microsoft Research) đề xuất năm 2004</li>
+<li>Cơ chế:<ul>
+<li>Mọi thứ ngoài khung chữ nhật → <mark>nền chắc chắn</mark>; trong khung → chưa biết</li>
+<li>Dùng <strong>Gaussian Mixture Model (GMM)</strong> mô hình hóa phân bố màu của tiền cảnh và nền</li>
+<li>Xây đồ thị: mỗi pixel là một nút, thêm hai nút đặc biệt <strong>Source</strong> (tiền cảnh) và <strong>Sink</strong> (nền)<ul>
+<li>Cạnh pixel - Source/Sink: trọng số = xác suất pixel thuộc tiền cảnh/nền (theo GMM)</li>
+<li>Cạnh pixel - pixel: trọng số lớn nếu hai pixel giống màu → khó bị cắt</li>
+</ul>
+</li>
+<li>Dùng thuật toán <strong>min-cut</strong> cắt đồ thị với tổng trọng số nhỏ nhất → pixel nối với Source là tiền cảnh</li>
+<li>Lặp lại (cập nhật GMM, cắt lại) đến khi hội tụ</li>
+</ul>
+</li>
+<li>Hàm: <code>mask, bgdModel, fgdModel = cv.grabCut(img, mask, rect, bgdModel, fgdModel, iterCount, mode)</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Tham số</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>img</code></td>
+<td>Ảnh màu 8-bit 3 kênh</td>
+</tr>
+<tr>
+<td><code>mask</code></td>
+<td>Ảnh 1 kênh <code>uint8</code>, vừa là đầu vào vừa là đầu ra, giá trị theo bảng dưới</td>
+</tr>
+<tr>
+<td><code>rect</code></td>
+<td>Khung <code>(x, y, w, h)</code> chứa vật thể, chỉ dùng với <code>GC_INIT_WITH_RECT</code></td>
+</tr>
+<tr>
+<td><code>bgdModel</code>, <code>fgdModel</code></td>
+<td>Mảng <code>np.zeros((1, 65), np.float64)</code> cho thuật toán dùng nội bộ</td>
+</tr>
+<tr>
+<td><code>iterCount</code></td>
+<td>Số vòng lặp</td>
+</tr>
+<tr>
+<td><code>mode</code></td>
+<td><code>cv.GC_INIT_WITH_RECT</code> (dùng khung) hoặc <code>cv.GC_INIT_WITH_MASK</code> (dùng mask đã vẽ)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Giá trị mask</th>
+<th>Hằng số</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td><code>cv.GC_BGD</code></td>
+<td>Nền chắc chắn</td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>cv.GC_FGD</code></td>
+<td>Tiền cảnh chắc chắn</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>cv.GC_PR_BGD</code></td>
+<td>Có lẽ là nền</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>cv.GC_PR_FGD</code></td>
+<td>Có lẽ là tiền cảnh</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="n">bgdModel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">65</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+<span class="n">fgdModel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">65</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">)</span>
+
+<span class="n">rect</span> <span class="o">=</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">230</span><span class="p">)</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">grabCut</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="n">rect</span><span class="p">,</span> <span class="n">bgdModel</span><span class="p">,</span> <span class="n">fgdModel</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">GC_INIT_WITH_RECT</span><span class="p">)</span>
+
+<span class="c1"># 0 và 2 là nền, 1 và 3 là tiền cảnh</span>
+<span class="n">mask2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">mask</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">mask</span> <span class="o">==</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"uint8"</span><span class="p">)</span>
+<span class="n">img_fg</span> <span class="o">=</span> <span class="n">img</span> <span class="o">*</span> <span class="n">mask2</span><span class="p">[:,</span> <span class="p">:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/23-grabcut-1.png" /></p>
+<ul>
+<li>
+<p><strong>Sửa kết quả bằng nét vẽ</strong>: chỗ nào bị sai thì tô trắng (chắc chắn tiền cảnh) hoặc đen (chắc chắn nền) rồi chạy lại với <code>GC_INIT_WITH_MASK</code></p>
+<div class="highlight"><pre><span></span><span class="c1"># newmask: ảnh người dùng vẽ, trắng = tiền cảnh, đen = nền</span>
+<span class="n">mask</span><span class="p">[</span><span class="n">newmask</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">mask</span><span class="p">[</span><span class="n">newmask</span> <span class="o">==</span> <span class="mi">255</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">mask</span><span class="p">,</span> <span class="n">bgdModel</span><span class="p">,</span> <span class="n">fgdModel</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">grabCut</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">bgdModel</span><span class="p">,</span> <span class="n">fgdModel</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">GC_INIT_WITH_MASK</span><span class="p">)</span>
+</pre></div>
+
+</li>
+<li>
+<p><mark>Hạn chế:</mark> vật thể và nền có màu giống nhau (ví dụ chân con chó và cỏ trong hình trên) thì dễ bị cắt nhầm → cần thêm nét vẽ sửa</p>
+</li>
+<li><mark>Ứng dụng:</mark><ul>
+<li><mark>Xóa phông, tách người/vật khỏi ảnh</mark></li>
+<li><mark>Tạo nhanh mask nhãn cho dữ liệu huấn luyện phân đoạn</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#23-grabcut">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 23-grabcut -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=d58f6e24"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

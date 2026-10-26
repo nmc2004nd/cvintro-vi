@@ -480,6 +480,136 @@
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 19-fourier-transform -->
+<details class="opencv-note" id="opencv-note-19-fourier-transform">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 19. Fourier Transform <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<table>
+<thead>
+<tr>
+<th>Hàm</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>np.fft.fft2()</code> / <code>np.fft.ifft2()</code></td>
+<td>Biến đổi Fourier 2D thuận / ngược của NumPy, trả về số phức</td>
+</tr>
+<tr>
+<td><code>np.fft.fftshift()</code> / <code>np.fft.ifftshift()</code></td>
+<td>Đưa thành phần tần số 0 (DC) vào giữa phổ / trả về góc trên trái</td>
+</tr>
+<tr>
+<td><code>cv.dft()</code> / <code>cv.idft()</code></td>
+<td>Biến đổi Fourier của OpenCV, nhanh hơn NumPy, kết quả 2 kênh (thực, ảo)</td>
+</tr>
+<tr>
+<td><code>cv.magnitude()</code></td>
+<td>Độ lớn <span class="math">\(\sqrt{Re^2 + Im^2}\)</span></td>
+</tr>
+<tr>
+<td><code>cv.getOptimalDFTSize()</code></td>
+<td>Kích thước tối ưu để DFT chạy nhanh</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Ảnh có thể xem là tín hiệu lấy mẫu theo hai chiều → DFT 2D cho biết ảnh gồm những <mark>tần số</mark> nào<ul>
+<li>Biên, nhiễu: pixel thay đổi đột ngột → <mark>tần số cao</mark></li>
+<li>Vùng phẳng, mảng màu: thay đổi chậm → <mark>tần số thấp</mark></li>
+<li>FFT (Fast Fourier Transform) là thuật toán nhanh để tính DFT</li>
+</ul>
+</li>
+<li>
+<p><strong>Fourier bằng NumPy</strong></p>
+<ul>
+<li><code>f = np.fft.fft2(img)</code>: kết quả phức, thành phần DC nằm ở góc trên trái</li>
+<li><code>fshift = np.fft.fftshift(f)</code>: dịch DC vào giữa ảnh phổ, dễ quan sát</li>
+<li>Phổ biên độ: <code>20 * np.log(np.abs(fshift))</code>, lấy log vì giá trị chênh nhau rất lớn</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fft2</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="n">fshift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+<span class="n">magnitude_spectrum</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">fshift</span><span class="p">))</span>
+</pre></div>
+
+<ul>
+<li><mark>Lọc thông cao (HPF)</mark>: xóa vùng tần số thấp ở giữa phổ rồi biến đổi ngược</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">shape</span>
+<span class="n">crow</span><span class="p">,</span> <span class="n">ccol</span> <span class="o">=</span> <span class="n">rows</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="n">cols</span> <span class="o">//</span> <span class="mi">2</span>
+<span class="n">fshift</span><span class="p">[</span><span class="n">crow</span> <span class="o">-</span> <span class="mi">30</span><span class="p">:</span><span class="n">crow</span> <span class="o">+</span> <span class="mi">31</span><span class="p">,</span> <span class="n">ccol</span> <span class="o">-</span> <span class="mi">30</span><span class="p">:</span><span class="n">ccol</span> <span class="o">+</span> <span class="mi">31</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>     <span class="c1"># bỏ tần số thấp</span>
+<span class="n">f_ishift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftshift</span><span class="p">(</span><span class="n">fshift</span><span class="p">)</span>                      <span class="c1"># trả DC về góc</span>
+<span class="n">img_back</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifft2</span><span class="p">(</span><span class="n">f_ishift</span><span class="p">))</span>               <span class="c1"># lấy phần thực</span>
+</pre></div>
+
+<ul>
+<li>Kết quả HPF giữ lại biên → <mark>HPF là một bộ phát hiện biên</mark></li>
+</ul>
+</li>
+<li>
+<p><strong>Fourier bằng OpenCV</strong></p>
+<ul>
+<li>Ảnh đầu vào phải chuyển sang <code>np.float32</code></li>
+<li><code>flags=cv.DFT_COMPLEX_OUTPUT</code> → kết quả có 2 kênh: phần thực <code>[:, :, 0]</code> và phần ảo <code>[:, :, 1]</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">dft</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">dft</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">img</span><span class="p">),</span> <span class="n">flags</span><span class="o">=</span><span class="n">cv</span><span class="o">.</span><span class="n">DFT_COMPLEX_OUTPUT</span><span class="p">)</span>
+<span class="n">dft_shift</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">fftshift</span><span class="p">(</span><span class="n">dft</span><span class="p">)</span>
+<span class="n">magnitude_spectrum</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">magnitude</span><span class="p">(</span><span class="n">dft_shift</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dft_shift</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">]))</span>
+</pre></div>
+
+<ul>
+<li>Có thể dùng <code>cv.cartToPolar()</code> để lấy cả độ lớn và pha cùng lúc</li>
+<li><mark>Lọc thông thấp (LPF)</mark>: tạo mask giữ vùng giữa (tần số thấp), xóa phần còn lại → ảnh bị làm mờ</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">rows</span><span class="p">,</span> <span class="n">cols</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>               <span class="c1"># 2 kênh giống dft</span>
+<span class="n">mask</span><span class="p">[</span><span class="n">crow</span> <span class="o">-</span> <span class="mi">30</span><span class="p">:</span><span class="n">crow</span> <span class="o">+</span> <span class="mi">30</span><span class="p">,</span> <span class="n">ccol</span> <span class="o">-</span> <span class="mi">30</span><span class="p">:</span><span class="n">ccol</span> <span class="o">+</span> <span class="mi">30</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+<span class="n">fshift</span> <span class="o">=</span> <span class="n">dft_shift</span> <span class="o">*</span> <span class="n">mask</span>
+<span class="n">img_back</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">idft</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">fft</span><span class="o">.</span><span class="n">ifftshift</span><span class="p">(</span><span class="n">fshift</span><span class="p">))</span>
+<span class="n">img_back</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">magnitude</span><span class="p">(</span><span class="n">img_back</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">img_back</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">])</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/19-fourier-transform-1.png" /></p>
+<ul>
+<li><mark>Mask hình chữ nhật cắt đột ngột gây hiện tượng gợn sóng (ringing effect)</mark> quanh biên → nên dùng mask Gauss để chuyển tiếp mượt</li>
+</ul>
+</li>
+<li>
+<p><strong>Tối ưu tốc độ</strong></p>
+<ul>
+<li>DFT nhanh nhất khi kích thước là lũy thừa của 2, hoặc tích của các thừa số 2, 3, 5</li>
+<li><code>cv.getOptimalDFTSize(n)</code> trả về kích thước tối ưu ≥ n, sau đó đệm thêm số 0 bằng <code>cv.copyMakeBorder</code></li>
+<li>Theo tài liệu OpenCV: ảnh 342x548 đệm lên 360x576 thì DFT nhanh hơn khoảng 4 lần; <code>cv.dft</code> nhanh hơn <code>np.fft.fft2</code> khoảng 3 lần</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">nrows</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">getOptimalDFTSize</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span>
+<span class="n">ncols</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">getOptimalDFTSize</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span>
+<span class="n">nimg</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">copyMakeBorder</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">nrows</span> <span class="o">-</span> <span class="n">rows</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">ncols</span> <span class="o">-</span> <span class="n">cols</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">BORDER_CONSTANT</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+</li>
+<li>
+<p><strong>Vì sao Laplacian là HPF, lọc trung bình là LPF?</strong></p>
+<ul>
+<li>Lấy FFT của chính kernel rồi xem phổ:<ul>
+<li>Kernel trung bình, Gauss: phổ sáng ở giữa → chỉ cho tần số thấp đi qua → LPF</li>
+<li>Laplacian: phổ tối ở giữa, sáng ở rìa → HPF</li>
+<li>Sobel x: chặn tần số theo trục x thấp, cho qua tần số cao theo x → tìm cạnh dọc</li>
+</ul>
+</li>
+<li><mark>Ứng dụng:</mark><ul>
+<li><mark>Hiểu và thiết kế bộ lọc trong miền tần số</mark></li>
+<li><mark>Tích chập kernel lớn nhanh hơn bằng nhân trong miền tần số</mark> (định lý tích chập)</li>
+<li><mark>Khử nhiễu có chu kỳ (sọc, lưới) bằng cách xóa các đỉnh tương ứng trong phổ</mark></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#19-fourier-transform">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 19-fourier-transform -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=5e8a8e3d"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

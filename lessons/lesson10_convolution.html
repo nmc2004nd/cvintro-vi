@@ -488,6 +488,113 @@ separable == full 2D convolution? True
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 20-template-matching -->
+<details class="opencv-note" id="opencv-note-20-template-matching">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 20. Template Matching <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li>Tìm vị trí của một ảnh mẫu nhỏ (template) trong ảnh lớn</li>
+<li>Cơ chế: <mark>trượt template trên ảnh giống tích chập 2D</mark>, tại mỗi vị trí tính một điểm so khớp giữa template và vùng ảnh bên dưới</li>
+<li>Hàm: <code>res = cv.matchTemplate(image, templ, method)</code><ul>
+<li>Ảnh kích thước W x H, template w x h → <code>res</code> có kích thước <mark>(W - w + 1) x (H - h + 1)</mark></li>
+<li>Mỗi pixel <code>res[y, x]</code> là điểm so khớp khi góc trên trái của template đặt tại (x, y)</li>
+</ul>
+</li>
+<li>Tìm vị trí tốt nhất bằng <code>cv.minMaxLoc(res)</code> → <code>min_val, max_val, min_loc, max_loc</code></li>
+<li>Các phương pháp so khớp (<span class="math">\(T\)</span>: template, <span class="math">\(I\)</span>: ảnh):</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Công thức</th>
+<th>Vị trí tốt nhất</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv.TM_SQDIFF</code></td>
+<td><span class="math">\(\sum (T - I)^2\)</span></td>
+<td><strong>min</strong></td>
+</tr>
+<tr>
+<td><code>cv.TM_SQDIFF_NORMED</code></td>
+<td>SQDIFF chuẩn hóa về [0, 1]</td>
+<td><strong>min</strong></td>
+</tr>
+<tr>
+<td><code>cv.TM_CCORR</code></td>
+<td><span class="math">\(\sum T \cdot I\)</span></td>
+<td>max</td>
+</tr>
+<tr>
+<td><code>cv.TM_CCORR_NORMED</code></td>
+<td>CCORR chuẩn hóa</td>
+<td>max</td>
+</tr>
+<tr>
+<td><code>cv.TM_CCOEFF</code></td>
+<td><span class="math">\(\sum T' \cdot I'\)</span> với <span class="math">\(T', I'\)</span> đã trừ trung bình</td>
+<td>max</td>
+</tr>
+<tr>
+<td><code>cv.TM_CCOEFF_NORMED</code></td>
+<td>CCOEFF chuẩn hóa về [-1, 1]</td>
+<td>max</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><mark>Với <code>TM_SQDIFF</code> và <code>TM_SQDIFF_NORMED</code> phải lấy <code>min_loc</code></mark>, các phương pháp còn lại lấy <code>max_loc</code></li>
+<li><code>TM_CCORR</code> không trừ trung bình nên dễ bị vùng sáng đánh lừa → kết quả kém nhất</li>
+<li><mark>Thường dùng <code>TM_CCOEFF_NORMED</code></mark>: chịu được thay đổi độ sáng, ngưỡng dễ chọn (gần 1 là giống)</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">img</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">"scene.jpg"</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">IMREAD_GRAYSCALE</span><span class="p">)</span>
+<span class="n">template</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">"template.jpg"</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">IMREAD_GRAYSCALE</span><span class="p">)</span>
+<span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">template</span><span class="o">.</span><span class="n">shape</span>                                     <span class="c1"># chú ý: shape là (h, w)</span>
+
+<span class="n">res</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">matchTemplate</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">TM_CCOEFF_NORMED</span><span class="p">)</span>
+<span class="n">min_val</span><span class="p">,</span> <span class="n">max_val</span><span class="p">,</span> <span class="n">min_loc</span><span class="p">,</span> <span class="n">max_loc</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">minMaxLoc</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+
+<span class="n">top_left</span> <span class="o">=</span> <span class="n">max_loc</span>                                       <span class="c1"># (x, y)</span>
+<span class="n">bottom_right</span> <span class="o">=</span> <span class="p">(</span><span class="n">top_left</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">,</span> <span class="n">top_left</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span><span class="p">)</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">top_left</span><span class="p">,</span> <span class="n">bottom_right</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/20-template-matching-1.png" /></p>
+<ul>
+<li>
+<p><strong>Tìm nhiều đối tượng cùng lúc</strong></p>
+<ul>
+<li><code>minMaxLoc</code> chỉ trả về một vị trí → dùng ngưỡng để lấy mọi vị trí có điểm cao</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">matchTemplate</span><span class="p">(</span><span class="n">img_gray</span><span class="p">,</span> <span class="n">template</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">TM_CCOEFF_NORMED</span><span class="p">)</span>
+<span class="n">loc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">res</span> <span class="o">&gt;=</span> <span class="mf">0.8</span><span class="p">)</span>                            <span class="c1"># trả về (các y, các x)</span>
+<span class="k">for</span> <span class="n">pt</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">loc</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]):</span>                            <span class="c1"># đảo lại thành (x, y)</span>
+    <span class="n">cv</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">img_rgb</span><span class="p">,</span> <span class="n">pt</span><span class="p">,</span> <span class="p">(</span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">w</span><span class="p">,</span> <span class="n">pt</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">h</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+<ul>
+<li>Một vật thể thường cho nhiều điểm sát nhau vượt ngưỡng → cần gộp lại (non-maximum suppression)</li>
+</ul>
+</li>
+<li>
+<p><mark>Hạn chế:</mark></p>
+<ul>
+<li><mark>Không bất biến với xoay và thay đổi tỷ lệ</mark>: template phải cùng kích thước và hướng với vật thể trong ảnh</li>
+<li>Muốn tìm ở nhiều tỷ lệ → chạy trên kim tự tháp ảnh; muốn bền vững hơn → dùng đặc trưng (SIFT, ORB) + homography</li>
+</ul>
+</li>
+<li><mark>Ứng dụng:</mark><ul>
+<li><mark>Tìm logo, biểu tượng, nút bấm trên ảnh chụp màn hình</mark></li>
+<li><mark>Kiểm tra linh kiện ở vị trí cố định trên băng chuyền</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#20-template-matching">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 20-template-matching -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=5dc67665"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

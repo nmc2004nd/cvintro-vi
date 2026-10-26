@@ -630,6 +630,102 @@ mean abs pixel error after correction:  7.43
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 39-hdr -->
+<details class="opencv-note" id="opencv-note-39-hdr">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 39. High Dynamic Range (HDR) <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li>Cảm biến 8-bit chỉ ghi được 256 mức sáng → cảnh có <mark>chênh lệch sáng tối lớn</mark> (trong nhà nhìn ra cửa sổ) thì hoặc cháy vùng sáng, hoặc tối đen vùng tối</li>
+<li>HDR: chụp <mark>nhiều ảnh cùng khung hình với thời gian phơi sáng khác nhau</mark>, ghép lại để giữ chi tiết cả vùng sáng lẫn vùng tối</li>
+<li>Hai hướng:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Hướng</th>
+<th>Thuật toán</th>
+<th>Cần thời gian phơi sáng?</th>
+<th>Kết quả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ghép thành ảnh HDR rồi nén dải</td>
+<td><code>cv.createMergeDebevec()</code>, <code>cv.createMergeRobertson()</code></td>
+<td>Có</td>
+<td>Ảnh HDR <code>float32</code> (độ rọi), phải tone mapping để hiển thị</td>
+</tr>
+<tr>
+<td>Exposure fusion</td>
+<td><code>cv.createMergeMertens()</code></td>
+<td><mark>Không</mark></td>
+<td>Ảnh hiển thị được ngay, giá trị [0, 1]</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p><strong>B1. Nạp ảnh và thời gian phơi sáng</strong></p>
+<div class="highlight"><pre><span></span><span class="n">img_fn</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"img0.jpg"</span><span class="p">,</span> <span class="s2">"img1.jpg"</span><span class="p">,</span> <span class="s2">"img2.jpg"</span><span class="p">,</span> <span class="s2">"img3.jpg"</span><span class="p">]</span>
+<span class="n">img_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">fn</span><span class="p">)</span> <span class="k">for</span> <span class="n">fn</span> <span class="ow">in</span> <span class="n">img_fn</span><span class="p">]</span>
+<span class="n">exposure_times</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">15.0</span><span class="p">,</span> <span class="mf">2.5</span><span class="p">,</span> <span class="mf">0.25</span><span class="p">,</span> <span class="mf">0.0333</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>   <span class="c1"># giây</span>
+</pre></div>
+
+</li>
+<li>
+<p><strong>B2. Ghép thành ảnh HDR</strong> (Debevec, Robertson)</p>
+<div class="highlight"><pre><span></span><span class="n">merge_debevec</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">createMergeDebevec</span><span class="p">()</span>
+<span class="n">hdr_debevec</span> <span class="o">=</span> <span class="n">merge_debevec</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">img_list</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">exposure_times</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+
+<span class="n">merge_robertson</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">createMergeRobertson</span><span class="p">()</span>
+<span class="n">hdr_robertson</span> <span class="o">=</span> <span class="n">merge_robertson</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">img_list</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">exposure_times</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+</pre></div>
+
+</li>
+<li>
+<p><strong>B3. Tone mapping</strong>: nén ảnh HDR về [0, 1] để hiển thị</p>
+<div class="highlight"><pre><span></span><span class="n">tonemap1</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">createTonemap</span><span class="p">(</span><span class="n">gamma</span><span class="o">=</span><span class="mf">2.2</span><span class="p">)</span>
+<span class="n">res_debevec</span> <span class="o">=</span> <span class="n">tonemap1</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">hdr_debevec</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+</pre></div>
+
+<ul>
+<li>OpenCV còn có <code>createTonemapDrago</code>, <code>createTonemapReinhard</code>, <code>createTonemapMantiuk</code></li>
+</ul>
+</li>
+<li>
+<p><strong>B4. Exposure fusion (Mertens)</strong>: <mark>không cần thời gian phơi sáng, không cần tone mapping</mark>; chọn pixel tốt ở mỗi ảnh theo độ tương phản, độ bão hòa và mức phơi sáng hợp lý</p>
+<div class="highlight"><pre><span></span><span class="n">merge_mertens</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">createMergeMertens</span><span class="p">()</span>
+<span class="n">res_mertens</span> <span class="o">=</span> <span class="n">merge_mertens</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">img_list</span><span class="p">)</span>
+</pre></div>
+
+</li>
+<li>
+<p><strong>B5. Chuyển sang 8-bit để lưu</strong></p>
+<div class="highlight"><pre><span></span><span class="n">res_debevec_8bit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">res_debevec</span> <span class="o">*</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"uint8"</span><span class="p">)</span>
+<span class="n">res_mertens_8bit</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">res_mertens</span> <span class="o">*</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"uint8"</span><span class="p">)</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="s2">"fusion_mertens.jpg"</span><span class="p">,</span> <span class="n">res_mertens_8bit</span><span class="p">)</span>
+</pre></div>
+
+</li>
+<li>
+<p><strong>Ước lượng đường cong đáp ứng camera (CRF)</strong>: ánh xạ độ rọi thật → giá trị pixel, thường phi tuyến</p>
+<div class="highlight"><pre><span></span><span class="n">cal_debevec</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">createCalibrateDebevec</span><span class="p">()</span>
+<span class="n">crf_debevec</span> <span class="o">=</span> <span class="n">cal_debevec</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">img_list</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">exposure_times</span><span class="p">)</span>
+<span class="n">hdr_debevec</span> <span class="o">=</span> <span class="n">merge_debevec</span><span class="o">.</span><span class="n">process</span><span class="p">(</span><span class="n">img_list</span><span class="p">,</span> <span class="n">times</span><span class="o">=</span><span class="n">exposure_times</span><span class="o">.</span><span class="n">copy</span><span class="p">(),</span> <span class="n">response</span><span class="o">=</span><span class="n">crf_debevec</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+</pre></div>
+
+</li>
+</ul>
+<p><img alt="" src="../img/opencv-notes/39-hdr-1.png" /></p>
+<ul>
+<li>Hình trên là <mark>mô phỏng</mark>: 4 mức phơi sáng được tạo từ một ảnh thường (không phải ảnh HDR thật), chỉ để minh họa Mertens fusion chọn vùng phơi sáng tốt từ mỗi ảnh</li>
+<li><mark>Lưu ý:</mark> các ảnh phải <mark>thẳng hàng</mark> (dùng chân máy, hoặc căn chỉnh bằng <code>cv.createAlignMTB()</code>); vật chuyển động giữa các lần chụp gây bóng ma (ghosting)</li>
+<li><mark>Ứng dụng:</mark> <mark>chế độ HDR trên điện thoại, chụp nội thất, phong cảnh ngược sáng</mark></li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#39-hdr">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 39-hdr -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=957d3388"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

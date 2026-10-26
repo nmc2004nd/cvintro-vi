@@ -444,6 +444,66 @@ detections after NMS: 2
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 40-face-detection -->
+<details class="opencv-note" id="opencv-note-40-face-detection">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 40. Face Detection - Haar Cascade <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li><mark>Lưu ý phiên bản</mark>: <code>cv.CascadeClassifier</code> có trong OpenCV 4.x. Bản <code>opencv-python</code> 5.0 không còn → dùng OpenCV 4.x, hoặc bộ phát hiện mặt bằng DNN <code>cv.FaceDetectorYN</code> (YuNet, có cả trong 4.x và 5.0), chính xác hơn nhiều</li>
+<li>Thuật toán Viola-Jones (2001): <mark>phát hiện đối tượng bằng cửa sổ trượt + cascade các bộ phân loại</mark></li>
+<li><strong>Đặc trưng Haar</strong>: hiệu tổng pixel giữa vùng trắng và vùng đen của các mẫu hình chữ nhật (cạnh, đường, tâm)<ul>
+<li>Ví dụ: vùng mắt tối hơn vùng má, sống mũi sáng hơn hai bên mắt</li>
+<li>Cửa sổ 24x24 có hơn 160.000 đặc trưng</li>
+</ul>
+</li>
+<li><strong>Ảnh tích phân (integral image)</strong>: <mark>tổng pixel của mọi hình chữ nhật chỉ cần 4 phép truy cập</mark> → tính đặc trưng Haar rất nhanh</li>
+<li><strong>AdaBoost</strong>: chọn ra vài nghìn đặc trưng tốt nhất trong 160.000 (bài báo: khoảng 6000), mỗi đặc trưng là một bộ phân loại yếu, ghép lại thành bộ phân loại mạnh</li>
+<li><mark><strong>Cascade</strong></mark>: chia các đặc trưng thành nhiều tầng (bài báo: 38 tầng)<ul>
+<li>Tầng đầu chỉ vài đặc trưng, loại ngay phần lớn cửa sổ không phải mặt</li>
+<li><mark>Cửa sổ chỉ là mặt nếu vượt qua tất cả các tầng</mark></li>
+<li>Trung bình mỗi cửa sổ chỉ cần tính khoảng 10 đặc trưng → chạy thời gian thực</li>
+</ul>
+</li>
+<li>OpenCV có sẵn các file XML đã huấn luyện (mặt chính diện, mắt, nụ cười, toàn thân, biển số Nga...) trong thư mục <code>cv.data.haarcascades</code></li>
+<li>Hàm: <code>objects = classifier.detectMultiScale(gray, scaleFactor, minNeighbors, minSize)</code><ul>
+<li><code>scaleFactor</code>: mỗi lần thu nhỏ ảnh bao nhiêu để quét ở nhiều tỷ lệ (1.1 = giảm 10%); nhỏ → chính xác hơn nhưng chậm hơn</li>
+<li><code>minNeighbors</code>: <mark>số khung chồng lấp tối thiểu để giữ một phát hiện; lớn → ít phát hiện sai nhưng dễ sót</mark></li>
+<li><code>minSize</code>, <code>maxSize</code>: giới hạn kích thước đối tượng</li>
+<li>Trả về danh sách <code>(x, y, w, h)</code></li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">face_cascade</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">CascadeClassifier</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">haarcascades</span> <span class="o">+</span> <span class="s2">"haarcascade_frontalface_default.xml"</span><span class="p">)</span>
+<span class="n">eyes_cascade</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">CascadeClassifier</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">haarcascades</span> <span class="o">+</span> <span class="s2">"haarcascade_eye.xml"</span><span class="p">)</span>
+
+<span class="n">gray</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+<span class="n">gray</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">equalizeHist</span><span class="p">(</span><span class="n">gray</span><span class="p">)</span>                      <span class="c1"># chuẩn hóa ánh sáng</span>
+
+<span class="n">faces</span> <span class="o">=</span> <span class="n">face_cascade</span><span class="o">.</span><span class="n">detectMultiScale</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="n">scaleFactor</span><span class="o">=</span><span class="mf">1.1</span><span class="p">,</span> <span class="n">minNeighbors</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">minSize</span><span class="o">=</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="mi">60</span><span class="p">))</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span> <span class="ow">in</span> <span class="n">faces</span><span class="p">:</span>
+    <span class="n">cv</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">w</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">h</span><span class="p">),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">roi_gray</span> <span class="o">=</span> <span class="n">gray</span><span class="p">[</span><span class="n">y</span><span class="p">:</span><span class="n">y</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span> <span class="o">+</span> <span class="n">w</span><span class="p">]</span>              <span class="c1"># chỉ tìm mắt bên trong mặt</span>
+    <span class="n">eyes</span> <span class="o">=</span> <span class="n">eyes_cascade</span><span class="o">.</span><span class="n">detectMultiScale</span><span class="p">(</span><span class="n">roi_gray</span><span class="p">)</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">ex</span><span class="p">,</span> <span class="n">ey</span><span class="p">,</span> <span class="n">ew</span><span class="p">,</span> <span class="n">eh</span><span class="p">)</span> <span class="ow">in</span> <span class="n">eyes</span><span class="p">:</span>
+        <span class="n">cv</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">ex</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">ey</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">ex</span> <span class="o">+</span> <span class="n">ew</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">ey</span> <span class="o">+</span> <span class="n">eh</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/40-face-detection-1.png" /></p>
+<ul>
+<li>Hình trên: <code>minNeighbors=5</code> cho 4 vùng, trong đó có 1 vùng nhận nhầm (khung đỏ ở tay); tăng lên <code>minNeighbors=10</code> chỉ còn đúng 3 khuôn mặt</li>
+<li><mark>Hạn chế:</mark><ul>
+<li><mark>Chỉ tốt với mặt chính diện</mark>, nghiêng nhiều hoặc bị che thì sót</li>
+<li>Nhạy với ánh sáng, nhiều phát hiện sai trên nền phức tạp</li>
+<li>Hiện nay nên dùng bộ phát hiện dựa trên deep learning (<code>cv.FaceDetectorYN</code>, các mô hình trong module <code>cv.dnn</code>)</li>
+</ul>
+</li>
+<li>Có thể tự huấn luyện cascade bằng công cụ <code>opencv_traincascade</code> (đã ngừng phát triển, chỉ còn ở nhánh OpenCV 3.4)</li>
+<li><mark>Ứng dụng:</mark> <mark>phát hiện mặt trên camera giá rẻ, thiết bị nhúng; bước đầu của nhận diện khuôn mặt</mark></li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#40-face-detection">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 40-face-detection -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=50ffa468"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

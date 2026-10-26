@@ -416,6 +416,232 @@ $$y_d = y(1 + k_1r^2 + k_2r^4 + k_3r^6) + p_1(r^2+2y^2) + 2p_2xy$$</p>
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 31-camera-calibration -->
+<details class="opencv-note" id="opencv-note-31-camera-calibration">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 31. Camera Calibration <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li>Camera giá rẻ làm ảnh bị <mark>méo (distortion)</mark>; hiệu chỉnh camera tìm ra các thông số để sửa méo và để đo đạc 3D</li>
+<li>
+<p><strong>Hai loại méo:</strong></p>
+<ul>
+<li>
+<p><mark>Méo xuyên tâm (radial)</mark>: đường thẳng bị cong, càng xa tâm ảnh càng cong (méo thùng - barrel, méo gối - pincushion)</p>
+<p><span class="math display">\[x_{distorted} = x (1 + k_1 r^2 + k_2 r^4 + k_3 r^6)\]</span></p>
+<p><span class="math display">\[y_{distorted} = y (1 + k_1 r^2 + k_2 r^4 + k_3 r^6)\]</span></p>
+</li>
+<li>
+<p><mark>Méo tiếp tuyến (tangential)</mark>: thấu kính không song song với cảm biến → một phần ảnh trông gần hơn</p>
+<p><span class="math display">\[x_{distorted} = x + [2 p_1 x y + p_2 (r^2 + 2 x^2)]\]</span></p>
+<p><span class="math display">\[y_{distorted} = y + [p_1 (r^2 + 2 y^2) + 2 p_2 x y]\]</span></p>
+</li>
+<li>
+<p><mark>Hệ số méo theo thứ tự OpenCV: <span class="math">\((k_1, k_2, p_1, p_2, k_3)\)</span></mark></p>
+</li>
+</ul>
+</li>
+<li>
+<p><strong>Thông số nội (intrinsic)</strong> - riêng của camera, chỉ cần tính một lần:</p>
+<p><span class="math display">\[K = \begin{bmatrix} f_x &amp; 0 &amp; c_x \\ 0 &amp; f_y &amp; c_y \\ 0 &amp; 0 &amp; 1 \end{bmatrix}\]</span></p>
+<ul>
+<li><span class="math">\(f_x, f_y\)</span>: tiêu cự (đơn vị pixel), <span class="math">\((c_x, c_y)\)</span>: tâm quang học</li>
+</ul>
+</li>
+<li>
+<p><strong>Thông số ngoại (extrinsic)</strong>: vector xoay <code>rvec</code> và tịnh tiến <code>tvec</code>, biến đổi từ hệ tọa độ thế giới sang hệ tọa độ camera, <mark>khác nhau với mỗi ảnh</mark></p>
+</li>
+<li><strong>Chuẩn bị:</strong><ul>
+<li>In bàn cờ (chessboard), chụp <mark>ít nhất 10 ảnh</mark> ở nhiều góc và vị trí khác nhau</li>
+<li><strong>Object points</strong>: tọa độ 3D các góc trong bàn cờ. Bàn cờ phẳng nên đặt Z = 0, mỗi ô dài 1 đơn vị: (0,0,0), (1,0,0), ..., (6,5,0)</li>
+<li><strong>Image points</strong>: tọa độ 2D các góc đó trong ảnh, tìm bằng <code>cv.findChessboardCorners</code></li>
+<li><mark><code>patternSize</code> là số <strong>góc trong</strong> (cols, rows)</mark>, không phải số ô: bàn cờ 8x8 ô có 7x7 góc trong</li>
+<li>Có thể dùng lưới hình tròn với <code>cv.findCirclesGrid()</code>, cần ít ảnh hơn</li>
+</ul>
+</li>
+<li>
+<p><strong>Tìm góc:</strong></p>
+<div class="highlight"><pre><span></span><span class="n">criteria</span> <span class="o">=</span> <span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">TERM_CRITERIA_EPS</span> <span class="o">+</span> <span class="n">cv</span><span class="o">.</span><span class="n">TERM_CRITERIA_MAX_ITER</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">)</span>
+<span class="n">cols</span><span class="p">,</span> <span class="n">rows</span> <span class="o">=</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span>                                        <span class="c1"># số góc trong</span>
+
+<span class="n">objp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">cols</span> <span class="o">*</span> <span class="n">rows</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">objp</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">cols</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">rows</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>  <span class="c1"># (0,0,0), (1,0,0), ...</span>
+
+<span class="n">objpoints</span><span class="p">,</span> <span class="n">imgpoints</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>                            <span class="c1"># điểm 3D thật, điểm 2D trên ảnh</span>
+<span class="k">for</span> <span class="n">fname</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">"*.jpg"</span><span class="p">):</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">fname</span><span class="p">)</span>
+    <span class="n">gray</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+    <span class="n">ret</span><span class="p">,</span> <span class="n">corners</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">findChessboardCorners</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">rows</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ret</span><span class="p">:</span>
+        <span class="n">objpoints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">objp</span><span class="p">)</span>
+        <span class="n">corners2</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cornerSubPix</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="n">corners</span><span class="p">,</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">11</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">criteria</span><span class="p">)</span>
+        <span class="n">imgpoints</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">corners2</span><span class="p">)</span>
+        <span class="n">cv</span><span class="o">.</span><span class="n">drawChessboardCorners</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="n">cols</span><span class="p">,</span> <span class="n">rows</span><span class="p">),</span> <span class="n">corners2</span><span class="p">,</span> <span class="n">ret</span><span class="p">)</span>
+</pre></div>
+
+</li>
+<li>
+<p><strong>Hiệu chỉnh:</strong></p>
+<div class="highlight"><pre><span></span><span class="n">ret</span><span class="p">,</span> <span class="n">mtx</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="n">rvecs</span><span class="p">,</span> <span class="n">tvecs</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">calibrateCamera</span><span class="p">(</span><span class="n">objpoints</span><span class="p">,</span> <span class="n">imgpoints</span><span class="p">,</span> <span class="n">gray</span><span class="o">.</span><span class="n">shape</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+</pre></div>
+
+<ul>
+<li><code>ret</code>: sai số chiếu lại RMS (pixel), <mark>càng gần 0 càng tốt, thường &lt; 1</mark></li>
+<li><code>mtx</code>: ma trận K; <code>dist</code>: hệ số méo; <code>rvecs</code>, <code>tvecs</code>: tư thế bàn cờ trong từng ảnh</li>
+<li><code>gray.shape[::-1]</code> = (w, h)</li>
+</ul>
+</li>
+<li>
+<p><strong>Sửa méo:</strong></p>
+<ul>
+<li>Tinh chỉnh ma trận camera: <code>newK, roi = cv.getOptimalNewCameraMatrix(mtx, dist, (w, h), alpha, (w, h))</code><ul>
+<li><mark><code>alpha = 0</code>: cắt hết vùng đen, có thể mất pixel ở rìa</mark></li>
+<li><mark><code>alpha = 1</code>: giữ mọi pixel gốc, xuất hiện vùng đen ở rìa</mark></li>
+<li><code>roi</code>: vùng hợp lệ để cắt ảnh</li>
+</ul>
+</li>
+<li>Cách 1: <code>cv.undistort</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">dst</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">undistort</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">mtx</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">newK</span><span class="p">)</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">roi</span>
+<span class="n">dst</span> <span class="o">=</span> <span class="n">dst</span><span class="p">[</span><span class="n">y</span><span class="p">:</span><span class="n">y</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span> <span class="o">+</span> <span class="n">w</span><span class="p">]</span>
+</pre></div>
+
+<ul>
+<li>Cách 2: tính bảng ánh xạ một lần, dùng lại cho nhiều frame video → nhanh hơn</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">mapx</span><span class="p">,</span> <span class="n">mapy</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">initUndistortRectifyMap</span><span class="p">(</span><span class="n">mtx</span><span class="p">,</span> <span class="n">dist</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">newK</span><span class="p">,</span> <span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">),</span> <span class="n">cv</span><span class="o">.</span><span class="n">CV_32FC1</span><span class="p">)</span>
+<span class="n">dst</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">remap</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">mapx</span><span class="p">,</span> <span class="n">mapy</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">INTER_LINEAR</span><span class="p">)</span>
+</pre></div>
+
+</li>
+</ul>
+<p><img alt="" src="../img/opencv-notes/31-camera-calibration-1.png" /></p>
+<ul>
+<li>Hình trên: 12 ảnh bàn cờ mô phỏng với méo thùng <span class="math">\(k_1 = -0.35\)</span> và <span class="math">\(f_x = 600\)</span>; <code>calibrateCamera</code> ước lượng lại được <span class="math">\(k_1 \approx -0.36\)</span>, <span class="math">\(f_x \approx 600.1\)</span>, RMS ≈ 0.1 pixel</li>
+<li>
+<p><strong>Sai số chiếu lại (re-projection error)</strong>: chiếu ngược object points bằng thông số vừa tìm, so với image points</p>
+<div class="highlight"><pre><span></span><span class="n">mean_error</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">objpoints</span><span class="p">)):</span>
+    <span class="n">imgpoints2</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">projectPoints</span><span class="p">(</span><span class="n">objpoints</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">rvecs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tvecs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">mtx</span><span class="p">,</span> <span class="n">dist</span><span class="p">)</span>
+    <span class="c1"># tổng bình phương sai số / số điểm = sai số bình phương trung bình của ảnh i</span>
+    <span class="n">mean_error</span> <span class="o">+=</span> <span class="n">cv</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">imgpoints</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">imgpoints2</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">NORM_L2SQR</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">imgpoints2</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">"total error:"</span><span class="p">,</span> <span class="n">mean_error</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">objpoints</span><span class="p">))</span>
+</pre></div>
+
+</li>
+<li>
+<p><mark>Lưu kết quả để dùng lại</mark>: <code>np.savez("calib.npz", mtx=mtx, dist=dist)</code></p>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#31-camera-calibration">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 31-camera-calibration -->
+<!-- opencv-note:begin 32-pose-estimation -->
+<details class="opencv-note" id="opencv-note-32-pose-estimation">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 32. Pose Estimation <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li>Khi đã có thông số nội (<code>mtx</code>, <code>dist</code>) từ hiệu chỉnh camera, ta tìm được <mark>tư thế (pose) của vật thể so với camera</mark>: vật xoay thế nào, nằm ở đâu</li>
+<li>Bài toán PnP (Perspective-n-Point): biết N điểm 3D trên vật và vị trí 2D tương ứng trong ảnh → tìm <code>rvec</code>, <code>tvec</code></li>
+<li>Các hàm:</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Hàm</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv.solvePnP(objectPoints, imagePoints, mtx, dist)</code></td>
+<td>Tìm <code>rvec</code>, <code>tvec</code></td>
+</tr>
+<tr>
+<td><code>cv.solvePnPRansac(...)</code></td>
+<td>Như trên nhưng loại outlier bằng RANSAC</td>
+</tr>
+<tr>
+<td><code>cv.projectPoints(points3D, rvec, tvec, mtx, dist)</code></td>
+<td>Chiếu điểm 3D lên ảnh</td>
+</tr>
+<tr>
+<td><code>cv.Rodrigues(rvec)</code></td>
+<td>Vector xoay (3x1) ↔ ma trận xoay (3x3)</td>
+</tr>
+<tr>
+<td><code>cv.drawFrameAxes(img, mtx, dist, rvec, tvec, length)</code></td>
+<td>Vẽ nhanh 3 trục tọa độ</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>rvec</code> là vector xoay dạng <mark>Rodrigues</mark>: hướng của vector là trục xoay, độ dài là góc xoay (radian)</li>
+<li>Ví dụ trong tài liệu: vẽ trục tọa độ 3D lên góc bàn cờ<ul>
+<li>Trục X (xanh dương), Y (xanh lá), Z (đỏ) dài 3 ô</li>
+<li><mark>Trục Z lấy giá trị âm</mark> để hướng về phía camera (hệ tọa độ bàn cờ có Z hướng vào trong bàn cờ)</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">"calib.npz"</span><span class="p">)</span> <span class="k">as</span> <span class="n">X</span><span class="p">:</span>
+    <span class="n">mtx</span><span class="p">,</span> <span class="n">dist</span> <span class="o">=</span> <span class="n">X</span><span class="p">[</span><span class="s2">"mtx"</span><span class="p">],</span> <span class="n">X</span><span class="p">[</span><span class="s2">"dist"</span><span class="p">]</span>
+
+<span class="n">criteria</span> <span class="o">=</span> <span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">TERM_CRITERIA_EPS</span> <span class="o">+</span> <span class="n">cv</span><span class="o">.</span><span class="n">TERM_CRITERIA_MAX_ITER</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">)</span>
+<span class="n">objp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">7</span> <span class="o">*</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">objp</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mgrid</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">7</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">axis</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">([[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">]])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">corners</span><span class="p">,</span> <span class="n">imgpts</span><span class="p">):</span>
+    <span class="n">corner</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">corners</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"int32"</span><span class="p">))</span>
+    <span class="n">imgpts</span> <span class="o">=</span> <span class="n">imgpts</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"int32"</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">corner</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">imgpts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">corner</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">imgpts</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">corner</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">imgpts</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">ravel</span><span class="p">()),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">5</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">img</span>
+
+<span class="n">gray</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+<span class="n">ret</span><span class="p">,</span> <span class="n">corners</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">findChessboardCorners</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="p">(</span><span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="kc">None</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">ret</span><span class="p">:</span>
+    <span class="n">corners2</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cornerSubPix</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="n">corners</span><span class="p">,</span> <span class="p">(</span><span class="mi">11</span><span class="p">,</span> <span class="mi">11</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">criteria</span><span class="p">)</span>
+    <span class="n">ret</span><span class="p">,</span> <span class="n">rvec</span><span class="p">,</span> <span class="n">tvec</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">solvePnP</span><span class="p">(</span><span class="n">objp</span><span class="p">,</span> <span class="n">corners2</span><span class="p">,</span> <span class="n">mtx</span><span class="p">,</span> <span class="n">dist</span><span class="p">)</span>
+    <span class="n">imgpts</span><span class="p">,</span> <span class="n">jac</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">projectPoints</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="n">rvec</span><span class="p">,</span> <span class="n">tvec</span><span class="p">,</span> <span class="n">mtx</span><span class="p">,</span> <span class="n">dist</span><span class="p">)</span>   <span class="c1"># chiếu 3 đầu trục lên ảnh</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">draw</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">corners2</span><span class="p">,</span> <span class="n">imgpts</span><span class="p">)</span>
+</pre></div>
+
+<ul>
+<li>
+<p>Vẽ hình hộp: chiếu 8 đỉnh của hình lập phương rồi nối lại</p>
+<div class="highlight"><pre><span></span><span class="n">cube</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+                   <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">3</span><span class="p">]])</span>
+<span class="n">imgpts</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">projectPoints</span><span class="p">(</span><span class="n">cube</span><span class="p">,</span> <span class="n">rvec</span><span class="p">,</span> <span class="n">tvec</span><span class="p">,</span> <span class="n">mtx</span><span class="p">,</span> <span class="n">dist</span><span class="p">)</span>
+<span class="n">imgpts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="n">imgpts</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">[</span><span class="n">imgpts</span><span class="p">[:</span><span class="mi">4</span><span class="p">]],</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="o">-</span><span class="mi">3</span><span class="p">)</span>     <span class="c1"># mặt đáy</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">)):</span>
+    <span class="n">img</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">imgpts</span><span class="p">[</span><span class="n">i</span><span class="p">]),</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">imgpts</span><span class="p">[</span><span class="n">j</span><span class="p">]),</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>   <span class="c1"># cột</span>
+<span class="n">img</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">drawContours</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">[</span><span class="n">imgpts</span><span class="p">[</span><span class="mi">4</span><span class="p">:]],</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>      <span class="c1"># mặt trên</span>
+</pre></div>
+
+</li>
+</ul>
+<p><img alt="" src="../img/opencv-notes/32-pose-estimation-1.png" /></p>
+<ul>
+<li>
+<p>Hình trái dùng <code>cv.drawFrameAxes</code>, màu theo quy ước X đỏ, Y xanh lá, Z xanh dương (khác màu trong hàm <code>draw</code> tự viết ở trên)</p>
+</li>
+<li>
+<p><mark>Ứng dụng:</mark></p>
+<ul>
+<li><mark>Thực tế tăng cường (AR): đặt vật thể ảo đúng phối cảnh lên bàn cờ, marker ArUco</mark></li>
+<li><mark>Robot gắp vật: biết vị trí và hướng của vật so với camera</mark></li>
+<li><mark>Ước lượng hướng đầu người từ các điểm mốc khuôn mặt</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#32-pose-estimation">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 32-pose-estimation -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=5546eaca"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

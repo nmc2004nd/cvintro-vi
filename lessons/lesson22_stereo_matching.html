@@ -613,6 +613,91 @@ newly marked invalid:           264
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 34-stereo-depth-map -->
+<details class="opencv-note" id="opencv-note-34-stereo-depth-map">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 34. Depth Map from Stereo Images <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li>Hai camera đặt song song, cách nhau đoạn B (baseline), cùng tiêu cự f</li>
+<li>Một điểm 3D chiếu lên ảnh trái tại x, ảnh phải tại x' → <mark>disparity <span class="math">\(d = x - x'\)</span></mark></li>
+<li>
+<p>Độ sâu:</p>
+<p><span class="math display">\[Z = \frac{B \cdot f}{d}\]</span></p>
+<ul>
+<li><mark>Disparity lớn → vật ở gần; disparity nhỏ → vật ở xa</mark></li>
+</ul>
+</li>
+<li>
+<p><mark>Điều kiện: hai ảnh phải được chỉnh song song (rectified)</mark>: điểm tương ứng nằm trên cùng một hàng → chỉ cần tìm theo hàng ngang</p>
+<ul>
+<li>Chưa rectify thì dùng <code>cv.stereoRectify</code> + <code>cv.initUndistortRectifyMap</code> + <code>cv.remap</code> (cần hiệu chỉnh stereo trước)</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Hàm</th>
+<th>Thuật toán</th>
+<th>Đặc điểm</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv.StereoBM_create()</code></td>
+<td>Block Matching: so khớp khối dọc theo hàng</td>
+<td>Nhanh, nhiều lỗ ở vùng ít kết cấu</td>
+</tr>
+<tr>
+<td><code>cv.StereoSGBM_create()</code></td>
+<td>Semi-Global Block Matching: thêm ràng buộc trơn theo nhiều hướng</td>
+<td>Chậm hơn, mịn và đầy đủ hơn</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Tham số chính:<ul>
+<li><code>numDisparities</code>: khoảng disparity cần tìm, <mark>phải chia hết cho 16</mark></li>
+<li><code>blockSize</code>: kích thước khối so khớp, <mark>số lẻ</mark> (BM: 5-21, SGBM: 3-11)</li>
+<li><code>minDisparity</code>: disparity nhỏ nhất (thường 0)</li>
+<li>SGBM thêm:<ul>
+<li><code>P1</code>, <code>P2</code>: phạt khi disparity hai pixel kề nhau chênh 1 / chênh nhiều hơn 1; <mark><code>P2 &gt; P1</code></mark>. Gợi ý: <code>P1 = 8 * cn * blockSize²</code>, <code>P2 = 32 * cn * blockSize²</code> (cn = số kênh)</li>
+<li><code>uniquenessRatio</code>: loại kết quả nếu khối tốt nhất không tốt hơn hẳn khối thứ hai (5-15)</li>
+<li><code>speckleWindowSize</code>, <code>speckleRange</code>: lọc các đốm nhiễu nhỏ</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><mark>Đầu vào là ảnh xám 8-bit</mark> (SGBM nhận được cả ảnh màu)</li>
+<li><mark>Kết quả kiểu <code>int16</code>, đã nhân 16</mark> (4 bit phần thập phân) → disparity thật = kết quả / 16; pixel không khớp được có giá trị âm</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">imgL</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">"tsukuba_l.png"</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">IMREAD_GRAYSCALE</span><span class="p">)</span>
+<span class="n">imgR</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">"tsukuba_r.png"</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">IMREAD_GRAYSCALE</span><span class="p">)</span>
+
+<span class="n">stereo</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">StereoBM_create</span><span class="p">(</span><span class="n">numDisparities</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">blockSize</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">disparity</span> <span class="o">=</span> <span class="n">stereo</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">imgL</span><span class="p">,</span> <span class="n">imgR</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">/</span> <span class="mi">16</span>
+
+<span class="n">sgbm</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">StereoSGBM_create</span><span class="p">(</span><span class="n">minDisparity</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">numDisparities</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">blockSize</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                            <span class="n">P1</span><span class="o">=</span><span class="mi">8</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">P2</span><span class="o">=</span><span class="mi">32</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
+                            <span class="n">uniquenessRatio</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">speckleWindowSize</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">speckleRange</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">disparity2</span> <span class="o">=</span> <span class="n">sgbm</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">imgL</span><span class="p">,</span> <span class="n">imgR</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span> <span class="o">/</span> <span class="mi">16</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/34-stereo-depth-map-1.png" /></p>
+<ul>
+<li><code>numDisparities</code> phải đủ lớn hơn disparity lớn nhất của cảnh: cặp tsukuba trong repo có disparity tới khoảng 20-30 nên dùng 32 (tài liệu OpenCV dùng 16 với cặp tsukuba gốc)</li>
+<li>Đổi disparity thành tọa độ 3D: <code>points3D = cv.reprojectImageTo3D(disparity, Q)</code>, với Q lấy từ <code>cv.stereoRectify</code></li>
+<li><mark>Hạn chế:</mark> vùng không có kết cấu (tường trơn), vùng lặp lại, vùng bị che ở một ảnh → disparity sai hoặc trống</li>
+<li><mark>Ứng dụng:</mark><ul>
+<li><mark>Đo khoảng cách cho robot, xe tự hành</mark></li>
+<li><mark>Tách tiền cảnh theo độ sâu, làm mờ hậu cảnh (hiệu ứng chân dung)</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#34-stereo-depth-map">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 34-stereo-depth-map -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=d0f0011d"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

@@ -54,7 +54,8 @@ Ngoài bản dịch, repo có thêm ghi chú cá nhân dựa trên tài liệu [
 
 - Nguồn: `opencv-notes/*.md`, mỗi file là một chủ đề. Phần đầu file khai báo `lesson` (bài học để chèn vào) và `after` (một đoạn chữ trong heading; ghi chú nằm ở cuối mục đó, để trống thì nằm trước phần Bài tập).
 - Cú pháp Markdown thông thường, thêm `==chữ==` để tô đỏ nhấn mạnh và `$...$`, `$$...$$` cho công thức.
-- Ảnh đặt trong `img/opencv-notes/`.
+- Ảnh đặt trong `img/opencv-notes/`. Hình minh họa của các ghi chú 18-40 được tạo bằng `tools/make_opencv_note_figures.py` (cần OpenCV 4.x bản contrib, vì OpenCV 5 không còn `CascadeClassifier` và `cv.ml`).
+- Ghi chú có dòng `draft: true` hiển thị nhãn "Bản nháp – chưa review" (do AI soạn theo tài liệu OpenCV). Xóa dòng đó sau khi đã đọc lại.
 - Sau khi sửa, chạy `python3 tools/build_opencv_notes.py` để chèn lại vào các bài và cập nhật `opencv-notes.html` (cần `markdown` và `pygments`).
 
 ## Trích dẫn

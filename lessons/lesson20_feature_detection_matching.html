@@ -216,6 +216,131 @@
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 24-corner-detection -->
+<details class="opencv-note" id="opencv-note-24-corner-detection">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 24. Corner Detection - Harris, Shi-Tomasi <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<table>
+<thead>
+<tr>
+<th>Hàm</th>
+<th>Thuật toán</th>
+<th>Kết quả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv.cornerHarris()</code></td>
+<td>Harris (1988)</td>
+<td>Ảnh "điểm góc" R, cùng kích thước ảnh</td>
+</tr>
+<tr>
+<td><code>cv.goodFeaturesToTrack()</code></td>
+<td>Shi-Tomasi (1994)</td>
+<td>N góc mạnh nhất, tọa độ (x, y)</td>
+</tr>
+<tr>
+<td><code>cv.cornerSubPix()</code></td>
+<td>Tinh chỉnh</td>
+<td>Tọa độ góc chính xác tới mức sub-pixel</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Đặc trưng tốt là vùng mà <mark>dịch cửa sổ theo mọi hướng đều làm thay đổi lớn cường độ</mark>:<ul>
+<li>Vùng phẳng: dịch hướng nào cũng không đổi → không dùng được</li>
+<li>Cạnh: chỉ đổi khi dịch vuông góc với cạnh, dịch dọc cạnh thì không đổi</li>
+<li><mark>Góc</mark>: dịch hướng nào cũng đổi → đặc trưng tốt nhất</li>
+</ul>
+</li>
+<li>
+<p><mark><strong>Harris Corner Detector</strong></mark></p>
+<ul>
+<li>
+<p>Độ thay đổi cường độ khi dịch cửa sổ một đoạn <span class="math">\((u, v)\)</span>:</p>
+<p><span class="math display">\[E(u, v) = \sum_{x, y} w(x, y)\,[I(x + u, y + v) - I(x, y)]^2 \approx [u \;\; v]\, M \begin{bmatrix} u \\ v \end{bmatrix}\]</span></p>
+<p><span class="math display">\[M = \sum_{x, y} w(x, y) \begin{bmatrix} I_x^2 &amp; I_x I_y \\ I_x I_y &amp; I_y^2 \end{bmatrix}\]</span></p>
+<ul>
+<li><span class="math">\(I_x, I_y\)</span>: đạo hàm theo x, y (tính bằng Sobel)</li>
+<li><span class="math">\(w(x, y)\)</span>: cửa sổ (hình chữ nhật hoặc Gauss)</li>
+</ul>
+</li>
+<li>
+<p>Điểm góc: <span class="math">\(R = \det(M) - k\,(\operatorname{trace} M)^2 = \lambda_1 \lambda_2 - k(\lambda_1 + \lambda_2)^2\)</span></p>
+<ul>
+<li><span class="math">\(|R|\)</span> nhỏ (<span class="math">\(\lambda_1, \lambda_2\)</span> đều nhỏ) → vùng phẳng</li>
+<li><span class="math">\(R &lt; 0\)</span> (một <span class="math">\(\lambda\)</span> lớn hơn hẳn) → cạnh</li>
+<li><mark><span class="math">\(R\)</span> lớn (<span class="math">\(\lambda_1, \lambda_2\)</span> đều lớn và xấp xỉ nhau) → góc</mark></li>
+</ul>
+</li>
+<li>Hàm: <code>dst = cv.cornerHarris(img, blockSize, ksize, k)</code><ul>
+<li><code>img</code>: ảnh xám, <mark>kiểu <code>float32</code></mark></li>
+<li><code>blockSize</code>: kích thước vùng lân cận</li>
+<li><code>ksize</code>: kích thước kernel Sobel</li>
+<li><code>k</code>: hệ số tự do, thường 0.04-0.06</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">gray</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">))</span>
+<span class="n">dst</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cornerHarris</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mf">0.04</span><span class="p">)</span>
+<span class="n">dst</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">dilate</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>                     <span class="c1"># chỉ để chấm góc to hơn khi vẽ</span>
+<span class="n">img</span><span class="p">[</span><span class="n">dst</span> <span class="o">&gt;</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">dst</span><span class="o">.</span><span class="n">max</span><span class="p">()]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">]</span>      <span class="c1"># ngưỡng tùy ảnh</span>
+</pre></div>
+
+</li>
+<li>
+<p><strong>Góc chính xác tới sub-pixel</strong>: <code>cv.cornerSubPix()</code></p>
+<ul>
+<li>Lấy tâm các cụm góc Harris bằng <code>connectedComponentsWithStats</code>, rồi tinh chỉnh</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">ret</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">dst</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">ret</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">stats</span><span class="p">,</span> <span class="n">centroids</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">connectedComponentsWithStats</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">(</span><span class="n">dst</span><span class="p">))</span>
+
+<span class="n">criteria</span> <span class="o">=</span> <span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">TERM_CRITERIA_EPS</span> <span class="o">+</span> <span class="n">cv</span><span class="o">.</span><span class="n">TERM_CRITERIA_MAX_ITER</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">)</span>
+<span class="n">corners</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cornerSubPix</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">centroids</span><span class="p">),</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="n">criteria</span><span class="p">)</span>
+</pre></div>
+
+<ul>
+<li><code>criteria</code>: điều kiện dừng = đủ số vòng lặp <strong>hoặc</strong> độ dịch chuyển nhỏ hơn epsilon</li>
+</ul>
+</li>
+<li>
+<p><mark><strong>Shi-Tomasi Corner Detector</strong></mark></p>
+<ul>
+<li>Thay hàm điểm của Harris bằng: <span class="math">\(R = \min(\lambda_1, \lambda_2)\)</span></li>
+<li><mark>Chỉ khi cả hai <span class="math">\(\lambda\)</span> đều lớn hơn một ngưỡng mới là góc</mark> → ổn định hơn Harris</li>
+<li>Hàm: <code>corners = cv.goodFeaturesToTrack(gray, maxCorners, qualityLevel, minDistance)</code><ul>
+<li><code>maxCorners</code>: số góc tối đa (lấy N góc mạnh nhất)</li>
+<li><code>qualityLevel</code>: 0-1, loại góc có điểm &lt; <code>qualityLevel</code> x điểm cao nhất</li>
+<li><code>minDistance</code>: khoảng cách Euclid tối thiểu giữa hai góc</li>
+<li>Có thể đặt <code>useHarrisDetector=True</code> để dùng hàm điểm Harris</li>
+<li>Trả về <code>float32</code> shape (N, 1, 2)</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">gray</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+<span class="n">corners</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">goodFeaturesToTrack</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="mf">0.01</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">corners</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">(</span><span class="n">corners</span><span class="p">)</span>                     <span class="c1"># tài liệu dùng np.int0 nhưng NumPy 2 đã xóa</span>
+<span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">corners</span><span class="p">:</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+    <span class="n">cv</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">)),</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/24-corner-detection-1.png" /></p>
+</li>
+<li>
+<p><mark>Lưu ý: góc Harris/Shi-Tomasi bất biến với xoay nhưng <strong>không</strong> bất biến với tỷ lệ</mark>: một góc khi phóng to nhìn qua cửa sổ nhỏ có thể chỉ còn là cạnh cong → cần SIFT</p>
+</li>
+<li><mark>Ứng dụng:</mark><ul>
+<li><mark>Chọn điểm để theo dõi bằng optical flow (Lucas-Kanade)</mark></li>
+<li><mark>Tìm góc bàn cờ khi hiệu chỉnh camera</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#24-corner-detection">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 24-corner-detection -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=2caf0562"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -298,6 +423,172 @@
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 25-feature-descriptors -->
+<details class="opencv-note" id="opencv-note-25-feature-descriptors">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 25. Feature Detectors &amp; Descriptors - SIFT, FAST, BRIEF, ORB <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li><strong>Keypoint (detector)</strong>: tìm điểm đặc biệt (vị trí, tỷ lệ, hướng)</li>
+<li><strong>Descriptor</strong>: mô tả vùng quanh keypoint bằng một vector → để so khớp giữa các ảnh</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Thuật toán</th>
+<th>Loại</th>
+<th>Descriptor</th>
+<th>Norm khi so khớp</th>
+<th>Bất biến tỷ lệ / xoay</th>
+<th>Tốc độ</th>
+<th>Bản quyền</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SIFT</td>
+<td>Detector + descriptor</td>
+<td>128 số thực</td>
+<td><code>NORM_L2</code></td>
+<td>Có / Có</td>
+<td>Chậm</td>
+<td>Hết hạn 2020, có trong OpenCV chính từ 4.4</td>
+</tr>
+<tr>
+<td>SURF</td>
+<td>Detector + descriptor</td>
+<td>64 số thực</td>
+<td><code>NORM_L2</code></td>
+<td>Có / Có</td>
+<td>Nhanh hơn SIFT</td>
+<td>Vẫn non-free (contrib)</td>
+</tr>
+<tr>
+<td>FAST</td>
+<td>Chỉ detector</td>
+<td>-</td>
+<td>-</td>
+<td>Không / Không</td>
+<td>Rất nhanh</td>
+<td>Tự do</td>
+</tr>
+<tr>
+<td>BRIEF</td>
+<td>Chỉ descriptor</td>
+<td>128/256/512 bit</td>
+<td><code>NORM_HAMMING</code></td>
+<td>Không / Không</td>
+<td>Rất nhanh</td>
+<td>Contrib (<code>xfeatures2d</code>)</td>
+</tr>
+<tr>
+<td>ORB</td>
+<td>Detector + descriptor</td>
+<td>256 bit (32 byte)</td>
+<td><code>NORM_HAMMING</code></td>
+<td>Có (kim tự tháp) / Có</td>
+<td>Nhanh</td>
+<td>Tự do</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Các hàm chung của mọi detector:<ul>
+<li><code>kp = detector.detect(gray, mask)</code>: tìm keypoint</li>
+<li><code>kp, des = detector.compute(gray, kp)</code>: tính descriptor cho keypoint có sẵn</li>
+<li><code>kp, des = detector.detectAndCompute(gray, mask)</code>: làm cả hai</li>
+<li>Mỗi <code>cv.KeyPoint</code> có: <code>pt</code> (x, y), <code>size</code> (đường kính vùng), <code>angle</code>, <code>response</code> (độ mạnh), <code>octave</code> (tầng kim tự tháp)</li>
+<li>Vẽ: <code>cv.drawKeypoints(img, kp, None, flags=cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)</code> → vẽ cả kích thước và hướng</li>
+</ul>
+</li>
+<li>
+<p><mark><strong>SIFT (Scale-Invariant Feature Transform)</strong></mark> - David Lowe, 2004</p>
+<ul>
+<li><strong>B1. Tìm cực trị trong không gian tỷ lệ</strong><ul>
+<li>LoG với <span class="math">\(\sigma\)</span> khác nhau phát hiện đốm (blob) ở các kích thước khác nhau, nhưng LoG tốn kém</li>
+<li><mark>Xấp xỉ LoG bằng DoG (Difference of Gaussians)</mark>: hiệu hai ảnh làm mờ với <span class="math">\(\sigma\)</span> và <span class="math">\(k\sigma\)</span>, làm trên từng tầng kim tự tháp (octave)</li>
+<li>Một pixel là cực trị nếu lớn/nhỏ nhất so với 8 lân cận cùng tỷ lệ và 9 + 9 lân cận ở tỷ lệ trên và dưới</li>
+<li>Tham số gợi ý: 4 octave, 5 mức tỷ lệ, <span class="math">\(\sigma = 1.6\)</span>, <span class="math">\(k = \sqrt{2}\)</span></li>
+</ul>
+</li>
+<li><strong>B2. Lọc keypoint</strong><ul>
+<li>Loại điểm tương phản thấp: ngưỡng <code>contrastThreshold</code> (mặc định 0.04)</li>
+<li>Loại điểm nằm trên cạnh (DoG phản hồi mạnh ở cạnh): dùng tỷ số trị riêng giống Harris, ngưỡng <code>edgeThreshold</code> (mặc định 10)</li>
+</ul>
+</li>
+<li><strong>B3. Gán hướng</strong>: histogram hướng gradient 36 bins quanh keypoint, lấy đỉnh cao nhất; đỉnh nào &gt; 80% đỉnh cao nhất thì tạo thêm keypoint với hướng đó → <mark>bất biến với xoay</mark></li>
+<li><strong>B4. Descriptor</strong>: vùng 16x16 quanh keypoint chia thành 16 ô 4x4, mỗi ô một histogram 8 hướng → <mark>4 x 4 x 8 = 128 chiều</mark></li>
+<li><strong>B5. So khớp</strong>: láng giềng gần nhất + ratio test (xem phần Feature Matching)</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">sift</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">SIFT_create</span><span class="p">()</span>
+<span class="n">kp</span><span class="p">,</span> <span class="n">des</span> <span class="o">=</span> <span class="n">sift</span><span class="o">.</span><span class="n">detectAndCompute</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>        <span class="c1"># des: (số keypoint, 128) float32</span>
+<span class="n">img2</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">drawKeypoints</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="n">kp</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="n">cv</span><span class="o">.</span><span class="n">DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS</span><span class="p">)</span>
+</pre></div>
+
+</li>
+<li>
+<p><mark><strong>FAST (Features from Accelerated Segment Test)</strong></mark> - Rosten &amp; Drummond, 2006</p>
+<ul>
+<li>Xét vòng tròn 16 pixel quanh pixel p (cường độ <span class="math">\(I_p\)</span>), ngưỡng t</li>
+<li><mark>p là góc nếu có n pixel liên tiếp trên vòng đều sáng hơn <span class="math">\(I_p + t\)</span> hoặc đều tối hơn <span class="math">\(I_p - t\)</span></mark><ul>
+<li>Bài báo chọn n = 12; OpenCV mặc định <code>TYPE_9_16</code> (n = 9 trên vòng 16)</li>
+</ul>
+</li>
+<li>Kiểm tra nhanh: xét pixel 1, 9 rồi 5, 13 trước, loại được phần lớn điểm không phải góc</li>
+<li>Bản dùng machine learning (cây quyết định ID3) để chọn thứ tự kiểm tra tối ưu</li>
+<li>Non-maximum suppression: hai góc kề nhau giữ góc có tổng chênh lệch tuyệt đối với 16 pixel lớn hơn</li>
+<li>Mặc định: <code>threshold=10</code>, <code>nonmaxSuppression=True</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">fast</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">FastFeatureDetector_create</span><span class="p">(</span><span class="n">threshold</span><span class="o">=</span><span class="mi">40</span><span class="p">)</span>
+<span class="n">kp</span> <span class="o">=</span> <span class="n">fast</span><span class="o">.</span><span class="n">detect</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">fast</span><span class="o">.</span><span class="n">getThreshold</span><span class="p">(),</span> <span class="n">fast</span><span class="o">.</span><span class="n">getNonmaxSuppression</span><span class="p">(),</span> <span class="n">fast</span><span class="o">.</span><span class="n">getType</span><span class="p">())</span>
+<span class="n">fast</span><span class="o">.</span><span class="n">setNonmaxSuppression</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>                   <span class="c1"># tắt NMS → nhiều điểm hơn hẳn</span>
+</pre></div>
+
+</li>
+<li>
+<p><mark><strong>BRIEF (Binary Robust Independent Elementary Features)</strong></mark></p>
+<ul>
+<li><mark>Chỉ là descriptor</mark>, cần detector khác (FAST, STAR...)</li>
+<li>Làm mờ vùng ảnh, chọn <span class="math">\(n_d\)</span> cặp điểm (p, q): <span class="math">\(I(p) &lt; I(q)\)</span> thì bit = 1, ngược lại 0 → chuỗi <span class="math">\(n_d\)</span> bit</li>
+<li><span class="math">\(n_d\)</span> = 128, 256 hoặc 512 bit; OpenCV mặc định 256 bit = 32 byte</li>
+<li>So khớp bằng khoảng cách Hamming (đếm bit khác nhau, XOR + popcount) → rất nhanh</li>
+<li>Không bất biến với xoay</li>
+<li>Nằm trong <code>opencv-contrib-python</code>: <code>cv.xfeatures2d.BriefDescriptorExtractor_create()</code></li>
+</ul>
+</li>
+<li>
+<p><mark><strong>ORB (Oriented FAST and Rotated BRIEF)</strong></mark> - Rublee et al., 2011, <mark>thay thế miễn phí cho SIFT/SURF</mark></p>
+<ul>
+<li>Detector: FAST trên kim tự tháp ảnh (bất biến tỷ lệ) + xếp hạng bằng điểm Harris, giữ N điểm tốt nhất</li>
+<li>Hướng: vector từ tâm vùng tới trọng tâm cường độ (intensity centroid) tính bằng moment</li>
+<li>Descriptor: <strong>rBRIEF</strong> = BRIEF được xoay theo hướng keypoint (rời rạc hóa theo bước 12°) và chọn các cặp điểm ít tương quan</li>
+<li>Tham số chính của <code>cv.ORB_create()</code>:<ul>
+<li><code>nfeatures</code>: số keypoint tối đa (mặc định 500)</li>
+<li><code>scoreType</code>: <code>cv.ORB_HARRIS_SCORE</code> (mặc định) hoặc <code>cv.ORB_FAST_SCORE</code></li>
+<li><code>WTA_K</code>: số điểm so sánh mỗi lần; 2 (mặc định) → dùng <code>NORM_HAMMING</code>, 3 hoặc 4 → dùng <code>NORM_HAMMING2</code></li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">orb</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">ORB_create</span><span class="p">(</span><span class="n">nfeatures</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">kp</span><span class="p">,</span> <span class="n">des</span> <span class="o">=</span> <span class="n">orb</span><span class="o">.</span><span class="n">detectAndCompute</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>          <span class="c1"># des: (N, 32) uint8</span>
+<span class="n">img2</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">drawKeypoints</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">kp</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">flags</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/25-feature-descriptors-1.png" /></p>
+</li>
+<li>
+<p><mark>Chọn thuật toán:</mark></p>
+<ul>
+<li><mark>Cần chính xác, ảnh thay đổi tỷ lệ/góc nhìn nhiều → SIFT</mark></li>
+<li><mark>Cần nhanh, thời gian thực, thiết bị yếu → ORB</mark></li>
+<li><mark>Chỉ cần điểm để theo dõi (optical flow) → FAST hoặc Shi-Tomasi</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#25-feature-descriptors">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 25-feature-descriptors -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=429094a0"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -397,6 +688,124 @@ good matches after Lowe ratio test: 191 / 723 candidate pairs
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 26-feature-matching -->
+<details class="opencv-note" id="opencv-note-26-feature-matching">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 26. Feature Matching <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<table>
+<thead>
+<tr>
+<th>Matcher</th>
+<th>Cách làm</th>
+<th>Khi nào dùng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv.BFMatcher</code></td>
+<td>Brute-Force: so mỗi descriptor với <strong>mọi</strong> descriptor bên kia</td>
+<td>Ít descriptor, cần kết quả chính xác</td>
+</tr>
+<tr>
+<td><code>cv.FlannBasedMatcher</code></td>
+<td>Tìm láng giềng gần đúng bằng cây (KD-tree, LSH)</td>
+<td>Nhiều descriptor (hàng nghìn trở lên), cần nhanh</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Brute-Force Matcher</strong>: <code>bf = cv.BFMatcher(normType, crossCheck)</code><ul>
+<li><code>normType</code>: cách đo khoảng cách<ul>
+<li><mark>SIFT, SURF (số thực) → <code>cv.NORM_L2</code></mark> (mặc định)</li>
+<li><mark>ORB, BRIEF, BRISK (nhị phân) → <code>cv.NORM_HAMMING</code></mark>; ORB với <code>WTA_K</code> = 3 hoặc 4 → <code>cv.NORM_HAMMING2</code></li>
+</ul>
+</li>
+<li><code>crossCheck=True</code>: chỉ giữ cặp (i, j) nếu j là gần nhất của i <strong>và</strong> i là gần nhất của j → kết quả nhất quán hơn</li>
+</ul>
+</li>
+<li>Hai cách so khớp:<ul>
+<li><code>matches = bf.match(des1, des2)</code>: mỗi descriptor lấy 1 cặp tốt nhất</li>
+<li><code>matches = bf.knnMatch(des1, des2, k=2)</code>: mỗi descriptor lấy k cặp tốt nhất → dùng cho ratio test</li>
+</ul>
+</li>
+<li>Kết quả là các đối tượng <code>DMatch</code>:<ul>
+<li><code>distance</code>: khoảng cách giữa hai descriptor, <mark>càng nhỏ càng tốt</mark></li>
+<li><code>queryIdx</code>: chỉ số descriptor trong ảnh 1 (query) → <code>kp1[m.queryIdx].pt</code></li>
+<li><code>trainIdx</code>: chỉ số descriptor trong ảnh 2 (train) → <code>kp2[m.trainIdx].pt</code></li>
+<li><code>imgIdx</code>: chỉ số ảnh train (khi so với nhiều ảnh)</li>
+</ul>
+</li>
+<li>
+<p><strong>ORB + Brute-Force</strong></p>
+<div class="highlight"><pre><span></span><span class="n">orb</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">ORB_create</span><span class="p">()</span>
+<span class="n">kp1</span><span class="p">,</span> <span class="n">des1</span> <span class="o">=</span> <span class="n">orb</span><span class="o">.</span><span class="n">detectAndCompute</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">kp2</span><span class="p">,</span> <span class="n">des2</span> <span class="o">=</span> <span class="n">orb</span><span class="o">.</span><span class="n">detectAndCompute</span><span class="p">(</span><span class="n">img2</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<span class="n">bf</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">BFMatcher</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">NORM_HAMMING</span><span class="p">,</span> <span class="n">crossCheck</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">matches</span> <span class="o">=</span> <span class="n">bf</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">des1</span><span class="p">,</span> <span class="n">des2</span><span class="p">)</span>
+<span class="n">matches</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">matches</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">m</span><span class="p">:</span> <span class="n">m</span><span class="o">.</span><span class="n">distance</span><span class="p">)</span>   <span class="c1"># tốt nhất lên đầu</span>
+
+<span class="n">img3</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">drawMatches</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">kp1</span><span class="p">,</span> <span class="n">img2</span><span class="p">,</span> <span class="n">kp2</span><span class="p">,</span> <span class="n">matches</span><span class="p">[:</span><span class="mi">30</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span>
+                      <span class="n">flags</span><span class="o">=</span><span class="n">cv</span><span class="o">.</span><span class="n">DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS</span><span class="p">)</span>
+</pre></div>
+
+</li>
+<li>
+<p><mark><strong>Ratio test của Lowe</strong></mark></p>
+<ul>
+<li>Với mỗi descriptor lấy 2 láng giềng gần nhất m, n</li>
+<li><mark>Chỉ nhận m nếu <code>m.distance &lt; 0.7 * n.distance</code> (0.7 - 0.8)</mark>: cặp tốt nhất phải tốt hơn hẳn cặp thứ hai. Nếu hai cặp gần bằng nhau thì đặc trưng không phân biệt được (ví dụ cửa sổ lặp lại) → loại</li>
+<li>Không dùng chung với <code>crossCheck=True</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">sift</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">SIFT_create</span><span class="p">()</span>
+<span class="n">kp1</span><span class="p">,</span> <span class="n">des1</span> <span class="o">=</span> <span class="n">sift</span><span class="o">.</span><span class="n">detectAndCompute</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">kp2</span><span class="p">,</span> <span class="n">des2</span> <span class="o">=</span> <span class="n">sift</span><span class="o">.</span><span class="n">detectAndCompute</span><span class="p">(</span><span class="n">img2</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<span class="n">bf</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">BFMatcher</span><span class="p">()</span>                                   <span class="c1"># NORM_L2</span>
+<span class="n">matches</span> <span class="o">=</span> <span class="n">bf</span><span class="o">.</span><span class="n">knnMatch</span><span class="p">(</span><span class="n">des1</span><span class="p">,</span> <span class="n">des2</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">good</span> <span class="o">=</span> <span class="p">[[</span><span class="n">m</span><span class="p">]</span> <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">distance</span> <span class="o">&lt;</span> <span class="mf">0.75</span> <span class="o">*</span> <span class="n">n</span><span class="o">.</span><span class="n">distance</span><span class="p">]</span>
+
+<span class="c1"># drawMatchesKnn nhận list các list</span>
+<span class="n">img3</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">drawMatchesKnn</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">kp1</span><span class="p">,</span> <span class="n">img2</span><span class="p">,</span> <span class="n">kp2</span><span class="p">,</span> <span class="n">good</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">flags</span><span class="o">=</span><span class="n">cv</span><span class="o">.</span><span class="n">DrawMatchesFlags_NOT_DRAW_SINGLE_POINTS</span><span class="p">)</span>
+</pre></div>
+
+</li>
+<li>
+<p><strong>FLANN Matcher</strong> (Fast Library for Approximate Nearest Neighbors)</p>
+<ul>
+<li>Cần hai dict tham số:<ul>
+<li><code>index_params</code>: thuật toán dựng chỉ mục<ul>
+<li>SIFT/SURF: <code>dict(algorithm=1, trees=5)</code> (<code>FLANN_INDEX_KDTREE = 1</code>)</li>
+<li>ORB: <code>dict(algorithm=6, table_number=6, key_size=12, multi_probe_level=1)</code> (<code>FLANN_INDEX_LSH = 6</code>)</li>
+</ul>
+</li>
+<li><code>search_params</code>: <code>dict(checks=50)</code> - số lần duyệt cây, <mark>càng lớn càng chính xác nhưng chậm hơn</mark></li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">FLANN_INDEX_KDTREE</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">index_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="n">FLANN_INDEX_KDTREE</span><span class="p">,</span> <span class="n">trees</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">search_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">checks</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">flann</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">FlannBasedMatcher</span><span class="p">(</span><span class="n">index_params</span><span class="p">,</span> <span class="n">search_params</span><span class="p">)</span>
+
+<span class="n">matches</span> <span class="o">=</span> <span class="n">flann</span><span class="o">.</span><span class="n">knnMatch</span><span class="p">(</span><span class="n">des1</span><span class="p">,</span> <span class="n">des2</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">good</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">distance</span> <span class="o">&lt;</span> <span class="mf">0.7</span> <span class="o">*</span> <span class="n">n</span><span class="o">.</span><span class="n">distance</span><span class="p">]</span>
+</pre></div>
+
+<ul>
+<li>Với LSH (ORB), <code>knnMatch</code> có thể trả về ít hơn 2 cặp cho một descriptor → kiểm tra <code>len(pair) == 2</code> trước khi tách <code>m, n</code></li>
+</ul>
+</li>
+</ul>
+<p><img alt="" src="../img/opencv-notes/26-feature-matching-1.png" /></p>
+<ul>
+<li><mark>Sau khi so khớp vẫn còn cặp sai (outlier)</mark> → dùng RANSAC khi ước lượng homography / ma trận cơ bản để loại (xem phần Homography)</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#26-feature-matching">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 26-feature-matching -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=05aa0df7"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

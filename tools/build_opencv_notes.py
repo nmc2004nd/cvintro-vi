@@ -5,6 +5,8 @@
       lesson: tên file lesson (không có .html) để chèn vào; bỏ trống -> chỉ ở trang tổng hợp
       after:  một đoạn chữ trong heading của lesson; ghi chú được chèn ở cuối mục đó.
               Bỏ trống -> chèn ngay trước phần Bài tập (hoặc cuối bài).
+      draft:  true -> gắn nhãn "Bản nháp – chưa review" (ghi chú do AI soạn, chưa được đọc lại).
+              Xóa dòng này sau khi đã review.
 - Kết quả:
       lessons/*.html     ô "Ghi chú OpenCV" nằm giữa hai marker <!-- opencv-note:begin/end -->
       opencv-notes.html  trang tổng hợp tất cả ghi chú
@@ -72,9 +74,38 @@ class FencePreprocessor(Preprocessor):
         return self.FENCE.sub(repl, text).split("\n")
 
 
+class LooseListPreprocessor(Preprocessor):
+    """Chèn dòng trống trước mục danh sách thụt ra ngoài nếu mục con bên trên có dòng trống.
+
+    Python-Markdown lồng sai mục đó vào danh sách con (ví dụ sau một công thức $$...$$ trong danh sách).
+    """
+
+    ITEM = re.compile(r"^( *)(?:[-*+]|\d+\.) ")
+
+    def run(self, lines):
+        out = []
+        for line in lines:
+            m = self.ITEM.match(line)
+            if m and out and out[-1].strip():
+                indent = len(m.group(1))
+                prev_indent = len(out[-1]) - len(out[-1].lstrip())
+                if prev_indent > indent:
+                    # tìm ngược tới mục cùng cấp gần nhất; có dòng trống ở giữa thì cần tách
+                    for prev in reversed(out):
+                        pm = self.ITEM.match(prev)
+                        if pm and len(pm.group(1)) <= indent:
+                            break
+                        if not prev.strip():
+                            out.append("")
+                            break
+            out.append(line)
+        return out
+
+
 class NoteExtension(markdown.Extension):
     def extendMarkdown(self, md):
         md.preprocessors.register(FencePreprocessor(md), "note_fence", 30)
+        md.preprocessors.register(LooseListPreprocessor(md), "note_loose_list", 29)
         # sau backtick (190) để code không bị coi là công thức, trước escape (180)
         md.inlinePatterns.register(MathProcessor(r"\$\$(.+?)\$\$|\$([^$\n]+?)\$", md), "math", 185)
         # ==chữ== -> chữ được tô màu nhấn mạnh
@@ -105,6 +136,7 @@ def load_notes():
             "title": meta.get("title", path.stem),
             "lesson": meta.get("lesson", ""),
             "after": meta.get("after", ""),
+            "draft": meta.get("draft", "").lower() == "true",
             "body": body,
         })
     return notes
@@ -112,12 +144,19 @@ def load_notes():
 
 # ---------- Chèn vào lesson ----------
 
+DRAFT_BADGE = '<span class="opencv-note-draft">Bản nháp – chưa review</span>'
+
+
+def draft_badge(note):
+    return " " + DRAFT_BADGE if note["draft"] else ""
+
+
 def note_box(note):
     body = render(note["body"], "../")
     return (
         f'<!-- opencv-note:begin {note["slug"]} -->\n'
         f'<details class="opencv-note" id="opencv-note-{note["slug"]}">\n'
-        f'<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> {html.escape(note["title"])}</summary>\n'
+        f'<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> {html.escape(note["title"])}{draft_badge(note)}</summary>\n'
         f'<div class="opencv-note-body">\n{body}\n'
         f'<p class="opencv-note-footer"><a href="../opencv-notes.html#{note["slug"]}">Xem tất cả ghi chú OpenCV &rarr;</a></p>\n'
         f'</div>\n</details>\n'
@@ -189,7 +228,7 @@ def build_page(notes):
     toc, sections = [], []
     for note in notes:
         title = html.escape(note["title"])
-        toc.append(f'<li><a href="#{note["slug"]}">{title}</a></li>')
+        toc.append(f'<li><a href="#{note["slug"]}">{title}</a>{draft_badge(note)}</li>')
         if note["lesson"]:
             link = (f'<p class="opencv-note-lesson">Gắn với: <a href="lessons/{note["lesson"]}.html#opencv-note-{note["slug"]}">'
                     f'{html.escape(lesson_title(note["lesson"]))}</a></p>')
@@ -197,7 +236,7 @@ def build_page(notes):
             link = '<p class="opencv-note-lesson">Chưa gắn với bài học nào.</p>'
         sections.append(
             f'<section class="opencv-note-section" id="{note["slug"]}">\n'
-            f'<h2>{title}</h2>\n{link}\n<div class="opencv-note-body">\n{render(note["body"], "")}\n</div>\n</section>'
+            f'<h2>{title}{draft_badge(note)}</h2>\n{link}\n<div class="opencv-note-body">\n{render(note["body"], "")}\n</div>\n</section>'
         )
 
     page = f"""<!DOCTYPE html>
@@ -230,7 +269,8 @@ def build_page(notes):
         <h1>Ghi chú OpenCV</h1>
         <p class="opencv-note-intro">Ghi chú cá nhân của người dịch, dựa trên tài liệu
         <a href="https://docs.opencv.org/4.x/d6/d00/tutorial_py_root.html">OpenCV-Python Tutorials</a>.
-        Đây <strong>không</strong> phải nội dung của bản gốc; các ghi chú cũng được chèn vào cuối mục liên quan trong từng bài học.</p>
+        Đây <strong>không</strong> phải nội dung của bản gốc; các ghi chú cũng được chèn vào cuối mục liên quan trong từng bài học.
+        Ghi chú có nhãn {DRAFT_BADGE} là bản nháp do AI soạn theo tài liệu OpenCV, chưa được người dịch đọc lại.</p>
         <ul class="opencv-note-toc">
 {chr(10).join(toc)}
         </ul>

@@ -369,7 +369,11 @@
 <li>
 <p><code>laplacian = cv.Laplacian(img, cv.CV_64F)</code></p>
 </li>
-<li><mark><strong>Vấn đề: Mất cạnh hoặc tràn số</strong></mark></li>
+</ul>
+</li>
+<li>
+<p><mark><strong>Vấn đề: Mất cạnh hoặc tràn số</strong></mark></p>
+<ul>
 <li>Kiểu dữ liệu đầu ra của đạo hàm</li>
 <li>Gradient có thể mang dấu âm dương tùy vào dx, dy:<ul>
 <li>Đen→Trắng : +</li>
@@ -1024,6 +1028,156 @@ accumulator peak:  center=(100, 100), radius=51
 </div>
 </div>
 
+<!-- opencv-note:begin 21-hough-transform -->
+<details class="opencv-note" id="opencv-note-21-hough-transform">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 21. Hough Transform <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<table>
+<thead>
+<tr>
+<th>Hàm</th>
+<th>Kết quả</th>
+<th>Ứng dụng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv.HoughLines()</code></td>
+<td>Danh sách <span class="math">\((\rho, \theta)\)</span> của các đường thẳng vô hạn</td>
+<td>Tìm hướng chính, đường chân trời</td>
+</tr>
+<tr>
+<td><code>cv.HoughLinesP()</code></td>
+<td>Danh sách đoạn thẳng <span class="math">\((x_1, y_1, x_2, y_2)\)</span></td>
+<td>Phát hiện làn đường, cạnh vật thể</td>
+</tr>
+<tr>
+<td><code>cv.HoughCircles()</code></td>
+<td>Danh sách <span class="math">\((x, y, r)\)</span></td>
+<td>Đếm đồng xu, phát hiện con ngươi, biển báo tròn</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Hough Transform tìm các hình dạng có thể <mark>biểu diễn bằng công thức toán học</mark> (đường thẳng, đường tròn), kể cả khi hình bị đứt đoạn hoặc có nhiễu</li>
+<li><mark>Đầu vào là ảnh nhị phân</mark>: thường là kết quả của Canny hoặc threshold</li>
+<li>
+<p><mark><strong>Hough Lines</strong></mark></p>
+<ul>
+<li>Đường thẳng viết dạng tham số: <span class="math">\(\rho = x\cos\theta + y\sin\theta\)</span><ul>
+<li><span class="math">\(\rho\)</span>: khoảng cách vuông góc từ gốc tọa độ (góc trên trái) tới đường thẳng</li>
+<li><span class="math">\(\theta\)</span>: góc giữa đường vuông góc đó và trục ngang, tính theo radian</li>
+<li>Dạng <span class="math">\(y = mx + c\)</span> không biểu diễn được đường thẳng đứng (<span class="math">\(m = \infty\)</span>) nên không dùng</li>
+</ul>
+</li>
+<li>Cơ chế bỏ phiếu (voting):<ul>
+<li>Tạo mảng tích lũy (accumulator) 2D: hàng là <span class="math">\(\rho\)</span>, cột là <span class="math">\(\theta\)</span>, ban đầu bằng 0</li>
+<li>Với mỗi điểm biên (x, y), thử mọi <span class="math">\(\theta\)</span>, tính <span class="math">\(\rho\)</span> tương ứng rồi cộng 1 vào ô <span class="math">\((\rho, \theta)\)</span></li>
+<li><mark>Ô nào có nhiều phiếu → có nhiều điểm cùng nằm trên một đường thẳng</mark></li>
+</ul>
+</li>
+<li>Hàm: <code>lines = cv.HoughLines(edges, rho, theta, threshold)</code><ul>
+<li><code>rho</code>: độ phân giải của <span class="math">\(\rho\)</span> (pixel), thường 1</li>
+<li><code>theta</code>: độ phân giải của <span class="math">\(\theta\)</span> (radian), thường <code>np.pi / 180</code></li>
+<li><code>threshold</code>: số phiếu tối thiểu để coi là một đường thẳng</li>
+<li>Trả về mảng shape (N, 1, 2) gồm các cặp <span class="math">\((\rho, \theta)\)</span></li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">gray</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+<span class="n">edges</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">Canny</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="n">apertureSize</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="n">lines</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">HoughLines</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">150</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">rho</span><span class="p">,</span> <span class="n">theta</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]:</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">theta</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">theta</span><span class="p">)</span>
+    <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">rho</span><span class="p">,</span> <span class="n">b</span> <span class="o">*</span> <span class="n">rho</span>                          <span class="c1"># chân đường vuông góc</span>
+    <span class="c1"># đi 1000 pixel về hai phía để vẽ đường "vô hạn"</span>
+    <span class="n">pt1</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x0</span> <span class="o">+</span> <span class="mi">1000</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">b</span><span class="p">)),</span> <span class="nb">int</span><span class="p">(</span><span class="n">y0</span> <span class="o">+</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">a</span><span class="p">))</span>
+    <span class="n">pt2</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x0</span> <span class="o">-</span> <span class="mi">1000</span> <span class="o">*</span> <span class="p">(</span><span class="o">-</span><span class="n">b</span><span class="p">)),</span> <span class="nb">int</span><span class="p">(</span><span class="n">y0</span> <span class="o">-</span> <span class="mi">1000</span> <span class="o">*</span> <span class="n">a</span><span class="p">))</span>
+    <span class="n">cv</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">pt1</span><span class="p">,</span> <span class="n">pt2</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+</li>
+<li>
+<p><mark><strong>Probabilistic Hough (HoughLinesP)</strong></mark></p>
+<ul>
+<li>Chỉ bỏ phiếu bằng một tập con điểm ngẫu nhiên → <mark>nhanh hơn</mark></li>
+<li><mark>Trả về trực tiếp hai đầu mút của đoạn thẳng</mark> → dễ dùng hơn</li>
+<li>Thêm hai tham số:<ul>
+<li><code>minLineLength</code>: đoạn ngắn hơn giá trị này bị loại</li>
+<li><code>maxLineGap</code>: khoảng hở tối đa giữa hai đoạn để vẫn gộp thành một đường</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">lines</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">HoughLinesP</span><span class="p">(</span><span class="n">edges</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">minLineLength</span><span class="o">=</span><span class="mi">80</span><span class="p">,</span> <span class="n">maxLineGap</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">y2</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]:</span>
+    <span class="n">cv</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">),</span> <span class="p">(</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/21-hough-transform-1.png" /></p>
+</li>
+<li>
+<p><mark><strong>Hough Circles</strong></mark></p>
+<ul>
+<li>Đường tròn: <span class="math">\((x - x_c)^2 + (y - y_c)^2 = r^2\)</span> → 3 tham số, bỏ phiếu 3D rất tốn bộ nhớ</li>
+<li>OpenCV dùng <strong>Hough Gradient Method</strong>: dùng hướng gradient tại điểm biên để bỏ phiếu cho tâm, sau đó mới tìm bán kính</li>
+<li><mark>Đầu vào là ảnh xám 8-bit, không phải ảnh Canny</mark> (hàm tự gọi Canny bên trong)</li>
+<li>Hàm: <code>circles = cv.HoughCircles(img, method, dp, minDist, param1, param2, minRadius, maxRadius)</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Tham số</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>method</code></td>
+<td><code>cv.HOUGH_GRADIENT</code> (hoặc <code>cv.HOUGH_GRADIENT_ALT</code> từ OpenCV 4.3, chính xác hơn)</td>
+</tr>
+<tr>
+<td><code>dp</code></td>
+<td>Tỷ lệ nghịch độ phân giải accumulator; 1 = cùng độ phân giải ảnh</td>
+</tr>
+<tr>
+<td><code>minDist</code></td>
+<td>Khoảng cách tối thiểu giữa hai tâm; nhỏ quá → nhiều vòng trùng, lớn quá → sót</td>
+</tr>
+<tr>
+<td><code>param1</code></td>
+<td>Ngưỡng cao của Canny bên trong (ngưỡng thấp = một nửa)</td>
+</tr>
+<tr>
+<td><code>param2</code></td>
+<td>Ngưỡng phiếu cho tâm; <mark>nhỏ hơn → nhiều vòng hơn, kể cả vòng giả</mark></td>
+</tr>
+<tr>
+<td><code>minRadius</code>, <code>maxRadius</code></td>
+<td>Giới hạn bán kính; 0 = không giới hạn</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><span class="n">img</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">medianBlur</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>                          <span class="c1"># giảm nhiễu trước</span>
+<span class="n">circles</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">HoughCircles</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">HOUGH_GRADIENT</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span>
+                          <span class="n">param1</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">param2</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">minRadius</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span> <span class="n">maxRadius</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+<span class="n">circles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint16</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">circles</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">circles</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+    <span class="n">cv</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">cimg</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">)),</span> <span class="nb">int</span><span class="p">(</span><span class="n">r</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>   <span class="c1"># đường tròn</span>
+    <span class="n">cv</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">cimg</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">)),</span> <span class="mi">2</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">),</span> <span class="mi">3</span><span class="p">)</span>        <span class="c1"># tâm</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/21-hough-transform-2.png" /></p>
+<ul>
+<li>Kết quả rất nhạy với <code>param2</code>: trong hình trên <code>param2=30</code> chỉ tìm được 4/6 đồng xu, <code>param2=25</code> tìm đủ 6</li>
+<li>Hàm trả về <code>None</code> nếu không tìm thấy → <mark>kiểm tra <code>if circles is not None</code> trước khi dùng</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#21-hough-transform">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 21-hough-transform -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=05e078d4"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

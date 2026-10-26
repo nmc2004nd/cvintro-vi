@@ -154,6 +154,126 @@
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 35-kmeans -->
+<details class="opencv-note" id="opencv-note-35-kmeans">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 35. K-Means Clustering <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li>K-Means chia dữ liệu thành K cụm:<ul>
+<li><strong>B1</strong>: chọn ngẫu nhiên K tâm cụm</li>
+<li><strong>B2</strong>: gán mỗi điểm vào tâm gần nhất</li>
+<li><strong>B3</strong>: tính lại tâm = trung bình các điểm trong cụm</li>
+<li>Lặp B2-B3 đến khi tâm không đổi (hoặc đạt điều kiện dừng)</li>
+<li>Mục tiêu: cực tiểu tổng bình phương khoảng cách từ điểm tới tâm cụm của nó (compactness)</li>
+</ul>
+</li>
+<li>Hàm: <code>compactness, labels, centers = cv.kmeans(data, K, bestLabels, criteria, attempts, flags)</code></li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Tham số</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data</code></td>
+<td><mark><code>np.float32</code>, mỗi hàng là một điểm</mark> (shape (N, số đặc trưng))</td>
+</tr>
+<tr>
+<td><code>K</code></td>
+<td>Số cụm</td>
+</tr>
+<tr>
+<td><code>bestLabels</code></td>
+<td>Nhãn khởi tạo, thường <code>None</code></td>
+</tr>
+<tr>
+<td><code>criteria</code></td>
+<td><code>(type, max_iter, epsilon)</code>: <code>cv.TERM_CRITERIA_EPS</code> (dừng khi tâm dịch &lt; epsilon), <code>cv.TERM_CRITERIA_MAX_ITER</code> (dừng sau max_iter vòng), hoặc cộng cả hai</td>
+</tr>
+<tr>
+<td><code>attempts</code></td>
+<td>Số lần chạy với khởi tạo khác nhau, trả về lần có compactness nhỏ nhất</td>
+</tr>
+<tr>
+<td><code>flags</code></td>
+<td><code>cv.KMEANS_RANDOM_CENTERS</code> hoặc <code>cv.KMEANS_PP_CENTERS</code> (k-means++, khởi tạo tốt hơn)</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Kết quả</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>compactness</code></td>
+<td>Tổng bình phương khoảng cách tới tâm cụm</td>
+</tr>
+<tr>
+<td><code>labels</code></td>
+<td>Nhãn cụm (0, 1, ...) của từng điểm, shape (N, 1)</td>
+</tr>
+<tr>
+<td><code>centers</code></td>
+<td>Tọa độ các tâm cụm, shape (K, số đặc trưng)</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Dữ liệu 1 đặc trưng</strong> (ví dụ chiều cao): <code>data</code> shape (N, 1)</li>
+<li>
+<p><strong>Nhiều đặc trưng</strong> (ví dụ chiều cao + cân nặng): <code>data</code> shape (N, 2), chia điểm theo nhãn: <code>A = Z[labels.ravel() == 0]</code></p>
+<div class="highlight"><pre><span></span><span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">)))</span>                    <span class="c1"># (N, 2)</span>
+<span class="n">criteria</span> <span class="o">=</span> <span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">TERM_CRITERIA_EPS</span> <span class="o">+</span> <span class="n">cv</span><span class="o">.</span><span class="n">TERM_CRITERIA_MAX_ITER</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">ret</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">center</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">kmeans</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">criteria</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">KMEANS_RANDOM_CENTERS</span><span class="p">)</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">Z</span><span class="p">[</span><span class="n">label</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">]</span>
+<span class="n">B</span> <span class="o">=</span> <span class="n">Z</span><span class="p">[</span><span class="n">label</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+</pre></div>
+
+</li>
+<li>
+<p><mark><strong>Lượng tử hóa màu (Color Quantization)</strong></mark>: giảm số màu trong ảnh xuống K màu</p>
+<ul>
+<li>Mỗi pixel là một điểm 3 đặc trưng (B, G, R) → <code>reshape((-1, 3))</code></li>
+<li>Sau khi phân cụm, thay mỗi pixel bằng màu của tâm cụm</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">Z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)))</span>
+<span class="n">criteria</span> <span class="o">=</span> <span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">TERM_CRITERIA_EPS</span> <span class="o">+</span> <span class="n">cv</span><span class="o">.</span><span class="n">TERM_CRITERIA_MAX_ITER</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+<span class="n">K</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">ret</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">center</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">kmeans</span><span class="p">(</span><span class="n">Z</span><span class="p">,</span> <span class="n">K</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="n">criteria</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">KMEANS_RANDOM_CENTERS</span><span class="p">)</span>
+
+<span class="n">center</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">(</span><span class="n">center</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">center</span><span class="p">[</span><span class="n">label</span><span class="o">.</span><span class="n">flatten</span><span class="p">()]</span>                        <span class="c1"># tra màu tâm cho từng pixel</span>
+<span class="n">res2</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+
+</li>
+</ul>
+<p><img alt="" src="../img/opencv-notes/35-kmeans-1.png" /></p>
+<ul>
+<li><mark>Lưu ý:</mark><ul>
+<li><mark>Phải chọn K trước</mark>; K-Means giả định cụm có dạng tròn, kích thước gần nhau → kém với cụm không lồi (xem DBSCAN trong bài)</li>
+<li>Kết quả phụ thuộc khởi tạo → dùng <code>attempts &gt; 1</code> hoặc <code>KMEANS_PP_CENTERS</code></li>
+</ul>
+</li>
+<li><mark>Ứng dụng:</mark><ul>
+<li><mark>Giảm số màu để nén ảnh, tạo hiệu ứng poster</mark></li>
+<li><mark>Phân đoạn ảnh theo màu</mark></li>
+<li><mark>Tạo "từ điển hình ảnh" (bag of visual words) từ các descriptor</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#35-kmeans">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 35-kmeans -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=ca8a3a20"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

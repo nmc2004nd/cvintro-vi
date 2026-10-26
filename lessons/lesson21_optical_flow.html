@@ -584,6 +584,330 @@ cv2.calcOpticalFlowPyrLK estimate:    (4.000, 3.000)  &lt;- accurate
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 28-meanshift-camshift -->
+<details class="opencv-note" id="opencv-note-28-meanshift-camshift">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 28. Meanshift và Camshift <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<table>
+<thead>
+<tr>
+<th>Hàm</th>
+<th>Cửa sổ theo dõi</th>
+<th>Trả về</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv.meanShift()</code></td>
+<td>Kích thước cố định, không xoay</td>
+<td><code>(số vòng lặp, (x, y, w, h))</code></td>
+</tr>
+<tr>
+<td><code>cv.CamShift()</code></td>
+<td><mark>Tự đổi kích thước và xoay theo vật thể</mark></td>
+<td><code>(RotatedRect, (x, y, w, h))</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>
+<p><mark><strong>Meanshift</strong></mark></p>
+<ul>
+<li>Ý tưởng: cho một tập điểm (ví dụ ảnh backprojection) và một cửa sổ<ul>
+<li>Tính trọng tâm các điểm trong cửa sổ</li>
+<li>Dịch tâm cửa sổ về trọng tâm đó</li>
+<li>Lặp lại đến khi cửa sổ không dịch nữa → cửa sổ nằm ở <mark>vùng có mật độ điểm cao nhất</mark></li>
+</ul>
+</li>
+<li>Áp dụng để theo dõi vật thể trong video:<ul>
+<li>Frame đầu: chọn cửa sổ chứa vật thể, tính histogram Hue của vùng đó</li>
+<li>Mỗi frame sau: backprojection histogram lên frame → ảnh xác suất → chạy meanShift từ cửa sổ cũ</li>
+</ul>
+</li>
+<li>Mask khi tính histogram: bỏ các pixel có S, V thấp (gần xám, gần đen) vì Hue của chúng không đáng tin</li>
+<li><code>term_crit</code>: điều kiện dừng, ví dụ tối đa 10 vòng hoặc dịch ít hơn 1 pixel</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">cap</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="s2">"video.mp4"</span><span class="p">)</span>
+<span class="n">ret</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="n">cap</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+<span class="c1"># Cửa sổ ban đầu chứa vật thể</span>
+<span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">50</span>
+<span class="n">track_window</span> <span class="o">=</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+
+<span class="c1"># Histogram Hue của vùng vật thể</span>
+<span class="n">roi</span> <span class="o">=</span> <span class="n">frame</span><span class="p">[</span><span class="n">y</span><span class="p">:</span><span class="n">y</span> <span class="o">+</span> <span class="n">h</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span> <span class="o">+</span> <span class="n">w</span><span class="p">]</span>
+<span class="n">hsv_roi</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">roi</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2HSV</span><span class="p">)</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">inRange</span><span class="p">(</span><span class="n">hsv_roi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="mf">0.</span><span class="p">,</span> <span class="mf">60.</span><span class="p">,</span> <span class="mf">32.</span><span class="p">)),</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">((</span><span class="mf">180.</span><span class="p">,</span> <span class="mf">255.</span><span class="p">,</span> <span class="mf">255.</span><span class="p">)))</span>
+<span class="n">roi_hist</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">calcHist</span><span class="p">([</span><span class="n">hsv_roi</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mask</span><span class="p">,</span> <span class="p">[</span><span class="mi">180</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">180</span><span class="p">])</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">roi_hist</span><span class="p">,</span> <span class="n">roi_hist</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">NORM_MINMAX</span><span class="p">)</span>
+
+<span class="n">term_crit</span> <span class="o">=</span> <span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">TERM_CRITERIA_EPS</span> <span class="o">|</span> <span class="n">cv</span><span class="o">.</span><span class="n">TERM_CRITERIA_COUNT</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">ret</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="n">cap</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ret</span><span class="p">:</span>
+        <span class="k">break</span>
+    <span class="n">hsv</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2HSV</span><span class="p">)</span>
+    <span class="n">dst</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">calcBackProject</span><span class="p">([</span><span class="n">hsv</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">roi_hist</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">180</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">ret</span><span class="p">,</span> <span class="n">track_window</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">meanShift</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">track_window</span><span class="p">,</span> <span class="n">term_crit</span><span class="p">)</span>
+    <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">track_window</span>
+    <span class="n">cv</span><span class="o">.</span><span class="n">rectangle</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">),</span> <span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="n">w</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="n">h</span><span class="p">),</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+<ul>
+<li>Hạn chế: <mark>kích thước cửa sổ cố định</mark> → vật lại gần camera (to ra) hay đi xa (nhỏ lại) thì cửa sổ không theo kịp</li>
+</ul>
+</li>
+<li>
+<p><mark><strong>Camshift (Continuously Adaptive Meanshift)</strong></mark> - Gary Bradski, 1998</p>
+<ul>
+<li>Chạy meanShift đến khi hội tụ, rồi <mark>cập nhật kích thước cửa sổ</mark> theo <span class="math">\(s = 2\sqrt{M_{00}/256}\)</span> và tính hướng của elip khớp nhất</li>
+<li>Chạy lại meanShift với cửa sổ mới, lặp đến khi đạt độ chính xác yêu cầu</li>
+<li>Code giống meanShift, chỉ đổi dòng theo dõi và cách vẽ:</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">ret</span><span class="p">,</span> <span class="n">track_window</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">CamShift</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">track_window</span><span class="p">,</span> <span class="n">term_crit</span><span class="p">)</span>
+<span class="n">pts</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">boxPoints</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>                       <span class="c1"># ret là RotatedRect ((cx, cy), (w, h), angle)</span>
+<span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">intp</span><span class="p">(</span><span class="n">pts</span><span class="p">)</span>
+<span class="n">frame</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">polylines</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="p">[</span><span class="n">pts</span><span class="p">],</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+</li>
+</ul>
+<p><img alt="" src="../img/opencv-notes/28-meanshift-camshift-1.png" /></p>
+<ul>
+<li><mark>Hạn chế chung:</mark><ul>
+<li><mark>Chỉ dựa vào màu</mark>: nền có màu giống vật thể → dễ trôi sang nền</li>
+<li>Vật thể bị che khuất hoàn toàn hoặc di chuyển quá nhanh (ra khỏi cửa sổ cũ) → mất dấu</li>
+</ul>
+</li>
+<li><mark>Ứng dụng:</mark><ul>
+<li><mark>Theo dõi khuôn mặt, bàn tay, quả bóng có màu nổi bật</mark></li>
+<li><mark>Theo dõi nhẹ, chạy được trên thiết bị yếu</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#28-meanshift-camshift">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 28-meanshift-camshift -->
+<!-- opencv-note:begin 29-optical-flow -->
+<details class="opencv-note" id="opencv-note-29-optical-flow">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 29. Optical Flow <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<table>
+<thead>
+<tr>
+<th>Hàm</th>
+<th>Loại</th>
+<th>Kết quả</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv.calcOpticalFlowPyrLK()</code></td>
+<td>Thưa (sparse), Lucas-Kanade</td>
+<td>Vị trí mới của một tập điểm</td>
+</tr>
+<tr>
+<td><code>cv.calcOpticalFlowFarneback()</code></td>
+<td>Dày (dense), Gunnar Farneback</td>
+<td>Vector chuyển động <span class="math">\((u, v)\)</span> cho <strong>mọi</strong> pixel</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Optical flow: <mark>chuyển động biểu kiến của các pixel giữa hai frame liên tiếp</mark>, là trường vector 2D</li>
+<li>Giả thiết:<ul>
+<li><mark>Độ sáng không đổi</mark> khi pixel di chuyển (brightness constancy)</li>
+<li><mark>Chuyển động nhỏ</mark> giữa hai frame</li>
+<li>Các pixel lân cận chuyển động giống nhau</li>
+</ul>
+</li>
+<li>
+<p>Phương trình optical flow:</p>
+<ul>
+<li>
+<p><span class="math">\(I(x, y, t) = I(x + dx, y + dy, t + dt)\)</span>, khai triển Taylor →</p>
+<p><span class="math display">\[I_x u + I_y v + I_t = 0\]</span></p>
+</li>
+<li>
+<p><span class="math">\(I_x, I_y\)</span>: gradient không gian, <span class="math">\(I_t\)</span>: gradient theo thời gian, <span class="math">\((u, v)\)</span>: vector chuyển động cần tìm</p>
+</li>
+<li><mark>Một phương trình, hai ẩn → không giải được tại một pixel đơn lẻ</mark> (aperture problem)</li>
+</ul>
+</li>
+<li>
+<p><mark><strong>Lucas-Kanade</strong></mark></p>
+<ul>
+<li>
+<p>Giả sử cả vùng 3x3 quanh điểm chuyển động như nhau → 9 phương trình, 2 ẩn → giải bằng bình phương tối thiểu:</p>
+<p><span class="math display">\[\begin{bmatrix} u \\ v \end{bmatrix} = \begin{bmatrix} \sum I_x^2 &amp; \sum I_x I_y \\ \sum I_x I_y &amp; \sum I_y^2 \end{bmatrix}^{-1} \begin{bmatrix} -\sum I_x I_t \\ -\sum I_y I_t \end{bmatrix}\]</span></p>
+</li>
+<li>
+<p>Ma trận nghịch đảo giống ma trận M của Harris → <mark>giải tốt nhất tại các góc</mark> → chọn điểm bằng <code>goodFeaturesToTrack</code></p>
+</li>
+<li>Chuyển động lớn → dùng <mark>kim tự tháp ảnh</mark>: ở tầng nhỏ, chuyển động lớn trở thành nhỏ</li>
+<li>Hàm: <code>p1, st, err = cv.calcOpticalFlowPyrLK(old_gray, frame_gray, p0, None, **lk_params)</code><ul>
+<li><code>p0</code>: điểm cần theo dõi, <code>float32</code> shape (N, 1, 2)</li>
+<li><code>p1</code>: vị trí mới</li>
+<li><code>st</code>: 1 nếu tìm thấy điểm, 0 nếu mất</li>
+<li><code>winSize</code>: kích thước cửa sổ, <code>maxLevel</code>: số tầng kim tự tháp</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">feature_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">maxCorners</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">qualityLevel</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">minDistance</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">blockSize</span><span class="o">=</span><span class="mi">7</span><span class="p">)</span>
+<span class="n">lk_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">winSize</span><span class="o">=</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">15</span><span class="p">),</span> <span class="n">maxLevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                 <span class="n">criteria</span><span class="o">=</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">TERM_CRITERIA_EPS</span> <span class="o">|</span> <span class="n">cv</span><span class="o">.</span><span class="n">TERM_CRITERIA_COUNT</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">))</span>
+
+<span class="n">ret</span><span class="p">,</span> <span class="n">old_frame</span> <span class="o">=</span> <span class="n">cap</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="n">old_gray</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">old_frame</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+<span class="n">p0</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">goodFeaturesToTrack</span><span class="p">(</span><span class="n">old_gray</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">feature_params</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">ret</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="n">cap</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ret</span><span class="p">:</span>
+        <span class="k">break</span>
+    <span class="n">frame_gray</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+    <span class="n">p1</span><span class="p">,</span> <span class="n">st</span><span class="p">,</span> <span class="n">err</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">calcOpticalFlowPyrLK</span><span class="p">(</span><span class="n">old_gray</span><span class="p">,</span> <span class="n">frame_gray</span><span class="p">,</span> <span class="n">p0</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">lk_params</span><span class="p">)</span>
+
+    <span class="n">good_new</span> <span class="o">=</span> <span class="n">p1</span><span class="p">[</span><span class="n">st</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>                     <span class="c1"># chỉ giữ điểm còn theo dõi được</span>
+    <span class="n">good_old</span> <span class="o">=</span> <span class="n">p0</span><span class="p">[</span><span class="n">st</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">new</span><span class="p">,</span> <span class="n">old</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">good_new</span><span class="p">,</span> <span class="n">good_old</span><span class="p">):</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">new</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">c</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">old</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">cv</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">a</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">b</span><span class="p">)),</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">c</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">d</span><span class="p">)),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">old_gray</span> <span class="o">=</span> <span class="n">frame_gray</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">p0</span> <span class="o">=</span> <span class="n">good_new</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+<ul>
+<li>Điểm mất dần theo thời gian → tài liệu khuyên <mark>định kỳ tìm lại điểm mới</mark> (sample <code>lk_track.py</code> còn kiểm tra ngược để loại điểm sai)</li>
+</ul>
+</li>
+<li>
+<p><mark><strong>Dense Optical Flow - Farneback</strong></mark></p>
+<ul>
+<li>Tính flow cho mọi pixel, kết quả shape (H, W, 2)</li>
+<li><code>flow = cv.calcOpticalFlowFarneback(prev, next, None, pyr_scale, levels, winsize, iterations, poly_n, poly_sigma, flags)</code><ul>
+<li>Tham số hay dùng: <code>0.5, 3, 15, 3, 5, 1.2, 0</code></li>
+</ul>
+</li>
+<li>Trực quan hóa bằng HSV: <mark>Hue = hướng, Value = độ lớn</mark></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">flow</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">calcOpticalFlowFarneback</span><span class="p">(</span><span class="n">prvs</span><span class="p">,</span> <span class="nb">next</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mf">0.5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mf">1.2</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">mag</span><span class="p">,</span> <span class="n">ang</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cartToPolar</span><span class="p">(</span><span class="n">flow</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">flow</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+
+<span class="n">hsv</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>
+<span class="n">hsv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">ang</span> <span class="o">*</span> <span class="mi">180</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mi">2</span>            <span class="c1"># radian → 0-179 của OpenCV</span>
+<span class="n">hsv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="mi">255</span>
+<span class="n">hsv</span><span class="p">[</span><span class="o">...</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">mag</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">NORM_MINMAX</span><span class="p">)</span>
+<span class="n">bgr</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">hsv</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_HSV2BGR</span><span class="p">)</span>
+</pre></div>
+
+</li>
+</ul>
+<p><img alt="" src="../img/opencv-notes/29-optical-flow-1.png" /></p>
+<ul>
+<li><mark>Ứng dụng:</mark><ul>
+<li><mark>Theo dõi điểm, ổn định video (video stabilization)</mark></li>
+<li><mark>Phát hiện vật chuyển động, ước lượng hướng di chuyển</mark></li>
+<li><mark>Nội suy frame, nén video</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#29-optical-flow">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 29-optical-flow -->
+<!-- opencv-note:begin 30-background-subtraction -->
+<details class="opencv-note" id="opencv-note-30-background-subtraction">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 30. Background Subtraction <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li>Mục tiêu: từ video camera <mark>cố định</mark>, tách các vật đang chuyển động (foreground) khỏi nền tĩnh</li>
+<li>Cách đơn giản nhất: trừ frame hiện tại cho ảnh nền trống → nhưng thường không có sẵn ảnh nền, và nền còn thay đổi (ánh sáng, lá cây rung, bóng đổ)</li>
+<li>OpenCV dùng <mark>mô hình thống kê cho từng pixel</mark>, cập nhật liên tục theo thời gian</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Hàm</th>
+<th>Thuật toán</th>
+<th>Tham số chính</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv.createBackgroundSubtractorMOG2()</code></td>
+<td>Mỗi pixel là hỗn hợp K phân phối Gauss, <mark>tự chọn số Gauss phù hợp</mark> cho từng pixel</td>
+<td><code>history=500</code>, <code>varThreshold=16</code>, <code>detectShadows=True</code></td>
+</tr>
+<tr>
+<td><code>cv.createBackgroundSubtractorKNN()</code></td>
+<td>K láng giềng gần nhất trên các mẫu quá khứ của pixel</td>
+<td><code>history=500</code>, <code>dist2Threshold=400</code>, <code>detectShadows=True</code></td>
+</tr>
+<tr>
+<td><code>cv.bgsegm.createBackgroundSubtractorMOG()</code></td>
+<td>MOG gốc, số Gauss cố định</td>
+<td>Trong <code>opencv-contrib-python</code></td>
+</tr>
+<tr>
+<td><code>cv.bgsegm.createBackgroundSubtractorGMG()</code></td>
+<td>Ước lượng Bayes, cần khoảng 120 frame đầu để học nền</td>
+<td>Trong <code>opencv-contrib-python</code></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>history</code>: số frame dùng để học nền; <code>varThreshold</code> / <code>dist2Threshold</code>: ngưỡng để coi pixel là khác nền</li>
+<li><mark>Phát hiện bóng (<code>detectShadows=True</code>)</mark>: pixel bóng có giá trị <mark>127</mark> trong mask (vật thể = 255, nền = 0)<ul>
+<li>Pixel bóng: tối hơn nền nhưng cùng sắc màu → không bị tính là vật thể</li>
+<li>Muốn bỏ bóng: <code>_, fg = cv.threshold(mask, 200, 255, cv.THRESH_BINARY)</code></li>
+<li>Không cần bóng thì đặt <code>detectShadows=False</code> cho nhanh hơn</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">backSub</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">createBackgroundSubtractorMOG2</span><span class="p">()</span>          <span class="c1"># hoặc createBackgroundSubtractorKNN()</span>
+<span class="n">cap</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="s2">"vtest.avi"</span><span class="p">)</span>
+
+<span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+    <span class="n">ret</span><span class="p">,</span> <span class="n">frame</span> <span class="o">=</span> <span class="n">cap</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">ret</span><span class="p">:</span>
+        <span class="k">break</span>
+    <span class="n">fgMask</span> <span class="o">=</span> <span class="n">backSub</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">frame</span><span class="p">)</span>                     <span class="c1"># vừa cập nhật mô hình vừa trả về mask</span>
+    <span class="c1"># learningRate: -1 tự động, 0 không học nữa, 1 học lại từ đầu theo frame hiện tại</span>
+    <span class="c1"># fgMask = backSub.apply(frame, learningRate=-1)</span>
+</pre></div>
+
+<ul>
+<li><code>backSub.getBackgroundImage()</code>: ảnh nền mà mô hình đang ước lượng</li>
+</ul>
+<p><img alt="" src="../img/opencv-notes/30-background-subtraction-1.png" /></p>
+<ul>
+<li>Hậu xử lý thường dùng:<ul>
+<li>Bỏ bóng bằng threshold</li>
+<li>Opening để xóa nhiễu nhỏ, closing để lấp lỗ trong vật thể</li>
+<li><code>findContours</code> + lọc theo diện tích → khung bao từng vật thể</li>
+</ul>
+</li>
+<li><mark>Hạn chế:</mark><ul>
+<li><mark>Camera phải đứng yên</mark>; camera rung hoặc di chuyển → cả ảnh thành foreground</li>
+<li>Vật đứng yên lâu sẽ dần bị học thành nền</li>
+</ul>
+</li>
+<li><mark>Ứng dụng:</mark><ul>
+<li><mark>Camera giám sát: phát hiện người, xe chuyển động</mark></li>
+<li><mark>Đếm phương tiện, đếm người qua cửa</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#30-background-subtraction">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 30-background-subtraction -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=a569183c"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

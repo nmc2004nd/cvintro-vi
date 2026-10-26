@@ -162,6 +162,199 @@
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 18-histogram -->
+<details class="opencv-note" id="opencv-note-18-histogram">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 18. Histogram <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<table>
+<thead>
+<tr>
+<th>Hàm</th>
+<th>Ý nghĩa</th>
+<th>Ứng dụng</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv.calcHist()</code></td>
+<td>Tính histogram 1D/2D, có thể kèm <code>mask</code></td>
+<td>Phân tích độ sáng, tương phản, màu sắc</td>
+</tr>
+<tr>
+<td><code>cv.equalizeHist()</code></td>
+<td>Cân bằng histogram toàn cục</td>
+<td>Tăng tương phản ảnh xám</td>
+</tr>
+<tr>
+<td><code>cv.createCLAHE()</code></td>
+<td>Cân bằng histogram thích nghi theo từng ô</td>
+<td>Tăng tương phản cục bộ, không làm cháy sáng</td>
+</tr>
+<tr>
+<td><code>cv.calcBackProject()</code></td>
+<td>Chiếu ngược histogram mẫu lên ảnh</td>
+<td>Tách vật thể theo màu, dùng cho CamShift</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Histogram là đồ thị phân bố cường độ của ảnh:<ul>
+<li>Trục x: giá trị pixel (0-255 với ảnh <code>uint8</code>)</li>
+<li>Trục y: số pixel có giá trị đó</li>
+<li>Histogram dồn về bên trái → ảnh tối, dồn về bên phải → ảnh sáng, dồn vào một vùng hẹp → <mark>tương phản thấp</mark></li>
+</ul>
+</li>
+<li>Các thuật ngữ:<ul>
+<li><strong>BINS</strong> (<code>histSize</code>): số khoảng chia. 256 bins = mỗi giá trị một cột, 16 bins = mỗi cột gom 16 giá trị</li>
+<li><strong>DIMS</strong>: số đặc trưng thu thập; ảnh xám chỉ có cường độ → 1</li>
+<li><strong>RANGE</strong>: khoảng giá trị cần đo, thường là <code>[0, 256]</code></li>
+</ul>
+</li>
+<li>
+<p>Tính histogram bằng OpenCV:</p>
+<ul>
+<li><code>hist = cv.calcHist(images, channels, mask, histSize, ranges)</code></li>
+<li><mark>Các tham số đều truyền dạng list <code>[...]</code></mark><ul>
+<li><code>images</code>: <code>[img]</code>, kiểu <code>uint8</code> hoặc <code>float32</code></li>
+<li><code>channels</code>: <code>[0]</code> với ảnh xám; <code>[0]</code>, <code>[1]</code>, <code>[2]</code> tương ứng kênh B, G, R</li>
+<li><code>mask</code>: <code>None</code> để tính cả ảnh, hoặc mask trắng ở vùng cần tính</li>
+<li><code>histSize</code>: <code>[256]</code></li>
+<li><code>ranges</code>: <code>[0, 256]</code></li>
+</ul>
+</li>
+<li>Kết quả là mảng <code>256x1</code> kiểu <code>float32</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">hist</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">calcHist</span><span class="p">([</span><span class="n">img</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">])</span>
+
+<span class="c1"># Histogram chỉ trong một vùng: tạo mask trắng ở vùng đó</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="n">mask</span><span class="p">[</span><span class="mi">100</span><span class="p">:</span><span class="mi">300</span><span class="p">,</span> <span class="mi">100</span><span class="p">:</span><span class="mi">400</span><span class="p">]</span> <span class="o">=</span> <span class="mi">255</span>
+<span class="n">hist_mask</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">calcHist</span><span class="p">([</span><span class="n">img</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">mask</span><span class="p">,</span> <span class="p">[</span><span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">])</span>
+</pre></div>
+
+</li>
+<li>
+<p>Tính histogram bằng NumPy:</p>
+<ul>
+<li><code>hist, bins = np.histogram(img.ravel(), 256, [0, 256])</code> → <code>bins</code> có 257 phần tử (thêm mốc 256 ở cuối)</li>
+<li><code>hist = np.bincount(img.ravel(), minlength=256)</code> nhanh hơn <code>np.histogram</code> khoảng 10 lần</li>
+<li><code>cv.calcHist</code> vẫn nhanh nhất (khoảng 40 lần so với <code>np.histogram</code> theo tài liệu OpenCV)</li>
+</ul>
+</li>
+<li>
+<p>Vẽ histogram:</p>
+<ul>
+<li>Nhanh nhất: <code>plt.hist(img.ravel(), 256, [0, 256])</code></li>
+<li>Ảnh màu: tính từng kênh rồi <code>plt.plot</code></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">((</span><span class="s2">"b"</span><span class="p">,</span> <span class="s2">"g"</span><span class="p">,</span> <span class="s2">"r"</span><span class="p">)):</span>
+    <span class="n">histr</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">calcHist</span><span class="p">([</span><span class="n">img</span><span class="p">],</span> <span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">])</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">histr</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">col</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">])</span>
+</pre></div>
+
+</li>
+<li>
+<p><mark><strong>Cân bằng histogram (Histogram Equalization)</strong></mark></p>
+<ul>
+<li>Ý tưởng: kéo giãn histogram đang dồn vào một vùng hẹp ra toàn dải 0-255 → <mark>tăng tương phản</mark></li>
+<li>
+<p>Dùng hàm phân phối tích lũy (CDF) làm bảng tra (look-up table):</p>
+<p><span class="math display">\[h(v) = \text{round}\left(\frac{cdf(v) - cdf_{min}}{M \times N - cdf_{min}} \times (L - 1)\right)\]</span></p>
+<ul>
+<li><span class="math">\(M \times N\)</span>: số pixel, <span class="math">\(L = 256\)</span></li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="c1"># Cách làm bằng NumPy</span>
+<span class="n">hist</span><span class="p">,</span> <span class="n">bins</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">img</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="mi">256</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">])</span>
+<span class="n">cdf</span> <span class="o">=</span> <span class="n">hist</span><span class="o">.</span><span class="n">cumsum</span><span class="p">()</span>
+<span class="n">cdf_m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_equal</span><span class="p">(</span><span class="n">cdf</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>                       <span class="c1"># bỏ các giá trị 0</span>
+<span class="n">cdf_m</span> <span class="o">=</span> <span class="p">(</span><span class="n">cdf_m</span> <span class="o">-</span> <span class="n">cdf_m</span><span class="o">.</span><span class="n">min</span><span class="p">())</span> <span class="o">*</span> <span class="mi">255</span> <span class="o">/</span> <span class="p">(</span><span class="n">cdf_m</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">-</span> <span class="n">cdf_m</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+<span class="n">lut</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="n">cdf_m</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">"uint8"</span><span class="p">)</span>
+<span class="n">img2</span> <span class="o">=</span> <span class="n">lut</span><span class="p">[</span><span class="n">img</span><span class="p">]</span>                                         <span class="c1"># áp bảng tra cho từng pixel</span>
+
+<span class="c1"># Cách làm bằng OpenCV</span>
+<span class="n">equ</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">equalizeHist</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>                              <span class="c1"># chỉ nhận ảnh xám 8-bit</span>
+</pre></div>
+
+<ul>
+<li>Ảnh tối hay sáng sau khi cân bằng đều cho kết quả gần giống nhau → dùng để <mark>chuẩn hóa điều kiện ánh sáng</mark> (ví dụ trước khi huấn luyện nhận diện khuôn mặt)</li>
+<li>Hạn chế: với ảnh vừa có vùng rất tối vừa có vùng rất sáng, cân bằng toàn cục làm cháy chi tiết</li>
+<li>Ảnh màu: <mark>không cân bằng riêng từng kênh B, G, R</mark> (lệch màu) → chuyển sang YCrCb hoặc LAB, chỉ cân bằng kênh độ sáng rồi chuyển ngược lại</li>
+</ul>
+</li>
+<li>
+<p><mark><strong>CLAHE (Contrast Limited Adaptive Histogram Equalization)</strong></mark></p>
+<ul>
+<li>Chia ảnh thành các ô nhỏ (<code>tileGridSize</code>, mặc định 8x8), cân bằng histogram trong từng ô</li>
+<li>Nhiễu trong ô nhỏ dễ bị khuếch đại → <mark>giới hạn tương phản</mark>: bin nào vượt <code>clipLimit</code> (mặc định 40) thì phần dư được cắt và chia đều cho các bin khác</li>
+<li>Nội suy song tuyến tính ở biên các ô để không lộ đường ranh giới</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">clahe</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">createCLAHE</span><span class="p">(</span><span class="n">clipLimit</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">tileGridSize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">))</span>
+<span class="n">cl1</span> <span class="o">=</span> <span class="n">clahe</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/18-histogram-1.png" /></p>
+</li>
+<li>
+<p><strong>Histogram 2D</strong></p>
+<ul>
+<li>Thu thập hai đặc trưng cùng lúc, thường là Hue và Saturation → histogram màu</li>
+<li>Chuyển ảnh sang HSV, rồi:<ul>
+<li><code>channels = [0, 1]</code>: kênh H và S</li>
+<li><code>histSize = [180, 256]</code>: 180 bins cho H, 256 bins cho S</li>
+<li><code>ranges = [0, 180, 0, 256]</code></li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">hsv</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2HSV</span><span class="p">)</span>
+<span class="n">hist</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">calcHist</span><span class="p">([</span><span class="n">hsv</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="mi">180</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">hist</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s2">"nearest"</span><span class="p">)</span>              <span class="c1"># trục y: H, trục x: S</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/18-histogram-2.png" /></p>
+</li>
+<li>
+<p><mark><strong>Histogram Backprojection</strong></mark></p>
+<ul>
+<li>Tạo ảnh một kênh cùng kích thước ảnh gốc, mỗi pixel là <mark>xác suất pixel đó thuộc vật thể</mark> → vật thể hiện lên màu trắng</li>
+<li>Các bước:<ul>
+<li>Tính histogram màu (H-S) của vùng mẫu chứa vật thể. Vùng mẫu nên chứa càng nhiều vật thể càng tốt</li>
+<li>Chuẩn hóa histogram mẫu rồi "chiếu ngược" lên ảnh cần tìm</li>
+<li>Tích chập với kernel hình đĩa để gom các điểm rời rạc</li>
+<li>Phân ngưỡng để lấy mask</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">hsv_roi</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">roi</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2HSV</span><span class="p">)</span>
+<span class="n">hsv_target</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2HSV</span><span class="p">)</span>
+
+<span class="n">roihist</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">calcHist</span><span class="p">([</span><span class="n">hsv_roi</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="p">[</span><span class="mi">180</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">])</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">normalize</span><span class="p">(</span><span class="n">roihist</span><span class="p">,</span> <span class="n">roihist</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">NORM_MINMAX</span><span class="p">)</span>
+<span class="n">dst</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">calcBackProject</span><span class="p">([</span><span class="n">hsv_target</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="n">roihist</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">256</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="n">disc</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">getStructuringElement</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">MORPH_ELLIPSE</span><span class="p">,</span> <span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+<span class="n">cv</span><span class="o">.</span><span class="n">filter2D</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">disc</span><span class="p">,</span> <span class="n">dst</span><span class="p">)</span>
+
+<span class="n">ret</span><span class="p">,</span> <span class="n">thresh</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">res</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">bitwise_and</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">mask</span><span class="o">=</span><span class="n">thresh</span><span class="p">)</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/18-histogram-3.png" /></p>
+<ul>
+<li><mark>Ứng dụng:</mark><ul>
+<li><mark>Tách vật thể có màu đặc trưng (sân cỏ, da người, hoa quả)</mark></li>
+<li><mark>Là bước đầu của thuật toán theo dõi meanShift / CamShift</mark></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#18-histogram">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 18-histogram -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=f2615cc2"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -676,8 +869,10 @@
 <li><mark>Làm mỏng vùng tiền cảnh</mark></li>
 </ul>
 </li>
-<li><mark><strong>Dilation - Phép giãn nở ảnh</strong></mark></li>
 </ul>
+</li>
+<li>
+<p><mark><strong>Dilation - Phép giãn nở ảnh</strong></mark></p>
 <p><img alt="" src="../img/opencv-notes/13-morphological-transform-3.png" /></p>
 <p><img alt="" src="../img/opencv-notes/13-morphological-transform-4.png" /></p>
 <ul>
@@ -700,8 +895,10 @@
 <li><mark>Khôi phục kích thước vật thể sau erosion</mark></li>
 </ul>
 </li>
-<li><mark><strong>Opening - Phép toán mở</strong></mark></li>
 </ul>
+</li>
+<li>
+<p><mark><strong>Opening - Phép toán mở</strong></mark></p>
 <p><img alt="" src="../img/opencv-notes/13-morphological-transform-5.png" /></p>
 <p><img alt="" src="../img/opencv-notes/13-morphological-transform-6.png" /></p>
 <ul>
@@ -718,8 +915,10 @@
 <li><mark>Làm sạch ảnh nhị phân sau threshold</mark></li>
 </ul>
 </li>
-<li><mark><strong>Closing - Phép toán đóng</strong></mark></li>
 </ul>
+</li>
+<li>
+<p><mark><strong>Closing - Phép toán đóng</strong></mark></p>
 <p><img alt="" src="../img/opencv-notes/13-morphological-transform-7.png" /></p>
 <p><img alt="" src="../img/opencv-notes/13-morphological-transform-8.png" /></p>
 <ul>
@@ -737,8 +936,10 @@
 <li><mark>Xóa nhiễu đen nhỏ trên vật thể trắng</mark></li>
 </ul>
 </li>
-<li><mark><strong>Morphological Gradient</strong></mark></li>
 </ul>
+</li>
+<li>
+<p><mark><strong>Morphological Gradient</strong></mark></p>
 <p><img alt="" src="../img/opencv-notes/13-morphological-transform-9.png" /></p>
 <ul>
 <li><strong>Morphological Gradient là hiệu giữa ảnh dilation và ảnh erosion</strong></li>
@@ -753,8 +954,10 @@
 <li><mark>Làm nổi bật outline (đường viền) trong ảnh nhị phân</mark></li>
 </ul>
 </li>
-<li><mark><strong>Top Hat</strong></mark></li>
 </ul>
+</li>
+<li>
+<p><mark><strong>Top Hat</strong></mark></p>
 <p><img alt="" src="../img/opencv-notes/13-morphological-transform-10.png" /></p>
 <ul>
 <li>Làm việc với ảnh grayscale</li>
@@ -775,8 +978,10 @@
 <li><mark>Tăng cường chi tiết sáng nhỏ trên ảnh</mark></li>
 </ul>
 </li>
-<li><mark><strong>Black Hat</strong></mark></li>
 </ul>
+</li>
+<li>
+<p><mark><strong>Black Hat</strong></mark></p>
 <p><img alt="" src="../img/opencv-notes/13-morphological-transform-11.png" /></p>
 <ul>
 <li>Làm việc với ảnh grayscale</li>

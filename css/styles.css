@@ -473,6 +473,19 @@ footer {
     font-weight: 600;
 }
 
+.opencv-note-draft {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 1px 8px;
+    border: 1px dashed #b9770e;
+    border-radius: 10px;
+    background-color: #fff8e1;
+    color: #8a5a00;
+    font-size: 0.75em;
+    font-weight: 600;
+    vertical-align: middle;
+}
+
 .opencv-note-body {
     padding: 0 16px 8px;
     overflow-x: auto;

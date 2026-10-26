@@ -389,6 +389,84 @@ max reprojection error:  2.919 px
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 27-homography -->
+<details class="opencv-note" id="opencv-note-27-homography">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 27. Feature Matching + Homography <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li>Mục tiêu: <mark>tìm một vật thể đã biết trong ảnh khác</mark>, kể cả khi bị xoay, co giãn, nhìn nghiêng</li>
+<li>
+<p>Homography H (ma trận 3x3, 8 bậc tự do) ánh xạ điểm trên <mark>một mặt phẳng</mark> giữa hai ảnh:</p>
+<p><span class="math display">\[s \begin{bmatrix} x' \\ y' \\ 1 \end{bmatrix} = H \begin{bmatrix} x \\ y \\ 1 \end{bmatrix}\]</span></p>
+</li>
+<li>
+<p><mark>Cần tối thiểu 4 cặp điểm đúng</mark> để tính H</p>
+</li>
+<li>Các bước:<ul>
+<li><strong>B1</strong>: Tìm keypoint + descriptor ở ảnh vật thể và ảnh cảnh (SIFT, ORB)</li>
+<li><strong>B2</strong>: So khớp + ratio test → các cặp tốt <code>good</code></li>
+<li><strong>B3</strong>: Nếu đủ cặp (ví dụ <code>MIN_MATCH_COUNT = 10</code>) thì tính H bằng <code>cv.findHomography</code> với RANSAC</li>
+<li><strong>B4</strong>: Biến đổi 4 góc ảnh vật thể bằng <code>cv.perspectiveTransform</code> → khung vật thể trong ảnh cảnh</li>
+</ul>
+</li>
+<li>Hàm: <code>M, mask = cv.findHomography(srcPoints, dstPoints, method, ransacReprojThreshold)</code><ul>
+<li><code>srcPoints</code>, <code>dstPoints</code>: <code>float32</code> shape (N, 1, 2)</li>
+<li><code>method</code>: <code>0</code> (bình phương tối thiểu, dùng mọi điểm), <mark><code>cv.RANSAC</code></mark>, <code>cv.LMEDS</code>, <code>cv.RHO</code></li>
+<li><code>ransacReprojThreshold</code>: sai số chiếu lại tối đa (pixel) để coi là inlier, thường 3-5</li>
+<li><code>mask</code>: mảng 0/1, <mark>1 = inlier</mark></li>
+</ul>
+</li>
+<li>RANSAC: lặp nhiều lần {chọn ngẫu nhiên 4 cặp → tính H → đếm số cặp khớp với H}, giữ H có nhiều inlier nhất → <mark>bền vững với các cặp so khớp sai</mark></li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">MIN_MATCH_COUNT</span> <span class="o">=</span> <span class="mi">10</span>
+
+<span class="n">sift</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">SIFT_create</span><span class="p">()</span>
+<span class="n">kp1</span><span class="p">,</span> <span class="n">des1</span> <span class="o">=</span> <span class="n">sift</span><span class="o">.</span><span class="n">detectAndCompute</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>     <span class="c1"># img1: ảnh vật thể</span>
+<span class="n">kp2</span><span class="p">,</span> <span class="n">des2</span> <span class="o">=</span> <span class="n">sift</span><span class="o">.</span><span class="n">detectAndCompute</span><span class="p">(</span><span class="n">img2</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>     <span class="c1"># img2: ảnh cảnh</span>
+
+<span class="n">flann</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">FlannBasedMatcher</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">trees</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span> <span class="nb">dict</span><span class="p">(</span><span class="n">checks</span><span class="o">=</span><span class="mi">50</span><span class="p">))</span>
+<span class="n">matches</span> <span class="o">=</span> <span class="n">flann</span><span class="o">.</span><span class="n">knnMatch</span><span class="p">(</span><span class="n">des1</span><span class="p">,</span> <span class="n">des2</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">good</span> <span class="o">=</span> <span class="p">[</span><span class="n">m</span> <span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">distance</span> <span class="o">&lt;</span> <span class="mf">0.7</span> <span class="o">*</span> <span class="n">n</span><span class="o">.</span><span class="n">distance</span><span class="p">]</span>
+
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">good</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">MIN_MATCH_COUNT</span><span class="p">:</span>
+    <span class="n">src_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">([</span><span class="n">kp1</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">queryIdx</span><span class="p">]</span><span class="o">.</span><span class="n">pt</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">good</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">dst_pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">([</span><span class="n">kp2</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">trainIdx</span><span class="p">]</span><span class="o">.</span><span class="n">pt</span> <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">good</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+    <span class="n">M</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">findHomography</span><span class="p">(</span><span class="n">src_pts</span><span class="p">,</span> <span class="n">dst_pts</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">RANSAC</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">)</span>
+    <span class="n">matchesMask</span> <span class="o">=</span> <span class="n">mask</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="n">h</span><span class="p">,</span> <span class="n">w</span> <span class="o">=</span> <span class="n">img1</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">pts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">h</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">w</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">h</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">w</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">dst</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">perspectiveTransform</span><span class="p">(</span><span class="n">pts</span><span class="p">,</span> <span class="n">M</span><span class="p">)</span>          <span class="c1"># 4 góc vật thể trong ảnh cảnh</span>
+    <span class="n">img2</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">polylines</span><span class="p">(</span><span class="n">img2</span><span class="p">,</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="n">dst</span><span class="p">)],</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">LINE_AA</span><span class="p">)</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">matchesMask</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="n">draw_params</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">matchColor</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">singlePointColor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                   <span class="n">matchesMask</span><span class="o">=</span><span class="n">matchesMask</span><span class="p">,</span> <span class="n">flags</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>      <span class="c1"># chỉ vẽ inlier</span>
+<span class="n">img3</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">drawMatches</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">kp1</span><span class="p">,</span> <span class="n">img2</span><span class="p">,</span> <span class="n">kp2</span><span class="p">,</span> <span class="n">good</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">draw_params</span><span class="p">)</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/27-homography-1.png" /></p>
+<ul>
+<li>Phân biệt các hàm:<ul>
+<li><code>cv.getPerspectiveTransform(4 điểm, 4 điểm)</code>: đúng 4 cặp, không lọc nhiễu</li>
+<li><code>cv.findHomography(N điểm, N điểm, cv.RANSAC)</code>: N ≥ 4 cặp, có lọc outlier</li>
+<li><code>cv.perspectiveTransform(points, M)</code>: biến đổi <strong>điểm</strong></li>
+<li><code>cv.warpPerspective(img, M, dsize)</code>: biến đổi <strong>cả ảnh</strong></li>
+</ul>
+</li>
+<li><mark>Ứng dụng:</mark><ul>
+<li><mark>Ghép ảnh panorama: tính H giữa hai ảnh rồi <code>warpPerspective</code> một ảnh sang hệ tọa độ ảnh kia</mark></li>
+<li><mark>Nhận diện và định vị bìa sách, biển báo, poster</mark></li>
+<li><mark>Thực tế tăng cường (AR) trên mặt phẳng</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#27-homography">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 27-homography -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=91673087"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

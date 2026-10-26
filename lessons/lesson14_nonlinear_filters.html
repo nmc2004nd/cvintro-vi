@@ -290,6 +290,159 @@ mean abs difference = 0.56 gray levels
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 37-image-denoising -->
+<details class="opencv-note" id="opencv-note-37-image-denoising">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 37. Image Denoising - Non-local Means <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li>Các bộ lọc đã học (Gaussian, median, bilateral) chỉ lấy trung bình <mark>trong vùng lân cận nhỏ</mark> → làm mờ chi tiết</li>
+<li>Ý tưởng Non-local Means:<ul>
+<li>Nhiễu có trung bình bằng 0 → lấy trung bình nhiều lần quan sát của cùng một pixel sẽ triệt tiêu nhiễu</li>
+<li>Một ảnh tĩnh không có nhiều lần quan sát, nhưng ảnh có <mark>nhiều mảng (patch) giống nhau ở nhiều nơi</mark></li>
+<li>Với mỗi pixel: tìm các patch giống patch quanh nó trong một vùng tìm kiếm lớn, <mark>lấy trung bình có trọng số theo độ giống nhau</mark></li>
+<li>Giữ chi tiết tốt hơn Gaussian nhưng <mark>chậm hơn nhiều</mark></li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Hàm</th>
+<th>Đầu vào</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv.fastNlMeansDenoising()</code></td>
+<td>Một ảnh xám</td>
+</tr>
+<tr>
+<td><code>cv.fastNlMeansDenoisingColored()</code></td>
+<td>Một ảnh màu (chuyển sang CIELAB, khử nhiễu riêng độ sáng L và màu AB)</td>
+</tr>
+<tr>
+<td><code>cv.fastNlMeansDenoisingMulti()</code></td>
+<td>Nhiều frame xám liên tiếp (video)</td>
+</tr>
+<tr>
+<td><code>cv.fastNlMeansDenoisingColoredMulti()</code></td>
+<td>Nhiều frame màu</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Tham số:<ul>
+<li><code>h</code>: cường độ lọc; <mark>h lớn → khử nhiễu mạnh nhưng mất chi tiết</mark>, h nhỏ → giữ chi tiết nhưng còn nhiễu (tài liệu dùng 10)</li>
+<li><code>hColor</code> (bản màu): như <code>h</code> cho kênh màu, thường bằng <code>h</code></li>
+<li><code>templateWindowSize</code>: kích thước patch, số lẻ, khuyến nghị 7</li>
+<li><code>searchWindowSize</code>: kích thước vùng tìm patch, số lẻ, khuyến nghị 21</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">img</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">"die.png"</span><span class="p">)</span>
+<span class="n">dst</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">fastNlMeansDenoisingColored</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">21</span><span class="p">)</span>
+<span class="c1">#                                     src  dst   h  hColor template search</span>
+</pre></div>
+
+<ul>
+<li>Với video (bản Multi):<ul>
+<li><code>imgToDenoiseIndex</code>: chỉ số frame cần khử nhiễu trong danh sách</li>
+<li><code>temporalWindowSize</code>: số frame lân cận dùng để khử nhiễu, <mark>phải là số lẻ</mark></li>
+<li>Ví dụ: 5 frame, <code>imgToDenoiseIndex = 2</code>, <code>temporalWindowSize = 3</code> → dùng frame 1, 2, 3 để khử nhiễu frame 2</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">cap</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">VideoCapture</span><span class="p">(</span><span class="s2">"vtest.avi"</span><span class="p">)</span>
+<span class="n">img</span> <span class="o">=</span> <span class="p">[</span><span class="n">cap</span><span class="o">.</span><span class="n">read</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)]</span>
+<span class="n">gray</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">img</span><span class="p">]</span>
+
+<span class="c1"># thêm nhiễu Gauss độ lệch chuẩn 10 để thử</span>
+<span class="n">noise</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="o">*</span><span class="n">gray</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">*</span> <span class="mi">10</span>
+<span class="n">noisy</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">i</span> <span class="o">+</span> <span class="n">noise</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">gray</span><span class="p">]</span>
+
+<span class="n">dst</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">fastNlMeansDenoisingMulti</span><span class="p">(</span><span class="n">noisy</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">35</span><span class="p">)</span>
+<span class="c1">#                                        idx tws dst h tmpl search</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/37-image-denoising-1.png" /></p>
+<ul>
+<li><mark>So sánh nhanh:</mark><ul>
+<li><mark>Gaussian: nhanh, mờ cả biên</mark></li>
+<li><mark>Median: tốt với nhiễu muối tiêu</mark></li>
+<li><mark>Bilateral: giữ biên, nhưng vùng phẳng có thể bị bệt</mark></li>
+<li><mark>Non-local Means: giữ chi tiết tốt nhất trong nhóm, chậm nhất</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#37-image-denoising">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 37-image-denoising -->
+<!-- opencv-note:begin 38-inpainting -->
+<details class="opencv-note" id="opencv-note-38-inpainting">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 38. Image Inpainting <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li>Inpainting: <mark>khôi phục vùng ảnh bị hỏng hoặc bị xóa</mark> bằng thông tin từ các pixel xung quanh (vết xước, vết bẩn, chữ chèn lên ảnh)</li>
+<li>Cần hai đầu vào:<ul>
+<li>Ảnh hỏng</li>
+<li><mark>Mask 8-bit 1 kênh, pixel khác 0 là vùng cần vá</mark>, cùng kích thước ảnh</li>
+</ul>
+</li>
+<li>Hàm: <code>dst = cv.inpaint(src, inpaintMask, inpaintRadius, flags)</code><ul>
+<li><code>inpaintRadius</code>: bán kính vùng lân cận dùng để vá mỗi điểm (thường 3)</li>
+<li><code>flags</code>: một trong hai thuật toán:</li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Flag</th>
+<th>Thuật toán</th>
+<th>Cơ chế</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cv.INPAINT_TELEA</code></td>
+<td>Fast Marching Method (Alexandru Telea, 2004)</td>
+<td>Vá dần từ biên vùng hỏng vào trong; mỗi pixel = trung bình có trọng số của các pixel đã biết lân cận, ưu tiên pixel gần, gần hướng pháp tuyến biên và nằm trên đường viền</td>
+</tr>
+<tr>
+<td><code>cv.INPAINT_NS</code></td>
+<td>Navier-Stokes (Bertalmio et al., 2001)</td>
+<td>Dựa trên phương trình động lực học chất lỏng: kéo dài các đường đẳng sáng (isophote) từ vùng đã biết vào vùng hỏng, giữ liên tục gradient</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight"><pre><span></span><span class="n">img</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">"messi_2.jpg"</span><span class="p">)</span>
+<span class="n">mask</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">"mask2.png"</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">IMREAD_GRAYSCALE</span><span class="p">)</span>   <span class="c1"># trắng = vùng cần vá</span>
+
+<span class="n">dst_telea</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">inpaint</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">INPAINT_TELEA</span><span class="p">)</span>
+<span class="n">dst_ns</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">inpaint</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">mask</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">INPAINT_NS</span><span class="p">)</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/38-inpainting-1.png" /></p>
+<ul>
+<li>Cách tạo mask:<ul>
+<li>Vẽ tay bằng chuột (dùng <code>setMouseCallback</code>) lên ảnh đen cùng kích thước</li>
+<li>Threshold nếu vùng hỏng có màu đặc trưng (ví dụ vết trắng)</li>
+<li><mark>Nên dilate mask một chút</mark> để phủ cả viền của vùng hỏng, nếu không viền sẽ bị kéo vào ảnh vá</li>
+</ul>
+</li>
+<li><mark>Hạn chế:</mark> chỉ tốt với <mark>vùng hỏng mảnh, nhỏ</mark> (nét chữ, vết xước). Vùng lớn có kết cấu phức tạp sẽ bị mờ, bệt → cần phương pháp dựa trên patch hoặc deep learning</li>
+<li><mark>Ứng dụng:</mark><ul>
+<li><mark>Phục chế ảnh cũ bị xước</mark></li>
+<li><mark>Xóa chữ, ngày tháng in trên ảnh</mark></li>
+<li><mark>Xóa vật thể nhỏ khỏi ảnh</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#38-inpainting">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 38-inpainting -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=503d9da8"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

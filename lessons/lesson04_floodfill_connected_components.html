@@ -606,7 +606,11 @@ label   area         centroid
 <li><code>is_convex = cv.isContourConvex(cnt)</code></li>
 </ul>
 </li>
-<li>Bounding Rectangle</li>
+</ul>
+</li>
+<li>
+<p>Bounding Rectangle</p>
+<ul>
 <li>
 <p>Hình chữ nhật bao thẳng đứng - <code>cv2.boundingRect</code></p>
 <ul>
@@ -1037,6 +1041,111 @@ label   area         centroid
 </div>
 </details>
 <!-- opencv-note:end 17-contour -->
+<!-- opencv-note:begin 22-watershed -->
+<details class="opencv-note" id="opencv-note-22-watershed">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 22. Watershed <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li>Bài toán: <mark>tách các vật thể chạm hoặc chồng lên nhau</mark> (đồng xu dính nhau, tế bào). Threshold + contour chỉ ra một khối liền</li>
+<li>Ý tưởng: coi ảnh xám là bản đồ địa hình, pixel sáng là đỉnh, pixel tối là thung lũng<ul>
+<li>Đổ nước có màu khác nhau vào từng thung lũng (cực tiểu cục bộ)</li>
+<li>Nước dâng lên, chỗ nước của hai thung lũng sắp gặp nhau thì xây "đập" → đập chính là <mark>đường biên phân tách</mark></li>
+</ul>
+</li>
+<li>Watershed thuần túy bị phân mảnh quá mức (over-segmentation) do nhiễu → OpenCV dùng <mark>watershed theo marker</mark>: ta tự chỉ định vùng nào chắc chắn là vật thể, vùng nào chắc chắn là nền, vùng nào chưa biết</li>
+<li>Quy ước mảng <code>markers</code> (kiểu <code>int32</code>):</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>Giá trị</th>
+<th>Ý nghĩa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>0</code></td>
+<td>Vùng chưa biết → watershed sẽ quyết định</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>Nền chắc chắn</td>
+</tr>
+<tr>
+<td><code>2, 3, ...</code></td>
+<td>Từng vật thể chắc chắn, mỗi vật một nhãn</td>
+</tr>
+<tr>
+<td><code>-1</code></td>
+<td>(Sau watershed) đường biên giữa các vùng</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Các bước:<ul>
+<li><strong>B1</strong>: Threshold Otsu để tách sơ bộ vật thể và nền</li>
+<li><strong>B2</strong>: Opening để xóa nhiễu trắng nhỏ</li>
+<li><strong>B3</strong>: Nền chắc chắn = dilate vật thể → vùng ngoài vùng giãn chắc chắn là nền</li>
+<li><strong>B4</strong>: Vật thể chắc chắn = <mark>distanceTransform</mark> rồi lấy ngưỡng<ul>
+<li><code>distanceTransform</code> gán mỗi pixel trắng giá trị = khoảng cách tới pixel đen gần nhất → <mark>tâm vật thể sáng nhất, chỗ hai vật chạm nhau tối hơn</mark></li>
+<li>Lấy ngưỡng cao chỉ giữ phần lõi của từng vật → các lõi tách rời nhau</li>
+</ul>
+</li>
+<li><strong>B5</strong>: Vùng chưa biết = nền chắc chắn - vật thể chắc chắn</li>
+<li><strong>B6</strong>: Gán nhãn lõi bằng <code>connectedComponents</code>, cộng 1 để nền thành 1, gán vùng chưa biết = 0</li>
+<li><strong>B7</strong>: Chạy <code>cv.watershed(img, markers)</code>, <mark>img phải là ảnh màu 8-bit 3 kênh</mark></li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">gray</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+<span class="n">ret</span><span class="p">,</span> <span class="n">thresh</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">THRESH_BINARY_INV</span> <span class="o">+</span> <span class="n">cv</span><span class="o">.</span><span class="n">THRESH_OTSU</span><span class="p">)</span>
+
+<span class="c1"># B2: xóa nhiễu</span>
+<span class="n">kernel</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">)</span>
+<span class="n">opening</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">morphologyEx</span><span class="p">(</span><span class="n">thresh</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">MORPH_OPEN</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="c1"># B3: nền chắc chắn</span>
+<span class="n">sure_bg</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">dilate</span><span class="p">(</span><span class="n">opening</span><span class="p">,</span> <span class="n">kernel</span><span class="p">,</span> <span class="n">iterations</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># B4: vật thể chắc chắn</span>
+<span class="n">dist_transform</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">distanceTransform</span><span class="p">(</span><span class="n">opening</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">DIST_L2</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">ret</span><span class="p">,</span> <span class="n">sure_fg</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">threshold</span><span class="p">(</span><span class="n">dist_transform</span><span class="p">,</span> <span class="mf">0.7</span> <span class="o">*</span> <span class="n">dist_transform</span><span class="o">.</span><span class="n">max</span><span class="p">(),</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># B5: vùng chưa biết</span>
+<span class="n">sure_fg</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">(</span><span class="n">sure_fg</span><span class="p">)</span>
+<span class="n">unknown</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">sure_bg</span><span class="p">,</span> <span class="n">sure_fg</span><span class="p">)</span>
+
+<span class="c1"># B6: tạo marker</span>
+<span class="n">ret</span><span class="p">,</span> <span class="n">markers</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">connectedComponents</span><span class="p">(</span><span class="n">sure_fg</span><span class="p">)</span>
+<span class="n">markers</span> <span class="o">=</span> <span class="n">markers</span> <span class="o">+</span> <span class="mi">1</span>                 <span class="c1"># nền thành 1 thay vì 0</span>
+<span class="n">markers</span><span class="p">[</span><span class="n">unknown</span> <span class="o">==</span> <span class="mi">255</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>           <span class="c1"># vùng chưa biết = 0</span>
+
+<span class="c1"># B7: watershed</span>
+<span class="n">markers</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">watershed</span><span class="p">(</span><span class="n">img</span><span class="p">,</span> <span class="n">markers</span><span class="p">)</span>
+<span class="n">img</span><span class="p">[</span><span class="n">markers</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>      <span class="c1"># tô đường biên</span>
+</pre></div>
+
+<ul>
+<li>Chú ý: tài liệu dùng <code>THRESH_BINARY_INV</code> vì đồng xu tối trên nền sáng; nếu vật thể sáng trên nền tối thì dùng <code>THRESH_BINARY</code></li>
+<li>Ngưỡng của distance transform (0.7 x max) quyết định có tách được các vật hay không:<ul>
+<li>Quá cao → vật nhỏ không có lõi, bị coi là vùng chưa biết rồi nhập vào nền</li>
+<li>Quá thấp → lõi của các vật dính nhau vẫn liền → không tách được</li>
+</ul>
+</li>
+</ul>
+<p><img alt="" src="../img/opencv-notes/22-watershed-1.png" /></p>
+<ul>
+<li>Hình trên dùng ngưỡng 0.5: đủ thấp để vật nhỏ ở góc vẫn có lõi, đủ cao để 3 vật dính nhau có lõi tách rời</li>
+<li><mark>Ứng dụng:</mark><ul>
+<li><mark>Đếm và tách tế bào, hạt, đồng xu chạm nhau</mark></li>
+<li><mark>Phân đoạn tương tác: người dùng vẽ marker, thuật toán tự tìm biên</mark> (xem sample <code>watershed.py</code> của OpenCV)</li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#22-watershed">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 22-watershed -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=53abce0b"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

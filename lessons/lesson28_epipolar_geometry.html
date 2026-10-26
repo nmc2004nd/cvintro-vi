@@ -473,6 +473,94 @@ recovered translation direction:  [ 0.9806 -0.      0.1961]
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 33-epipolar-geometry -->
+<details class="opencv-note" id="opencv-note-33-epipolar-geometry">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 33. Epipolar Geometry <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li>Một ảnh mất thông tin độ sâu: mọi điểm trên tia OX đều chiếu về cùng một pixel. Có ảnh thứ hai thì các điểm đó chiếu thành <mark>một đường thẳng</mark> trên ảnh thứ hai</li>
+<li>Các khái niệm:<ul>
+<li><strong>Epiline</strong>: đường trên ảnh 2 chứa mọi vị trí có thể của điểm tương ứng với x ở ảnh 1 → <mark>tìm điểm tương ứng chỉ cần dò dọc epiline (bài toán 1D)</mark></li>
+<li><strong>Epipolar plane</strong>: mặt phẳng chứa X và tâm hai camera</li>
+<li><strong>Epipole</strong>: giao của đường nối hai tâm camera với mặt phẳng ảnh; mọi epiline đều đi qua epipole (có thể nằm ngoài ảnh)</li>
+</ul>
+</li>
+<li><strong>Ma trận cơ bản (Fundamental Matrix) F</strong> và <strong>ma trận thiết yếu (Essential Matrix) E</strong>:<ul>
+<li>Ràng buộc epipolar: <mark><span class="math">\(x'^T F x = 0\)</span></mark> với x, x' là cặp điểm tương ứng (tọa độ pixel)</li>
+<li>E chứa phép xoay và tịnh tiến giữa hai camera, dùng tọa độ đã chuẩn hóa; F = E + thông số nội: <span class="math">\(F = K'^{-T} E K^{-1}\)</span></li>
+<li>F là ma trận 3x3, hạng 2, 7 bậc tự do</li>
+<li>Epiline trên ảnh 2 ứng với x: <span class="math">\(l' = F x\)</span>; trên ảnh 1 ứng với x': <span class="math">\(l = F^T x'\)</span></li>
+<li><mark>Cần tối thiểu 8 cặp điểm</mark> (thuật toán 8 điểm), nên dùng RANSAC/LMedS để chống outlier</li>
+</ul>
+</li>
+<li>Hàm:<ul>
+<li><code>F, mask = cv.findFundamentalMat(pts1, pts2, method)</code>: <code>method</code> = <code>cv.FM_8POINT</code>, <code>cv.FM_LMEDS</code>, <code>cv.FM_RANSAC</code>; <code>mask</code> = 1 với inlier</li>
+<li><code>lines = cv.computeCorrespondEpilines(points, whichImage, F)</code><ul>
+<li><code>whichImage = 1</code>: điểm thuộc ảnh 1 → trả về epiline trên ảnh 2</li>
+<li><code>whichImage = 2</code>: điểm thuộc ảnh 2 → trả về epiline trên ảnh 1</li>
+<li>Mỗi đường là (a, b, c) với <span class="math">\(ax + by + c = 0\)</span></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">sift</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">SIFT_create</span><span class="p">()</span>
+<span class="n">kp1</span><span class="p">,</span> <span class="n">des1</span> <span class="o">=</span> <span class="n">sift</span><span class="o">.</span><span class="n">detectAndCompute</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+<span class="n">kp2</span><span class="p">,</span> <span class="n">des2</span> <span class="o">=</span> <span class="n">sift</span><span class="o">.</span><span class="n">detectAndCompute</span><span class="p">(</span><span class="n">img2</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+<span class="n">flann</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">FlannBasedMatcher</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">algorithm</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">trees</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span> <span class="nb">dict</span><span class="p">(</span><span class="n">checks</span><span class="o">=</span><span class="mi">50</span><span class="p">))</span>
+<span class="n">matches</span> <span class="o">=</span> <span class="n">flann</span><span class="o">.</span><span class="n">knnMatch</span><span class="p">(</span><span class="n">des1</span><span class="p">,</span> <span class="n">des2</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+<span class="n">pts1</span><span class="p">,</span> <span class="n">pts2</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">distance</span> <span class="o">&lt;</span> <span class="mf">0.8</span> <span class="o">*</span> <span class="n">n</span><span class="o">.</span><span class="n">distance</span><span class="p">:</span>
+        <span class="n">pts2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kp2</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">trainIdx</span><span class="p">]</span><span class="o">.</span><span class="n">pt</span><span class="p">)</span>
+        <span class="n">pts1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">kp1</span><span class="p">[</span><span class="n">m</span><span class="o">.</span><span class="n">queryIdx</span><span class="p">]</span><span class="o">.</span><span class="n">pt</span><span class="p">)</span>
+
+<span class="n">pts1</span><span class="p">,</span> <span class="n">pts2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="n">pts1</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">(</span><span class="n">pts2</span><span class="p">)</span>
+<span class="n">F</span><span class="p">,</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">findFundamentalMat</span><span class="p">(</span><span class="n">pts1</span><span class="p">,</span> <span class="n">pts2</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">FM_LMEDS</span><span class="p">)</span>
+<span class="n">pts1</span> <span class="o">=</span> <span class="n">pts1</span><span class="p">[</span><span class="n">mask</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>                         <span class="c1"># chỉ giữ inlier</span>
+<span class="n">pts2</span> <span class="o">=</span> <span class="n">pts2</span><span class="p">[</span><span class="n">mask</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">]</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">drawlines</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">img2</span><span class="p">,</span> <span class="n">lines</span><span class="p">,</span> <span class="n">pts1</span><span class="p">,</span> <span class="n">pts2</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">"""Vẽ epiline lên img1, chấm điểm tương ứng lên cả hai ảnh."""</span>
+    <span class="n">r</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">img1</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">img1</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_GRAY2BGR</span><span class="p">)</span>
+    <span class="n">img2</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">img2</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_GRAY2BGR</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">r_</span><span class="p">,</span> <span class="n">pt1</span><span class="p">,</span> <span class="n">pt2</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="n">pts1</span><span class="p">,</span> <span class="n">pts2</span><span class="p">):</span>
+        <span class="n">color</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+        <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">r_</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">r_</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>          <span class="c1"># giao với cạnh trái (x = 0)</span>
+        <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="p">[</span><span class="n">c</span><span class="p">,</span> <span class="o">-</span><span class="p">(</span><span class="n">r_</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">c</span><span class="p">)</span> <span class="o">/</span> <span class="n">r_</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>  <span class="c1"># giao với cạnh phải</span>
+        <span class="n">img1</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">),</span> <span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">),</span> <span class="n">color</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">img1</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">pt1</span><span class="p">)),</span> <span class="mi">5</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">img2</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">img2</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">pt2</span><span class="p">)),</span> <span class="mi">5</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">img1</span><span class="p">,</span> <span class="n">img2</span>
+
+<span class="c1"># epiline trên ảnh trái ứng với điểm ở ảnh phải</span>
+<span class="n">lines1</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">computeCorrespondEpilines</span><span class="p">(</span><span class="n">pts2</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">F</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">img5</span><span class="p">,</span> <span class="n">img6</span> <span class="o">=</span> <span class="n">drawlines</span><span class="p">(</span><span class="n">img1</span><span class="p">,</span> <span class="n">img2</span><span class="p">,</span> <span class="n">lines1</span><span class="p">,</span> <span class="n">pts1</span><span class="p">,</span> <span class="n">pts2</span><span class="p">)</span>
+
+<span class="c1"># epiline trên ảnh phải ứng với điểm ở ảnh trái</span>
+<span class="n">lines2</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">computeCorrespondEpilines</span><span class="p">(</span><span class="n">pts1</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="n">F</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">img3</span><span class="p">,</span> <span class="n">img4</span> <span class="o">=</span> <span class="n">drawlines</span><span class="p">(</span><span class="n">img2</span><span class="p">,</span> <span class="n">img1</span><span class="p">,</span> <span class="n">lines2</span><span class="p">,</span> <span class="n">pts2</span><span class="p">,</span> <span class="n">pts1</span><span class="p">)</span>
+</pre></div>
+
+<p><img alt="" src="../img/opencv-notes/33-epipolar-geometry-1.png" /></p>
+<ul>
+<li>Nếu camera thứ hai chỉ dịch ngang so với camera thứ nhất thì các epiline song song và nằm ngang (trường hợp stereo đã rectify). Trong hình trên các epiline không song song mà hội tụ về một epipole nằm ngoài khung ảnh</li>
+<li><mark>Kết quả F rất nhạy với chất lượng điểm</mark>: điểm sai, ít điểm, hoặc mọi điểm nằm trên cùng một mặt phẳng → F sai</li>
+<li>Khi đã biết thông số nội K: dùng <code>cv.findEssentialMat</code> rồi <code>cv.recoverPose</code> để lấy R, t giữa hai camera (bước đầu của Structure from Motion)</li>
+<li><mark>Ứng dụng:</mark><ul>
+<li><mark>Thu hẹp vùng tìm điểm tương ứng trong stereo matching</mark></li>
+<li><mark>Chỉnh ảnh song song (rectification) trước khi tính độ sâu</mark></li>
+<li><mark>Khôi phục chuyển động camera trong SfM, Visual Odometry</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#33-epipolar-geometry">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 33-epipolar-geometry -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=b5962a05"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

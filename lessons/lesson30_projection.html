@@ -288,6 +288,101 @@ classification accuracy: 100.0%
 </div>
 </div>
 </div>
+<!-- opencv-note:begin 36-knn-svm -->
+<details class="opencv-note" id="opencv-note-36-knn-svm">
+<summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 36. kNN và SVM <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-note-body">
+<ul>
+<li><mark>Lưu ý phiên bản</mark>: module <code>cv.ml</code> có trong OpenCV 4.x. Bản <code>opencv-python</code> 5.0 không còn <code>cv.ml</code> → dùng OpenCV 4.x hoặc scikit-learn (<code>KNeighborsClassifier</code>, <code>SVC</code>)</li>
+<li>Quy ước dữ liệu của <code>cv.ml</code>:<ul>
+<li><mark>Dữ liệu huấn luyện: <code>np.float32</code>, mỗi hàng một mẫu</mark> → truyền cờ <code>cv.ml.ROW_SAMPLE</code></li>
+<li>Nhãn: <code>np.float32</code> hoặc <code>np.int32</code>, shape (N, 1)</li>
+</ul>
+</li>
+<li>
+<p><mark><strong>k-Nearest Neighbour (kNN)</strong></mark></p>
+<ul>
+<li>Không có bước học thật sự: lưu lại toàn bộ dữ liệu</li>
+<li>Phân loại điểm mới: tìm k điểm gần nhất, <mark>lớp nào chiếm đa số thì gán lớp đó</mark></li>
+<li>k nhỏ → nhạy với nhiễu; k lớn → biên quyết định mượt hơn nhưng có thể lấn sang lớp khác; thường chọn k lẻ để tránh hòa</li>
+<li>Có thể đặt trọng số theo khoảng cách (điểm gần quan trọng hơn)</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">knn</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">KNearest_create</span><span class="p">()</span>
+<span class="n">knn</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">trainData</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">ROW_SAMPLE</span><span class="p">,</span> <span class="n">responses</span><span class="p">)</span>
+<span class="n">ret</span><span class="p">,</span> <span class="n">results</span><span class="p">,</span> <span class="n">neighbours</span><span class="p">,</span> <span class="n">dist</span> <span class="o">=</span> <span class="n">knn</span><span class="o">.</span><span class="n">findNearest</span><span class="p">(</span><span class="n">newcomer</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+<span class="c1"># results: nhãn dự đoán; neighbours: nhãn của k láng giềng; dist: khoảng cách tới chúng</span>
+</pre></div>
+
+<ul>
+<li><strong>Ví dụ nhận dạng chữ số viết tay (OCR)</strong> trong tài liệu:<ul>
+<li>Ảnh <code>digits.png</code> gồm 5000 chữ số, mỗi chữ số 20x20 → làm phẳng thành vector 400 chiều</li>
+<li>2500 mẫu huấn luyện, 2500 mẫu kiểm tra, k = 5 → <mark>độ chính xác khoảng 91%</mark></li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">gray</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">cvtColor</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">"digits.png"</span><span class="p">),</span> <span class="n">cv</span><span class="o">.</span><span class="n">COLOR_BGR2GRAY</span><span class="p">)</span>
+<span class="n">cells</span> <span class="o">=</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">hsplit</span><span class="p">(</span><span class="n">row</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">vsplit</span><span class="p">(</span><span class="n">gray</span><span class="p">,</span> <span class="mi">50</span><span class="p">)]</span>   <span class="c1"># 50 hàng x 100 cột ô 20x20</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">cells</span><span class="p">)</span>                                           <span class="c1"># (50, 100, 20, 20)</span>
+
+<span class="n">train</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">50</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>         <span class="c1"># (2500, 400)</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">x</span><span class="p">[:,</span> <span class="mi">50</span><span class="p">:</span><span class="mi">100</span><span class="p">]</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+<span class="n">k</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">train_labels</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="mi">250</span><span class="p">)[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+<span class="n">test_labels</span> <span class="o">=</span> <span class="n">train_labels</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+<span class="n">knn</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">KNearest_create</span><span class="p">()</span>
+<span class="n">knn</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">train</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">ROW_SAMPLE</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">)</span>
+<span class="n">ret</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">neighbours</span><span class="p">,</span> <span class="n">dist</span> <span class="o">=</span> <span class="n">knn</span><span class="o">.</span><span class="n">findNearest</span><span class="p">(</span><span class="n">test</span><span class="p">,</span> <span class="n">k</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="n">accuracy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">result</span> <span class="o">==</span> <span class="n">test_labels</span><span class="p">)</span> <span class="o">*</span> <span class="mf">100.0</span> <span class="o">/</span> <span class="n">result</span><span class="o">.</span><span class="n">size</span>
+</pre></div>
+
+<ul>
+<li><mark>Nhược điểm</mark>: lưu toàn bộ dữ liệu, dự đoán phải so với mọi mẫu → chậm và tốn bộ nhớ khi dữ liệu lớn</li>
+</ul>
+</li>
+<li>
+<p><mark><strong>Support Vector Machine (SVM)</strong></mark></p>
+<ul>
+<li>Tìm siêu phẳng phân chia hai lớp với <mark>lề (margin) lớn nhất</mark></li>
+<li>Chỉ các điểm nằm sát biên (<mark>support vectors</mark>) quyết định siêu phẳng → sau khi học không cần giữ toàn bộ dữ liệu</li>
+<li>Dữ liệu không tách được bằng đường thẳng → <strong>kernel trick</strong>: ánh xạ ngầm sang không gian nhiều chiều hơn (RBF, đa thức)</li>
+<li>Tham số:<ul>
+<li><code>C</code>: <mark>C lớn → phạt nặng điểm bị phân loại sai, lề hẹp, dễ overfit; C nhỏ → lề rộng, chấp nhận vài điểm sai</mark></li>
+<li><code>gamma</code> (RBF): gamma lớn → biên quyết định uốn lượn sát từng điểm</li>
+</ul>
+</li>
+</ul>
+<div class="highlight"><pre><span></span><span class="n">svm</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">SVM_create</span><span class="p">()</span>
+<span class="n">svm</span><span class="o">.</span><span class="n">setType</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">SVM_C_SVC</span><span class="p">)</span>
+<span class="n">svm</span><span class="o">.</span><span class="n">setKernel</span><span class="p">(</span><span class="n">cv</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">SVM_RBF</span><span class="p">)</span>                   <span class="c1"># hoặc cv.ml.SVM_LINEAR</span>
+<span class="n">svm</span><span class="o">.</span><span class="n">setC</span><span class="p">(</span><span class="mf">10.0</span><span class="p">)</span>
+<span class="n">svm</span><span class="o">.</span><span class="n">setGamma</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>
+<span class="n">svm</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">trainData</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">ROW_SAMPLE</span><span class="p">,</span> <span class="n">responses</span><span class="p">)</span>
+
+<span class="n">result</span> <span class="o">=</span> <span class="n">svm</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">testData</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">sv</span> <span class="o">=</span> <span class="n">svm</span><span class="o">.</span><span class="n">getSupportVectors</span><span class="p">()</span>
+<span class="n">svm</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="s2">"svm_data.dat"</span><span class="p">)</span>                       <span class="c1"># tải lại: cv.ml.SVM_load("svm_data.dat")</span>
+</pre></div>
+
+<ul>
+<li><code>svm.trainAuto(...)</code> tự tìm C, gamma tốt nhất bằng cross-validation</li>
+<li><strong>Ví dụ OCR với SVM</strong> trong tài liệu: chỉnh nghiêng chữ số bằng moment (deskew), tính đặc trưng <mark>HOG</mark> (histogram hướng gradient, 64 chiều), huấn luyện SVM tuyến tính → <mark>độ chính xác khoảng 94%</mark></li>
+</ul>
+</li>
+</ul>
+<p><img alt="" src="../img/opencv-notes/36-knn-svm-1.png" /></p>
+<ul>
+<li>Hình trên: hai lớp điểm 2D. kNN cho biên quyết định gồ ghề theo từng điểm; SVM RBF cho biên mượt, chỉ phụ thuộc vào các support vector (vòng đen)</li>
+<li><mark>Ứng dụng:</mark><ul>
+<li><mark>Phân loại đặc trưng thủ công (HOG, histogram màu) trước thời deep learning: HOG + SVM phát hiện người đi bộ</mark></li>
+<li><mark>kNN dùng cho tìm kiếm ảnh tương tự theo vector đặc trưng</mark></li>
+</ul>
+</li>
+</ul>
+<p class="opencv-note-footer"><a href="../opencv-notes.html#36-knn-svm">Xem tất cả ghi chú OpenCV &rarr;</a></p>
+</div>
+</details>
+<!-- opencv-note:end 36-knn-svm -->
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=3ec5a67c"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 27: Hiệu chỉnh camera - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 27: Hiệu chỉnh camera (Camera Calibration) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=e83ca348"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-27:-Hi%E1%BB%87u-ch%E1%BB%89nh-camera">Bài 27: Hiệu chỉnh camera<a class="anchor-link" href="#B%C3%A0i-27:-Hi%E1%BB%87u-ch%E1%BB%89nh-camera">¶</a></h1><p>Bài 26 đã giới thiệu ma trận tham số nội $K$ để mô hình hóa một camera lỗ kim. Cách tiếp cận kinh điển (<a href="../references.html#zhang-2000">Zhang, 2000</a>) cho <strong>hiệu chỉnh camera (camera calibration)</strong> khôi phục $K$ bằng cách cho camera xem một mẫu phẳng đã biết (một bàn cờ) từ nhiều góc khác nhau: trích xuất một phép đồng nhất (Bài 24) giữa mặt phẳng bàn cờ và mỗi ảnh, rồi kết hợp các ràng buộc từ nhiều phép đồng nhất như vậy để ước lượng $K$.</p>
+<h1 id="B%C3%A0i-27:-Hi%E1%BB%87u-ch%E1%BB%89nh-camera-(Camera-Calibration)">Bài 27: Hiệu chỉnh camera (Camera Calibration)<a class="anchor-link" href="#B%C3%A0i-27:-Hi%E1%BB%87u-ch%E1%BB%89nh-camera-(Camera-Calibration)">¶</a></h1><p>Bài 26 đã giới thiệu ma trận tham số nội $K$ để mô hình hóa một camera lỗ kim. Cách tiếp cận kinh điển (<a href="../references.html#zhang-2000">Zhang, 2000</a>) cho <strong>hiệu chỉnh camera (camera calibration)</strong> khôi phục $K$ bằng cách cho camera xem một mẫu phẳng đã biết (một bàn cờ) từ nhiều góc khác nhau: trích xuất một phép đồng nhất (Bài 24) giữa mặt phẳng bàn cờ và mỗi ảnh, rồi kết hợp các ràng buộc từ nhiều phép đồng nhất như vậy để ước lượng $K$.</p>
 </div>
 </div>
 </div>
@@ -432,8 +432,8 @@ $$y_d = y(1 + k_1r^2 + k_2r^4 + k_3r^6) + p_1(r^2+2y^2) + 2p_2xy$$</p>
             <a href="../quizzes/quiz27.html" class="quiz-button">Làm bài trắc nghiệm Bài 27 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson26_image_formation.html">&larr; Bài 26: Sự hình thành ảnh</a></div>
-            <div class="lesson-nav-next"><a href="lesson28_epipolar_geometry.html">Bài 28: Hình học epipolar &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson26_image_formation.html">&larr; Bài 26: Sự hình thành ảnh (Image Formation)</a></div>
+            <div class="lesson-nav-next"><a href="lesson28_epipolar_geometry.html">Bài 28: Hình học epipolar (Epipolar Geometry) &rarr;</a></div>
         </div>
     </div>
 </body>

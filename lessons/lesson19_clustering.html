@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 19: Phân cụm — k-Means, GMM và DBSCAN - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 19: Phân cụm — k-Means, GMM và DBSCAN (Clustering — k-Means, GMMs, and DBSCAN) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=51f62a0d"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-19:-Ph%C3%A2n-c%E1%BB%A5m-%E2%80%94-k-Means,-GMM-v%C3%A0-DBSCAN">Bài 19: Phân cụm — k-Means, GMM và DBSCAN<a class="anchor-link" href="#B%C3%A0i-19:-Ph%C3%A2n-c%E1%BB%A5m-%E2%80%94-k-Means,-GMM-v%C3%A0-DBSCAN">¶</a></h1><p>Mọi bài trước trong phần này đều giả định có một <em>mục tiêu</em> nào đó — một ngưỡng, một khuôn mẫu, một phép biến đổi đã biết. <strong>Phân cụm (clustering)</strong> đặt ra một loại câu hỏi khác, hoàn toàn không có mục tiêu: cho một đống điểm (hoặc điểm ảnh), hãy nhóm chúng thành một số ít loại hợp lý, chỉ dựa vào mức độ giống nhau giữa chúng. Đây là điểm khởi đầu kinh điển của <strong>học không giám sát (unsupervised learning)</strong> — không có nhãn, chỉ có một hàm khoảng cách và một giả định về việc "một cụm" nên trông như thế nào. Bài này xây dựng từ đầu ba thuật toán phân cụm, mỗi thuật toán dựa trên một giả định khác nhau về hình dạng cụm, và chỉ ra cụ thể chỗ mỗi thuật toán thành công và thất bại: <strong>k-means</strong> (các cụm tròn, kích thước tương tự nhau), <strong>mô hình hỗn hợp Gauss (Gaussian mixture models)</strong> (các cụm elip, gán mềm), và <strong>DBSCAN</strong> (hình dạng tùy ý, được xác định bởi mật độ thay vì một tâm).</p>
+<h1 id="B%C3%A0i-19:-Ph%C3%A2n-c%E1%BB%A5m-%E2%80%94-k-Means,-GMM-v%C3%A0-DBSCAN-(Clustering-%E2%80%94-k-Means,-GMMs,-and-DBSCAN)">Bài 19: Phân cụm — k-Means, GMM và DBSCAN (Clustering — k-Means, GMMs, and DBSCAN)<a class="anchor-link" href="#B%C3%A0i-19:-Ph%C3%A2n-c%E1%BB%A5m-%E2%80%94-k-Means,-GMM-v%C3%A0-DBSCAN-(Clustering-%E2%80%94-k-Means,-GMMs,-and-DBSCAN)">¶</a></h1><p>Mọi bài trước trong phần này đều giả định có một <em>mục tiêu</em> nào đó — một ngưỡng, một khuôn mẫu, một phép biến đổi đã biết. <strong>Phân cụm (clustering)</strong> đặt ra một loại câu hỏi khác, hoàn toàn không có mục tiêu: cho một đống điểm (hoặc điểm ảnh), hãy nhóm chúng thành một số ít loại hợp lý, chỉ dựa vào mức độ giống nhau giữa chúng. Đây là điểm khởi đầu kinh điển của <strong>học không giám sát (unsupervised learning)</strong> — không có nhãn, chỉ có một hàm khoảng cách và một giả định về việc "một cụm" nên trông như thế nào. Bài này xây dựng từ đầu ba thuật toán phân cụm, mỗi thuật toán dựa trên một giả định khác nhau về hình dạng cụm, và chỉ ra cụ thể chỗ mỗi thuật toán thành công và thất bại: <strong>k-means</strong> (các cụm tròn, kích thước tương tự nhau), <strong>mô hình hỗn hợp Gauss (Gaussian mixture models)</strong> (các cụm elip, gán mềm), và <strong>DBSCAN</strong> (hình dạng tùy ý, được xác định bởi mật độ thay vì một tâm).</p>
 </div>
 </div>
 </div>
@@ -436,8 +436,8 @@ DBSCAN accuracy on concentric rings: 100.0%
             <a href="../quizzes/quiz19.html" class="quiz-button">Làm bài trắc nghiệm Bài 19 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson18_color_spaces.html">&larr; Bài 18: Không gian màu</a></div>
-            <div class="lesson-nav-next"><a href="lesson20_feature_detection_matching.html">Bài 20: Phát hiện và So khớp đặc trưng &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson18_color_spaces.html">&larr; Bài 18: Không gian màu (Color Spaces)</a></div>
+            <div class="lesson-nav-next"><a href="lesson20_feature_detection_matching.html">Bài 20: Phát hiện và So khớp đặc trưng (Feature Detection and Matching) &rarr;</a></div>
         </div>
     </div>
 </body>

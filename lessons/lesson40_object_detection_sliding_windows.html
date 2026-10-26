@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 40: Phát hiện đối tượng bằng cửa sổ trượt - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 40: Phát hiện đối tượng bằng cửa sổ trượt (Object Detection from Sliding Windows) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=7323fa60"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-40:-Ph%C3%A1t-hi%E1%BB%87n-%C4%91%E1%BB%91i-t%C6%B0%E1%BB%A3ng-b%E1%BA%B1ng-c%E1%BB%ADa-s%E1%BB%95-tr%C6%B0%E1%BB%A3t">Bài 40: Phát hiện đối tượng bằng cửa sổ trượt<a class="anchor-link" href="#B%C3%A0i-40:-Ph%C3%A1t-hi%E1%BB%87n-%C4%91%E1%BB%91i-t%C6%B0%E1%BB%A3ng-b%E1%BA%B1ng-c%E1%BB%ADa-s%E1%BB%95-tr%C6%B0%E1%BB%A3t">¶</a></h1><p>Mọi bộ phân loại từ đầu đến giờ đều tập trung vào toàn bộ ảnh thay vì các mảng ảnh. Nói cách khác, chúng hỏi "ảnh này <em>là</em> gì?" — giả định rằng ảnh đã chứa đúng một thứ, được căn giữa và cắt gọn.</p>
+<h1 id="B%C3%A0i-40:-Ph%C3%A1t-hi%E1%BB%87n-%C4%91%E1%BB%91i-t%C6%B0%E1%BB%A3ng-b%E1%BA%B1ng-c%E1%BB%ADa-s%E1%BB%95-tr%C6%B0%E1%BB%A3t-(Object-Detection-from-Sliding-Windows)">Bài 40: Phát hiện đối tượng bằng cửa sổ trượt (Object Detection from Sliding Windows)<a class="anchor-link" href="#B%C3%A0i-40:-Ph%C3%A1t-hi%E1%BB%87n-%C4%91%E1%BB%91i-t%C6%B0%E1%BB%A3ng-b%E1%BA%B1ng-c%E1%BB%ADa-s%E1%BB%95-tr%C6%B0%E1%BB%A3t-(Object-Detection-from-Sliding-Windows)">¶</a></h1><p>Mọi bộ phân loại từ đầu đến giờ đều tập trung vào toàn bộ ảnh thay vì các mảng ảnh. Nói cách khác, chúng hỏi "ảnh này <em>là</em> gì?" — giả định rằng ảnh đã chứa đúng một thứ, được căn giữa và cắt gọn.</p>
 <p><strong>Phát hiện (detection)</strong> đối tượng đặt ra một câu hỏi khó hơn: cho một ảnh chứa không, một, hoặc vài đối tượng ở các vị trí và tỉ lệ chưa biết, hãy tìm <em>vị trí</em> của từng đối tượng.</p>
 <p>Cách tiếp cận kinh điển là <strong>cửa sổ trượt (sliding window)</strong>: huấn luyện một bộ phân loại cho một mảng ảnh kích thước cố định, rồi trượt bộ phân loại qua ảnh để chạy nó ở mọi vị trí (và tỉ lệ). <a href="../references.html#rowley-baluja-kanade-1996">Rowley, Baluja và Kanade (1996)</a> đã làm chính xác điều này với một mạng nơ-ron nhỏ làm bộ phân loại cửa sổ. Ý tưởng này thực sự đi trước thời đại — một trong những ứng dụng thành công đầu tiên của mạng nơ-ron cho một nhiệm vụ thị giác thực tế, hơn một thập kỷ trước sự hồi sinh của học sâu (Bài 37). Bài này xây dựng cách tiếp cận từ đầu đến cuối: một bộ phân loại cửa sổ nhỏ, áp dụng ở mọi vị trí, theo sau là một bước then chốt mà mọi hệ thống thực tế đều cần — gộp các phát hiện trùng lặp.</p>
 </div>
@@ -461,8 +461,8 @@ detections after NMS: 2
             <a href="../quizzes/quiz40.html" class="quiz-button">Làm bài trắc nghiệm Bài 40 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson39_visualizing_cnns.html">&larr; Bài 39: Trực quan hóa và Thấu hiểu CNN</a></div>
-            <div class="lesson-nav-next"><a href="lesson41_object_detection_regression.html">Bài 41: Phát hiện đối tượng như một bài toán hồi quy &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson39_visualizing_cnns.html">&larr; Bài 39: Trực quan hóa và Thấu hiểu CNN (Visualizing and Understanding CNNs)</a></div>
+            <div class="lesson-nav-next"><a href="lesson41_object_detection_regression.html">Bài 41: Phát hiện đối tượng như một bài toán hồi quy (Object Detection as Regression) &rarr;</a></div>
         </div>
     </div>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 45: Cơ chế chú ý - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 45: Cơ chế chú ý (The Attention Mechanism) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=3ca94f33"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-45:-C%C6%A1-ch%E1%BA%BF-ch%C3%BA-%C3%BD">Bài 45: Cơ chế chú ý<a class="anchor-link" href="#B%C3%A0i-45:-C%C6%A1-ch%E1%BA%BF-ch%C3%BA-%C3%BD">¶</a></h1><p>Mọi mô hình ở Phần 3 đều xử lý cấu trúc không gian thông qua tích chập: một mẫu lân cận cục bộ, cố định, được áp dụng như nhau ở mọi nơi (Bài 10). <strong>Chú ý (attention)</strong> là một cách khác để trộn thông tin trên một chuỗi hoặc một ảnh: thay vì một vùng lân cận cố định, mỗi vị trí tự quyết định, một cách động, những vị trí <em>khác</em> nào liên quan đến nó ngay lúc này, và trộn chúng theo tỉ lệ với mức độ liên quan đó. Bài này xây dựng cơ chế chú ý từ đầu, đối chiếu nó với cài đặt của chính PyTorch, và cho thấy cụ thể nó đang làm gì: truy xuất mềm, dựa trên nội dung.</p>
+<h1 id="B%C3%A0i-45:-C%C6%A1-ch%E1%BA%BF-ch%C3%BA-%C3%BD-(The-Attention-Mechanism)">Bài 45: Cơ chế chú ý (The Attention Mechanism)<a class="anchor-link" href="#B%C3%A0i-45:-C%C6%A1-ch%E1%BA%BF-ch%C3%BA-%C3%BD-(The-Attention-Mechanism)">¶</a></h1><p>Mọi mô hình ở Phần 3 đều xử lý cấu trúc không gian thông qua tích chập: một mẫu lân cận cục bộ, cố định, được áp dụng như nhau ở mọi nơi (Bài 10). <strong>Chú ý (attention)</strong> là một cách khác để trộn thông tin trên một chuỗi hoặc một ảnh: thay vì một vùng lân cận cố định, mỗi vị trí tự quyết định, một cách động, những vị trí <em>khác</em> nào liên quan đến nó ngay lúc này, và trộn chúng theo tỉ lệ với mức độ liên quan đó. Bài này xây dựng cơ chế chú ý từ đầu, đối chiếu nó với cài đặt của chính PyTorch, và cho thấy cụ thể nó đang làm gì: truy xuất mềm, dựa trên nội dung.</p>
 </div>
 </div>
 </div>
@@ -281,8 +281,8 @@ max abs diff vs F.scaled_dot_product_attention(..., is_causal=True): 1.19e-07
 </div>
 
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson44_precision_and_parallel_training.html">&larr; Bài 44: Độ chính xác số và Huấn luyện song song</a></div>
-            <div class="lesson-nav-next"><a href="lesson46_transformer_architecture.html">Bài 46: Kiến trúc Transformer &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson44_precision_and_parallel_training.html">&larr; Bài 44: Độ chính xác số và Huấn luyện song song (Precision and Parallel Training)</a></div>
+            <div class="lesson-nav-next"><a href="lesson46_transformer_architecture.html">Bài 46: Kiến trúc Transformer (The Transformer Architecture) &rarr;</a></div>
         </div>
     </div>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 49: Học tự giám sát và Học tương phản - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 49: Học tự giám sát và Học tương phản (Self-Supervised and Contrastive Learning) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=1f71c5e5"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-49:-H%E1%BB%8Dc-t%E1%BB%B1-gi%C3%A1m-s%C3%A1t-v%C3%A0-H%E1%BB%8Dc-t%C6%B0%C6%A1ng-ph%E1%BA%A3n">Bài 49: Học tự giám sát và Học tương phản<a class="anchor-link" href="#B%C3%A0i-49:-H%E1%BB%8Dc-t%E1%BB%B1-gi%C3%A1m-s%C3%A1t-v%C3%A0-H%E1%BB%8Dc-t%C6%B0%C6%A1ng-ph%E1%BA%A3n">¶</a></h1><p>Học chuyển giao ở Bài 38 vẫn cần một nhiệm vụ nguồn có nhãn để tiền huấn luyện một mạng xương sống hữu ích. <strong>Học tự giám sát (self-supervised learning)</strong> loại bỏ cả yêu cầu đó: tiền huấn luyện trên các ảnh <em>không nhãn</em> bằng cách tự tạo ra một nhiệm vụ từ chính dữ liệu, hoàn toàn không dùng chú thích nào của con người. Bài này xây dựng công thức thống trị cho điều đó, <strong>học tương phản (contrastive learning)</strong> (kiểu SimCLR, <a href="../references.html#chen-2020-simclr">Chen et al., 2020</a>): hai góc nhìn được tăng cường ngẫu nhiên của cùng một ảnh nên tạo ra các vector nhúng (embedding) tương tự; các góc nhìn của các ảnh khác nhau thì không.</p>
+<h1 id="B%C3%A0i-49:-H%E1%BB%8Dc-t%E1%BB%B1-gi%C3%A1m-s%C3%A1t-v%C3%A0-H%E1%BB%8Dc-t%C6%B0%C6%A1ng-ph%E1%BA%A3n-(Self-Supervised-and-Contrastive-Learning)">Bài 49: Học tự giám sát và Học tương phản (Self-Supervised and Contrastive Learning)<a class="anchor-link" href="#B%C3%A0i-49:-H%E1%BB%8Dc-t%E1%BB%B1-gi%C3%A1m-s%C3%A1t-v%C3%A0-H%E1%BB%8Dc-t%C6%B0%C6%A1ng-ph%E1%BA%A3n-(Self-Supervised-and-Contrastive-Learning)">¶</a></h1><p>Học chuyển giao ở Bài 38 vẫn cần một nhiệm vụ nguồn có nhãn để tiền huấn luyện một mạng xương sống hữu ích. <strong>Học tự giám sát (self-supervised learning)</strong> loại bỏ cả yêu cầu đó: tiền huấn luyện trên các ảnh <em>không nhãn</em> bằng cách tự tạo ra một nhiệm vụ từ chính dữ liệu, hoàn toàn không dùng chú thích nào của con người. Bài này xây dựng công thức thống trị cho điều đó, <strong>học tương phản (contrastive learning)</strong> (kiểu SimCLR, <a href="../references.html#chen-2020-simclr">Chen et al., 2020</a>): hai góc nhìn được tăng cường ngẫu nhiên của cùng một ảnh nên tạo ra các vector nhúng (embedding) tương tự; các góc nhìn của các ảnh khác nhau thì không.</p>
 </div>
 </div>
 </div>
@@ -281,8 +281,8 @@ linear probe on CONTRASTIVE-pretrained features: 73.3%  (+/- 16.5%)
 </div>
 
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson48_autoencoders.html">&larr; Bài 48: Bộ tự mã hóa</a></div>
-            <div class="lesson-nav-next"><a href="lesson50_dino_self_distillation.html">Bài 50: DINO và Tự chưng cất &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson48_autoencoders.html">&larr; Bài 48: Bộ tự mã hóa (Autoencoders)</a></div>
+            <div class="lesson-nav-next"><a href="lesson50_dino_self_distillation.html">Bài 50: DINO và Tự chưng cất (DINO and Self-Distillation) &rarr;</a></div>
         </div>
     </div>
 </body>

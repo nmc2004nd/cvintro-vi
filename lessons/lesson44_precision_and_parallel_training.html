@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 44: Độ chính xác số và Huấn luyện song song - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 44: Độ chính xác số và Huấn luyện song song (Precision and Parallel Training) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=2142dece"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-44:-%C4%90%E1%BB%99-ch%C3%ADnh-x%C3%A1c-s%E1%BB%91-v%C3%A0-Hu%E1%BA%A5n-luy%E1%BB%87n-song-song">Bài 44: Độ chính xác số và Huấn luyện song song<a class="anchor-link" href="#B%C3%A0i-44:-%C4%90%E1%BB%99-ch%C3%ADnh-x%C3%A1c-s%E1%BB%91-v%C3%A0-Hu%E1%BA%A5n-luy%E1%BB%87n-song-song">¶</a></h1><p>Mọi mạng ở Bài 31-43 đều được huấn luyện trên một bài toán đồ chơi nhỏ, thân thiện với CPU, ở dạng số thực dấu phẩy động 32-bit mặc định (fp32), trên một tiến trình duy nhất. Các lần huấn luyện thực tế hiếm khi trông như vậy: các mô hình được huấn luyện ở độ chính xác giảm để chạy nhanh hơn và tốn ít bộ nhớ hơn, và được chia ra trên nhiều GPU vì không thiết bị đơn lẻ nào chứa nổi một mô hình hiện đại cộng với dữ liệu huấn luyện của nó. Bài này khép lại Phần 3 bằng phần kỹ thuật bên dưới <em>cách</em> huấn luyện thực sự diễn ra ở quy mô lớn, xây dựng từng cơ chế ở dạng thu nhỏ và đối chiếu với bản thật: <strong>độ chính xác dấu phẩy động</strong> và tại sao độ chính xác giảm cần được trợ giúp mới hoạt động được, cách khắc phục cụ thể của <strong>huấn luyện độ chính xác hỗn hợp (mixed-precision training)</strong> cho điều đó, và hai cách chia công việc trên nhiều thiết bị, <strong>song song dữ liệu (data parallelism)</strong> và <strong>song song mô hình (model parallelism)</strong>.</p>
+<h1 id="B%C3%A0i-44:-%C4%90%E1%BB%99-ch%C3%ADnh-x%C3%A1c-s%E1%BB%91-v%C3%A0-Hu%E1%BA%A5n-luy%E1%BB%87n-song-song-(Precision-and-Parallel-Training)">Bài 44: Độ chính xác số và Huấn luyện song song (Precision and Parallel Training)<a class="anchor-link" href="#B%C3%A0i-44:-%C4%90%E1%BB%99-ch%C3%ADnh-x%C3%A1c-s%E1%BB%91-v%C3%A0-Hu%E1%BA%A5n-luy%E1%BB%87n-song-song-(Precision-and-Parallel-Training)">¶</a></h1><p>Mọi mạng ở Bài 31-43 đều được huấn luyện trên một bài toán đồ chơi nhỏ, thân thiện với CPU, ở dạng số thực dấu phẩy động 32-bit mặc định (fp32), trên một tiến trình duy nhất. Các lần huấn luyện thực tế hiếm khi trông như vậy: các mô hình được huấn luyện ở độ chính xác giảm để chạy nhanh hơn và tốn ít bộ nhớ hơn, và được chia ra trên nhiều GPU vì không thiết bị đơn lẻ nào chứa nổi một mô hình hiện đại cộng với dữ liệu huấn luyện của nó. Bài này khép lại Phần 3 bằng phần kỹ thuật bên dưới <em>cách</em> huấn luyện thực sự diễn ra ở quy mô lớn, xây dựng từng cơ chế ở dạng thu nhỏ và đối chiếu với bản thật: <strong>độ chính xác dấu phẩy động</strong> và tại sao độ chính xác giảm cần được trợ giúp mới hoạt động được, cách khắc phục cụ thể của <strong>huấn luyện độ chính xác hỗn hợp (mixed-precision training)</strong> cho điều đó, và hai cách chia công việc trên nhiều thiết bị, <strong>song song dữ liệu (data parallelism)</strong> và <strong>song song mô hình (model parallelism)</strong>.</p>
 </div>
 </div>
 </div>
@@ -424,8 +424,8 @@ fraction exactly zero after casting to fp16: 100.0%
             <a href="../quizzes/quiz44.html" class="quiz-button">Làm bài trắc nghiệm Bài 44 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson43_instance_segmentation.html">&larr; Bài 43: Phân đoạn thực thể</a></div>
-            <div class="lesson-nav-next"><a href="lesson45_attention_mechanism.html">Bài 45: Cơ chế chú ý &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson43_instance_segmentation.html">&larr; Bài 43: Phân đoạn thực thể (Instance Segmentation)</a></div>
+            <div class="lesson-nav-next"><a href="lesson45_attention_mechanism.html">Bài 45: Cơ chế chú ý (The Attention Mechanism) &rarr;</a></div>
         </div>
     </div>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 55: Phát hiện từ vựng mở - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 55: Phát hiện từ vựng mở (Open-Vocabulary Detection) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=745baeca"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-55:-Ph%C3%A1t-hi%E1%BB%87n-t%E1%BB%AB-v%E1%BB%B1ng-m%E1%BB%9F">Bài 55: Phát hiện từ vựng mở<a class="anchor-link" href="#B%C3%A0i-55:-Ph%C3%A1t-hi%E1%BB%87n-t%E1%BB%AB-v%E1%BB%B1ng-m%E1%BB%9F">¶</a></h1><p>Bộ phát hiện ở Bài 41 dự đoán một trong một tập nhỏ, cố định các lớp được định sẵn lúc huấn luyện — chính xác là giới hạn phân loại ở Bài 36, chỉ là áp dụng cho hộp thay vì toàn bộ ảnh. <strong>Phát hiện từ vựng mở (open-vocabulary detection)</strong> (Grounding DINO, OWL-ViT) loại bỏ giới hạn đó bằng cách tách việc phát hiện thành hai kỹ năng tách biệt được: <em>tìm</em> đối tượng (một kỹ năng không phân biệt lớp, có khả năng chuyển giao đáng ngạc nhiên giữa các danh mục đối tượng) và <em>gọi tên</em> chúng (giao cho một phép so khớp vector nhúng văn bản kiểu CLIP, Bài 52, có thể nhận ra bất kỳ danh mục nào mô tả được bằng lời). Bài này xây dựng cả hai nửa và kiểm tra sự kết hợp trên một danh mục mà bộ hồi quy hộp của bộ phát hiện chưa bao giờ nhận được một hộp có nhãn nào.</p>
+<h1 id="B%C3%A0i-55:-Ph%C3%A1t-hi%E1%BB%87n-t%E1%BB%AB-v%E1%BB%B1ng-m%E1%BB%9F-(Open-Vocabulary-Detection)">Bài 55: Phát hiện từ vựng mở (Open-Vocabulary Detection)<a class="anchor-link" href="#B%C3%A0i-55:-Ph%C3%A1t-hi%E1%BB%87n-t%E1%BB%AB-v%E1%BB%B1ng-m%E1%BB%9F-(Open-Vocabulary-Detection)">¶</a></h1><p>Bộ phát hiện ở Bài 41 dự đoán một trong một tập nhỏ, cố định các lớp được định sẵn lúc huấn luyện — chính xác là giới hạn phân loại ở Bài 36, chỉ là áp dụng cho hộp thay vì toàn bộ ảnh. <strong>Phát hiện từ vựng mở (open-vocabulary detection)</strong> (Grounding DINO, OWL-ViT) loại bỏ giới hạn đó bằng cách tách việc phát hiện thành hai kỹ năng tách biệt được: <em>tìm</em> đối tượng (một kỹ năng không phân biệt lớp, có khả năng chuyển giao đáng ngạc nhiên giữa các danh mục đối tượng) và <em>gọi tên</em> chúng (giao cho một phép so khớp vector nhúng văn bản kiểu CLIP, Bài 52, có thể nhận ra bất kỳ danh mục nào mô tả được bằng lời). Bài này xây dựng cả hai nửa và kiểm tra sự kết hợp trên một danh mục mà bộ hồi quy hộp của bộ phát hiện chưa bao giờ nhận được một hộp có nhãn nào.</p>
 </div>
 </div>
 </div>
@@ -377,8 +377,8 @@
 </div>
 
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson54_segment_anything.html">&larr; Bài 54: Segment Anything</a></div>
-            <div class="lesson-nav-next"><a href="lesson56_monocular_depth_estimation.html">Bài 56: Ước lượng độ sâu đơn mắt &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson54_segment_anything.html">&larr; Bài 54: Segment Anything (Segment Anything)</a></div>
+            <div class="lesson-nav-next"><a href="lesson56_monocular_depth_estimation.html">Bài 56: Ước lượng độ sâu đơn mắt (Monocular Depth Estimation) &rarr;</a></div>
         </div>
     </div>
 </body>

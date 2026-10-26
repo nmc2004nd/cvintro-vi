@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 60: Mô hình sinh và Mô hình khuếch tán - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 60: Mô hình sinh và Mô hình khuếch tán (Generative and Diffusion Models) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=9b565b4b"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-60:-M%C3%B4-h%C3%ACnh-sinh-v%C3%A0-M%C3%B4-h%C3%ACnh-khu%E1%BA%BFch-t%C3%A1n">Bài 60: Mô hình sinh và Mô hình khuếch tán<a class="anchor-link" href="#B%C3%A0i-60:-M%C3%B4-h%C3%ACnh-sinh-v%C3%A0-M%C3%B4-h%C3%ACnh-khu%E1%BA%BFch-t%C3%A1n">¶</a></h1><p>Mọi mạng từ đầu đến giờ đều ánh xạ một ảnh thành thứ gì đó nhỏ hơn: một nhãn, một hộp, một mặt nạ, một vector nhúng. <strong>Mô hình khuếch tán (diffusion models)</strong> (<a href="../references.html#sohl-dickstein-2015">Sohl-Dickstein et al., 2015</a>; <a href="../references.html#ho-2020-ddpm">Ho et al., 2020</a>) chạy ý tưởng theo chiều ngược lại: học cách ánh xạ nhiễu thuần túy thành một ảnh chân thực. Mẹo cốt lõi đơn giản một cách đánh lừa — huấn luyện một mạng hoàn tác mỗi lần một bước nhỏ của sự làm hỏng bằng nhiễu, rồi nối chuỗi nhiều bước như vậy, bắt đầu từ nhiễu và kết thúc ở thứ gì đó trông giống dữ liệu huấn luyện.</p>
+<h1 id="B%C3%A0i-60:-M%C3%B4-h%C3%ACnh-sinh-v%C3%A0-M%C3%B4-h%C3%ACnh-khu%E1%BA%BFch-t%C3%A1n-(Generative-and-Diffusion-Models)">Bài 60: Mô hình sinh và Mô hình khuếch tán (Generative and Diffusion Models)<a class="anchor-link" href="#B%C3%A0i-60:-M%C3%B4-h%C3%ACnh-sinh-v%C3%A0-M%C3%B4-h%C3%ACnh-khu%E1%BA%BFch-t%C3%A1n-(Generative-and-Diffusion-Models)">¶</a></h1><p>Mọi mạng từ đầu đến giờ đều ánh xạ một ảnh thành thứ gì đó nhỏ hơn: một nhãn, một hộp, một mặt nạ, một vector nhúng. <strong>Mô hình khuếch tán (diffusion models)</strong> (<a href="../references.html#sohl-dickstein-2015">Sohl-Dickstein et al., 2015</a>; <a href="../references.html#ho-2020-ddpm">Ho et al., 2020</a>) chạy ý tưởng theo chiều ngược lại: học cách ánh xạ nhiễu thuần túy thành một ảnh chân thực. Mẹo cốt lõi đơn giản một cách đánh lừa — huấn luyện một mạng hoàn tác mỗi lần một bước nhỏ của sự làm hỏng bằng nhiễu, rồi nối chuỗi nhiều bước như vậy, bắt đầu từ nhiễu và kết thúc ở thứ gì đó trông giống dữ liệu huấn luyện.</p>
 </div>
 </div>
 </div>
@@ -351,8 +351,8 @@ mean # connected foreground blobs, pure random noise:    4.5
 </div>
 
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson59_feedforward_pose_estimation.html">&larr; Bài 59: Ước lượng tư thế camera một lượt xuôi</a></div>
-            <div class="lesson-nav-next"><a href="lesson61_neural_rendering.html">Bài 61: Kết xuất thần kinh &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson59_feedforward_pose_estimation.html">&larr; Bài 59: Ước lượng tư thế camera một lượt xuôi (Feed-Forward Camera Pose Estimation)</a></div>
+            <div class="lesson-nav-next"><a href="lesson61_neural_rendering.html">Bài 61: Kết xuất thần kinh (Neural Rendering) &rarr;</a></div>
         </div>
     </div>
 </body>

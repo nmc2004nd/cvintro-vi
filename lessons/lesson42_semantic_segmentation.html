@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 42: Phân đoạn ngữ nghĩa - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 42: Phân đoạn ngữ nghĩa (Semantic Segmentation) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=95000fa8"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-42:-Ph%C3%A2n-%C4%91o%E1%BA%A1n-ng%E1%BB%AF-ngh%C4%A9a">Bài 42: Phân đoạn ngữ nghĩa<a class="anchor-link" href="#B%C3%A0i-42:-Ph%C3%A2n-%C4%91o%E1%BA%A1n-ng%E1%BB%AF-ngh%C4%A9a">¶</a></h1><p>Phân loại gán nhãn cho cả một ảnh. Phát hiện (Bài 40-41) gán nhãn cho một nhúm hộp. <strong>Phân đoạn ngữ nghĩa (semantic segmentation)</strong> tiến thêm một bước: gán nhãn <em>mọi điểm ảnh</em> với một lớp/danh mục. Phương pháp học sâu đầu tiên là <strong>mạng tích chập hoàn toàn (fully convolutional network — FCN)</strong> (<a href="../references.html#long-2015-fcn">Long, Shelhamer &amp; Darrell, 2015</a><span class="landmark-paper">★</span>), thay các lớp kết nối đầy đủ của một bộ phân loại bằng các phép tích chập, rồi tăng mẫu kết quả trở lại độ phân giải đầu vào. Đầu ra là một dự đoán dày đặc, theo từng điểm ảnh thay vì một nhãn duy nhất cho cả ảnh. Bài này xây dựng ý tưởng đó từ đầu, đối chiếu với một FCN tiền huấn luyện thật, rồi thêm vào một cải tiến cụ thể — các kết nối tắt.</p>
+<h1 id="B%C3%A0i-42:-Ph%C3%A2n-%C4%91o%E1%BA%A1n-ng%E1%BB%AF-ngh%C4%A9a-(Semantic-Segmentation)">Bài 42: Phân đoạn ngữ nghĩa (Semantic Segmentation)<a class="anchor-link" href="#B%C3%A0i-42:-Ph%C3%A2n-%C4%91o%E1%BA%A1n-ng%E1%BB%AF-ngh%C4%A9a-(Semantic-Segmentation)">¶</a></h1><p>Phân loại gán nhãn cho cả một ảnh. Phát hiện (Bài 40-41) gán nhãn cho một nhúm hộp. <strong>Phân đoạn ngữ nghĩa (semantic segmentation)</strong> tiến thêm một bước: gán nhãn <em>mọi điểm ảnh</em> với một lớp/danh mục. Phương pháp học sâu đầu tiên là <strong>mạng tích chập hoàn toàn (fully convolutional network — FCN)</strong> (<a href="../references.html#long-2015-fcn">Long, Shelhamer &amp; Darrell, 2015</a><span class="landmark-paper">★</span>), thay các lớp kết nối đầy đủ của một bộ phân loại bằng các phép tích chập, rồi tăng mẫu kết quả trở lại độ phân giải đầu vào. Đầu ra là một dự đoán dày đặc, theo từng điểm ảnh thay vì một nhãn duy nhất cho cả ảnh. Bài này xây dựng ý tưởng đó từ đầu, đối chiếu với một FCN tiền huấn luyện thật, rồi thêm vào một cải tiến cụ thể — các kết nối tắt.</p>
 </div>
 </div>
 </div>
@@ -434,8 +434,8 @@ mean IoU: 0.836
             <a href="../quizzes/quiz42.html" class="quiz-button">Làm bài trắc nghiệm Bài 42 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson41_object_detection_regression.html">&larr; Bài 41: Phát hiện đối tượng như một bài toán hồi quy</a></div>
-            <div class="lesson-nav-next"><a href="lesson43_instance_segmentation.html">Bài 43: Phân đoạn thực thể &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson41_object_detection_regression.html">&larr; Bài 41: Phát hiện đối tượng như một bài toán hồi quy (Object Detection as Regression)</a></div>
+            <div class="lesson-nav-next"><a href="lesson43_instance_segmentation.html">Bài 43: Phân đoạn thực thể (Instance Segmentation) &rarr;</a></div>
         </div>
     </div>
 </body>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 57: Depth Anything - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 57: Depth Anything (Depth Anything) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=26ac9960"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-57:-Depth-Anything">Bài 57: Depth Anything<a class="anchor-link" href="#B%C3%A0i-57:-Depth-Anything">¶</a></h1><p>Bài 56 đã cho thấy điểm yếu trung tâm của độ sâu đơn mắt: một mạng được huấn luyện trên một tập dữ liệu nhỏ, hẹp chỉ học được các tiên nghiệm đúng <em>bên trong</em> phân phối của tập dữ liệu đó, và bị đánh lừa một cách tự tin bên ngoài nó. <strong>Depth Anything</strong> (<a href="../references.html#yang-2024-depthanything">Yang et al., 2024</a>) là một mô hình nền tảng độ sâu đơn mắt được xây dựng đặc biệt để thu hẹp khoảng cách đó, dùng <strong>tự huấn luyện trên dữ liệu không nhãn (self-training on unlabeled data)</strong>: một mô hình giáo viên gán nhãn giả (pseudo-label) cho một kho ảnh không nhãn khổng lồ, và một học sinh huấn luyện trên dữ liệu có nhãn cộng với các nhãn giả đó, ở một quy mô (hơn 60 triệu ảnh không nhãn) mà không tập dữ liệu độ sâu chú thích thủ công nào tiến gần được. Bài này xây dựng quy trình đó — và kết quả của nó là một phát hiện tiêu cực thực sự, hữu ích: gán nhãn giả từ một giáo viên bị thiên lệch, tự nó, không khắc phục được sự thiên lệch. Hiểu <em>tại sao</em> là điều thực sự giải thích những gì Depth Anything làm đúng mà một phiên bản ngây thơ của cùng ý tưởng không làm được.</p>
+<h1 id="B%C3%A0i-57:-Depth-Anything-(Depth-Anything)">Bài 57: Depth Anything (Depth Anything)<a class="anchor-link" href="#B%C3%A0i-57:-Depth-Anything-(Depth-Anything)">¶</a></h1><p>Bài 56 đã cho thấy điểm yếu trung tâm của độ sâu đơn mắt: một mạng được huấn luyện trên một tập dữ liệu nhỏ, hẹp chỉ học được các tiên nghiệm đúng <em>bên trong</em> phân phối của tập dữ liệu đó, và bị đánh lừa một cách tự tin bên ngoài nó. <strong>Depth Anything</strong> (<a href="../references.html#yang-2024-depthanything">Yang et al., 2024</a>) là một mô hình nền tảng độ sâu đơn mắt được xây dựng đặc biệt để thu hẹp khoảng cách đó, dùng <strong>tự huấn luyện trên dữ liệu không nhãn (self-training on unlabeled data)</strong>: một mô hình giáo viên gán nhãn giả (pseudo-label) cho một kho ảnh không nhãn khổng lồ, và một học sinh huấn luyện trên dữ liệu có nhãn cộng với các nhãn giả đó, ở một quy mô (hơn 60 triệu ảnh không nhãn) mà không tập dữ liệu độ sâu chú thích thủ công nào tiến gần được. Bài này xây dựng quy trình đó — và kết quả của nó là một phát hiện tiêu cực thực sự, hữu ích: gán nhãn giả từ một giáo viên bị thiên lệch, tự nó, không khắc phục được sự thiên lệch. Hiểu <em>tại sao</em> là điều thực sự giải thích những gì Depth Anything làm đúng mà một phiên bản ngây thơ của cùng ý tưởng không làm được.</p>
 </div>
 </div>
 </div>
@@ -232,8 +232,8 @@ test:      100 scenes, depth range [0.2, 0.9]
 </div>
 
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson56_monocular_depth_estimation.html">&larr; Bài 56: Ước lượng độ sâu đơn mắt</a></div>
-            <div class="lesson-nav-next"><a href="lesson58_stereo_foundationstereo.html">Bài 58: Độ sâu ảnh nổi với các mô hình nền tảng &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson56_monocular_depth_estimation.html">&larr; Bài 56: Ước lượng độ sâu đơn mắt (Monocular Depth Estimation)</a></div>
+            <div class="lesson-nav-next"><a href="lesson58_stereo_foundationstereo.html">Bài 58: Độ sâu ảnh nổi với các mô hình nền tảng (Stereo Depth with Foundation Models) &rarr;</a></div>
         </div>
     </div>
 </body>

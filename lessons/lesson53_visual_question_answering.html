@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 53: Hỏi đáp thị giác (VQA) - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 53: Hỏi đáp thị giác (VQA) (Visual Question Answering (VQA)) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=5a798be9"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-53:-H%E1%BB%8Fi-%C4%91%C3%A1p-th%E1%BB%8B-gi%C3%A1c-(VQA)">Bài 53: Hỏi đáp thị giác (VQA)<a class="anchor-link" href="#B%C3%A0i-53:-H%E1%BB%8Fi-%C4%91%C3%A1p-th%E1%BB%8B-gi%C3%A1c-(VQA)">¶</a></h1><p>CLIP ở Bài 52 so khớp một tập lời nhắc văn bản <em>cố định</em> với một ảnh. <strong>Hỏi đáp thị giác (Visual Question Answering — VQA)</strong> đòi hỏi thứ gì đó linh hoạt hơn: cho một ảnh và một câu hỏi bằng ngôn ngữ tự nhiên tùy ý về nó, hãy đưa ra một câu trả lời. Đây là cơ chế đằng sau các trợ lý đa phương thức hiện đại có thể nhìn một bức ảnh và trả lời câu hỏi về nó — một năng lực của VLM sinh (generative VLM), khác với việc so khớp tương phản của CLIP. Bài này xây dựng phép đơn giản hóa kinh điển (và vẫn được dùng rộng rãi): coi VQA là phân loại trên một tập từ vựng nhỏ, đóng gồm các câu trả lời có thể, hợp nhất một bộ mã hóa ảnh và một bộ mã hóa câu hỏi trước dự đoán cuối cùng.</p>
+<h1 id="B%C3%A0i-53:-H%E1%BB%8Fi-%C4%91%C3%A1p-th%E1%BB%8B-gi%C3%A1c-(VQA)-(Visual-Question-Answering-(VQA))">Bài 53: Hỏi đáp thị giác (VQA) (Visual Question Answering (VQA))<a class="anchor-link" href="#B%C3%A0i-53:-H%E1%BB%8Fi-%C4%91%C3%A1p-th%E1%BB%8B-gi%C3%A1c-(VQA)-(Visual-Question-Answering-(VQA))">¶</a></h1><p>CLIP ở Bài 52 so khớp một tập lời nhắc văn bản <em>cố định</em> với một ảnh. <strong>Hỏi đáp thị giác (Visual Question Answering — VQA)</strong> đòi hỏi thứ gì đó linh hoạt hơn: cho một ảnh và một câu hỏi bằng ngôn ngữ tự nhiên tùy ý về nó, hãy đưa ra một câu trả lời. Đây là cơ chế đằng sau các trợ lý đa phương thức hiện đại có thể nhìn một bức ảnh và trả lời câu hỏi về nó — một năng lực của VLM sinh (generative VLM), khác với việc so khớp tương phản của CLIP. Bài này xây dựng phép đơn giản hóa kinh điển (và vẫn được dùng rộng rãi): coi VQA là phân loại trên một tập từ vựng nhỏ, đóng gồm các câu trả lời có thể, hợp nhất một bộ mã hóa ảnh và một bộ mã hóa câu hỏi trước dự đoán cuối cùng.</p>
 </div>
 </div>
 </div>
@@ -305,8 +305,8 @@ baseline (always predict the most common training answer, "yes"): 22.0%
 </div>
 
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson52_vision_language_models.html">&larr; Bài 52: Mô hình thị giác-ngôn ngữ (VLM)</a></div>
-            <div class="lesson-nav-next"><a href="lesson54_segment_anything.html">Bài 54: Segment Anything &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson52_vision_language_models.html">&larr; Bài 52: Mô hình thị giác-ngôn ngữ (VLM) (Vision-Language Models (VLMs))</a></div>
+            <div class="lesson-nav-next"><a href="lesson54_segment_anything.html">Bài 54: Segment Anything (Segment Anything) &rarr;</a></div>
         </div>
     </div>
 </body>

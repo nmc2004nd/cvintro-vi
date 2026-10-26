@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 46: Kiến trúc Transformer - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 46: Kiến trúc Transformer (The Transformer Architecture) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=f9166404"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-46:-Ki%E1%BA%BFn-tr%C3%BAc-Transformer">Bài 46: Kiến trúc Transformer<a class="anchor-link" href="#B%C3%A0i-46:-Ki%E1%BA%BFn-tr%C3%BAc-Transformer">¶</a></h1><p>Bài 45 đã xây dựng một phép toán chú ý. Một <strong>Transformer</strong> (<a href="../references.html#vaswani-2017">Vaswani et al., 2017</a><span class="landmark-paper">★</span>) bọc phép toán đó thành một khối dùng lại được và xếp chồng nhiều khối như vậy. Bài này bổ sung ba thành phần mà riêng cơ chế chú ý còn thiếu: <strong>nhiều đầu chú ý (multiple attention heads)</strong> (để một lớp có thể theo dõi nhiều loại quan hệ cùng lúc), <strong>mã hóa vị trí (positional encoding)</strong> (để thứ tự không vô hình đối với một cơ chế vốn coi chuỗi như một tập không có thứ tự), và <strong>khối mã hóa (encoder block)</strong> (chú ý cộng với một mạng truyền thẳng (feedforward) theo từng vị trí, được nối với nhau bằng các kết nối dư và chuẩn hóa).</p>
+<h1 id="B%C3%A0i-46:-Ki%E1%BA%BFn-tr%C3%BAc-Transformer-(The-Transformer-Architecture)">Bài 46: Kiến trúc Transformer (The Transformer Architecture)<a class="anchor-link" href="#B%C3%A0i-46:-Ki%E1%BA%BFn-tr%C3%BAc-Transformer-(The-Transformer-Architecture)">¶</a></h1><p>Bài 45 đã xây dựng một phép toán chú ý. Một <strong>Transformer</strong> (<a href="../references.html#vaswani-2017">Vaswani et al., 2017</a><span class="landmark-paper">★</span>) bọc phép toán đó thành một khối dùng lại được và xếp chồng nhiều khối như vậy. Bài này bổ sung ba thành phần mà riêng cơ chế chú ý còn thiếu: <strong>nhiều đầu chú ý (multiple attention heads)</strong> (để một lớp có thể theo dõi nhiều loại quan hệ cùng lúc), <strong>mã hóa vị trí (positional encoding)</strong> (để thứ tự không vô hình đối với một cơ chế vốn coi chuỗi như một tập không có thứ tự), và <strong>khối mã hóa (encoder block)</strong> (chú ý cộng với một mạng truyền thẳng (feedforward) theo từng vị trí, được nối với nhau bằng các kết nối dư và chuẩn hóa).</p>
 </div>
 </div>
 </div>
@@ -309,8 +309,8 @@ output shape unchanged from input: (2, 6, 16) == (2, 6, 16)
 </div>
 
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson45_attention_mechanism.html">&larr; Bài 45: Cơ chế chú ý</a></div>
-            <div class="lesson-nav-next"><a href="lesson47_vision_transformers.html">Bài 47: Vision Transformer (ViT) &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson45_attention_mechanism.html">&larr; Bài 45: Cơ chế chú ý (The Attention Mechanism)</a></div>
+            <div class="lesson-nav-next"><a href="lesson47_vision_transformers.html">Bài 47: Vision Transformer (ViT) (Vision Transformers (ViT)) &rarr;</a></div>
         </div>
     </div>
 </body>

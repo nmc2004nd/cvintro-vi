@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 29: Cấu trúc từ chuyển động - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 29: Cấu trúc từ chuyển động (Structure from Motion) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=725b135c"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-29:-C%E1%BA%A5u-tr%C3%BAc-t%E1%BB%AB-chuy%E1%BB%83n-%C4%91%E1%BB%99ng">Bài 29: Cấu trúc từ chuyển động<a class="anchor-link" href="#B%C3%A0i-29:-C%E1%BA%A5u-tr%C3%BAc-t%E1%BB%AB-chuy%E1%BB%83n-%C4%91%E1%BB%99ng">¶</a></h1><p>Bài này lắp ráp so khớp đặc trưng (Bài 20), ước lượng bền vững (Bài 23), hiệu chỉnh (Bài 27), cùng ma trận thiết yếu và khôi phục tư thế (Bài 28) thành một quy trình hoàn chỉnh nhận các cặp tương ứng ảnh 2D từ hai góc nhìn và khôi phục <strong>cả</strong> chuyển động tương đối của các camera <strong>lẫn</strong> vị trí 3D của các điểm đang được quan sát — <strong>C</strong>ấu trúc <strong>t</strong>ừ <strong>C</strong>huyển động (<strong>S</strong>tructure <strong>f</strong>rom <strong>M</strong>otion — SfM). Thành phần duy nhất mà ta chưa phát triển chi tiết là <strong>phép tam giác đạc (triangulation)</strong>: biến một cặp điểm 2D đã khớp, cùng với các tư thế camera đã biết, thành một điểm 3D. (Bài 22 đã chỉ ra cách chuyển độ chênh lệch thành độ sâu trong trường hợp ảnh đã nắn thẳng; bài này tổng quát hóa ý tưởng đó.)</p>
+<h1 id="B%C3%A0i-29:-C%E1%BA%A5u-tr%C3%BAc-t%E1%BB%AB-chuy%E1%BB%83n-%C4%91%E1%BB%99ng-(Structure-from-Motion)">Bài 29: Cấu trúc từ chuyển động (Structure from Motion)<a class="anchor-link" href="#B%C3%A0i-29:-C%E1%BA%A5u-tr%C3%BAc-t%E1%BB%AB-chuy%E1%BB%83n-%C4%91%E1%BB%99ng-(Structure-from-Motion)">¶</a></h1><p>Bài này lắp ráp so khớp đặc trưng (Bài 20), ước lượng bền vững (Bài 23), hiệu chỉnh (Bài 27), cùng ma trận thiết yếu và khôi phục tư thế (Bài 28) thành một quy trình hoàn chỉnh nhận các cặp tương ứng ảnh 2D từ hai góc nhìn và khôi phục <strong>cả</strong> chuyển động tương đối của các camera <strong>lẫn</strong> vị trí 3D của các điểm đang được quan sát — <strong>C</strong>ấu trúc <strong>t</strong>ừ <strong>C</strong>huyển động (<strong>S</strong>tructure <strong>f</strong>rom <strong>M</strong>otion — SfM). Thành phần duy nhất mà ta chưa phát triển chi tiết là <strong>phép tam giác đạc (triangulation)</strong>: biến một cặp điểm 2D đã khớp, cùng với các tư thế camera đã biết, thành một điểm 3D. (Bài 22 đã chỉ ra cách chuyển độ chênh lệch thành độ sâu trong trường hợp ảnh đã nắn thẳng; bài này tổng quát hóa ý tưởng đó.)</p>
 </div>
 </div>
 </div>
@@ -498,8 +498,8 @@ max 3D reconstruction error:                                     0.096
             <a href="../quizzes/quiz29.html" class="quiz-button">Làm bài trắc nghiệm Bài 29 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson28_epipolar_geometry.html">&larr; Bài 28: Hình học epipolar</a></div>
-            <div class="lesson-nav-next"><a href="lesson30_projection.html">Bài 30: Phép chiếu &mdash; Ý tưởng trung tâm &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson28_epipolar_geometry.html">&larr; Bài 28: Hình học epipolar (Epipolar Geometry)</a></div>
+            <div class="lesson-nav-next"><a href="lesson30_projection.html">Bài 30: Phép chiếu &mdash; Ý tưởng trung tâm (Projection &mdash; The Central Idea) &rarr;</a></div>
         </div>
     </div>
 </body>

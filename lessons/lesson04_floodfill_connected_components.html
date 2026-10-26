@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 4: Tô loang và Thành phần liên thông - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 4: Tô loang và Thành phần liên thông (Flood Fill and Connected Components) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=44e5ce7f"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-4:-T%C3%B4-loang-v%C3%A0-Th%C3%A0nh-ph%E1%BA%A7n-li%C3%AAn-th%C3%B4ng">Bài 4: Tô loang và Thành phần liên thông<a class="anchor-link" href="#B%C3%A0i-4:-T%C3%B4-loang-v%C3%A0-Th%C3%A0nh-ph%E1%BA%A7n-li%C3%AAn-th%C3%B4ng">¶</a></h1><p>Khi đã có một ảnh nhị phân (ví dụ từ phân ngưỡng ở Bài 3), câu hỏi tự nhiên tiếp theo là: <em>có bao nhiêu đốm (blob) tách rời nhau, và chúng nằm ở đâu?</em> Có hai công cụ trả lời câu hỏi này:</p>
+<h1 id="B%C3%A0i-4:-T%C3%B4-loang-v%C3%A0-Th%C3%A0nh-ph%E1%BA%A7n-li%C3%AAn-th%C3%B4ng-(Flood-Fill-and-Connected-Components)">Bài 4: Tô loang và Thành phần liên thông (Flood Fill and Connected Components)<a class="anchor-link" href="#B%C3%A0i-4:-T%C3%B4-loang-v%C3%A0-Th%C3%A0nh-ph%E1%BA%A7n-li%C3%AAn-th%C3%B4ng-(Flood-Fill-and-Connected-Components)">¶</a></h1><p>Khi đã có một ảnh nhị phân (ví dụ từ phân ngưỡng ở Bài 3), câu hỏi tự nhiên tiếp theo là: <em>có bao nhiêu đốm (blob) tách rời nhau, và chúng nằm ở đâu?</em> Có hai công cụ trả lời câu hỏi này:</p>
 <ul>
 <li><strong>Tô loang (flood fill)</strong> phát triển một vùng từ một điểm ảnh hạt giống (seed) duy nhất, lan sang tất cả các điểm ảnh lân cận liên thông có giá trị tương tự.</li>
 <li><strong>Gán nhãn thành phần liên thông (connected component labeling)</strong> tìm <em>tất cả</em> các vùng như vậy trong ảnh nhị phân cùng lúc, gán cho mỗi vùng một mã định danh (ID) duy nhất.</li>
@@ -382,8 +382,8 @@ label   area         centroid
             <a href="../quizzes/quiz04.html" class="quiz-button">Làm bài trắc nghiệm Bài 4 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson03_thresholding_morphology.html">&larr; Bài 3: Phân ngưỡng, Co và Giãn</a></div>
-            <div class="lesson-nav-next"><a href="lesson05_moments.html">Bài 5: Mô-men ảnh &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson03_thresholding_morphology.html">&larr; Bài 3: Phân ngưỡng, Co và Giãn (Thresholding, Erosion, and Dilation)</a></div>
+            <div class="lesson-nav-next"><a href="lesson05_moments.html">Bài 5: Mô-men ảnh (Image Moments) &rarr;</a></div>
         </div>
     </div>
 </body>

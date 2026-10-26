@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 59: Ước lượng tư thế camera một lượt xuôi - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 59: Ước lượng tư thế camera một lượt xuôi (Feed-Forward Camera Pose Estimation) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=d57014c8"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-59:-%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-t%C6%B0-th%E1%BA%BF-camera-m%E1%BB%99t-l%C6%B0%E1%BB%A3t-xu%C3%B4i">Bài 59: Ước lượng tư thế camera một lượt xuôi<a class="anchor-link" href="#B%C3%A0i-59:-%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-t%C6%B0-th%E1%BA%BF-camera-m%E1%BB%99t-l%C6%B0%E1%BB%A3t-xu%C3%B4i">¶</a></h1><p>RANSAC ở Bài 23 và cấu trúc từ chuyển động ở Bài 29 khôi phục hình học camera thông qua một quy trình lặp: phát hiện đặc trưng, so khớp chúng, chạy RANSAC để loại bỏ ngoại lai, giải ma trận thiết yếu, phân rã nó thành phép xoay và tịnh tiến. Mỗi giai đoạn là một thuật toán riêng biệt, thiết kế thủ công. <strong>VGGT</strong> (Visual Geometry Grounded Transformer, <a href="../references.html#wang-2024-vggt">Wang et al., 2025</a>) thay toàn bộ quy trình bằng một mạng một lượt xuôi (feed-forward) duy nhất: đưa vào các cặp tương ứng (hoặc thậm chí ảnh thô) từ nhiều góc nhìn, và nó hồi quy trực tiếp tư thế camera trong một lượt xuôi, không có bước RANSAC tường minh nào ở bất cứ đâu. Bài này xây dựng một phiên bản nhỏ của ý tưởng đó và so sánh nó với quy trình cổ điển mà nó thay thế — bao gồm chính xác nơi mỗi cách thắng.</p>
+<h1 id="B%C3%A0i-59:-%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-t%C6%B0-th%E1%BA%BF-camera-m%E1%BB%99t-l%C6%B0%E1%BB%A3t-xu%C3%B4i-(Feed-Forward-Camera-Pose-Estimation)">Bài 59: Ước lượng tư thế camera một lượt xuôi (Feed-Forward Camera Pose Estimation)<a class="anchor-link" href="#B%C3%A0i-59:-%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-t%C6%B0-th%E1%BA%BF-camera-m%E1%BB%99t-l%C6%B0%E1%BB%A3t-xu%C3%B4i-(Feed-Forward-Camera-Pose-Estimation)">¶</a></h1><p>RANSAC ở Bài 23 và cấu trúc từ chuyển động ở Bài 29 khôi phục hình học camera thông qua một quy trình lặp: phát hiện đặc trưng, so khớp chúng, chạy RANSAC để loại bỏ ngoại lai, giải ma trận thiết yếu, phân rã nó thành phép xoay và tịnh tiến. Mỗi giai đoạn là một thuật toán riêng biệt, thiết kế thủ công. <strong>VGGT</strong> (Visual Geometry Grounded Transformer, <a href="../references.html#wang-2024-vggt">Wang et al., 2025</a>) thay toàn bộ quy trình bằng một mạng một lượt xuôi (feed-forward) duy nhất: đưa vào các cặp tương ứng (hoặc thậm chí ảnh thô) từ nhiều góc nhìn, và nó hồi quy trực tiếp tư thế camera trong một lượt xuôi, không có bước RANSAC tường minh nào ở bất cứ đâu. Bài này xây dựng một phiên bản nhỏ của ý tưởng đó và so sánh nó với quy trình cổ điển mà nó thay thế — bao gồm chính xác nơi mỗi cách thắng.</p>
 </div>
 </div>
 </div>
@@ -324,8 +324,8 @@ outlier_frac=0.2:
 </div>
 
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson58_stereo_foundationstereo.html">&larr; Bài 58: Độ sâu ảnh nổi với các mô hình nền tảng</a></div>
-            <div class="lesson-nav-next"><a href="lesson60_diffusion_models.html">Bài 60: Mô hình sinh và Mô hình khuếch tán &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson58_stereo_foundationstereo.html">&larr; Bài 58: Độ sâu ảnh nổi với các mô hình nền tảng (Stereo Depth with Foundation Models)</a></div>
+            <div class="lesson-nav-next"><a href="lesson60_diffusion_models.html">Bài 60: Mô hình sinh và Mô hình khuếch tán (Generative and Diffusion Models) &rarr;</a></div>
         </div>
     </div>
 </body>

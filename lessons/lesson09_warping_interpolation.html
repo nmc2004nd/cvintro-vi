@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 9: Biến dạng ảnh, Ánh xạ ngược và Nội suy song tuyến tính - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 9: Biến dạng ảnh, Ánh xạ ngược và Nội suy song tuyến tính (Image Warping, Inverse Mapping, and Bilinear Interpolation) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=77eb0b9a"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-9:-Bi%E1%BA%BFn-d%E1%BA%A1ng-%E1%BA%A3nh,-%C3%81nh-x%E1%BA%A1-ng%C6%B0%E1%BB%A3c-v%C3%A0-N%E1%BB%99i-suy-song-tuy%E1%BA%BFn-t%C3%ADnh">Bài 9: Biến dạng ảnh, Ánh xạ ngược và Nội suy song tuyến tính<a class="anchor-link" href="#B%C3%A0i-9:-Bi%E1%BA%BFn-d%E1%BA%A1ng-%E1%BA%A3nh,-%C3%81nh-x%E1%BA%A1-ng%C6%B0%E1%BB%A3c-v%C3%A0-N%E1%BB%99i-suy-song-tuy%E1%BA%BFn-t%C3%ADnh">¶</a></h1><p>Bài 8 đã xây dựng các ma trận biến đổi; bài này nói về việc thực sự <em>áp dụng</em> một ma trận để lấy mẫu lại (resample) ảnh. Cách ngây thơ để làm điều này — đẩy mỗi điểm ảnh nguồn tới vị trí sau biến đổi của nó — hóa ra là sai. Chúng ta sẽ thấy tại sao, khắc phục bằng <strong>ánh xạ ngược (inverse mapping)</strong>, rồi xử lý việc ánh xạ ngược rơi vào các tọa độ điểm ảnh lẻ (phân số) cần phải được <em>nội suy (interpolate)</em>.</p>
+<h1 id="B%C3%A0i-9:-Bi%E1%BA%BFn-d%E1%BA%A1ng-%E1%BA%A3nh,-%C3%81nh-x%E1%BA%A1-ng%C6%B0%E1%BB%A3c-v%C3%A0-N%E1%BB%99i-suy-song-tuy%E1%BA%BFn-t%C3%ADnh-(Image-Warping,-Inverse-Mapping,-and-Bilinear-Interpolation)">Bài 9: Biến dạng ảnh, Ánh xạ ngược và Nội suy song tuyến tính (Image Warping, Inverse Mapping, and Bilinear Interpolation)<a class="anchor-link" href="#B%C3%A0i-9:-Bi%E1%BA%BFn-d%E1%BA%A1ng-%E1%BA%A3nh,-%C3%81nh-x%E1%BA%A1-ng%C6%B0%E1%BB%A3c-v%C3%A0-N%E1%BB%99i-suy-song-tuy%E1%BA%BFn-t%C3%ADnh-(Image-Warping,-Inverse-Mapping,-and-Bilinear-Interpolation)">¶</a></h1><p>Bài 8 đã xây dựng các ma trận biến đổi; bài này nói về việc thực sự <em>áp dụng</em> một ma trận để lấy mẫu lại (resample) ảnh. Cách ngây thơ để làm điều này — đẩy mỗi điểm ảnh nguồn tới vị trí sau biến đổi của nó — hóa ra là sai. Chúng ta sẽ thấy tại sao, khắc phục bằng <strong>ánh xạ ngược (inverse mapping)</strong>, rồi xử lý việc ánh xạ ngược rơi vào các tọa độ điểm ảnh lẻ (phân số) cần phải được <em>nội suy (interpolate)</em>.</p>
 </div>
 </div>
 </div>
@@ -386,8 +386,8 @@ mean pixel difference = 0.092
             <a href="../quizzes/quiz09.html" class="quiz-button">Làm bài trắc nghiệm Bài 9 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson08_geometric_transformations.html">&larr; Bài 8: Các phép biến đổi hình học</a></div>
-            <div class="lesson-nav-next"><a href="lesson10_convolution.html">Bài 10: Tích chập &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson08_geometric_transformations.html">&larr; Bài 8: Các phép biến đổi hình học (Geometric Transformations)</a></div>
+            <div class="lesson-nav-next"><a href="lesson10_convolution.html">Bài 10: Tích chập (Convolution) &rarr;</a></div>
         </div>
     </div>
 </body>

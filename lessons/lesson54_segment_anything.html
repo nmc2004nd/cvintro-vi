@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 54: Segment Anything - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 54: Segment Anything (Segment Anything) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=f838dcff"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-54:-Segment-Anything">Bài 54: Segment Anything<a class="anchor-link" href="#B%C3%A0i-54:-Segment-Anything">¶</a></h1><p>Phân đoạn thực thể ở Bài 43 huấn luyện một mạng đưa ra mặt nạ của <em>mọi</em> thực thể cùng lúc, rồi gỡ rối chúng bằng bỏ phiếu tâm. <strong>Segment Anything (SAM)</strong> (<a href="../references.html#kirillov-2023-sam">Kirillov et al., 2023</a>) đi theo một cách tiếp cận khác: phân đoạn theo yêu cầu. Cho mô hình một <em>lời nhắc (prompt)</em> — một điểm, một hộp, một nét vẽ nguệch ngoạc — và nó trả về mặt nạ của đúng một đối tượng mà lời nhắc đó chỉ tới. Bài này xây dựng ý tưởng cốt lõi của SAM: đưa lời nhắc vào như một tín hiệu không gian tường minh bên cạnh ảnh, và huấn luyện mạng tạo ra chính xác mặt nạ của đối tượng được nhắc, không gì khác.</p>
+<h1 id="B%C3%A0i-54:-Segment-Anything-(Segment-Anything)">Bài 54: Segment Anything (Segment Anything)<a class="anchor-link" href="#B%C3%A0i-54:-Segment-Anything-(Segment-Anything)">¶</a></h1><p>Phân đoạn thực thể ở Bài 43 huấn luyện một mạng đưa ra mặt nạ của <em>mọi</em> thực thể cùng lúc, rồi gỡ rối chúng bằng bỏ phiếu tâm. <strong>Segment Anything (SAM)</strong> (<a href="../references.html#kirillov-2023-sam">Kirillov et al., 2023</a>) đi theo một cách tiếp cận khác: phân đoạn theo yêu cầu. Cho mô hình một <em>lời nhắc (prompt)</em> — một điểm, một hộp, một nét vẽ nguệch ngoạc — và nó trả về mặt nạ của đúng một đối tượng mà lời nhắc đó chỉ tới. Bài này xây dựng ý tưởng cốt lõi của SAM: đưa lời nhắc vào như một tín hiệu không gian tường minh bên cạnh ảnh, và huấn luyện mạng tạo ra chính xác mặt nạ của đối tượng được nhắc, không gì khác.</p>
 </div>
 </div>
 </div>
@@ -282,8 +282,8 @@ overlap (IoU) between the two prompted masks: 0.145  (low = genuinely different 
 </div>
 
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson53_visual_question_answering.html">&larr; Bài 53: Hỏi đáp thị giác (VQA)</a></div>
-            <div class="lesson-nav-next"><a href="lesson55_open_vocabulary_detection.html">Bài 55: Phát hiện từ vựng mở &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson53_visual_question_answering.html">&larr; Bài 53: Hỏi đáp thị giác (VQA) (Visual Question Answering (VQA))</a></div>
+            <div class="lesson-nav-next"><a href="lesson55_open_vocabulary_detection.html">Bài 55: Phát hiện từ vựng mở (Open-Vocabulary Detection) &rarr;</a></div>
         </div>
     </div>
 </body>

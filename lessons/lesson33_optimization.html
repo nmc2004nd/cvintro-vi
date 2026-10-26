@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 33: Tối ưu hóa - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 33: Tối ưu hóa (Optimization) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=8d00ab3f"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-33:-T%E1%BB%91i-%C6%B0u-h%C3%B3a">Bài 33: Tối ưu hóa<a class="anchor-link" href="#B%C3%A0i-33:-T%E1%BB%91i-%C6%B0u-h%C3%B3a">¶</a></h1><p>Bài 31-32 đã dùng hạ gradient đơn thuần: lấy gradient, bước một bước kích thước cố định ngược chiều nó:</p>
+<h1 id="B%C3%A0i-33:-T%E1%BB%91i-%C6%B0u-h%C3%B3a-(Optimization)">Bài 33: Tối ưu hóa (Optimization)<a class="anchor-link" href="#B%C3%A0i-33:-T%E1%BB%91i-%C6%B0u-h%C3%B3a-(Optimization)">¶</a></h1><p>Bài 31-32 đã dùng hạ gradient đơn thuần: lấy gradient, bước một bước kích thước cố định ngược chiều nó:</p>
 <p>$$p \leftarrow p - \eta\,\nabla f(p)$$</p>
 <p>trong đó $p$ là bất cứ thứ gì đang được học (một trọng số, một độ lệch, hoặc toàn bộ vector tham số cùng lúc), $\eta$ là <strong>tốc độ học</strong>, và $\nabla f(p)$ là gradient của hàm mất mát tại các tham số hiện tại. Như vậy là đủ để chứng minh <em>ý tưởng</em> hoạt động, nhưng hiếm khi đó là cách mạng thực tế được huấn luyện. Bài này trình bày bốn nâng cấp thực tế — <strong>quán tính (momentum)</strong>, <strong>kích thước bước thích nghi (Adam)</strong>, <strong>các lược đồ khởi tạo trọng số</strong>, và <strong>lịch trình tốc độ học (learning rate schedules)</strong> — mỗi cái khắc phục một kiểu thất bại cụ thể, rõ ràng của hạ gradient đơn thuần.</p>
 <p>Lưu ý rằng trong huấn luyện thực tế, gradient hầu như không bao giờ được tính trên <em>toàn bộ</em> tập huấn luyện cùng lúc — nó sẽ không vừa bộ nhớ. Thay vào đó, ở mỗi bước nó được ước lượng từ một <strong>lô nhỏ (mini-batch)</strong> được lấy mẫu ngẫu nhiên (chẳng hạn 32 hoặc 256 mẫu). Ước lượng nhiễu, thay đổi theo từng lần lấy mẫu thu được chính là điều mang lại tên gọi cho <strong>hạ gradient ngẫu nhiên (SGD)</strong>. Bài này chủ yếu dùng gradient chính xác, không nhiễu của một hàm cố định (gọi nó là "SGD" cho tiện); mục cuối mô phỏng trực tiếp nhiễu lô nhỏ để cho thấy tại sao nó quan trọng.</p>
@@ -733,8 +733,8 @@ step decay:   mean loss over final 50 steps = 0.0025
             <a href="../quizzes/quiz33.html" class="quiz-button">Làm bài trắc nghiệm Bài 33 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson32_multilayer_perceptrons.html">&larr; Bài 32: Perceptron nhiều lớp</a></div>
-            <div class="lesson-nav-next"><a href="lesson34_convolutional_neural_networks.html">Bài 34: Mạng nơ-ron tích chập (CNN) &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson32_multilayer_perceptrons.html">&larr; Bài 32: Perceptron nhiều lớp (Multi-Layer Perceptrons)</a></div>
+            <div class="lesson-nav-next"><a href="lesson34_convolutional_neural_networks.html">Bài 34: Mạng nơ-ron tích chập (CNN) (Convolutional Neural Networks (CNNs)) &rarr;</a></div>
         </div>
     </div>
 </body>

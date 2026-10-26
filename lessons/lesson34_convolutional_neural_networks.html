@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 34: Mạng nơ-ron tích chập (CNN) - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 34: Mạng nơ-ron tích chập (CNN) (Convolutional Neural Networks (CNNs)) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=07d92102"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-34:-M%E1%BA%A1ng-n%C6%A1-ron-t%C3%ADch-ch%E1%BA%ADp-(CNN)">Bài 34: Mạng nơ-ron tích chập (CNN)<a class="anchor-link" href="#B%C3%A0i-34:-M%E1%BA%A1ng-n%C6%A1-ron-t%C3%ADch-ch%E1%BA%ADp-(CNN)">¶</a></h1><p>Các lớp ở Bài 31-33 coi mọi đầu vào là một vector phẳng, và điều đó tạo ra hai vấn đề riêng biệt với ảnh. Thứ nhất, mỗi điểm ảnh có trọng số độc lập riêng, không có khái niệm rằng các điểm ảnh lân cận thì <em>gần</em> nhau — toàn bộ cấu trúc không gian mà ảnh có bị vứt bỏ. Thứ hai, vì mỗi vị trí có trọng số riêng biệt, một lớp kết nối đầy đủ không có cách nào dùng lại một bộ lọc nó đã học: nó phải học lại một cách độc lập một cạnh trông như thế nào ở từng vị trí, hết lần này đến lần khác. <strong>Tích chập</strong> — đã được tự xây dựng ở Bài 10 — khắc phục cả hai vấn đề cùng lúc bằng cách đưa vào một <strong>thiên kiến quy nạp (inductive bias)</strong>: giới hạn mỗi đầu ra vào một mảng cục bộ nhỏ, và chia sẻ trọng số của mảng đó qua mọi vị trí.</p>
+<h1 id="B%C3%A0i-34:-M%E1%BA%A1ng-n%C6%A1-ron-t%C3%ADch-ch%E1%BA%ADp-(CNN)-(Convolutional-Neural-Networks-(CNNs))">Bài 34: Mạng nơ-ron tích chập (CNN) (Convolutional Neural Networks (CNNs))<a class="anchor-link" href="#B%C3%A0i-34:-M%E1%BA%A1ng-n%C6%A1-ron-t%C3%ADch-ch%E1%BA%ADp-(CNN)-(Convolutional-Neural-Networks-(CNNs))">¶</a></h1><p>Các lớp ở Bài 31-33 coi mọi đầu vào là một vector phẳng, và điều đó tạo ra hai vấn đề riêng biệt với ảnh. Thứ nhất, mỗi điểm ảnh có trọng số độc lập riêng, không có khái niệm rằng các điểm ảnh lân cận thì <em>gần</em> nhau — toàn bộ cấu trúc không gian mà ảnh có bị vứt bỏ. Thứ hai, vì mỗi vị trí có trọng số riêng biệt, một lớp kết nối đầy đủ không có cách nào dùng lại một bộ lọc nó đã học: nó phải học lại một cách độc lập một cạnh trông như thế nào ở từng vị trí, hết lần này đến lần khác. <strong>Tích chập</strong> — đã được tự xây dựng ở Bài 10 — khắc phục cả hai vấn đề cùng lúc bằng cách đưa vào một <strong>thiên kiến quy nạp (inductive bias)</strong>: giới hạn mỗi đầu ra vào một mảng cục bộ nhỏ, và chia sẻ trọng số của mảng đó qua mọi vị trí.</p>
 </div>
 </div>
 </div>
@@ -450,8 +450,8 @@ grad_bias max diff:   1.78e-15
             <a href="../quizzes/quiz34.html" class="quiz-button">Làm bài trắc nghiệm Bài 34 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson33_optimization.html">&larr; Bài 33: Tối ưu hóa</a></div>
-            <div class="lesson-nav-next"><a href="lesson35_training_a_cnn.html">Bài 35: Huấn luyện một CNN &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson33_optimization.html">&larr; Bài 33: Tối ưu hóa (Optimization)</a></div>
+            <div class="lesson-nav-next"><a href="lesson35_training_a_cnn.html">Bài 35: Huấn luyện một CNN (Training a CNN) &rarr;</a></div>
         </div>
     </div>
 </body>

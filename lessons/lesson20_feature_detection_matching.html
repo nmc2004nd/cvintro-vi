@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 20: Phát hiện và So khớp đặc trưng - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 20: Phát hiện và So khớp đặc trưng (Feature Detection and Matching) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=2cd7620a"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-20:-Ph%C3%A1t-hi%E1%BB%87n-v%C3%A0-So-kh%E1%BB%9Bp-%C4%91%E1%BA%B7c-tr%C6%B0ng">Bài 20: Phát hiện và So khớp đặc trưng<a class="anchor-link" href="#B%C3%A0i-20:-Ph%C3%A1t-hi%E1%BB%87n-v%C3%A0-So-kh%E1%BB%9Bp-%C4%91%E1%BA%B7c-tr%C6%B0ng">¶</a></h1><p>Đây là phần mở đầu của Phần 2: thị giác máy tính 3D cổ điển, nơi các thuật toán ngày càng làm việc trên <em>nhiều</em> ảnh của một cảnh — các khung hình video, hoặc nhiều camera — thay vì chỉ một ảnh. Vấn đề đầu tiên nảy sinh: hai ảnh của cùng một cảnh hiếm khi đặt cùng một nội dung tại cùng một vị trí điểm ảnh, vì phép xoay, tỉ lệ và góc nhìn đều làm mọi thứ dịch chuyển. Bài này tiến dần tới so khớp dựa trên đặc trưng (feature-based matching), vốn chịu được chính những thay đổi đó: đầu tiên là <strong>các bộ phát hiện góc (corner detectors)</strong> (Harris, Shi-Tomasi) tìm ra các điểm đặc biệt, lặp lại được, sau đó là <strong>SIFT</strong>, bổ sung tính bất biến với tỉ lệ và một bộ mô tả (descriptor) có thể so khớp giữa hai ảnh trông khác nhau của cùng một cảnh.</p>
+<h1 id="B%C3%A0i-20:-Ph%C3%A1t-hi%E1%BB%87n-v%C3%A0-So-kh%E1%BB%9Bp-%C4%91%E1%BA%B7c-tr%C6%B0ng-(Feature-Detection-and-Matching)">Bài 20: Phát hiện và So khớp đặc trưng (Feature Detection and Matching)<a class="anchor-link" href="#B%C3%A0i-20:-Ph%C3%A1t-hi%E1%BB%87n-v%C3%A0-So-kh%E1%BB%9Bp-%C4%91%E1%BA%B7c-tr%C6%B0ng-(Feature-Detection-and-Matching)">¶</a></h1><p>Đây là phần mở đầu của Phần 2: thị giác máy tính 3D cổ điển, nơi các thuật toán ngày càng làm việc trên <em>nhiều</em> ảnh của một cảnh — các khung hình video, hoặc nhiều camera — thay vì chỉ một ảnh. Vấn đề đầu tiên nảy sinh: hai ảnh của cùng một cảnh hiếm khi đặt cùng một nội dung tại cùng một vị trí điểm ảnh, vì phép xoay, tỉ lệ và góc nhìn đều làm mọi thứ dịch chuyển. Bài này tiến dần tới so khớp dựa trên đặc trưng (feature-based matching), vốn chịu được chính những thay đổi đó: đầu tiên là <strong>các bộ phát hiện góc (corner detectors)</strong> (Harris, Shi-Tomasi) tìm ra các điểm đặc biệt, lặp lại được, sau đó là <strong>SIFT</strong>, bổ sung tính bất biến với tỉ lệ và một bộ mô tả (descriptor) có thể so khớp giữa hai ảnh trông khác nhau của cùng một cảnh.</p>
 </div>
 </div>
 </div>
@@ -413,8 +413,8 @@ good matches after Lowe ratio test: 191 / 723 candidate pairs
             <a href="../quizzes/quiz20.html" class="quiz-button">Làm bài trắc nghiệm Bài 20 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson19_clustering.html">&larr; Bài 19: Phân cụm — k-Means, GMM và DBSCAN</a></div>
-            <div class="lesson-nav-next"><a href="lesson21_optical_flow.html">Bài 21: Luồng quang học và Ước lượng chuyển động &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson19_clustering.html">&larr; Bài 19: Phân cụm — k-Means, GMM và DBSCAN (Clustering — k-Means, GMMs, and DBSCAN)</a></div>
+            <div class="lesson-nav-next"><a href="lesson21_optical_flow.html">Bài 21: Luồng quang học và Ước lượng chuyển động (Optical Flow and Motion Estimation) &rarr;</a></div>
         </div>
     </div>
 </body>

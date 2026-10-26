@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 50: DINO và Tự chưng cất - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 50: DINO và Tự chưng cất (DINO and Self-Distillation) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=78858cda"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-50:-DINO-v%C3%A0-T%E1%BB%B1-ch%C6%B0ng-c%E1%BA%A5t">Bài 50: DINO và Tự chưng cất<a class="anchor-link" href="#B%C3%A0i-50:-DINO-v%C3%A0-T%E1%BB%B1-ch%C6%B0ng-c%E1%BA%A5t">¶</a></h1><p>Hàm mất mát tương phản ở Bài 49 cần các cặp âm tường minh (các ảnh khác trong lô) để tránh nghiệm tầm thường là ánh xạ mọi ảnh về cùng một điểm. <strong>Tự chưng cất (self-distillation)</strong>, cơ chế đằng sau <strong>DINO</strong> (<a href="../references.html#caron-2021-dino">Caron et al., 2021</a>) và người kế nhiệm <strong>DINOv2</strong> (<a href="../references.html#oquab-2023-dinov2">Oquab et al., 2023</a>), loại bỏ hoàn toàn các mẫu âm: một mạng "giáo viên (teacher)" được cập nhật chậm hướng dẫn một mạng "học sinh (student)", hoàn toàn không có nhãn và không có cặp âm nào. Không có một biện pháp bảo vệ cẩn thận, thiết lập này sụp đổ về nghiệm tầm thường ngay lập tức — bài này xây dựng biện pháp bảo vệ đó (định tâm — centering) từ đầu và cho thấy chính xác tại sao nó cần thiết.</p>
+<h1 id="B%C3%A0i-50:-DINO-v%C3%A0-T%E1%BB%B1-ch%C6%B0ng-c%E1%BA%A5t-(DINO-and-Self-Distillation)">Bài 50: DINO và Tự chưng cất (DINO and Self-Distillation)<a class="anchor-link" href="#B%C3%A0i-50:-DINO-v%C3%A0-T%E1%BB%B1-ch%C6%B0ng-c%E1%BA%A5t-(DINO-and-Self-Distillation)">¶</a></h1><p>Hàm mất mát tương phản ở Bài 49 cần các cặp âm tường minh (các ảnh khác trong lô) để tránh nghiệm tầm thường là ánh xạ mọi ảnh về cùng một điểm. <strong>Tự chưng cất (self-distillation)</strong>, cơ chế đằng sau <strong>DINO</strong> (<a href="../references.html#caron-2021-dino">Caron et al., 2021</a>) và người kế nhiệm <strong>DINOv2</strong> (<a href="../references.html#oquab-2023-dinov2">Oquab et al., 2023</a>), loại bỏ hoàn toàn các mẫu âm: một mạng "giáo viên (teacher)" được cập nhật chậm hướng dẫn một mạng "học sinh (student)", hoàn toàn không có nhãn và không có cặp âm nào. Không có một biện pháp bảo vệ cẩn thận, thiết lập này sụp đổ về nghiệm tầm thường ngay lập tức — bài này xây dựng biện pháp bảo vệ đó (định tâm — centering) từ đầu và cho thấy chính xác tại sao nó cần thiết.</p>
 </div>
 </div>
 </div>
@@ -393,8 +393,8 @@ teacher output std, WITHOUT centering: 0.0773  (closer to 0 = more collapsed)
 </div>
 
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson49_self_supervised_learning.html">&larr; Bài 49: Học tự giám sát và Học tương phản</a></div>
-            <div class="lesson-nav-next"><a href="lesson51_masked_autoencoders.html">Bài 51: Bộ tự mã hóa có che &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson49_self_supervised_learning.html">&larr; Bài 49: Học tự giám sát và Học tương phản (Self-Supervised and Contrastive Learning)</a></div>
+            <div class="lesson-nav-next"><a href="lesson51_masked_autoencoders.html">Bài 51: Bộ tự mã hóa có che (Masked Autoencoders) &rarr;</a></div>
         </div>
     </div>
 </body>

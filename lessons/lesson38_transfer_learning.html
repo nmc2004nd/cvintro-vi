@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 38: Học chuyển giao - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 38: Học chuyển giao (Transfer Learning) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=20bdaad1"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-38:-H%E1%BB%8Dc-chuy%E1%BB%83n-giao">Bài 38: Học chuyển giao<a class="anchor-link" href="#B%C3%A0i-38:-H%E1%BB%8Dc-chuy%E1%BB%83n-giao">¶</a></h1><p>Huấn luyện một CNN tốt từ đầu (Bài 34-35) cần hàng trăm mẫu có nhãn ngay cả cho một nhiệm vụ đồ chơi. Các nhiệm vụ đích thực tế thường đói dữ liệu: một nhúm ảnh chụp y tế có nhãn, một danh mục sản phẩm mới với 20 bức ảnh. <strong>Học chuyển giao (transfer learning)</strong> né tránh điều này bằng cách dùng lại một mạng đã được huấn luyện trên một nhiệm vụ <em>khác</em>, giàu dữ liệu, dựa trên giả thuyết rằng các đặc trưng ở lớp sớm (biên, đốm, kết cấu đơn giản) hữu ích cho hầu như mọi nhiệm vụ thị giác, không chỉ nhiệm vụ mà chúng được huấn luyện ban đầu. Bài này minh họa điều đó trên ảnh chụp thật, dùng một tập con CIFAR-10 (<a href="../references.html#krizhevsky-2009-cifar">Krizhevsky, 2009</a>).</p>
+<h1 id="B%C3%A0i-38:-H%E1%BB%8Dc-chuy%E1%BB%83n-giao-(Transfer-Learning)">Bài 38: Học chuyển giao (Transfer Learning)<a class="anchor-link" href="#B%C3%A0i-38:-H%E1%BB%8Dc-chuy%E1%BB%83n-giao-(Transfer-Learning)">¶</a></h1><p>Huấn luyện một CNN tốt từ đầu (Bài 34-35) cần hàng trăm mẫu có nhãn ngay cả cho một nhiệm vụ đồ chơi. Các nhiệm vụ đích thực tế thường đói dữ liệu: một nhúm ảnh chụp y tế có nhãn, một danh mục sản phẩm mới với 20 bức ảnh. <strong>Học chuyển giao (transfer learning)</strong> né tránh điều này bằng cách dùng lại một mạng đã được huấn luyện trên một nhiệm vụ <em>khác</em>, giàu dữ liệu, dựa trên giả thuyết rằng các đặc trưng ở lớp sớm (biên, đốm, kết cấu đơn giản) hữu ích cho hầu như mọi nhiệm vụ thị giác, không chỉ nhiệm vụ mà chúng được huấn luyện ban đầu. Bài này minh họa điều đó trên ảnh chụp thật, dùng một tập con CIFAR-10 (<a href="../references.html#krizhevsky-2009-cifar">Krizhevsky, 2009</a>).</p>
 </div>
 </div>
 </div>
@@ -452,8 +452,8 @@
             <a href="../quizzes/quiz38.html" class="quiz-button">Làm bài trắc nghiệm Bài 38 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson37_classic_architectures.html">&larr; Bài 37: Các kiến trúc kinh điển</a></div>
-            <div class="lesson-nav-next"><a href="lesson39_visualizing_cnns.html">Bài 39: Trực quan hóa và Thấu hiểu CNN &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson37_classic_architectures.html">&larr; Bài 37: Các kiến trúc kinh điển (Classic Architectures)</a></div>
+            <div class="lesson-nav-next"><a href="lesson39_visualizing_cnns.html">Bài 39: Trực quan hóa và Thấu hiểu CNN (Visualizing and Understanding CNNs) &rarr;</a></div>
         </div>
     </div>
 </body>

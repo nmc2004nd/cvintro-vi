@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 39: Trực quan hóa và Thấu hiểu CNN - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 39: Trực quan hóa và Thấu hiểu CNN (Visualizing and Understanding CNNs) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=67d8e930"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-39:-Tr%E1%BB%B1c-quan-h%C3%B3a-v%C3%A0-Th%E1%BA%A5u-hi%E1%BB%83u-CNN">Bài 39: Trực quan hóa và Thấu hiểu CNN<a class="anchor-link" href="#B%C3%A0i-39:-Tr%E1%BB%B1c-quan-h%C3%B3a-v%C3%A0-Th%E1%BA%A5u-hi%E1%BB%83u-CNN">¶</a></h1><p>Một CNN đã huấn luyện là một hộp đen vì hàng triệu trọng số của nó không có ý nghĩa riêng lẻ rõ ràng. Nhưng câu hỏi một dự đoán xuất phát từ <em>đâu trong ảnh đầu vào</em> thì trả lời được, và trả lời được nó thường là điều phân biệt "mô hình đưa ra đáp án đúng" với "mô hình đưa ra đáp án đúng vì đúng lý do". Bài này xây dựng từ đầu hai công cụ trực quan hóa — <strong>bản đồ nổi bật (saliency maps)</strong> (<a href="../references.html#simonyan-2013-saliency">Simonyan et al., 2013</a>) và <strong>Grad-CAM</strong> (<a href="../references.html#selvaraju-2017">Selvaraju et al., 2017</a><span class="landmark-paper">★</span>) — trên ảnh chụp thật từ CIFAR-10 (<a href="../references.html#krizhevsky-2009-cifar">Krizhevsky, 2009</a>), rồi dùng chúng để bắt quả tang một mô hình đang gian lận. Cuối cùng, <strong>t-SNE</strong> (<a href="../references.html#vandermaaten-2008-tsne">Van der Maaten &amp; Hinton, 2008</a><span class="landmark-paper">★</span>) được dùng để trực quan hóa các vector đặc trưng học được.</p>
+<h1 id="B%C3%A0i-39:-Tr%E1%BB%B1c-quan-h%C3%B3a-v%C3%A0-Th%E1%BA%A5u-hi%E1%BB%83u-CNN-(Visualizing-and-Understanding-CNNs)">Bài 39: Trực quan hóa và Thấu hiểu CNN (Visualizing and Understanding CNNs)<a class="anchor-link" href="#B%C3%A0i-39:-Tr%E1%BB%B1c-quan-h%C3%B3a-v%C3%A0-Th%E1%BA%A5u-hi%E1%BB%83u-CNN-(Visualizing-and-Understanding-CNNs)">¶</a></h1><p>Một CNN đã huấn luyện là một hộp đen vì hàng triệu trọng số của nó không có ý nghĩa riêng lẻ rõ ràng. Nhưng câu hỏi một dự đoán xuất phát từ <em>đâu trong ảnh đầu vào</em> thì trả lời được, và trả lời được nó thường là điều phân biệt "mô hình đưa ra đáp án đúng" với "mô hình đưa ra đáp án đúng vì đúng lý do". Bài này xây dựng từ đầu hai công cụ trực quan hóa — <strong>bản đồ nổi bật (saliency maps)</strong> (<a href="../references.html#simonyan-2013-saliency">Simonyan et al., 2013</a>) và <strong>Grad-CAM</strong> (<a href="../references.html#selvaraju-2017">Selvaraju et al., 2017</a><span class="landmark-paper">★</span>) — trên ảnh chụp thật từ CIFAR-10 (<a href="../references.html#krizhevsky-2009-cifar">Krizhevsky, 2009</a>), rồi dùng chúng để bắt quả tang một mô hình đang gian lận. Cuối cùng, <strong>t-SNE</strong> (<a href="../references.html#vandermaaten-2008-tsne">Van der Maaten &amp; Hinton, 2008</a><span class="landmark-paper">★</span>) được dùng để trực quan hóa các vector đặc trưng học được.</p>
 </div>
 </div>
 </div>
@@ -540,8 +540,8 @@
             <a href="../quizzes/quiz39.html" class="quiz-button">Làm bài trắc nghiệm Bài 39 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson38_transfer_learning.html">&larr; Bài 38: Học chuyển giao</a></div>
-            <div class="lesson-nav-next"><a href="lesson40_object_detection_sliding_windows.html">Bài 40: Phát hiện đối tượng bằng cửa sổ trượt &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson38_transfer_learning.html">&larr; Bài 38: Học chuyển giao (Transfer Learning)</a></div>
+            <div class="lesson-nav-next"><a href="lesson40_object_detection_sliding_windows.html">Bài 40: Phát hiện đối tượng bằng cửa sổ trượt (Object Detection from Sliding Windows) &rarr;</a></div>
         </div>
     </div>
 </body>

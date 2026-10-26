@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 11: Làm trơn và Kim tự tháp Gauss - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 11: Làm trơn và Kim tự tháp Gauss (Smoothing and Gaussian Pyramids) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=99700935"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-11:-L%C3%A0m-tr%C6%A1n-v%C3%A0-Kim-t%E1%BB%B1-th%C3%A1p-Gauss">Bài 11: Làm trơn và Kim tự tháp Gauss<a class="anchor-link" href="#B%C3%A0i-11:-L%C3%A0m-tr%C6%A1n-v%C3%A0-Kim-t%E1%BB%B1-th%C3%A1p-Gauss">¶</a></h1><p>Bài 10 đã giới thiệu làm mờ Gauss như một trong nhiều kernel tích chập. Ở đây ta xem xét <em>tại sao</em> làm mờ lại quan trọng, vượt ra ngoài việc chỉ "làm mềm" ảnh: nó là thành phần then chốt giúp việc giảm mẫu (downsampling) trở nên an toàn. Điều đó dẫn thẳng tới <strong>kim tự tháp Gauss (Gaussian pyramid)</strong> — một chồng các phiên bản ngày càng nhỏ hơn, mờ hơn của một ảnh, được dùng khắp nơi trong thị giác máy tính để phân tích đa tỉ lệ (multi-scale).</p>
+<h1 id="B%C3%A0i-11:-L%C3%A0m-tr%C6%A1n-v%C3%A0-Kim-t%E1%BB%B1-th%C3%A1p-Gauss-(Smoothing-and-Gaussian-Pyramids)">Bài 11: Làm trơn và Kim tự tháp Gauss (Smoothing and Gaussian Pyramids)<a class="anchor-link" href="#B%C3%A0i-11:-L%C3%A0m-tr%C6%A1n-v%C3%A0-Kim-t%E1%BB%B1-th%C3%A1p-Gauss-(Smoothing-and-Gaussian-Pyramids)">¶</a></h1><p>Bài 10 đã giới thiệu làm mờ Gauss như một trong nhiều kernel tích chập. Ở đây ta xem xét <em>tại sao</em> làm mờ lại quan trọng, vượt ra ngoài việc chỉ "làm mềm" ảnh: nó là thành phần then chốt giúp việc giảm mẫu (downsampling) trở nên an toàn. Điều đó dẫn thẳng tới <strong>kim tự tháp Gauss (Gaussian pyramid)</strong> — một chồng các phiên bản ngày càng nhỏ hơn, mờ hơn của một ảnh, được dùng khắp nơi trong thị giác máy tính để phân tích đa tỉ lệ (multi-scale).</p>
 </div>
 </div>
 </div>
@@ -458,8 +458,8 @@ cv2.GaussianBlur pixel:    139
             <a href="../quizzes/quiz11.html" class="quiz-button">Làm bài trắc nghiệm Bài 11 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson10_convolution.html">&larr; Bài 10: Tích chập</a></div>
-            <div class="lesson-nav-next"><a href="lesson12_differentiation_edges.html">Bài 12: Đạo hàm và Phát hiện biên &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson10_convolution.html">&larr; Bài 10: Tích chập (Convolution)</a></div>
+            <div class="lesson-nav-next"><a href="lesson12_differentiation_edges.html">Bài 12: Đạo hàm và Phát hiện biên (Differentiation and Edge Detection) &rarr;</a></div>
         </div>
     </div>
 </body>

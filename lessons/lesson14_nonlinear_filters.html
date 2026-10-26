@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 14: Các bộ lọc phi tuyến - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 14: Các bộ lọc phi tuyến (Nonlinear Filters) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=8fbc8b08"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-14:-C%C3%A1c-b%E1%BB%99-l%E1%BB%8Dc-phi-tuy%E1%BA%BFn">Bài 14: Các bộ lọc phi tuyến<a class="anchor-link" href="#B%C3%A0i-14:-C%C3%A1c-b%E1%BB%99-l%E1%BB%8Dc-phi-tuy%E1%BA%BFn">¶</a></h1><p>Mọi bộ lọc từ đầu đến giờ (hộp, Gauss, Sobel, Laplace, ...) đều là tích chập: một tổ hợp tuyến tính cố định của các giá trị điểm ảnh lân cận. Nhưng bộ lọc tuyến tính bị giới hạn về những gì chúng làm được — chúng không thể suy xét xem điểm ảnh lân cận nào là "ngoại lai (outlier)" hay điểm nào "nằm ở phía bên kia của một biên". Bài này xem xét các bộ lọc phá vỡ tính tuyến tính đó: <strong>lọc trung vị (median filtering)</strong>, <strong>co/giãn</strong> ảnh xám <strong>dưới dạng bộ lọc min/max</strong>, và <strong>bộ lọc song phương (bilateral filter)</strong> bảo toàn biên.</p>
+<h1 id="B%C3%A0i-14:-C%C3%A1c-b%E1%BB%99-l%E1%BB%8Dc-phi-tuy%E1%BA%BFn-(Nonlinear-Filters)">Bài 14: Các bộ lọc phi tuyến (Nonlinear Filters)<a class="anchor-link" href="#B%C3%A0i-14:-C%C3%A1c-b%E1%BB%99-l%E1%BB%8Dc-phi-tuy%E1%BA%BFn-(Nonlinear-Filters)">¶</a></h1><p>Mọi bộ lọc từ đầu đến giờ (hộp, Gauss, Sobel, Laplace, ...) đều là tích chập: một tổ hợp tuyến tính cố định của các giá trị điểm ảnh lân cận. Nhưng bộ lọc tuyến tính bị giới hạn về những gì chúng làm được — chúng không thể suy xét xem điểm ảnh lân cận nào là "ngoại lai (outlier)" hay điểm nào "nằm ở phía bên kia của một biên". Bài này xem xét các bộ lọc phá vỡ tính tuyến tính đó: <strong>lọc trung vị (median filtering)</strong>, <strong>co/giãn</strong> ảnh xám <strong>dưới dạng bộ lọc min/max</strong>, và <strong>bộ lọc song phương (bilateral filter)</strong> bảo toàn biên.</p>
 </div>
 </div>
 </div>
@@ -306,8 +306,8 @@ mean abs difference = 0.56 gray levels
             <a href="../quizzes/quiz14.html" class="quiz-button">Làm bài trắc nghiệm Bài 14 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson13_laplacian_pyramids.html">&larr; Bài 13: Đạo hàm bậc hai và Toán tử Laplace</a></div>
-            <div class="lesson-nav-next"><a href="lesson15_fourier_frequency_filtering.html">Bài 15: Biến đổi Fourier và Lọc trong miền tần số &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson13_laplacian_pyramids.html">&larr; Bài 13: Đạo hàm bậc hai và Toán tử Laplace (Second Derivatives and the Laplacian)</a></div>
+            <div class="lesson-nav-next"><a href="lesson15_fourier_frequency_filtering.html">Bài 15: Biến đổi Fourier và Lọc trong miền tần số (The Fourier Transform and Frequency-Domain Filtering) &rarr;</a></div>
         </div>
     </div>
 </body>

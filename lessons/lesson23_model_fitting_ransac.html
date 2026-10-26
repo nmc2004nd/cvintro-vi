@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 23: Khớp mô hình, Ước lượng bền vững và RANSAC - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 23: Khớp mô hình, Ước lượng bền vững và RANSAC (Model Fitting, Robust Estimation, and RANSAC) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=add51d1a"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-23:-Kh%E1%BB%9Bp-m%C3%B4-h%C3%ACnh,-%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-b%E1%BB%81n-v%E1%BB%AFng-v%C3%A0-RANSAC">Bài 23: Khớp mô hình, Ước lượng bền vững và RANSAC<a class="anchor-link" href="#B%C3%A0i-23:-Kh%E1%BB%9Bp-m%C3%B4-h%C3%ACnh,-%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-b%E1%BB%81n-v%E1%BB%AFng-v%C3%A0-RANSAC">¶</a></h1><p>Nhiều bài toán thị giác máy tính quy về việc khớp một mô hình — một đường thẳng, một đường tròn, một mặt phẳng, một phép đồng nhất (homography) (Bài 24), một ma trận cơ bản (fundamental matrix) (Bài 28) — với một tập các điểm tương ứng. Trên thực tế, dữ liệu đó gần như luôn chứa các điểm ngoại lai: các cặp tương ứng đơn giản là sai. Bài này đối mặt trực tiếp với điều đó: phép khớp bình phương tối thiểu mong manh một cách thảm hại chỉ với vài điểm xấu, và <strong>RANSAC</strong> là cách khắc phục tiêu chuẩn.</p>
+<h1 id="B%C3%A0i-23:-Kh%E1%BB%9Bp-m%C3%B4-h%C3%ACnh,-%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-b%E1%BB%81n-v%E1%BB%AFng-v%C3%A0-RANSAC-(Model-Fitting,-Robust-Estimation,-and-RANSAC)">Bài 23: Khớp mô hình, Ước lượng bền vững và RANSAC (Model Fitting, Robust Estimation, and RANSAC)<a class="anchor-link" href="#B%C3%A0i-23:-Kh%E1%BB%9Bp-m%C3%B4-h%C3%ACnh,-%C6%AF%E1%BB%9Bc-l%C6%B0%E1%BB%A3ng-b%E1%BB%81n-v%E1%BB%AFng-v%C3%A0-RANSAC-(Model-Fitting,-Robust-Estimation,-and-RANSAC)">¶</a></h1><p>Nhiều bài toán thị giác máy tính quy về việc khớp một mô hình — một đường thẳng, một đường tròn, một mặt phẳng, một phép đồng nhất (homography) (Bài 24), một ma trận cơ bản (fundamental matrix) (Bài 28) — với một tập các điểm tương ứng. Trên thực tế, dữ liệu đó gần như luôn chứa các điểm ngoại lai: các cặp tương ứng đơn giản là sai. Bài này đối mặt trực tiếp với điều đó: phép khớp bình phương tối thiểu mong manh một cách thảm hại chỉ với vài điểm xấu, và <strong>RANSAC</strong> là cách khắc phục tiêu chuẩn.</p>
 </div>
 </div>
 </div>
@@ -399,8 +399,8 @@ RANSAC fit:  y = 2.05x + 4.94
             <a href="../quizzes/quiz23.html" class="quiz-button">Làm bài trắc nghiệm Bài 23 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson22_stereo_matching.html">&larr; Bài 22: So khớp ảnh nổi</a></div>
-            <div class="lesson-nav-next"><a href="lesson24_projective_geometry.html">Bài 24: Hình học xạ ảnh &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson22_stereo_matching.html">&larr; Bài 22: So khớp ảnh nổi (Stereo Matching)</a></div>
+            <div class="lesson-nav-next"><a href="lesson24_projective_geometry.html">Bài 24: Hình học xạ ảnh (Projective Geometry) &rarr;</a></div>
         </div>
     </div>
 </body>

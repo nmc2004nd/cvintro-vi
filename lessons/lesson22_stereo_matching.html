@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 22: So khớp ảnh nổi - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 22: So khớp ảnh nổi (Stereo Matching) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=d0f27f66"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-22:-So-kh%E1%BB%9Bp-%E1%BA%A3nh-n%E1%BB%95i">Bài 22: So khớp ảnh nổi<a class="anchor-link" href="#B%C3%A0i-22:-So-kh%E1%BB%9Bp-%E1%BA%A3nh-n%E1%BB%95i">¶</a></h1><p>Hai camera cùng nhìn một cảnh từ hai vị trí hơi khác nhau sẽ thấy cùng các điểm 3D bị dịch chuyển với lượng khác nhau tùy theo độ sâu — điểm gần dịch nhiều hơn, điểm xa dịch ít hơn. <strong>So khớp ảnh nổi (stereo matching)</strong> tìm các độ dịch này (gọi là <strong>độ chênh lệch — disparity</strong>) tại mọi điểm ảnh, rồi chuyển chúng thành độ sâu thông qua phép tam giác đạc (triangulation). Vấn đề then chốt là sự tương ứng (correspondence): tìm, cho mỗi điểm ảnh trong ảnh trái, điểm ảnh khớp với nó trong ảnh phải. Bài này xây dựng một <strong>bộ so khớp khối (block matcher)</strong> giải quyết bài toán bằng cách so sánh các mảng nhỏ với tổng bình phương sai khác (sum-of-squared differences — SSD) — một họ hàng gần của luồng quang học ở Bài 21, nhưng bị giới hạn ở tìm kiếm 1D dọc theo một hàng duy nhất thay vì cả một vùng lân cận 2D.</p>
+<h1 id="B%C3%A0i-22:-So-kh%E1%BB%9Bp-%E1%BA%A3nh-n%E1%BB%95i-(Stereo-Matching)">Bài 22: So khớp ảnh nổi (Stereo Matching)<a class="anchor-link" href="#B%C3%A0i-22:-So-kh%E1%BB%9Bp-%E1%BA%A3nh-n%E1%BB%95i-(Stereo-Matching)">¶</a></h1><p>Hai camera cùng nhìn một cảnh từ hai vị trí hơi khác nhau sẽ thấy cùng các điểm 3D bị dịch chuyển với lượng khác nhau tùy theo độ sâu — điểm gần dịch nhiều hơn, điểm xa dịch ít hơn. <strong>So khớp ảnh nổi (stereo matching)</strong> tìm các độ dịch này (gọi là <strong>độ chênh lệch — disparity</strong>) tại mọi điểm ảnh, rồi chuyển chúng thành độ sâu thông qua phép tam giác đạc (triangulation). Vấn đề then chốt là sự tương ứng (correspondence): tìm, cho mỗi điểm ảnh trong ảnh trái, điểm ảnh khớp với nó trong ảnh phải. Bài này xây dựng một <strong>bộ so khớp khối (block matcher)</strong> giải quyết bài toán bằng cách so sánh các mảng nhỏ với tổng bình phương sai khác (sum-of-squared differences — SSD) — một họ hàng gần của luồng quang học ở Bài 21, nhưng bị giới hạn ở tìm kiếm 1D dọc theo một hàng duy nhất thay vì cả một vùng lân cận 2D.</p>
 </div>
 </div>
 </div>
@@ -629,8 +629,8 @@ newly marked invalid:           264
             <a href="../quizzes/quiz22.html" class="quiz-button">Làm bài trắc nghiệm Bài 22 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson21_optical_flow.html">&larr; Bài 21: Luồng quang học và Ước lượng chuyển động</a></div>
-            <div class="lesson-nav-next"><a href="lesson23_model_fitting_ransac.html">Bài 23: Khớp mô hình, Ước lượng bền vững và RANSAC &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson21_optical_flow.html">&larr; Bài 21: Luồng quang học và Ước lượng chuyển động (Optical Flow and Motion Estimation)</a></div>
+            <div class="lesson-nav-next"><a href="lesson23_model_fitting_ransac.html">Bài 23: Khớp mô hình, Ước lượng bền vững và RANSAC (Model Fitting, Robust Estimation, and RANSAC) &rarr;</a></div>
         </div>
     </div>
 </body>

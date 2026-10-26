@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 35: Huấn luyện một CNN - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 35: Huấn luyện một CNN (Training a CNN) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=686bd577"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-35:-Hu%E1%BA%A5n-luy%E1%BB%87n-m%E1%BB%99t-CNN">Bài 35: Huấn luyện một CNN<a class="anchor-link" href="#B%C3%A0i-35:-Hu%E1%BA%A5n-luy%E1%BB%87n-m%E1%BB%99t-CNN">¶</a></h1><p>CNN ở Bài 34 được huấn luyện và đánh giá trên dữ liệu lấy từ cùng một phân phối khá rộng rãi. Huấn luyện thực tế có một kiểu thất bại sắc bén hơn nhiều đang rình rập: với quá ít dữ liệu và quá nhiều năng lực mô hình, một mạng có thể ghi nhớ hoàn hảo tập huấn luyện của nó trong khi không học được gì có thể tổng quát hóa. Bài 32 đã cho thấy nhiều năng lực hơn nghĩa là mô hình <em>có thể</em> biểu diễn nhiều hơn; bài này cho thấy mặt trái — chính năng lực dư thừa đó, với quá ít dữ liệu để ràng buộc nó, lại chính là thứ cho phép một mạng ghi nhớ thay vì tổng quát hóa. Bài này làm cho kiểu thất bại đó trở nên cụ thể, rồi khắc phục nó theo ba cách khác nhau: <strong>tăng cường dữ liệu (data augmentation)</strong> (các phép biến đổi ở Bài 8, được dùng vào mục đích mới), <strong>chính quy hóa (regularization)</strong> (suy giảm trọng số — weight decay), và <strong>dropout</strong>.</p>
+<h1 id="B%C3%A0i-35:-Hu%E1%BA%A5n-luy%E1%BB%87n-m%E1%BB%99t-CNN-(Training-a-CNN)">Bài 35: Huấn luyện một CNN (Training a CNN)<a class="anchor-link" href="#B%C3%A0i-35:-Hu%E1%BA%A5n-luy%E1%BB%87n-m%E1%BB%99t-CNN-(Training-a-CNN)">¶</a></h1><p>CNN ở Bài 34 được huấn luyện và đánh giá trên dữ liệu lấy từ cùng một phân phối khá rộng rãi. Huấn luyện thực tế có một kiểu thất bại sắc bén hơn nhiều đang rình rập: với quá ít dữ liệu và quá nhiều năng lực mô hình, một mạng có thể ghi nhớ hoàn hảo tập huấn luyện của nó trong khi không học được gì có thể tổng quát hóa. Bài 32 đã cho thấy nhiều năng lực hơn nghĩa là mô hình <em>có thể</em> biểu diễn nhiều hơn; bài này cho thấy mặt trái — chính năng lực dư thừa đó, với quá ít dữ liệu để ràng buộc nó, lại chính là thứ cho phép một mạng ghi nhớ thay vì tổng quát hóa. Bài này làm cho kiểu thất bại đó trở nên cụ thể, rồi khắc phục nó theo ba cách khác nhau: <strong>tăng cường dữ liệu (data augmentation)</strong> (các phép biến đổi ở Bài 8, được dùng vào mục đích mới), <strong>chính quy hóa (regularization)</strong> (suy giảm trọng số — weight decay), và <strong>dropout</strong>.</p>
 </div>
 </div>
 </div>
@@ -739,8 +739,8 @@ dropout(0.5):   mean val acc = 70.2%  (+/- 8.0%, 8 seeds)
             <a href="../quizzes/quiz35.html" class="quiz-button">Làm bài trắc nghiệm Bài 35 &rarr;</a>
         </div>
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson34_convolutional_neural_networks.html">&larr; Bài 34: Mạng nơ-ron tích chập (CNN)</a></div>
-            <div class="lesson-nav-next"><a href="lesson36_evaluating_a_classifier.html">Bài 36: Đánh giá một bộ phân loại &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson34_convolutional_neural_networks.html">&larr; Bài 34: Mạng nơ-ron tích chập (CNN) (Convolutional Neural Networks (CNNs))</a></div>
+            <div class="lesson-nav-next"><a href="lesson36_evaluating_a_classifier.html">Bài 36: Đánh giá một bộ phân loại (Evaluating a Classifier) &rarr;</a></div>
         </div>
     </div>
 </body>

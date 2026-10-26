@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 61: Kết xuất thần kinh - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 61: Kết xuất thần kinh (Neural Rendering) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=565671ba"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-61:-K%E1%BA%BFt-xu%E1%BA%A5t-th%E1%BA%A7n-kinh">Bài 61: Kết xuất thần kinh<a class="anchor-link" href="#B%C3%A0i-61:-K%E1%BA%BFt-xu%E1%BA%A5t-th%E1%BA%A7n-kinh">¶</a></h1><p>Cấu trúc từ chuyển động ở Bài 29 khôi phục một đám mây điểm 3D thưa từ nhiều ảnh. <strong>Kết xuất thần kinh (neural rendering)</strong> — nổi tiếng nhất là <strong>NeRF</strong> (<a href="../references.html#mildenhall-2020-nerf">Mildenhall et al., 2020</a>) — đòi hỏi thứ gì đó phong phú hơn: một biểu diễn <em>liên tục</em> của toàn bộ một cảnh 3D, đủ dày đặc để kết xuất một ảnh chân thực như ảnh chụp từ bất kỳ góc nhìn camera nào, kể cả những góc chưa bao giờ được quan sát trong khi huấn luyện. Biểu diễn đó hoàn toàn không phải là một lưới (mesh) hay một đám mây điểm; nó là trọng số của một mạng nơ-ron nhỏ. Bài này xây dựng một mạng như vậy từ đầu: một mạng tọa độ được huấn luyện hoàn toàn bằng cách so sánh các điểm ảnh được kết xuất với các điểm ảnh thật, không có giám sát 3D nào ở bất cứ đâu trong hàm mất mát.</p>
+<h1 id="B%C3%A0i-61:-K%E1%BA%BFt-xu%E1%BA%A5t-th%E1%BA%A7n-kinh-(Neural-Rendering)">Bài 61: Kết xuất thần kinh (Neural Rendering)<a class="anchor-link" href="#B%C3%A0i-61:-K%E1%BA%BFt-xu%E1%BA%A5t-th%E1%BA%A7n-kinh-(Neural-Rendering)">¶</a></h1><p>Cấu trúc từ chuyển động ở Bài 29 khôi phục một đám mây điểm 3D thưa từ nhiều ảnh. <strong>Kết xuất thần kinh (neural rendering)</strong> — nổi tiếng nhất là <strong>NeRF</strong> (<a href="../references.html#mildenhall-2020-nerf">Mildenhall et al., 2020</a>) — đòi hỏi thứ gì đó phong phú hơn: một biểu diễn <em>liên tục</em> của toàn bộ một cảnh 3D, đủ dày đặc để kết xuất một ảnh chân thực như ảnh chụp từ bất kỳ góc nhìn camera nào, kể cả những góc chưa bao giờ được quan sát trong khi huấn luyện. Biểu diễn đó hoàn toàn không phải là một lưới (mesh) hay một đám mây điểm; nó là trọng số của một mạng nơ-ron nhỏ. Bài này xây dựng một mạng như vậy từ đầu: một mạng tọa độ được huấn luyện hoàn toàn bằng cách so sánh các điểm ảnh được kết xuất với các điểm ảnh thật, không có giám sát 3D nào ở bất cứ đâu trong hàm mất mát.</p>
 </div>
 </div>
 </div>
@@ -321,7 +321,7 @@ baseline (mean training color everywhere) MSE: 0.0453
 </div>
 
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson60_diffusion_models.html">&larr; Bài 60: Mô hình sinh và Mô hình khuếch tán</a></div>
+            <div class="lesson-nav-prev"><a href="lesson60_diffusion_models.html">&larr; Bài 60: Mô hình sinh và Mô hình khuếch tán (Generative and Diffusion Models)</a></div>
             <div class="lesson-nav-next"></div>
         </div>
     </div>

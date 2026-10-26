@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 48: Bộ tự mã hóa - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 48: Bộ tự mã hóa (Autoencoders) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=ea2009da"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-48:-B%E1%BB%99-t%E1%BB%B1-m%C3%A3-h%C3%B3a">Bài 48: Bộ tự mã hóa<a class="anchor-link" href="#B%C3%A0i-48:-B%E1%BB%99-t%E1%BB%B1-m%C3%A3-h%C3%B3a">¶</a></h1><p>Mọi mạng cho đến giờ đều học từ các mẫu có nhãn: một ảnh và lớp, hộp hoặc mặt nạ đúng của nó. <strong>Bộ tự mã hóa (autoencoder)</strong> không cần bất kỳ thứ nào trong số đó — chúng là một ví dụ nền tảng của <strong>học không giám sát</strong>, nơi tín hiệu huấn luyện duy nhất đến từ chính dữ liệu, không bao giờ từ một nhãn do con người cung cấp. Huấn luyện một mạng tái tạo chính đầu vào của nó, qua một nút thắt cổ chai hẹp có chủ đích, và nút thắt cổ chai đó buộc phải khám phá ra một biểu diễn nén, có ý nghĩa của dữ liệu — không phải vì ai đó đã gán nhãn gì, mà vì việc tái tạo qua một đường ống đủ hẹp chỉ có thể giải được bằng cách vứt bỏ việc một hình dạng trông như thế nào đến từng điểm ảnh và giữ lại việc một hình dạng <em>là</em> gì. Bài này xây dựng một bộ tự mã hóa từ đầu (<a href="../references.html#hinton-2006-autoencoder">Hinton &amp; Salakhutdinov, 2006</a>), so sánh nó với phương án tuyến tính cổ điển (PCA), và cho thấy nút thắt cổ chai thực sự mang lại gì: khử nhiễu, và một không gian tiềm ẩn (latent space) có thể nội suy một cách mượt mà.</p>
+<h1 id="B%C3%A0i-48:-B%E1%BB%99-t%E1%BB%B1-m%C3%A3-h%C3%B3a-(Autoencoders)">Bài 48: Bộ tự mã hóa (Autoencoders)<a class="anchor-link" href="#B%C3%A0i-48:-B%E1%BB%99-t%E1%BB%B1-m%C3%A3-h%C3%B3a-(Autoencoders)">¶</a></h1><p>Mọi mạng cho đến giờ đều học từ các mẫu có nhãn: một ảnh và lớp, hộp hoặc mặt nạ đúng của nó. <strong>Bộ tự mã hóa (autoencoder)</strong> không cần bất kỳ thứ nào trong số đó — chúng là một ví dụ nền tảng của <strong>học không giám sát</strong>, nơi tín hiệu huấn luyện duy nhất đến từ chính dữ liệu, không bao giờ từ một nhãn do con người cung cấp. Huấn luyện một mạng tái tạo chính đầu vào của nó, qua một nút thắt cổ chai hẹp có chủ đích, và nút thắt cổ chai đó buộc phải khám phá ra một biểu diễn nén, có ý nghĩa của dữ liệu — không phải vì ai đó đã gán nhãn gì, mà vì việc tái tạo qua một đường ống đủ hẹp chỉ có thể giải được bằng cách vứt bỏ việc một hình dạng trông như thế nào đến từng điểm ảnh và giữ lại việc một hình dạng <em>là</em> gì. Bài này xây dựng một bộ tự mã hóa từ đầu (<a href="../references.html#hinton-2006-autoencoder">Hinton &amp; Salakhutdinov, 2006</a>), so sánh nó với phương án tuyến tính cổ điển (PCA), và cho thấy nút thắt cổ chai thực sự mang lại gì: khử nhiễu, và một không gian tiềm ẩn (latent space) có thể nội suy một cách mượt mà.</p>
 </div>
 </div>
 </div>
@@ -447,8 +447,8 @@ denoiser output vs. clean target MSE: 0.0151
 </div>
 
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson47_vision_transformers.html">&larr; Bài 47: Vision Transformer (ViT)</a></div>
-            <div class="lesson-nav-next"><a href="lesson49_self_supervised_learning.html">Bài 49: Học tự giám sát và Học tương phản &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson47_vision_transformers.html">&larr; Bài 47: Vision Transformer (ViT) (Vision Transformers (ViT))</a></div>
+            <div class="lesson-nav-next"><a href="lesson49_self_supervised_learning.html">Bài 49: Học tự giám sát và Học tương phản (Self-Supervised and Contrastive Learning) &rarr;</a></div>
         </div>
     </div>
 </body>

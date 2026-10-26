@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bài 58: Độ sâu ảnh nổi với các mô hình nền tảng - Nhập môn Thị giác Máy tính</title>
+    <title>Bài 58: Độ sâu ảnh nổi với các mô hình nền tảng (Stereo Depth with Foundation Models) - Nhập môn Thị giác Máy tính</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="../css/pygments.css">
     <link rel="stylesheet" href="../css/notebook.css">
@@ -37,7 +37,7 @@
 <div class="cell border-box-sizing text_cell rendered" id="cell-id=0119ebfb"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="B%C3%A0i-58:-%C4%90%E1%BB%99-s%C3%A2u-%E1%BA%A3nh-n%E1%BB%95i-v%E1%BB%9Bi-c%C3%A1c-m%C3%B4-h%C3%ACnh-n%E1%BB%81n-t%E1%BA%A3ng">Bài 58: Độ sâu ảnh nổi với các mô hình nền tảng<a class="anchor-link" href="#B%C3%A0i-58:-%C4%90%E1%BB%99-s%C3%A2u-%E1%BA%A3nh-n%E1%BB%95i-v%E1%BB%9Bi-c%C3%A1c-m%C3%B4-h%C3%ACnh-n%E1%BB%81n-t%E1%BA%A3ng">¶</a></h1><p>Bài 22 đã xây dựng so khớp ảnh nổi cổ điển: trượt một cửa sổ nhỏ dọc theo các đường quét tương ứng, so sánh các mảng cường độ, lấy độ chênh lệch có chi phí thấp nhất. Nó hoạt động tốt trên các bề mặt có kết cấu và thất bại một cách dễ đoán trên các vùng phẳng, ít kết cấu — <strong>bài toán khẩu độ</strong>, nơi một cửa sổ nhỏ thực sự không thể biết độ dịch nào là đúng. Bài này xây dựng một mạng ảnh nổi <em>học được</em> nhỏ (một khối chi phí (cost volume) khả vi cộng với một bước tinh chỉnh tích chập, ý tưởng cốt lõi đằng sau các hệ thống ảnh nổi sâu hiện đại cho đến <strong>FoundationStereo</strong>, <a href="../references.html#wen-2024-foundationstereo">Wen et al., 2025</a>) và cho thấy cụ thể tại sao việc học thắng so khớp cục bộ thuần túy: trường tiếp nhận của một mạng cho phép nó vay mượn ngữ cảnh từ <em>bên ngoài</em> vùng mơ hồ, điều mà một cửa sổ cục bộ cố định về mặt cấu trúc không thể làm.</p>
+<h1 id="B%C3%A0i-58:-%C4%90%E1%BB%99-s%C3%A2u-%E1%BA%A3nh-n%E1%BB%95i-v%E1%BB%9Bi-c%C3%A1c-m%C3%B4-h%C3%ACnh-n%E1%BB%81n-t%E1%BA%A3ng-(Stereo-Depth-with-Foundation-Models)">Bài 58: Độ sâu ảnh nổi với các mô hình nền tảng (Stereo Depth with Foundation Models)<a class="anchor-link" href="#B%C3%A0i-58:-%C4%90%E1%BB%99-s%C3%A2u-%E1%BA%A3nh-n%E1%BB%95i-v%E1%BB%9Bi-c%C3%A1c-m%C3%B4-h%C3%ACnh-n%E1%BB%81n-t%E1%BA%A3ng-(Stereo-Depth-with-Foundation-Models)">¶</a></h1><p>Bài 22 đã xây dựng so khớp ảnh nổi cổ điển: trượt một cửa sổ nhỏ dọc theo các đường quét tương ứng, so sánh các mảng cường độ, lấy độ chênh lệch có chi phí thấp nhất. Nó hoạt động tốt trên các bề mặt có kết cấu và thất bại một cách dễ đoán trên các vùng phẳng, ít kết cấu — <strong>bài toán khẩu độ</strong>, nơi một cửa sổ nhỏ thực sự không thể biết độ dịch nào là đúng. Bài này xây dựng một mạng ảnh nổi <em>học được</em> nhỏ (một khối chi phí (cost volume) khả vi cộng với một bước tinh chỉnh tích chập, ý tưởng cốt lõi đằng sau các hệ thống ảnh nổi sâu hiện đại cho đến <strong>FoundationStereo</strong>, <a href="../references.html#wen-2024-foundationstereo">Wen et al., 2025</a>) và cho thấy cụ thể tại sao việc học thắng so khớp cục bộ thuần túy: trường tiếp nhận của một mạng cho phép nó vay mượn ngữ cảnh từ <em>bên ngoài</em> vùng mơ hồ, điều mà một cửa sổ cục bộ cố định về mặt cấu trúc không thể làm.</p>
 </div>
 </div>
 </div>
@@ -329,8 +329,8 @@ block matching MAE, textureless region: 3.30 px  (true disparity = 4)
 </div>
 
         <div class="lesson-nav">
-            <div class="lesson-nav-prev"><a href="lesson57_depth_anything.html">&larr; Bài 57: Depth Anything</a></div>
-            <div class="lesson-nav-next"><a href="lesson59_feedforward_pose_estimation.html">Bài 59: Ước lượng tư thế camera một lượt xuôi &rarr;</a></div>
+            <div class="lesson-nav-prev"><a href="lesson57_depth_anything.html">&larr; Bài 57: Depth Anything (Depth Anything)</a></div>
+            <div class="lesson-nav-next"><a href="lesson59_feedforward_pose_estimation.html">Bài 59: Ước lượng tư thế camera một lượt xuôi (Feed-Forward Camera Pose Estimation) &rarr;</a></div>
         </div>
     </div>
 </body>

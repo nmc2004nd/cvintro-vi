@@ -9,12 +9,13 @@
     <link rel="stylesheet" href="../css/quiz.css">
 </head>
 <body>
-    <nav class="navbar">
-        <div class="nav-container">
-            <ul class="nav-links">
-                <!-- site-toc:begin -->
-<li><details class="site-toc"><summary>&#9776; Các bài</summary><div class="site-toc-panel"><ul>
-<li class="site-toc-part">Phần 1: Xử lý ảnh 2D cổ điển (1960&ndash;1990)</li>
+<!-- site-toc:begin -->
+<button id="site-toc-button" class="site-toc-button" type="button" aria-label="Mục lục" aria-controls="site-toc-drawer" aria-expanded="false">&#9776;</button>
+<div class="site-toc-overlay"></div>
+<aside id="site-toc-drawer" class="site-toc-drawer" aria-label="Mục lục">
+<div class="site-toc-head"><span>Mục lục</span><button class="site-toc-close" type="button" aria-label="Đóng">&times;</button></div>
+<a class="site-toc-home" href="../index.html">&larr; Trang chủ</a>
+<details class="site-toc-group" open><summary>Phần 1: Xử lý ảnh 2D cổ điển (1960&ndash;1990)</summary><ul>
 <li><a href="../lessons/lesson01_images_as_arrays.html">Bài 1: Ảnh dưới dạng mảng (Images as Arrays)</a> <a class="site-toc-quiz" href="../quizzes/quiz01.html" title="Trắc nghiệm Bài 1">TN</a></li>
 <li><a href="../lessons/lesson02_image_arithmetic.html">Bài 2: Số học trên ảnh (Image Arithmetic)</a> <a class="site-toc-quiz" href="../quizzes/quiz02.html" title="Trắc nghiệm Bài 2">TN</a></li>
 <li><a href="../lessons/lesson03_thresholding_morphology.html">Bài 3: Phân ngưỡng, Co và Giãn (Thresholding, Erosion, and Dilation)</a> <a class="site-toc-quiz" href="../quizzes/quiz03.html" title="Trắc nghiệm Bài 3">TN</a></li>
@@ -34,7 +35,8 @@
 <li><a href="../lessons/lesson17_compression.html">Bài 17: Nén ảnh &mdash; Không mất mát và Có mất mát (Image Compression &mdash; Lossless and Lossy)</a> <a class="site-toc-quiz" href="../quizzes/quiz17.html" title="Trắc nghiệm Bài 17">TN</a></li>
 <li><a href="../lessons/lesson18_color_spaces.html">Bài 18: Không gian màu (Color Spaces)</a> <a class="site-toc-quiz" href="../quizzes/quiz18.html" title="Trắc nghiệm Bài 18">TN</a></li>
 <li class="current"><a href="../lessons/lesson19_clustering.html">Bài 19: Phân cụm — k-Means, GMM và DBSCAN (Clustering — k-Means, GMMs, and DBSCAN)</a> <a class="site-toc-quiz" href="../quizzes/quiz19.html" title="Trắc nghiệm Bài 19">TN</a></li>
-<li class="site-toc-part">Phần 2: Thị giác máy tính 3D cổ điển (1980&ndash;2010)</li>
+</ul></details>
+<details class="site-toc-group"><summary>Phần 2: Thị giác máy tính 3D cổ điển (1980&ndash;2010)</summary><ul>
 <li><a href="../lessons/lesson20_feature_detection_matching.html">Bài 20: Phát hiện và So khớp đặc trưng (Feature Detection and Matching)</a> <a class="site-toc-quiz" href="../quizzes/quiz20.html" title="Trắc nghiệm Bài 20">TN</a></li>
 <li><a href="../lessons/lesson21_optical_flow.html">Bài 21: Luồng quang học và Ước lượng chuyển động (Optical Flow and Motion Estimation)</a> <a class="site-toc-quiz" href="../quizzes/quiz21.html" title="Trắc nghiệm Bài 21">TN</a></li>
 <li><a href="../lessons/lesson22_stereo_matching.html">Bài 22: So khớp ảnh nổi (Stereo Matching)</a> <a class="site-toc-quiz" href="../quizzes/quiz22.html" title="Trắc nghiệm Bài 22">TN</a></li>
@@ -45,7 +47,8 @@
 <li><a href="../lessons/lesson27_camera_calibration.html">Bài 27: Hiệu chỉnh camera (Camera Calibration)</a> <a class="site-toc-quiz" href="../quizzes/quiz27.html" title="Trắc nghiệm Bài 27">TN</a></li>
 <li><a href="../lessons/lesson28_epipolar_geometry.html">Bài 28: Hình học epipolar (Epipolar Geometry)</a> <a class="site-toc-quiz" href="../quizzes/quiz28.html" title="Trắc nghiệm Bài 28">TN</a></li>
 <li><a href="../lessons/lesson29_structure_from_motion.html">Bài 29: Cấu trúc từ chuyển động (Structure from Motion)</a> <a class="site-toc-quiz" href="../quizzes/quiz29.html" title="Trắc nghiệm Bài 29">TN</a></li>
-<li class="site-toc-part">Phần 3: Học sâu cho thị giác máy tính (2012&ndash;2022)</li>
+</ul></details>
+<details class="site-toc-group"><summary>Phần 3: Học sâu cho thị giác máy tính (2012&ndash;2022)</summary><ul>
 <li><a href="../lessons/lesson30_projection.html">Bài 30: Phép chiếu &mdash; Ý tưởng trung tâm (Projection &mdash; The Central Idea)</a> <a class="site-toc-quiz" href="../quizzes/quiz30.html" title="Trắc nghiệm Bài 30">TN</a></li>
 <li><a href="../lessons/lesson31_neural_network_fundamentals.html">Bài 31: Nền tảng mạng nơ-ron (Neural Network Fundamentals)</a> <a class="site-toc-quiz" href="../quizzes/quiz31.html" title="Trắc nghiệm Bài 31">TN</a></li>
 <li><a href="../lessons/lesson32_multilayer_perceptrons.html">Bài 32: Perceptron nhiều lớp (Multi-Layer Perceptrons)</a> <a class="site-toc-quiz" href="../quizzes/quiz32.html" title="Trắc nghiệm Bài 32">TN</a></li>
@@ -61,7 +64,8 @@
 <li><a href="../lessons/lesson42_semantic_segmentation.html">Bài 42: Phân đoạn ngữ nghĩa (Semantic Segmentation)</a> <a class="site-toc-quiz" href="../quizzes/quiz42.html" title="Trắc nghiệm Bài 42">TN</a></li>
 <li><a href="../lessons/lesson43_instance_segmentation.html">Bài 43: Phân đoạn thực thể (Instance Segmentation)</a> <a class="site-toc-quiz" href="../quizzes/quiz43.html" title="Trắc nghiệm Bài 43">TN</a></li>
 <li><a href="../lessons/lesson44_precision_and_parallel_training.html">Bài 44: Độ chính xác số và Huấn luyện song song (Precision and Parallel Training)</a> <a class="site-toc-quiz" href="../quizzes/quiz44.html" title="Trắc nghiệm Bài 44">TN</a></li>
-<li class="site-toc-part">Phần 4: Transformer và mô hình nền tảng (2020&ndash;nay)</li>
+</ul></details>
+<details class="site-toc-group"><summary>Phần 4: Transformer và mô hình nền tảng (2020&ndash;nay)</summary><ul>
 <li><a href="../lessons/lesson45_attention_mechanism.html">Bài 45: Cơ chế chú ý (The Attention Mechanism)</a></li>
 <li><a href="../lessons/lesson46_transformer_architecture.html">Bài 46: Kiến trúc Transformer (The Transformer Architecture)</a></li>
 <li><a href="../lessons/lesson47_vision_transformers.html">Bài 47: Vision Transformer (ViT) (Vision Transformers (ViT))</a></li>
@@ -79,27 +83,35 @@
 <li><a href="../lessons/lesson59_feedforward_pose_estimation.html">Bài 59: Ước lượng tư thế camera một lượt xuôi (Feed-Forward Camera Pose Estimation)</a></li>
 <li><a href="../lessons/lesson60_diffusion_models.html">Bài 60: Mô hình sinh và Mô hình khuếch tán (Generative and Diffusion Models)</a></li>
 <li><a href="../lessons/lesson61_neural_rendering.html">Bài 61: Kết xuất thần kinh (Neural Rendering)</a></li>
-<li class="site-toc-part"><a href="../opencv-notes.html">Ghi chú OpenCV</a> &middot; <a href="../references.html">Tài liệu tham khảo</a></li>
-</ul></div></details></li>
+</ul></details>
+<div class="site-toc-extra"><a href="../opencv-notes.html">Ghi chú OpenCV</a><a href="../references.html">Tài liệu tham khảo</a></div>
+</aside>
 <script>
-document.addEventListener('click', function (e) {
-    document.querySelectorAll('.site-toc[open]').forEach(function (d) {
-        if (!d.contains(e.target) || e.target.closest('.site-toc-panel a')) d.removeAttribute('open');
+(function () {
+    var body = document.body;
+    function setOpen(open) {
+        body.classList.toggle('site-toc-open', open);
+        document.getElementById('site-toc-button').setAttribute('aria-expanded', open);
+        if (open) {
+            var cur = document.querySelector('.site-toc-drawer .current');
+            if (cur) cur.scrollIntoView({block: 'center'});
+        }
+    }
+    document.getElementById('site-toc-button').addEventListener('click', function () {
+        setOpen(!body.classList.contains('site-toc-open'));
     });
-});
-document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') document.querySelectorAll('.site-toc[open]').forEach(function (d) { d.removeAttribute('open'); });
-});
-document.querySelectorAll('.site-toc').forEach(function (d) {
-    d.addEventListener('toggle', function () {
-        if (!d.open) return;
-        document.querySelectorAll('.site-toc[open]').forEach(function (o) { if (o !== d) o.removeAttribute('open'); });
-        var cur = d.querySelector('.current');
-        if (cur) cur.scrollIntoView({block: 'center'});
+    document.querySelector('.site-toc-overlay').addEventListener('click', function () { setOpen(false); });
+    document.querySelector('.site-toc-close').addEventListener('click', function () { setOpen(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
+    document.querySelectorAll('.site-toc-drawer a').forEach(function (a) {
+        a.addEventListener('click', function () { setOpen(false); });
     });
-});
+})();
 </script>
 <!-- site-toc:end -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <ul class="nav-links">
                 <li><a href="../index.html">Nhập môn Thị giác Máy tính</a></li>
                 <li style="display: flex; align-items: center; color: #2c3e50;">&bull;</li>
                 <li><a href="https://sbirchfield.github.io/">Stan Birchfield</a></li>

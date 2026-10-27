@@ -562,100 +562,140 @@ footer {
     padding: 12px 16px;
 }
 
-/* Mục lục sổ xuống trên thanh điều hướng (tools/build_nav.py) */
-.nav-container {
-    position: relative;
-}
-
-.site-toc > summary {
-    list-style: none;
+/* Mục lục dạng ngăn kéo, mở bằng nút ☰ (tools/build_nav.py) */
+.site-toc-button {
+    position: fixed;
+    top: 8px;
+    left: 12px;
+    z-index: 1100;
+    width: 38px;
+    height: 36px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: #16a085;
+    font-size: 26px;
+    line-height: 1;
     cursor: pointer;
-    padding: 15px 20px;
+}
+
+.site-toc-button:hover {
+    background: #e8f6f3;
+}
+
+.site-toc-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.35);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    z-index: 1200;
+}
+
+.site-toc-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: min(360px, 88vw);
+    overflow-y: auto;
+    background: #ffffff;
+    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.18);
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+    z-index: 1300;
+    font-size: 15px;
+}
+
+body.site-toc-open .site-toc-drawer {
+    transform: none;
+}
+
+body.site-toc-open .site-toc-overlay {
+    opacity: 1;
+    visibility: visible;
+}
+
+.site-toc-head {
+    position: sticky;
+    top: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: #ffffff;
+    border-bottom: 1px solid #eef1f4;
+    font-weight: 600;
     color: #2c3e50;
-    font-weight: 500;
-    user-select: none;
 }
 
-.site-toc > summary::-webkit-details-marker {
-    display: none;
+.site-toc-close {
+    border: none;
+    background: none;
+    font-size: 26px;
+    line-height: 1;
+    color: #7f8c8d;
+    cursor: pointer;
 }
 
-.site-toc > summary:hover,
-.site-toc[open] > summary {
+.site-toc-drawer a {
+    color: #2c3e50;
+    text-decoration: none;
+}
+
+.site-toc-drawer a:hover {
     color: #3498db;
 }
 
-.site-toc-panel {
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(620px, calc(100vw - 32px));
-    max-height: 70vh;
-    overflow-y: auto;
-    background: #ffffff;
-    border: 1px solid #dde3ea;
-    border-radius: 8px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-    text-align: left;
-    z-index: 1001;
-}
-
-.site-toc-panel ul {
-    list-style: none;
-    margin: 0;
-    padding: 6px 0;
-}
-
-.site-toc-panel li {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    padding: 0 14px;
-}
-
-.nav-links .site-toc-panel a {
-    display: inline;
-    padding: 5px 0;
-    font-weight: 400;
-    font-size: 0.92em;
-    line-height: 1.6;
-    flex: 1;
-}
-
-.site-toc-panel li.site-toc-part {
+.site-toc-home {
     display: block;
-    margin-top: 8px;
-    padding: 6px 14px;
-    font-size: 0.8em;
+    padding: 10px 16px;
+    font-weight: 600;
+    color: #16a085 !important;
+    border-bottom: 1px solid #eef1f4;
+}
+
+.site-toc-group > summary {
+    cursor: pointer;
+    padding: 10px 16px;
+    font-size: 0.82em;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.03em;
     color: #7f8c8d;
-    border-top: 1px solid #eef1f4;
+    border-bottom: 1px solid #eef1f4;
 }
 
-.site-toc-panel li.site-toc-part:first-child {
-    margin-top: 0;
-    border-top: none;
+.site-toc-group ul {
+    list-style: none;
+    margin: 0;
+    padding: 4px 0 8px;
 }
 
-.nav-links .site-toc-panel li.site-toc-part a {
-    font-size: 1em;
-    font-weight: 600;
+.site-toc-group li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 4px 16px;
+    line-height: 1.45;
 }
 
-.site-toc-panel li.current {
+.site-toc-group li > a:first-child {
+    flex: 1;
+}
+
+.site-toc-group li.current {
     background: #eef5fc;
     border-left: 3px solid #3498db;
-    padding-left: 11px;
+    padding-left: 13px;
 }
 
-.site-toc-panel li.current > a:first-child {
+.site-toc-group li.current > a:first-child {
     font-weight: 600;
 }
 
-.nav-links .site-toc-panel a.site-toc-quiz {
+.site-toc-drawer a.site-toc-quiz {
     flex: none;
     font-size: 0.75em;
     font-weight: 600;
@@ -665,15 +705,22 @@ footer {
     color: #2471a3;
 }
 
-.nav-links .site-toc-panel a.site-toc-quiz:hover {
+.site-toc-drawer a.site-toc-quiz:hover {
     background: #3498db;
     color: #ffffff;
 }
 
+.site-toc-extra {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 16px 16px;
+    gap: 6px;
+    border-top: 1px solid #eef1f4;
+}
+
 @media (max-width: 768px) {
-    .nav-links .site-toc > summary,
-    .nav-links > li > a {
-        padding: 8px 9px;
-        font-size: 0.9em;
+    .nav-container {
+        padding-left: 52px;
+        padding-right: 12px;
     }
 }

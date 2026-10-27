@@ -1,8 +1,8 @@
-"""Thêm mục lục sổ xuống vào thanh điều hướng và sửa nút "tiếp" của trang trắc nghiệm.
+"""Thêm mục lục dạng ngăn kéo (nút ☰ ở góc trái) và sửa nút "tiếp" của trang trắc nghiệm.
 
-- Mọi trang (trừ index.html) có nút "Các bài" trên thanh điều hướng: danh sách tất cả bài học
-  theo từng phần (lấy từ index.html), kèm link trắc nghiệm nếu có.
-- Trang bài học có thêm nút "Trong bài này": các mục (h2) của bài.
+- Mọi trang (trừ index.html) có nút ☰ mở ngăn mục lục bên trái: link về trang chủ, tất cả bài học
+  theo từng phần (lấy từ index.html, phần chứa bài đang xem mở sẵn), kèm link trắc nghiệm nếu có.
+- Trang bài học có thêm nhóm "Trong bài này": các mục (h2) của bài.
 - Trang trắc nghiệm Bài N: nút "tiếp" dẫn sang lý thuyết Bài N+1 (thay vì trắc nghiệm Bài N+1).
 
 Chạy lại bao nhiêu lần cũng được (phần chèn nằm giữa marker <!-- site-toc:begin/end -->).
@@ -19,25 +19,29 @@ LESSONS_DIR = ROOT / "lessons"
 QUIZZES_DIR = ROOT / "quizzes"
 
 TOC_RE = re.compile(r"[ \t]*<!-- site-toc:begin -->.*?<!-- site-toc:end -->\n", re.S)
-NAV_LINKS = '<ul class="nav-links">\n'
+BODY = "<body>\n"
 
 SCRIPT = """<script>
-document.addEventListener('click', function (e) {
-    document.querySelectorAll('.site-toc[open]').forEach(function (d) {
-        if (!d.contains(e.target) || e.target.closest('.site-toc-panel a')) d.removeAttribute('open');
+(function () {
+    var body = document.body;
+    function setOpen(open) {
+        body.classList.toggle('site-toc-open', open);
+        document.getElementById('site-toc-button').setAttribute('aria-expanded', open);
+        if (open) {
+            var cur = document.querySelector('.site-toc-drawer .current');
+            if (cur) cur.scrollIntoView({block: 'center'});
+        }
+    }
+    document.getElementById('site-toc-button').addEventListener('click', function () {
+        setOpen(!body.classList.contains('site-toc-open'));
     });
-});
-document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') document.querySelectorAll('.site-toc[open]').forEach(function (d) { d.removeAttribute('open'); });
-});
-document.querySelectorAll('.site-toc').forEach(function (d) {
-    d.addEventListener('toggle', function () {
-        if (!d.open) return;
-        document.querySelectorAll('.site-toc[open]').forEach(function (o) { if (o !== d) o.removeAttribute('open'); });
-        var cur = d.querySelector('.current');
-        if (cur) cur.scrollIntoView({block: 'center'});
+    document.querySelector('.site-toc-overlay').addEventListener('click', function () { setOpen(false); });
+    document.querySelector('.site-toc-close').addEventListener('click', function () { setOpen(false); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setOpen(false); });
+    document.querySelectorAll('.site-toc-drawer a').forEach(function (a) {
+        a.addEventListener('click', function () { setOpen(false); });
     });
-});
+})();
 </script>"""
 
 
@@ -73,38 +77,46 @@ def lesson_sections(page):
 
 def build_toc(parts, prefix, current=None, page=None):
     """prefix: "" cho trang ở gốc, "../" cho lessons/ và quizzes/. current: stem lesson/quiz đang xem."""
-    rows = []
-    for title, lessons in parts:
-        rows.append(f'<li class="site-toc-part">{title}</li>')
-        for stem, lesson_title in lessons:
-            n = lesson_number(stem)
-            quiz = quiz_stem(n)
-            cls = ' class="current"' if current in (stem, quiz) else ""
-            quiz_link = (f' <a class="site-toc-quiz" href="{prefix}quizzes/{quiz}.html" title="Trắc nghiệm Bài {n}">TN</a>'
-                         if quiz else "")
-            rows.append(f'<li{cls}><a href="{prefix}lessons/{stem}.html">{lesson_title}</a>{quiz_link}</li>')
-    rows.append(f'<li class="site-toc-part"><a href="{prefix}opencv-notes.html">Ghi chú OpenCV</a> &middot; '
-                f'<a href="{prefix}references.html">Tài liệu tham khảo</a></li>')
-
-    items = [
-        '<li><details class="site-toc">'
-        '<summary>&#9776; Các bài</summary>'
-        '<div class="site-toc-panel"><ul>\n' + "\n".join(rows) + '\n</ul></div></details></li>'
-    ]
+    groups = []
     if page is not None:
         sections = lesson_sections(page)
         if sections:
-            items.append(
-                '<li><details class="site-toc">'
-                '<summary>&sect; Trong bài này</summary>'
-                '<div class="site-toc-panel"><ul>\n' + "\n".join(sections) + '\n</ul></div></details></li>'
-            )
-    return "                <!-- site-toc:begin -->\n" + "\n".join(items) + "\n" + SCRIPT + "\n<!-- site-toc:end -->\n"
+            groups.append('<details class="site-toc-group" open><summary>Trong bài này</summary><ul>\n'
+                          + "\n".join(sections) + '\n</ul></details>')
+    for title, lessons in parts:
+        rows, has_current = [], False
+        for stem, lesson_title in lessons:
+            n = lesson_number(stem)
+            quiz = quiz_stem(n)
+            cls = ""
+            if current in (stem, quiz):
+                cls, has_current = ' class="current"', True
+            quiz_link = (f' <a class="site-toc-quiz" href="{prefix}quizzes/{quiz}.html" title="Trắc nghiệm Bài {n}">TN</a>'
+                         if quiz else "")
+            rows.append(f'<li{cls}><a href="{prefix}lessons/{stem}.html">{lesson_title}</a>{quiz_link}</li>')
+        is_open = " open" if has_current or (current is None and page is None and not groups) else ""
+        groups.append(f'<details class="site-toc-group"{is_open}><summary>{title}</summary><ul>\n'
+                      + "\n".join(rows) + '\n</ul></details>')
+
+    return (
+        "<!-- site-toc:begin -->\n"
+        '<button id="site-toc-button" class="site-toc-button" type="button" aria-label="Mục lục" '
+        'aria-controls="site-toc-drawer" aria-expanded="false">&#9776;</button>\n'
+        '<div class="site-toc-overlay"></div>\n'
+        '<aside id="site-toc-drawer" class="site-toc-drawer" aria-label="Mục lục">\n'
+        '<div class="site-toc-head"><span>Mục lục</span>'
+        '<button class="site-toc-close" type="button" aria-label="Đóng">&times;</button></div>\n'
+        f'<a class="site-toc-home" href="{prefix}index.html">&larr; Trang chủ</a>\n'
+        + "\n".join(groups) + "\n"
+        f'<div class="site-toc-extra"><a href="{prefix}opencv-notes.html">Ghi chú OpenCV</a>'
+        f'<a href="{prefix}references.html">Tài liệu tham khảo</a></div>\n'
+        "</aside>\n" + SCRIPT + "\n<!-- site-toc:end -->\n"
+    )
 
 
 def add_toc(page, parts, prefix, current=None, with_sections=False):
     page = TOC_RE.sub("", page)
-    pos = page.index(NAV_LINKS) + len(NAV_LINKS)
+    pos = page.index(BODY) + len(BODY)
     toc = build_toc(parts, prefix, current, page if with_sections else None)
     return page[:pos] + toc + page[pos:]
 

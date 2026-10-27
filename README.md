@@ -58,6 +58,12 @@ Ngoài bản dịch, repo có thêm ghi chú cá nhân dựa trên tài liệu [
 - Ghi chú có dòng `draft: true` hiển thị nhãn "Bản nháp – chưa review" (do AI soạn theo tài liệu OpenCV). Xóa dòng đó sau khi đã đọc lại.
 - Sau khi sửa, chạy `python3 tools/build_opencv_notes.py` để chèn lại vào các bài và cập nhật `opencv-notes.html` (cần `markdown` và `pygments`).
 
+## Mục lục và điều hướng
+
+- `python3 tools/build_nav.py` chèn nút "Các bài" (mục lục sổ xuống, lấy danh sách từ `index.html`, kèm link trắc nghiệm "TN") và "Trong bài này" (các mục của bài) vào thanh điều hướng của mọi bài học, trang trắc nghiệm, `references.html` và `opencv-notes.html`.
+- Nút "tiếp" ở trang trắc nghiệm Bài N dẫn sang lý thuyết Bài N+1.
+- Chạy lại script này sau khi đổi tiêu đề bài trong `index.html` hoặc sửa heading của bài học.
+
 ## Trích dẫn
 
 Nếu thấy tài liệu hữu ích, vui lòng trích dẫn **bản gốc**:

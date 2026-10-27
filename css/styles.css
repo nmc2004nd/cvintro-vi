@@ -401,7 +401,8 @@ footer {
 
 @media (max-width: 480px) {
     .nav-links {
-        flex-direction: column;
+        flex-wrap: wrap;
+        justify-content: center;
         align-items: center;
     }
     
@@ -559,4 +560,120 @@ footer {
     border-left: 4px solid #2e8b57;
     border-radius: 6px;
     padding: 12px 16px;
+}
+
+/* Mục lục sổ xuống trên thanh điều hướng (tools/build_nav.py) */
+.nav-container {
+    position: relative;
+}
+
+.site-toc > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 15px 20px;
+    color: #2c3e50;
+    font-weight: 500;
+    user-select: none;
+}
+
+.site-toc > summary::-webkit-details-marker {
+    display: none;
+}
+
+.site-toc > summary:hover,
+.site-toc[open] > summary {
+    color: #3498db;
+}
+
+.site-toc-panel {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(620px, calc(100vw - 32px));
+    max-height: 70vh;
+    overflow-y: auto;
+    background: #ffffff;
+    border: 1px solid #dde3ea;
+    border-radius: 8px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    text-align: left;
+    z-index: 1001;
+}
+
+.site-toc-panel ul {
+    list-style: none;
+    margin: 0;
+    padding: 6px 0;
+}
+
+.site-toc-panel li {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    padding: 0 14px;
+}
+
+.nav-links .site-toc-panel a {
+    display: inline;
+    padding: 5px 0;
+    font-weight: 400;
+    font-size: 0.92em;
+    line-height: 1.6;
+    flex: 1;
+}
+
+.site-toc-panel li.site-toc-part {
+    display: block;
+    margin-top: 8px;
+    padding: 6px 14px;
+    font-size: 0.8em;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #7f8c8d;
+    border-top: 1px solid #eef1f4;
+}
+
+.site-toc-panel li.site-toc-part:first-child {
+    margin-top: 0;
+    border-top: none;
+}
+
+.nav-links .site-toc-panel li.site-toc-part a {
+    font-size: 1em;
+    font-weight: 600;
+}
+
+.site-toc-panel li.current {
+    background: #eef5fc;
+    border-left: 3px solid #3498db;
+    padding-left: 11px;
+}
+
+.site-toc-panel li.current > a:first-child {
+    font-weight: 600;
+}
+
+.nav-links .site-toc-panel a.site-toc-quiz {
+    flex: none;
+    font-size: 0.75em;
+    font-weight: 600;
+    padding: 1px 6px;
+    border: 1px solid #b9d3ee;
+    border-radius: 4px;
+    color: #2471a3;
+}
+
+.nav-links .site-toc-panel a.site-toc-quiz:hover {
+    background: #3498db;
+    color: #ffffff;
+}
+
+@media (max-width: 768px) {
+    .nav-links .site-toc > summary,
+    .nav-links > li > a {
+        padding: 8px 9px;
+        font-size: 0.9em;
+    }
 }

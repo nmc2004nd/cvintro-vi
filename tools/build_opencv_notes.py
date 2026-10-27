@@ -28,6 +28,8 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import TextLexer, get_lexer_by_name
 
+from build_nav import add_toc, load_parts
+
 ROOT = Path(__file__).resolve().parent.parent
 NOTES_DIR = ROOT / "opencv-notes"
 LESSONS_DIR = ROOT / "lessons"
@@ -279,6 +281,7 @@ def build_page(notes):
 </body>
 </html>
 """
+    page = add_toc(page, load_parts(), "")
     if not PAGE.exists() or PAGE.read_text(encoding="utf-8") != page:
         PAGE.write_text(page, encoding="utf-8")
         print("cập nhật", PAGE.relative_to(ROOT))

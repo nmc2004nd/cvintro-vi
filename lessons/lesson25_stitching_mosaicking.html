@@ -506,6 +506,22 @@ max reprojection error:  2.919 px
 <li>
 <p>Homography H (ma trận 3x3, 8 bậc tự do) ánh xạ điểm trên <mark>một mặt phẳng</mark> giữa hai ảnh:</p>
 <p><span class="math display">\[s \begin{bmatrix} x' \\ y' \\ 1 \end{bmatrix} = H \begin{bmatrix} x \\ y \\ 1 \end{bmatrix}\]</span></p>
+<details class="opencv-proof"><summary>Chứng minh: vì sao H có 8 bậc tự do, cần 4 điểm, và khi nào homography đúng <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Vì sao có hệ số <span class="math">\(s\)</span>.</strong> Khai triển <span class="math">\(s\,(x', y', 1)^T = H(x, y, 1)^T\)</span> với <span class="math">\(H = [h_{ij}]\)</span>; hàng thứ ba cho <span class="math">\(s = h_{31}x + h_{32}y + h_{33}\)</span>. Chia hai hàng đầu cho <span class="math">\(s\)</span>:</p>
+<p><span class="math display">\[x' = \frac{h_{11}x + h_{12}y + h_{13}}{h_{31}x + h_{32}y + h_{33}}, \qquad y' = \frac{h_{21}x + h_{22}y + h_{23}}{h_{31}x + h_{32}y + h_{33}}\]</span></p>
+<p>Mẫu số thay đổi theo vị trí là thứ tạo ra hiệu ứng <strong>phối cảnh</strong> (vật xa nhỏ lại). Khi <span class="math">\(h_{31} = h_{32} = 0\)</span> thì quay về phép affine.</p>
+<p><strong>2. 8 bậc tự do.</strong> Nhân <span class="math">\(H\)</span> với bất kỳ <span class="math">\(c \ne 0\)</span>, cả tử và mẫu cùng nhân <span class="math">\(c\)</span>, nên <span class="math">\((x', y')\)</span> không đổi. <span class="math">\(H\)</span> có 9 số nhưng chỉ xác định <strong>sai khác một hệ số</strong>: 9 − 1 = 8 bậc tự do (thường cố định <span class="math">\(h_{33} = 1\)</span>).</p>
+<p><strong>3. Mỗi cặp điểm cho 2 phương trình tuyến tính → cần 4 cặp.</strong> Nhân chéo mẫu số:</p>
+<p><span class="math display">\[h_{11}x + h_{12}y + h_{13} - x'(h_{31}x + h_{32}y + h_{33}) = 0\]</span></p>
+<p><span class="math display">\[h_{21}x + h_{22}y + h_{23} - y'(h_{31}x + h_{32}y + h_{33}) = 0\]</span></p>
+<p>Hai phương trình này <strong>tuyến tính</strong> theo 9 ẩn <span class="math">\(h_{ij}\)</span>. Bốn cặp điểm cho 8 phương trình, đúng bằng 8 bậc tự do. Với điều kiện không có 3 điểm nào thẳng hàng, hệ có nghiệm duy nhất (sai khác hệ số). Nhiều hơn 4 cặp thì giải bình phương tối thiểu: xếp thành <span class="math">\(A\mathbf{h} = 0\)</span> và lấy <span class="math">\(\mathbf{h}\)</span> là vector kỳ dị ứng với giá trị kỳ dị nhỏ nhất của <span class="math">\(A\)</span> (thuật toán <strong>DLT</strong>). Mình đã kiểm tra: DLT trên 4 góc khôi phục đúng <span class="math">\(H\)</span> ban đầu, trùng với <code>cv.getPerspectiveTransform</code>.</p>
+<p><strong>4. Vì sao chỉ đúng với mặt phẳng.</strong> Hai camera <span class="math">\(P = K[I \mid 0]\)</span> và <span class="math">\(P' = K'[R \mid \mathbf{t}]\)</span>; điểm 3D <span class="math">\(X\)</span> nằm trên mặt phẳng <span class="math">\(\mathbf{n}^T X = d\)</span>. Khi đó <span class="math">\(\frac{\mathbf{n}^T X}{d} = 1\)</span>, nên</p>
+<p><span class="math display">\[X' = RX + \mathbf{t} = RX + \mathbf{t}\,\frac{\mathbf{n}^T X}{d} = \Big(R + \frac{\mathbf{t}\,\mathbf{n}^T}{d}\Big)X\]</span></p>
+<p>Ảnh của <span class="math">\(X\)</span> là <span class="math">\(\mathbf{x} \sim KX\)</span> và <span class="math">\(\mathbf{x}' \sim K'X'\)</span>, nên</p>
+<p><span class="math display">\[\mathbf{x}' \sim K'\Big(R + \frac{\mathbf{t}\,\mathbf{n}^T}{d}\Big)K^{-1}\,\mathbf{x} = H\mathbf{x}\]</span></p>
+<p>Ma trận này <strong>chỉ phụ thuộc vào mặt phẳng</strong> <span class="math">\((\mathbf{n}, d)\)</span>. Điểm không nằm trên mặt phẳng đó thì không thỏa – vì vậy homography chỉ khớp vật phẳng (sách, bìa đĩa, mặt tường). Trường hợp đặc biệt <span class="math">\(\mathbf{t} = 0\)</span> (camera chỉ xoay, như khi chụp ảnh toàn cảnh) cho <span class="math">\(H = K'RK^{-1}\)</span>, đúng với <strong>mọi</strong> điểm bất kể độ sâu.</p>
+</div></details>
 </li>
 <li>
 <p><mark>Cần tối thiểu 4 cặp điểm đúng</mark> để tính H</p>
@@ -524,7 +540,22 @@ max reprojection error:  2.919 px
 <li><code>mask</code>: mảng 0/1, <mark>1 = inlier</mark></li>
 </ul>
 </li>
-<li>RANSAC: lặp nhiều lần {chọn ngẫu nhiên 4 cặp → tính H → đếm số cặp khớp với H}, giữ H có nhiều inlier nhất → <mark>bền vững với các cặp so khớp sai</mark></li>
+<li>
+<p>RANSAC: lặp nhiều lần {chọn ngẫu nhiên 4 cặp → tính H → đếm số cặp khớp với H}, giữ H có nhiều inlier nhất → <mark>bền vững với các cặp so khớp sai</mark></p>
+<details class="opencv-proof"><summary>Chứng minh: cần lặp RANSAC bao nhiêu lần <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Gọi <span class="math">\(w\)</span> là tỉ lệ cặp đúng (inlier), <span class="math">\(s = 4\)</span> là số cặp mỗi lần lấy mẫu, <span class="math">\(p\)</span> là xác suất mong muốn (ví dụ 0.99) để <strong>ít nhất một</strong> lần lấy mẫu toàn inlier.</p>
+<ul>
+<li>Một lần lấy mẫu toàn inlier: xác suất <span class="math">\(w^s\)</span> (coi các lần chọn độc lập).</li>
+<li>Một lần lấy mẫu có ít nhất một outlier: <span class="math">\(1 - w^s\)</span>.</li>
+<li>Cả <span class="math">\(N\)</span> lần đều có outlier: <span class="math">\((1 - w^s)^N\)</span>.</li>
+</ul>
+<p>Cần <span class="math">\((1 - w^s)^N \le 1 - p\)</span>. Lấy log hai vế (log của số trong <span class="math">\((0,1)\)</span> là số âm, nên đổi chiều bất đẳng thức khi chia):</p>
+<p><span class="math display">\[N \ge \frac{\log(1 - p)}{\log(1 - w^s)}\]</span></p>
+<p><strong>Ví dụ:</strong> <span class="math">\(w = 0.5\)</span>, <span class="math">\(s = 4\)</span>, <span class="math">\(p = 0.99\)</span>: <span class="math">\(w^4 = 0.0625\)</span>, <span class="math">\(N \ge \frac{\ln 0.01}{\ln 0.9375} = \frac{-4.605}{-0.0645} \approx 71.4\)</span> → <strong>72 lần</strong>. Nếu tính fundamental matrix với <span class="math">\(s = 8\)</span> thì <span class="math">\(w^8 \approx 0.0039\)</span>, cần khoảng <strong>1177 lần</strong> – mỗi điểm thêm vào mẫu làm số lần lặp tăng theo hàm mũ. Đó là lý do luôn dùng <strong>mẫu nhỏ nhất có thể</strong>.</p>
+<p>OpenCV ước lượng lại <span class="math">\(w\)</span> theo số inlier tốt nhất đã tìm được và giảm <span class="math">\(N\)</span> dần trong khi chạy (tham số <code>confidence</code>, mặc định 0.995; <code>maxIters</code>, mặc định 2000).</p>
+</div></details>
+</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">MIN_MATCH_COUNT</span> <span class="o">=</span> <span class="mi">10</span>
 

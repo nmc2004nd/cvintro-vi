@@ -45,6 +45,23 @@ after:
 
 - Trộn hai ảnh với nhau
     - $g(x) = (1 - \alpha) f_0(x) + \alpha f_1(x)$
+
+        :::proof trộn ảnh không bị tràn số
+        **Khẳng định:** nếu $0 \le \alpha \le 1$ và $f_0(x), f_1(x) \in [0, 255]$ thì $g(x) \in [\min(f_0, f_1), \max(f_0, f_1)] \subseteq [0, 255]$.
+
+        **Chứng minh.** Đặt $a = \min(f_0(x), f_1(x))$, $b = \max(f_0(x), f_1(x))$. Vì $1 - \alpha \ge 0$ và $\alpha \ge 0$:
+
+        $$g(x) = (1-\alpha) f_0(x) + \alpha f_1(x) \ge (1-\alpha)a + \alpha a = a$$
+
+        $$g(x) \le (1-\alpha) b + \alpha b = b$$
+
+        Vậy $g$ luôn nằm giữa hai giá trị gốc (đây là một *tổ hợp lồi*), không thể vượt 255 hay xuống dưới 0. $\blacksquare$
+
+        - Hai hệ số có tổng $(1 - \alpha) + \alpha = 1$ là điều kiện then chốt. Với `addWeighted(img1, alpha, img2, beta, gamma)`, nếu `alpha + beta > 1` hoặc `gamma != 0` thì kết quả có thể vượt 255 và bị OpenCV bão hòa (kẹp về 255).
+        - Độ sáng trung bình cũng trộn tuyến tính: $\overline{g} = (1-\alpha)\overline{f_0} + \alpha\overline{f_1}$ (lấy trung bình hai vế, phép trung bình là tuyến tính).
+        - Hiệu ứng fade: cho $\alpha$ tăng đều từ 0 đến 1 theo thời gian, ảnh đi thẳng từ $f_0$ ($\alpha = 0$) sang $f_1$ ($\alpha = 1$).
+        :::
+
     - Dùng hàm `cv2.addWeighted(img1, alpha, img2, beta, gamma)` = `img1*alpha + img2*beta + gamma`, để ra công thức trên thì` beta = 1 - alpha`
     - Hai ảnh `img1` và `img2` phải cùng kích thước và cùng số kênh
     - Dùng hàm `cv2.resize(img, (W, H))` - chú ý thứ tự (W, H) khác với `img.shape` là (H, W, D)

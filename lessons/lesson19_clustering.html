@@ -267,15 +267,37 @@
 <summary><span class="opencv-note-badge">Ghi chú OpenCV</span> 35. K-Means Clustering <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
 <div class="opencv-note-body">
 <ul>
-<li>K-Means chia dữ liệu thành K cụm:<ul>
+<li>
+<p>K-Means chia dữ liệu thành K cụm:</p>
+<ul>
 <li><strong>B1</strong>: chọn ngẫu nhiên K tâm cụm</li>
 <li><strong>B2</strong>: gán mỗi điểm vào tâm gần nhất</li>
 <li><strong>B3</strong>: tính lại tâm = trung bình các điểm trong cụm</li>
 <li>Lặp B2-B3 đến khi tâm không đổi (hoặc đạt điều kiện dừng)</li>
-<li>Mục tiêu: cực tiểu tổng bình phương khoảng cách từ điểm tới tâm cụm của nó (compactness)</li>
+<li>
+<p>Mục tiêu: cực tiểu tổng bình phương khoảng cách từ điểm tới tâm cụm của nó (compactness)</p>
+<details class="opencv-proof"><summary>Chứng minh: vì sao k-means luôn dừng và vì sao tâm = trung bình <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Hàm mục tiêu (chính là <code>compactness</code>), với <span class="math">\(c(i)\)</span> là cụm của điểm <span class="math">\(\mathbf{x}_i\)</span> và <span class="math">\(\boldsymbol{\mu}_j\)</span> là các tâm:</p>
+<p><span class="math display">\[J = \sum_{i=1}^{N}\big\|\mathbf{x}_i - \boldsymbol{\mu}_{c(i)}\big\|^2\]</span></p>
+<p><strong>Bổ đề – trung bình là điểm gần nhất (theo bình phương) với một nhóm điểm.</strong> Với nhóm <span class="math">\(S\)</span> có <span class="math">\(n\)</span> điểm, trung bình <span class="math">\(\bar{\mathbf{x}}\)</span>, và một điểm <span class="math">\(\mathbf{m}\)</span> bất kỳ:</p>
+<p><span class="math display">\[\sum_{i \in S}\|\mathbf{x}_i - \mathbf{m}\|^2 = \sum_{i \in S}\|(\mathbf{x}_i - \bar{\mathbf{x}}) + (\bar{\mathbf{x}} - \mathbf{m})\|^2 = \sum_{i \in S}\|\mathbf{x}_i - \bar{\mathbf{x}}\|^2 + n\|\bar{\mathbf{x}} - \mathbf{m}\|^2\]</span></p>
+<p>(số hạng chéo <span class="math">\(2(\bar{\mathbf{x}} - \mathbf{m})^T\sum_{i\in S}(\mathbf{x}_i - \bar{\mathbf{x}})\)</span> bằng 0 vì tổng độ lệch so với trung bình bằng 0). Vế phải nhỏ nhất khi và chỉ khi <span class="math">\(\mathbf{m} = \bar{\mathbf{x}}\)</span>. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Định lý – <span class="math">\(J\)</span> không bao giờ tăng, và thuật toán dừng sau hữu hạn bước.</strong></p>
+<ul>
+<li><strong>B2 (gán điểm)</strong>: tâm cố định, mỗi điểm chuyển sang tâm gần nhất, nên số hạng của từng điểm không tăng → <span class="math">\(J\)</span> không tăng.</li>
+<li><strong>B3 (cập nhật tâm)</strong>: nhãn cố định, <span class="math">\(J\)</span> tách thành tổng theo từng cụm, và theo bổ đề mỗi cụm đạt nhỏ nhất khi tâm là trung bình → <span class="math">\(J\)</span> không tăng.</li>
+</ul>
+<p><span class="math">\(J \ge 0\)</span> và không tăng qua mỗi vòng. Hơn nữa chỉ có hữu hạn cách chia <span class="math">\(N\)</span> điểm thành <span class="math">\(K\)</span> nhóm (nhiều nhất <span class="math">\(K^N\)</span>), và mỗi cách chia xác định duy nhất các tâm. Nếu <span class="math">\(J\)</span> giảm ngặt thì không thể quay lại một cách chia cũ, nên sau hữu hạn bước các nhãn ngừng thay đổi. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Nhưng chỉ là cực tiểu địa phương.</strong> Phép chứng minh chỉ nói <span class="math">\(J\)</span> giảm, không nói đạt cực tiểu toàn cục (bài toán tổng quát là NP-khó). Kết quả phụ thuộc khởi tạo – đó là lý do có tham số <code>attempts</code> (chạy nhiều lần, giữ <span class="math">\(J\)</span> nhỏ nhất) và <code>KMEANS_PP_CENTERS</code> (k-means++ chọn tâm ban đầu xa nhau, có đảm bảo kỳ vọng <span class="math">\(J\)</span> chỉ kém tối ưu cỡ <span class="math">\(O(\log K)\)</span> lần).</p>
+<p><strong>Vì sao phải <code>float32</code> và chuẩn hóa đặc trưng.</strong> <span class="math">\(J\)</span> dùng khoảng cách Euclid, nên đặc trưng có thang đo lớn (ví dụ chiều cao tính bằng cm cạnh cân nặng tính bằng tấn) sẽ lấn át hoàn toàn đặc trưng còn lại.</p>
+</div></details>
+</li>
 </ul>
 </li>
-<li>Hàm: <code>compactness, labels, centers = cv.kmeans(data, K, bestLabels, criteria, attempts, flags)</code></li>
+<li>
+<p>Hàm: <code>compactness, labels, centers = cv.kmeans(data, K, bestLabels, criteria, attempts, flags)</code></p>
+</li>
 </ul>
 <table>
 <thead>

@@ -409,8 +409,18 @@ classification accuracy: 100.0%
 <p><mark><strong>k-Nearest Neighbour (kNN)</strong></mark></p>
 <ul>
 <li>Không có bước học thật sự: lưu lại toàn bộ dữ liệu</li>
-<li>Phân loại điểm mới: tìm k điểm gần nhất, <mark>lớp nào chiếm đa số thì gán lớp đó</mark></li>
-<li>k nhỏ → nhạy với nhiễu; k lớn → biên quyết định mượt hơn nhưng có thể lấn sang lớp khác; thường chọn k lẻ để tránh hòa</li>
+<li>
+<p>Phân loại điểm mới: tìm k điểm gần nhất, <mark>lớp nào chiếm đa số thì gán lớp đó</mark></p>
+<details class="opencv-proof"><summary>Chứng minh: vì sao kNN với k lẻ không hòa (2 lớp) và trọng số theo khoảng cách <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>k lẻ không hòa với 2 lớp.</strong> Nếu hai lớp có <span class="math">\(a\)</span> và <span class="math">\(b\)</span> phiếu thì <span class="math">\(a + b = k\)</span>. Hòa nghĩa là <span class="math">\(a = b\)</span>, tức <span class="math">\(k = 2a\)</span> chẵn. Vậy <span class="math">\(k\)</span> lẻ thì không thể hòa. <span class="math">\(\blacksquare\)</span> Với 3 lớp trở lên, <span class="math">\(k\)</span> lẻ <strong>không</strong> đủ (ví dụ <span class="math">\(k = 3\)</span> với ba lớp mỗi lớp 1 phiếu) – khi đó cần quy tắc phá hòa, thường là chọn lớp có điểm gần nhất.</p>
+<p><strong>Trọng số theo khoảng cách</strong> (ví dụ <span class="math">\(w_i = 1/d_i\)</span>): lớp được chọn là lớp có tổng <span class="math">\(w_i\)</span> lớn nhất. Điểm nằm gần điểm mới quyết định nhiều hơn, nên kết quả ít nhạy với việc chọn <span class="math">\(k\)</span> hơn.</p>
+<p><strong>Vì sao kNN cần chuẩn hóa đặc trưng</strong> – giống k-means: khoảng cách Euclid <span class="math">\(\sqrt{\sum_j (x_j - x'_j)^2}\)</span> bị chi phối bởi đặc trưng có thang đo lớn nhất.</p>
+</div></details>
+</li>
+<li>
+<p>k nhỏ → nhạy với nhiễu; k lớn → biên quyết định mượt hơn nhưng có thể lấn sang lớp khác; thường chọn k lẻ để tránh hòa</p>
+</li>
 <li>Có thể đặt trọng số theo khoảng cách (điểm gần quan trọng hơn)</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">knn</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">KNearest_create</span><span class="p">()</span>
@@ -449,8 +459,27 @@ classification accuracy: 100.0%
 <li>
 <p><mark><strong>Support Vector Machine (SVM)</strong></mark></p>
 <ul>
-<li>Tìm siêu phẳng phân chia hai lớp với <mark>lề (margin) lớn nhất</mark></li>
-<li>Chỉ các điểm nằm sát biên (<mark>support vectors</mark>) quyết định siêu phẳng → sau khi học không cần giữ toàn bộ dữ liệu</li>
+<li>
+<p>Tìm siêu phẳng phân chia hai lớp với <mark>lề (margin) lớn nhất</mark></p>
+<details class="opencv-proof"><summary>Chứng minh: độ rộng lề 2/‖w‖, vai trò của C và kernel RBF <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Khoảng cách từ điểm tới siêu phẳng.</strong> Siêu phẳng <span class="math">\(\mathbf{w}^T\mathbf{x} + b = 0\)</span> có pháp tuyến <span class="math">\(\mathbf{w}\)</span>. Lấy <span class="math">\(\mathbf{x}_0\)</span> trên siêu phẳng; khoảng cách từ <span class="math">\(\mathbf{x}\)</span> là độ dài hình chiếu của <span class="math">\(\mathbf{x} - \mathbf{x}_0\)</span> lên <span class="math">\(\mathbf{w}/\|\mathbf{w}\|\)</span>:</p>
+<p><span class="math display">\[\text{dist} = \frac{|\mathbf{w}^T(\mathbf{x} - \mathbf{x}_0)|}{\|\mathbf{w}\|} = \frac{|\mathbf{w}^T\mathbf{x} + b|}{\|\mathbf{w}\|}\]</span></p>
+<p>(vì <span class="math">\(\mathbf{w}^T\mathbf{x}_0 = -b\)</span>).</p>
+<p><strong>2. Độ rộng lề = <span class="math">\(2/\|\mathbf{w}\|\)</span>.</strong> Nhân <span class="math">\(\mathbf{w}, b\)</span> với cùng một hằng số không đổi siêu phẳng, nên có thể chọn thang đo sao cho các điểm gần nhất thỏa <span class="math">\(|\mathbf{w}^T\mathbf{x} + b| = 1\)</span>. Với nhãn <span class="math">\(y_i \in \{-1, +1\}\)</span>, mọi điểm được phân loại đúng với lề khi <span class="math">\(y_i(\mathbf{w}^T\mathbf{x}_i + b) \ge 1\)</span>. Hai đường biên của lề là <span class="math">\(\mathbf{w}^T\mathbf{x} + b = \pm1\)</span>, mỗi đường cách siêu phẳng <span class="math">\(\frac{1}{\|\mathbf{w}\|}\)</span> (theo mục 1), nên lề rộng <span class="math">\(\frac{2}{\|\mathbf{w}\|}\)</span>. Cực đại lề tương đương bài toán lồi:</p>
+<p><span class="math display">\[\min_{\mathbf{w}, b}\ \frac12\|\mathbf{w}\|^2 \quad \text{với } y_i(\mathbf{w}^T\mathbf{x}_i + b) \ge 1\ \ \forall i\]</span></p>
+<p><strong>3. Vì sao chỉ support vector quyết định.</strong> Theo điều kiện tối ưu (KKT) của bài toán trên, nghiệm có dạng <span class="math">\(\mathbf{w} = \sum_i \alpha_i y_i \mathbf{x}_i\)</span> với <span class="math">\(\alpha_i \ge 0\)</span>, và <span class="math">\(\alpha_i &gt; 0\)</span> <strong>chỉ</strong> với các điểm nằm đúng trên biên lề (<span class="math">\(y_i(\mathbf{w}^T\mathbf{x}_i + b) = 1\)</span>). Xóa một điểm nằm ngoài lề thì <span class="math">\(\alpha_i = 0\)</span> vẫn thỏa mọi điều kiện, nghiệm không đổi. Đó là các <em>support vector</em> trong hình minh họa.</p>
+<p><strong>4. Tham số C (lề mềm).</strong> Khi dữ liệu không tách được, cho phép vi phạm <span class="math">\(\xi_i \ge 0\)</span>:</p>
+<p><span class="math display">\[\min\ \frac12\|\mathbf{w}\|^2 + C\sum_i\xi_i \quad \text{với } y_i(\mathbf{w}^T\mathbf{x}_i + b) \ge 1 - \xi_i\]</span></p>
+<p><span class="math">\(C\)</span> là giá của mỗi đơn vị vi phạm. <span class="math">\(C\)</span> lớn → vi phạm rất đắt → bộ giải chấp nhận <span class="math">\(\|\mathbf{w}\|\)</span> lớn (lề hẹp) để phân loại đúng hết, dễ khớp cả nhiễu. <span class="math">\(C\)</span> nhỏ → ưu tiên <span class="math">\(\|\mathbf{w}\|\)</span> nhỏ (lề rộng), chấp nhận vài điểm sai. Đó chính là mô tả <code>C</code> trong ghi chú.</p>
+<p><strong>5. Kernel trick.</strong> Trong bài toán đối ngẫu, dữ liệu chỉ xuất hiện qua tích vô hướng <span class="math">\(\mathbf{x}_i^T\mathbf{x}_j\)</span>, và hàm quyết định là <span class="math">\(\sum_i\alpha_iy_i\,\mathbf{x}_i^T\mathbf{x} + b\)</span>. Thay tích vô hướng bằng <span class="math">\(K(\mathbf{x}_i, \mathbf{x}) = \phi(\mathbf{x}_i)^T\phi(\mathbf{x})\)</span> là làm SVM tuyến tính trong không gian đặc trưng <span class="math">\(\phi\)</span>, mà không cần tính <span class="math">\(\phi\)</span> tường minh. RBF:</p>
+<p><span class="math display">\[K(\mathbf{x}, \mathbf{x}') = e^{-\gamma\|\mathbf{x} - \mathbf{x}'\|^2}\]</span></p>
+<p>Hàm quyết định thành tổng các "quả chuông" Gauss đặt tại các support vector, độ rộng cỡ <span class="math">\(1/\sqrt{\gamma}\)</span>. <strong><span class="math">\(\gamma\)</span> lớn → chuông hẹp → biên uốn sát từng điểm</strong>; <span class="math">\(\gamma\)</span> nhỏ → chuông rộng → biên mượt. Đúng như mô tả tham số <code>gamma</code> ở dưới.</p>
+</div></details>
+</li>
+<li>
+<p>Chỉ các điểm nằm sát biên (<mark>support vectors</mark>) quyết định siêu phẳng → sau khi học không cần giữ toàn bộ dữ liệu</p>
+</li>
 <li>Dữ liệu không tách được bằng đường thẳng → <strong>kernel trick</strong>: ánh xạ ngầm sang không gian nhiều chiều hơn (RBF, đa thức)</li>
 <li>Tham số:<ul>
 <li><code>C</code>: <mark>C lớn → phạt nặng điểm bị phân loại sai, lề hẹp, dễ overfit; C nhỏ → lề rộng, chấp nhận vài điểm sai</mark></li>

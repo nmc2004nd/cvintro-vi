@@ -423,17 +423,42 @@
 <li>
 <p><mark><strong>Gradient bằng Sobel và Scharr</strong></mark></p>
 <ul>
-<li>Kết hợp giữa:<ul>
+<li>
+<p>Kết hợp giữa:</p>
+<ul>
 <li>Làm mịn Gaussian</li>
 <li>Phép đạo hàm sai biệt</li>
 <li><code>Derivative×Gaussian</code></li>
-<li><span class="math">\(\frac{\partial I}{\partial x} = I(x+1, y) - I(x-1, y)\)</span> → <span class="math">\(dx = [-1, 0, 1]\)</span></li>
-<li><span class="math">\(\frac{\partial I}{\partial y} = I(x, y+1) - I(x, y-1)\)</span> → <span class="math">\(dy = [-1, 0, 1]^T\)</span></li>
+<li><span class="math">\(\frac{\partial I}{\partial x} \approx \frac{I(x+1, y) - I(x-1, y)}{2}\)</span> → <span class="math">\(dx = [-1, 0, 1]\)</span> (OpenCV bỏ hệ số <span class="math">\(\frac12\)</span>)</li>
+<li><span class="math">\(\frac{\partial I}{\partial y} \approx \frac{I(x, y+1) - I(x, y-1)}{2}\)</span> → <span class="math">\(dy = [-1, 0, 1]^T\)</span></li>
 <li>Đạo hàm theo x (dx) thì làm mượt Gaussian theo y → <span class="math">\(Ga_y = [1, 2, 1]^T\)</span></li>
 <li>Đạo hàm theo y (dy) thì làm mượt Gaussian theo x → <span class="math">\(Ga_x = [1, 2, 1]\)</span></li>
-<li>Với Scharr thì <span class="math">\(Ga_y = [3, 10, 3]^T\)</span> và <span class="math">\(Ga_x = [3, 10, 3]\)</span></li>
-<li>Sobel xấp xỉ:<ul>
-<li><mark>Chính xác nhất với cạnh ngang/dọc (0°, 90°), sai số góc lớn hơn ở các hướng chéo</mark></li>
+<li>
+<p>Với Scharr thì <span class="math">\(Ga_y = [3, 10, 3]^T\)</span> và <span class="math">\(Ga_x = [3, 10, 3]\)</span></p>
+<details class="opencv-proof"><summary>Chứng minh: đạo hàm sai phân, kernel Sobel tách được và hệ số Scharr <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Vì sao dùng sai phân trung tâm.</strong> Khai triển Taylor theo <span class="math">\(x\)</span> (bước <span class="math">\(h = 1\)</span> pixel):</p>
+<p><span class="math display">\[I(x+1) = I(x) + I'(x) + \tfrac{1}{2}I''(x) + \tfrac{1}{6}I'''(x) + \dots\]</span></p>
+<p><span class="math display">\[I(x-1) = I(x) - I'(x) + \tfrac{1}{2}I''(x) - \tfrac{1}{6}I'''(x) + \dots\]</span></p>
+<p>Trừ hai dòng, các số hạng bậc chẵn triệt tiêu:</p>
+<p><span class="math display">\[I(x+1) - I(x-1) = 2I'(x) + \tfrac{1}{3}I'''(x) + \dots \;\Rightarrow\; I'(x) = \frac{I(x+1) - I(x-1)}{2} + O(h^2)\]</span></p>
+<p>Sai phân tiến <span class="math">\(I(x+1) - I(x)\)</span> chỉ có sai số <span class="math">\(O(h)\)</span> (còn sót <span class="math">\(\tfrac12 I''\)</span>) và lệch nửa pixel. Kernel <span class="math">\([-1, 0, 1]\)</span> chính là sai phân trung tâm <strong>chưa chia 2</strong>; OpenCV bỏ hệ số này, nên giá trị Sobel lớn hơn đạo hàm thật (xem mục 3).</p>
+<p><strong>2. Kernel 3x3 = tích ngoài của hai vector 1D (tách được).</strong></p>
+<p><span class="math display">\[\begin{bmatrix} 1 \\ 2 \\ 1 \end{bmatrix}\begin{bmatrix} -1 &amp; 0 &amp; 1 \end{bmatrix} = \begin{bmatrix} -1 &amp; 0 &amp; 1 \\ -2 &amp; 0 &amp; 2 \\ -1 &amp; 0 &amp; 1 \end{bmatrix}\]</span></p>
+<p>Vì <span class="math">\(K(i, j) = a_i b_j\)</span> nên <span class="math">\(\sum_{i,j} a_i b_j f(x+j, y+i) = \sum_i a_i \big(\sum_j b_j f(x+j, y+i)\big)\)</span>: lọc theo hàng bằng <span class="math">\(b\)</span> rồi theo cột bằng <span class="math">\(a\)</span> cho cùng kết quả, tốn <span class="math">\(3 + 3 = 6\)</span> phép nhân thay vì 9 (kernel <span class="math">\(k \times k\)</span>: <span class="math">\(2k\)</span> thay vì <span class="math">\(k^2\)</span>). <span class="math">\([1, 2, 1] = [1, 1] * [1, 1]\)</span> là hệ số nhị thức, xấp xỉ Gauss rời rạc; nó làm mượt theo hướng <em>vuông góc</em> với hướng đạo hàm để giảm nhiễu mà không làm mờ cạnh theo hướng đang đo.</p>
+<p><strong>3. Sobel trả về 8 lần đạo hàm thật.</strong> Trên ảnh dốc đều <span class="math">\(I = ax\)</span>: hàng giữa cho <span class="math">\(a(x+1) - a(x-1) = 2a\)</span>, và ba hàng có trọng số <span class="math">\(1 + 2 + 1 = 4\)</span>, tổng cộng <span class="math">\(8a\)</span>. Mình đã kiểm tra: ảnh dốc với <span class="math">\(a = 3\)</span> cho Sobel = 24. Với Scharr hệ số là <span class="math">\(2 \cdot (3 + 10 + 3) = 32\)</span>. Hướng gradient không đổi vì <span class="math">\(G_x, G_y\)</span> cùng bị nhân một hằng số.</p>
+<p><strong>4. Vì sao Scharr chính xác hơn về hướng.</strong> Đưa vào một sóng phẳng tần số <span class="math">\(\omega\)</span> theo hướng <span class="math">\(\varphi\)</span>: <span class="math">\(I = \cos(\omega_x x + \omega_y y)\)</span> với <span class="math">\(\omega_x = \omega\cos\varphi\)</span>, <span class="math">\(\omega_y = \omega\sin\varphi\)</span>. Kernel tách được <span class="math">\([a, b, a]^T \otimes [-1, 0, 1]\)</span> cho</p>
+<p><span class="math display">\[G_x \propto \sin\omega_x\,(b + 2a\cos\omega_y), \qquad G_y \propto \sin\omega_y\,(b + 2a\cos\omega_x)\]</span></p>
+<p>Khai triển <span class="math">\(\sin u \approx u - u^3/6\)</span>, <span class="math">\(\cos u \approx 1 - u^2/2\)</span> khi <span class="math">\(\omega\)</span> nhỏ:</p>
+<p><span class="math display">\[\frac{G_y}{G_x} \approx \frac{\omega_y}{\omega_x}\Big[1 + (\omega_y^2 - \omega_x^2)\Big(\frac{a}{b + 2a} - \frac{1}{6}\Big)\Big]\]</span></p>
+<p>Hướng ước lượng đúng (<span class="math">\(G_y/G_x = \tan\varphi\)</span>) với mọi <span class="math">\(\varphi\)</span> khi <span class="math">\(\frac{a}{b+2a} = \frac16\)</span>, tức <span class="math">\(b = 4a\)</span>. Sobel có <span class="math">\(\frac{1}{1+2+1} = \frac14 \ne \frac16\)</span> nên lệch hướng; số hạng sai bằng 0 khi <span class="math">\(\omega_x = \omega_y\)</span> (45°) hoặc khi một trong hai bằng 0 (0°, 90°). Scharr <span class="math">\([3, 10, 3]\)</span> có <span class="math">\(\frac{3}{16} \approx 0.19\)</span>, gần <span class="math">\(\frac16 \approx 0.17\)</span> hơn nhiều; hệ số này được Scharr tối ưu số trên <em>mọi</em> tần số chứ không chỉ tần số thấp, nên không đúng bằng <span class="math">\([1,4,1]\)</span>.</p>
+<p>Tính số trên sóng có <span class="math">\(\omega = \pi/2\)</span> (chi tiết cỡ 4 pixel): Sobel lệch tối đa <strong>3.2°</strong> (ở 22.5° và 67.5°), Scharr chỉ <strong>0.3°</strong>. Ở 0°, 45°, 90° cả hai đều đúng tuyệt đối.</p>
+</div></details>
+</li>
+<li>
+<p>Sobel xấp xỉ:</p>
+<ul>
+<li><mark>Hướng gradient đúng ở 0°, 45°, 90°; lệch nhiều nhất quanh 22.5° và 67.5° (tới khoảng 3° với chi tiết nhỏ)</mark></li>
 <li><mark>Hay phát hiện cạnh giả do nhiễu</mark></li>
 <li><mark>Cạnh dày</mark></li>
 <li><span class="math">\(K_x = Ga_y * dx = \begin{bmatrix}-1 &amp; 0 &amp; 1 \\-2 &amp; 0 &amp; 2 \\-1 &amp; 0 &amp; 1\end{bmatrix}\)</span>: đạo hàm theo x (theo cột) → tìm cạnh dọc</li>
@@ -448,8 +473,26 @@
 </li>
 </ul>
 </li>
-<li><span class="math">\(G = \sqrt{G_x^2 + G_y^2}\)</span> hoặc có thể tăng tốc độ bằng <span class="math">\(G \approx |G_x| + |G_y|\)</span></li>
-<li><span class="math display">\[\theta = \operatorname{atan2}(G_y, G_x)\times\frac{180}{\pi}\]</span></li>
+<li>
+<p><span class="math">\(G = \sqrt{G_x^2 + G_y^2}\)</span> hoặc có thể tăng tốc độ bằng <span class="math">\(G \approx |G_x| + |G_y|\)</span></p>
+<details class="opencv-proof"><summary>Chứng minh: độ lớn, hướng gradient và xấp xỉ |Gx| + |Gy| <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Gradient chỉ hướng tăng nhanh nhất, độ lớn là tốc độ tăng đó.</strong> Đạo hàm theo hướng vector đơn vị <span class="math">\(\mathbf{u} = (\cos\psi, \sin\psi)\)</span> là</p>
+<p><span class="math display">\[D_{\mathbf{u}}I = \nabla I \cdot \mathbf{u} = G_x\cos\psi + G_y\sin\psi = |\nabla I|\cos(\psi - \theta)\]</span></p>
+<p>với <span class="math">\(\theta\)</span> là góc của <span class="math">\(\nabla I = (G_x, G_y)\)</span>. Biểu thức lớn nhất khi <span class="math">\(\psi = \theta\)</span> và có giá trị <span class="math">\(|\nabla I| = \sqrt{G_x^2 + G_y^2}\)</span>. Theo hướng <span class="math">\(\psi = \theta \pm 90°\)</span> thì <span class="math">\(D_{\mathbf{u}} I = 0\)</span>: cường độ không đổi → đó là <strong>hướng chạy dọc theo cạnh</strong>. Vậy gradient luôn vuông góc với cạnh. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>2. Vì sao dùng <code>atan2</code> chứ không dùng <code>atan(Gy/Gx)</code>.</strong> <code>atan</code> chỉ cho góc trong <span class="math">\((-90°, 90°)\)</span> và lỗi khi <span class="math">\(G_x = 0\)</span>; <span class="math">\((G_x, G_y)\)</span> và <span class="math">\((-G_x, -G_y)\)</span> cho cùng tỉ số nên không phân biệt được "tối → sáng" với "sáng → tối". <code>atan2</code> dùng dấu của cả hai thành phần để trả về góc đầy đủ <span class="math">\((-180°, 180°]\)</span>.</p>
+<p><strong>3. Sai số của <span class="math">\(|G_x| + |G_y|\)</span>.</strong> Với <span class="math">\(a = G_x\)</span>, <span class="math">\(b = G_y\)</span>:</p>
+<ul>
+<li><span class="math">\((|a| + |b|)^2 = a^2 + b^2 + 2|ab| \ge a^2 + b^2\)</span> → <span class="math">\(|a| + |b| \ge G\)</span></li>
+<li><span class="math">\(2|ab| \le a^2 + b^2\)</span> (vì <span class="math">\((|a| - |b|)^2 \ge 0\)</span>) → <span class="math">\((|a| + |b|)^2 \le 2(a^2 + b^2)\)</span> → <span class="math">\(|a| + |b| \le \sqrt{2}\,G\)</span></li>
+</ul>
+<p><span class="math display">\[G \le |G_x| + |G_y| \le \sqrt{2}\,G\]</span></p>
+<p>Đúng tuyệt đối với cạnh ngang/dọc (một thành phần bằng 0), lớn hơn thật tối đa <span class="math">\(\sqrt2 \approx 1.41\)</span> lần ở cạnh chéo 45°. Nghĩa là với cùng một ngưỡng, cạnh chéo dễ được giữ hơn cạnh ngang/dọc. Đó là lý do Canny có tùy chọn <code>L2gradient</code>.</p>
+</div></details>
+</li>
+<li>
+<p><span class="math display">\[\theta = \operatorname{atan2}(G_y, G_x)\times\frac{180}{\pi}\]</span></p>
+</li>
 <li><mark>Có khả năng chống nhiễu hạt tốt</mark></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="c1"># Lưu ý: Sử dụng kiểu dữ liệu cv.CV_64F để giữ lại các giá trị âm (tránh mất biên)</span>
@@ -470,6 +513,18 @@
 <li>
 <p>Với <code>ksize = 1</code></p>
 <p><span class="math display">\[\begin{bmatrix}0 &amp; 1 &amp; 0 \\1 &amp; -4 &amp; 1 \\0 &amp; 1 &amp; 0\end{bmatrix}\]</span></p>
+<details class="opencv-proof"><summary>Chứng minh: kernel Laplace 3x3 và vì sao nó bất biến với phép xoay <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Đạo hàm bậc hai bằng sai phân.</strong> Cộng hai khai triển Taylor ở mục trước (lần này các số hạng bậc lẻ triệt tiêu):</p>
+<p><span class="math display">\[I(x+1) + I(x-1) = 2I(x) + I''(x) + O(h^4) \;\Rightarrow\; \frac{\partial^2 I}{\partial x^2} \approx I(x+1) - 2I(x) + I(x-1)\]</span></p>
+<p>tức kernel <span class="math">\([1, -2, 1]\)</span>, sai số <span class="math">\(O(h^2)\)</span>. Làm tương tự theo <span class="math">\(y\)</span> rồi cộng lại:</p>
+<p><span class="math display">\[\begin{bmatrix} 0 &amp; 0 &amp; 0 \\ 1 &amp; -2 &amp; 1 \\ 0 &amp; 0 &amp; 0 \end{bmatrix} + \begin{bmatrix} 0 &amp; 1 &amp; 0 \\ 0 &amp; -2 &amp; 0 \\ 0 &amp; 1 &amp; 0 \end{bmatrix} = \begin{bmatrix} 0 &amp; 1 &amp; 0 \\ 1 &amp; -4 &amp; 1 \\ 0 &amp; 1 &amp; 0 \end{bmatrix}\]</span></p>
+<p>Đã kiểm tra: <code>cv.Laplacian(img, cv.CV_32F)</code> (mặc định <code>ksize=1</code>) trùng với <code>filter2D</code> bằng kernel này.</p>
+<p><strong>2. Kernel có tổng bằng 0</strong> → kết quả bằng 0 trên vùng phẳng <em>và</em> trên vùng dốc đều <span class="math">\(I = ax + by + c\)</span> (đạo hàm bậc hai của hàm tuyến tính bằng 0). Laplace chỉ phản ứng với chỗ độ dốc <em>thay đổi</em>: hai bên của một cạnh cho dấu ngược nhau, và cạnh nằm ở <strong>điểm cắt không</strong> (zero-crossing).</p>
+<p><strong>3. Bất biến với phép xoay (bản liên tục).</strong> <span class="math">\(\Delta I\)</span> là vết (trace) của ma trận Hessian <span class="math">\(H = \begin{bmatrix} I_{xx} &amp; I_{xy} \\ I_{xy} &amp; I_{yy} \end{bmatrix}\)</span>. Khi xoay hệ trục bằng <span class="math">\(R\)</span>, Hessian thành <span class="math">\(R^T H R\)</span>, và</p>
+<p><span class="math display">\[\operatorname{tr}(R^T H R) = \operatorname{tr}(H R R^T) = \operatorname{tr}(H)\]</span></p>
+<p>(dùng <span class="math">\(\operatorname{tr}(AB) = \operatorname{tr}(BA)\)</span> và <span class="math">\(RR^T = I\)</span>). Vậy Laplace phát hiện biên <strong>theo mọi hướng bằng một phép lọc</strong>, không cần tách <span class="math">\(x\)</span>, <span class="math">\(y\)</span> như Sobel. Đổi lại nó là đạo hàm bậc hai nên khuếch đại nhiễu mạnh hơn (nhiễu tần số <span class="math">\(\omega\)</span> bị nhân khoảng <span class="math">\(\omega^2\)</span> thay vì <span class="math">\(\omega\)</span>) – đó là lý do thường làm mờ Gauss trước (LoG).</p>
+</div></details>
 </li>
 </ul>
 </li>
@@ -701,11 +756,55 @@
 <li>Giá trị góc này sẽ được làm tròn về 1 trong 4 hướng: 0°, 45°, 90°, 135°</li>
 </ul>
 </li>
-<li>GD3: Triệt tiêu phi cực đại - Loại trừ cạnh dày<ul>
+<li>
+<p>GD3: Triệt tiêu phi cực đại - Loại trừ cạnh dày</p>
+<ul>
 <li>Tại mỗi pixel A kiểm tra xem <span class="math">\(G_A\)</span> có max trong vùng lân cận dọc theo Gradient không</li>
 <li>Nếu <span class="math">\(G_A\)</span> max thì sẽ giữ lại</li>
 <li>Nếu <span class="math">\(G_A\)</span> không phải là max thì là cạnh giả đặt về 0 ( nền đen)</li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: vì sao triệt tiêu phi cực đại tìm đúng tâm cạnh <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Cạnh nằm ở đỉnh của độ lớn gradient theo hướng gradient.</strong> Cắt ảnh dọc theo hướng gradient <span class="math">\(\mathbf{n}\)</span> qua một điểm biên, ta được hồ sơ cường độ 1D <span class="math">\(f(s)\)</span>: một bậc thang đã bị làm mờ, có dạng chữ S. Độ lớn gradient trên lát cắt là <span class="math">\(|f'(s)|\)</span>. Tâm cạnh là nơi cường độ đổi nhanh nhất, tức <span class="math">\(|f'|\)</span> cực đại, tức</p>
+<p><span class="math display">\[\frac{d}{ds}f'(s) = f''(s) = 0 \quad \text{và } f' \ne 0\]</span></p>
+<p>(chính là <em>điểm uốn</em> của chữ S, cũng là điểm cắt không của Laplace theo hướng <span class="math">\(\mathbf{n}\)</span>). Sau khi làm mờ, <span class="math">\(|f'|\)</span> là một "quả đồi" rộng vài pixel, nên ngưỡng trực tiếp sẽ cho cạnh dày. Giữ lại <em>chỉ đỉnh đồi</em> thì cạnh dày đúng 1 pixel.</p>
+<p><strong>2. Vì sao chỉ so với 2 hàng xóm dọc theo gradient.</strong> Dọc theo cạnh (vuông góc với gradient), <span class="math">\(|\nabla I|\)</span> gần như không đổi – mọi điểm trên cạnh đều cao như nhau, so theo hướng đó sẽ xóa nhầm cạnh. Chỉ theo hướng gradient thì tâm cạnh mới là cực đại địa phương.</p>
+<p><strong>3. Làm tròn góc về 4 hướng.</strong> Lưới pixel chỉ có 8 hàng xóm, tức 4 trục: 0°, 45°, 90°, 135° (hướng và hướng ngược lại dùng chung một trục, nên xét <span class="math">\(\theta \bmod 180°\)</span>). Mỗi góc được gán về trục gần nhất, tức các khoảng rộng 45° có tâm tại trục:</p>
+<table>
+<thead>
+<tr>
+<th><span class="math">\(\theta \bmod 180°\)</span></th>
+<th>Trục</th>
+<th>So với hai pixel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math">\([0°, 22.5°) \cup [157.5°, 180°)\)</span></td>
+<td>0°</td>
+<td>trái, phải</td>
+</tr>
+<tr>
+<td><span class="math">\([22.5°, 67.5°)\)</span></td>
+<td>45°</td>
+<td>hai pixel chéo theo hướng đó</td>
+</tr>
+<tr>
+<td><span class="math">\([67.5°, 112.5°)\)</span></td>
+<td>90°</td>
+<td>trên, dưới</td>
+</tr>
+<tr>
+<td><span class="math">\([112.5°, 157.5°)\)</span></td>
+<td>135°</td>
+<td>hai pixel chéo còn lại</td>
+</tr>
+</tbody>
+</table>
+<p>(Với trục <span class="math">\(y\)</span> hướng xuống, "45°" nối pixel dưới-phải với trên-trái.) Sai số hướng tối đa là 22.5°, đủ tốt vì ta chỉ cần biết hai hàng xóm nào nằm "phía trước" và "phía sau" của cạnh.</p>
+<p><strong>4. Hai ngưỡng (hysteresis) không có chứng minh tối ưu</strong> – đây là lựa chọn thiết kế. Canny đề xuất tỉ lệ <code>maxVal : minVal</code> khoảng 2:1 đến 3:1 dựa trên thực nghiệm: ngưỡng cao để chắc chắn bắt đầu từ cạnh thật, ngưỡng thấp để nối tiếp cạnh đó qua những đoạn yếu đi (bóng, độ tương phản giảm) mà không bị đứt. Nhiễu cô lập hiếm khi nối liền được tới một cạnh mạnh nên bị loại.</p>
+<p><strong>Về "tối ưu" của Canny:</strong> Canny (1986) đặt ra ba tiêu chí – phát hiện tốt, định vị chính xác, mỗi cạnh chỉ một phản hồi – rồi giải bài toán biến phân, được một bộ lọc gần giống <strong>đạo hàm của Gauss</strong> (sai khác khoảng 20%). Phép chứng minh này dài và nằm ngoài phạm vi ghi chú; trong thực hành nó là lý do pipeline Canny là "Gauss rồi lấy đạo hàm".</p>
+</div></details>
 </li>
 <li>
 <p>GD4: Ngưỡng trễ:</p>
@@ -1171,13 +1270,31 @@ accumulator peak:  center=(100, 100), radius=51
 <li>
 <p><mark><strong>Hough Lines</strong></mark></p>
 <ul>
-<li>Đường thẳng viết dạng tham số: <span class="math">\(\rho = x\cos\theta + y\sin\theta\)</span><ul>
+<li>
+<p>Đường thẳng viết dạng tham số: <span class="math">\(\rho = x\cos\theta + y\sin\theta\)</span></p>
+<ul>
 <li><span class="math">\(\rho\)</span>: khoảng cách vuông góc từ gốc tọa độ (góc trên trái) tới đường thẳng</li>
 <li><span class="math">\(\theta\)</span>: góc giữa đường vuông góc đó và trục ngang, tính theo radian</li>
 <li>Dạng <span class="math">\(y = mx + c\)</span> không biểu diễn được đường thẳng đứng (<span class="math">\(m = \infty\)</span>) nên không dùng</li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: dạng pháp tuyến của đường thẳng và vì sao mỗi điểm thành một đường sin <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Dạng pháp tuyến.</strong> Gọi <span class="math">\(\mathbf{n} = (\cos\theta, \sin\theta)\)</span> là vector đơn vị vuông góc với đường thẳng, <span class="math">\(P_0 = \rho\,\mathbf{n}\)</span> là chân đường vuông góc hạ từ gốc (cách gốc đúng <span class="math">\(\rho\)</span>). Điểm <span class="math">\(X = (x, y)\)</span> nằm trên đường thẳng khi và chỉ khi <span class="math">\(X - P_0\)</span> song song với đường, tức vuông góc với <span class="math">\(\mathbf{n}\)</span>:</p>
+<p><span class="math display">\[(X - \rho\,\mathbf{n}) \cdot \mathbf{n} = 0 \iff X \cdot \mathbf{n} = \rho\,(\mathbf{n} \cdot \mathbf{n}) = \rho \iff x\cos\theta + y\sin\theta = \rho \qquad \blacksquare\]</span></p>
+<p>Mọi đường thẳng (kể cả thẳng đứng: <span class="math">\(\theta = 0\)</span>, <span class="math">\(x = \rho\)</span>) đều có dạng này, với <span class="math">\(\theta \in [0, \pi)\)</span> và <span class="math">\(\rho\)</span> có dấu.</p>
+<p><strong>2. Miền giá trị hữu hạn.</strong> Với ảnh <span class="math">\(W \times H\)</span>, theo Cauchy–Schwarz <span class="math">\(|\rho| = |X \cdot \mathbf{n}| \le |X|\,|\mathbf{n}| = |X| \le \sqrt{W^2 + H^2}\)</span>. Cả <span class="math">\(\rho\)</span> và <span class="math">\(\theta\)</span> đều bị chặn, nên mảng tích lũy có kích thước cố định: khoảng <span class="math">\(2\sqrt{W^2+H^2}/\text{rho} \times \pi/\text{theta}\)</span> ô. Dạng <span class="math">\(y = mx + c\)</span> có <span class="math">\(m \in (-\infty, \infty)\)</span> nên không thể chia ô hữu hạn.</p>
+<p><strong>3. Mỗi điểm biên vẽ một đường sin trong không gian <span class="math">\((\theta, \rho)\)</span>.</strong> Cố định điểm <span class="math">\((x_0, y_0)\)</span>, viết <span class="math">\(x_0 = R\cos\varphi\)</span>, <span class="math">\(y_0 = R\sin\varphi\)</span> với <span class="math">\(R = \sqrt{x_0^2 + y_0^2}\)</span>:</p>
+<p><span class="math display">\[\rho(\theta) = R\cos\varphi\cos\theta + R\sin\varphi\sin\theta = R\cos(\theta - \varphi)\]</span></p>
+<p>Đây là tập mọi đường thẳng đi qua <span class="math">\((x_0, y_0)\)</span>.</p>
+<p><strong>4. Hai điểm → các đường sin cắt nhau đúng một lần, tại đường thẳng nối chúng.</strong> Hai đường cong của <span class="math">\((x_1, y_1)\)</span> và <span class="math">\((x_2, y_2)\)</span> cắt nhau khi</p>
+<p><span class="math display">\[x_1\cos\theta + y_1\sin\theta = x_2\cos\theta + y_2\sin\theta \iff (x_1 - x_2)\cos\theta + (y_1 - y_2)\sin\theta = 0\]</span></p>
+<p>tức <span class="math">\(\mathbf{n} \perp (P_1 - P_2)\)</span>: pháp tuyến vuông góc với đoạn nối hai điểm. Trong <span class="math">\([0, \pi)\)</span> chỉ có đúng một hướng như vậy, và nó xác định đúng đường thẳng qua <span class="math">\(P_1\)</span>, <span class="math">\(P_2\)</span>. Tổng quát: <span class="math">\(k\)</span> điểm thẳng hàng cho <span class="math">\(k\)</span> đường sin <strong>cùng đi qua một ô</strong> → ô đó nhận <span class="math">\(k\)</span> phiếu. <span class="math">\(\blacksquare\)</span> Đó là lý do "ô nhiều phiếu = nhiều điểm thẳng hàng", kể cả khi đường bị đứt đoạn hay lẫn nhiễu (điểm nhiễu chỉ rải phiếu đều ra nhiều ô).</p>
+<p><strong>5. Vì sao Hough Gradient cho đường tròn rẻ hơn.</strong> Không gian <span class="math">\((x_c, y_c, r)\)</span> có 3 chiều. Nhưng tại một điểm biên của đường tròn, gradient hướng theo <strong>bán kính</strong> (gradient vuông góc với biên – xem ghi chú Gradient), nên tâm phải nằm trên đường thẳng qua điểm đó theo hướng gradient. Mỗi điểm biên chỉ cần bỏ phiếu dọc một đoạn thẳng trong mặt phẳng <span class="math">\((x_c, y_c)\)</span> (2D). Tìm được tâm rồi mới chọn <span class="math">\(r\)</span> bằng histogram khoảng cách từ tâm tới các điểm biên (1D).</p>
+</div></details>
 </li>
-<li>Cơ chế bỏ phiếu (voting):<ul>
+<li>
+<p>Cơ chế bỏ phiếu (voting):</p>
+<ul>
 <li>Tạo mảng tích lũy (accumulator) 2D: hàng là <span class="math">\(\rho\)</span>, cột là <span class="math">\(\theta\)</span>, ban đầu bằng 0</li>
 <li>Với mỗi điểm biên (x, y), thử mọi <span class="math">\(\theta\)</span>, tính <span class="math">\(\rho\)</span> tương ứng rồi cộng 1 vào ô <span class="math">\((\rho, \theta)\)</span></li>
 <li><mark>Ô nào có nhiều phiếu → có nhiều điểm cùng nằm trên một đường thẳng</mark></li>

@@ -189,11 +189,26 @@
 </li>
 <li>Lưu ảnh bằng <code>cv2.imwrite(name, img)</code></li>
 <li>Hiển thị ảnh bằng: <code>cv2.imshow(name_window, img)</code></li>
-<li>Chờ phím <code>cv2.waitKey(d)</code> :<ul>
+<li>
+<p>Chờ phím <code>cv2.waitKey(d)</code> :</p>
+<ul>
 <li>d = 0 - Chờ đến khi nào người dùng nhập phím</li>
 <li>d &gt; 0 - chờ tối đa d mili giây</li>
-<li>Khi phát video với mỗi frame chờ d ms → FPS ≈ <span class="math">\(\frac{1000}{d}\)</span> (thực tế thấp hơn một chút vì còn thời gian xử lý frame)</li>
-<li><code>waitKey</code> chỉ hoạt động khi có ít nhất một cửa sổ <code>imshow</code> đang mở</li>
+<li>
+<p>Khi phát video với mỗi frame chờ d ms → FPS ≈ <span class="math">\(\frac{1000}{d}\)</span> (thực tế thấp hơn một chút vì còn thời gian xử lý frame)</p>
+<details class="opencv-proof"><summary>Chứng minh: FPS khi dùng waitKey(d) <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Gọi <span class="math">\(p\)</span> là thời gian (ms) để đọc, xử lý và hiển thị một frame. Mỗi vòng lặp tốn <span class="math">\(d + p\)</span> ms, nên số frame mỗi giây là</p>
+<p><span class="math display">\[\text{FPS} = \frac{1000}{d + p} &lt; \frac{1000}{d} \quad (p &gt; 0)\]</span></p>
+<ul>
+<li>Ví dụ: <span class="math">\(d = 25\)</span> → tối đa <span class="math">\(1000/25 = 40\)</span> FPS. Nếu xử lý mất <span class="math">\(p = 5\)</span> ms thì chỉ còn <span class="math">\(1000/30 \approx 33\)</span> FPS.</li>
+<li>Muốn phát đúng tốc độ gốc của video (lấy bằng <code>cap.get(cv2.CAP_PROP_FPS)</code>) thì chọn <span class="math">\(d \approx \frac{1000}{\text{fps}} - p\)</span>, và <span class="math">\(d \ge 1\)</span> vì <code>waitKey(0)</code> là chờ vô hạn.</li>
+</ul>
+</div></details>
+</li>
+<li>
+<p><code>waitKey</code> chỉ hoạt động khi có ít nhất một cửa sổ <code>imshow</code> đang mở</p>
+</li>
 </ul>
 </li>
 </ul>
@@ -544,14 +559,33 @@
 <li>
 <p>Trộn hai ảnh với nhau</p>
 <ul>
-<li><span class="math">\(g(x) = (1 - \alpha) f_0(x) + \alpha f_1(x)\)</span></li>
-<li>Dùng hàm <code>cv2.addWeighted(img1, alpha, img2, beta, gamma)</code> = <code>img1*alpha + img2*beta + gamma</code>, để ra công thức trên thì<code>beta = 1 - alpha</code></li>
+<li>
+<p><span class="math">\(g(x) = (1 - \alpha) f_0(x) + \alpha f_1(x)\)</span></p>
+<details class="opencv-proof"><summary>Chứng minh: trộn ảnh không bị tràn số <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Khẳng định:</strong> nếu <span class="math">\(0 \le \alpha \le 1\)</span> và <span class="math">\(f_0(x), f_1(x) \in [0, 255]\)</span> thì <span class="math">\(g(x) \in [\min(f_0, f_1), \max(f_0, f_1)] \subseteq [0, 255]\)</span>.</p>
+<p><strong>Chứng minh.</strong> Đặt <span class="math">\(a = \min(f_0(x), f_1(x))\)</span>, <span class="math">\(b = \max(f_0(x), f_1(x))\)</span>. Vì <span class="math">\(1 - \alpha \ge 0\)</span> và <span class="math">\(\alpha \ge 0\)</span>:</p>
+<p><span class="math display">\[g(x) = (1-\alpha) f_0(x) + \alpha f_1(x) \ge (1-\alpha)a + \alpha a = a\]</span></p>
+<p><span class="math display">\[g(x) \le (1-\alpha) b + \alpha b = b\]</span></p>
+<p>Vậy <span class="math">\(g\)</span> luôn nằm giữa hai giá trị gốc (đây là một <em>tổ hợp lồi</em>), không thể vượt 255 hay xuống dưới 0. <span class="math">\(\blacksquare\)</span></p>
+<ul>
+<li>Hai hệ số có tổng <span class="math">\((1 - \alpha) + \alpha = 1\)</span> là điều kiện then chốt. Với <code>addWeighted(img1, alpha, img2, beta, gamma)</code>, nếu <code>alpha + beta &gt; 1</code> hoặc <code>gamma != 0</code> thì kết quả có thể vượt 255 và bị OpenCV bão hòa (kẹp về 255).</li>
+<li>Độ sáng trung bình cũng trộn tuyến tính: <span class="math">\(\overline{g} = (1-\alpha)\overline{f_0} + \alpha\overline{f_1}\)</span> (lấy trung bình hai vế, phép trung bình là tuyến tính).</li>
+<li>Hiệu ứng fade: cho <span class="math">\(\alpha\)</span> tăng đều từ 0 đến 1 theo thời gian, ảnh đi thẳng từ <span class="math">\(f_0\)</span> (<span class="math">\(\alpha = 0\)</span>) sang <span class="math">\(f_1\)</span> (<span class="math">\(\alpha = 1\)</span>).</li>
+</ul>
+</div></details>
+</li>
+<li>
+<p>Dùng hàm <code>cv2.addWeighted(img1, alpha, img2, beta, gamma)</code> = <code>img1*alpha + img2*beta + gamma</code>, để ra công thức trên thì<code>beta = 1 - alpha</code></p>
+</li>
 <li>Hai ảnh <code>img1</code> và <code>img2</code> phải cùng kích thước và cùng số kênh</li>
 <li>Dùng hàm <code>cv2.resize(img, (W, H))</code> - chú ý thứ tự (W, H) khác với <code>img.shape</code> là (H, W, D)</li>
 <li>Có thể tạo hiệu ứng <code>Fade in Fade out</code> bằng cách đổi <code>alpha từ 0-1</code></li>
 </ul>
 </li>
-<li>Phép toán Bitwise cần <mark>mask</mark></li>
+<li>
+<p>Phép toán Bitwise cần <mark>mask</mark></p>
+</li>
 </ul>
 <table>
 <thead>
@@ -776,6 +810,13 @@
 <li>
 <p>Ma trận tịnh tiến</p>
 <p><span class="math display">\[M= \begin{bmatrix} 1 &amp; 0 &amp; dx\\ 0 &amp; 1 &amp; dy \end{bmatrix}\]</span></p>
+<details class="opencv-proof"><summary>Chứng minh: vì sao ma trận tịnh tiến có kích thước 2x3 <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Phép tịnh tiến <span class="math">\(x' = x + d_x,\ y' = y + d_y\)</span> <strong>không tuyến tính</strong>: nó đưa gốc <span class="math">\((0, 0)\)</span> tới <span class="math">\((d_x, d_y) \ne (0, 0)\)</span>, trong khi mọi ma trận <span class="math">\(2 \times 2\)</span> đều giữ nguyên gốc (<span class="math">\(A \cdot \mathbf{0} = \mathbf{0}\)</span>). Vì vậy không có ma trận <span class="math">\(2 \times 2\)</span> nào biểu diễn được phép tịnh tiến.</p>
+<p><strong>Cách giải: tọa độ đồng nhất.</strong> Thêm thành phần thứ ba bằng 1 vào điểm, <span class="math">\((x, y) \to (x, y, 1)\)</span>:</p>
+<p><span class="math display">\[\begin{bmatrix} 1 &amp; 0 &amp; d_x \\ 0 &amp; 1 &amp; d_y \end{bmatrix} \begin{bmatrix} x \\ y \\ 1 \end{bmatrix} = \begin{bmatrix} 1\cdot x + 0\cdot y + d_x \cdot 1 \\ 0 \cdot x + 1 \cdot y + d_y \cdot 1 \end{bmatrix} = \begin{bmatrix} x + d_x \\ y + d_y \end{bmatrix}\]</span></p>
+<p>Cột thứ ba nhân với số 1 nên được <em>cộng thẳng</em> vào kết quả. Tổng quát, mọi phép affine <span class="math">\(\mathbf{x}' = A\mathbf{x} + \mathbf{t}\)</span> đều viết được thành một ma trận <span class="math">\(2 \times 3\)</span> là <span class="math">\([A \mid \mathbf{t}]\)</span>; đó chính là dạng mà <code>cv2.warpAffine</code> nhận vào.</p>
+</div></details>
 </li>
 <li>
 <p>Hàm dùng: <code>dst = cv2.warpAffine(img, M, dsize)</code></p>
@@ -788,6 +829,23 @@
 <li>
 <p>Ma trận xoay trong toán học : 2x2 → xoay quanh gốc tọa độ (0, 0)</p>
 <p><span class="math display">\[M= \begin{bmatrix} \cos\theta &amp; -\sin\theta\\ \sin\theta &amp; \cos\theta \end{bmatrix}\]</span></p>
+<details class="opencv-proof"><summary>Chứng minh: công thức ma trận xoay <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Bước 1 – viết điểm theo tọa độ cực.</strong> Một điểm cách gốc <span class="math">\(r\)</span>, hợp với trục <span class="math">\(x\)</span> góc <span class="math">\(\varphi\)</span>:</p>
+<p><span class="math display">\[x = r\cos\varphi, \qquad y = r\sin\varphi\]</span></p>
+<p><strong>Bước 2 – xoay thêm góc <span class="math">\(\theta\)</span></strong> (ngược chiều kim đồng hồ trong hệ trục toán học, <span class="math">\(y\)</span> hướng lên): khoảng cách <span class="math">\(r\)</span> giữ nguyên, góc thành <span class="math">\(\varphi + \theta\)</span>:</p>
+<p><span class="math display">\[x' = r\cos(\varphi + \theta), \qquad y' = r\sin(\varphi + \theta)\]</span></p>
+<p><strong>Bước 3 – khai triển bằng công thức cộng góc:</strong></p>
+<p><span class="math display">\[x' = r\cos\varphi\cos\theta - r\sin\varphi\sin\theta = x\cos\theta - y\sin\theta\]</span></p>
+<p><span class="math display">\[y' = r\sin\varphi\cos\theta + r\cos\varphi\sin\theta = x\sin\theta + y\cos\theta\]</span></p>
+<p>Viết dạng ma trận ra đúng <span class="math">\(R(\theta) = \begin{bmatrix} \cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta \end{bmatrix}\)</span>. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Tính chất (kiểm tra trực tiếp):</strong></p>
+<ul>
+<li><span class="math">\(R^T R = I\)</span> vì <span class="math">\(\cos^2\theta + \sin^2\theta = 1\)</span> và hai cột vuông góc → phép xoay <strong>giữ nguyên độ dài và góc</strong>.</li>
+<li><span class="math">\(\det R = \cos^2\theta + \sin^2\theta = 1\)</span> → giữ nguyên diện tích, không lật ảnh.</li>
+<li><span class="math">\(R(\theta)^{-1} = R(-\theta) = R(\theta)^T\)</span>: xoay ngược lại chỉ cần chuyển vị.</li>
+</ul>
+</div></details>
 </li>
 <li>
 <p>Chọn các tham số:</p>
@@ -799,7 +857,26 @@
 <p><span class="math display">\[\begin{aligned}\alpha &amp;= \text{scale}\cdot\cos\theta\\\beta &amp;= \text{scale}\cdot\sin\theta\end{aligned}\]</span></p>
 <p><span class="math display">\[M=\begin{bmatrix}\alpha &amp; \beta &amp; (1-\alpha)\,\mathrm{center.x}-\beta\,\mathrm{center.y}\\-\beta &amp; \alpha &amp; \beta\,\mathrm{center.x}+(1-\alpha)\,\mathrm{center.y}\end{bmatrix}\]</span></p>
 <ul>
-<li>Dấu của <span class="math">\(\beta\)</span> ngược với ma trận toán học ở trên vì trục y của ảnh hướng xuống: góc dương = xoay ngược chiều kim đồng hồ khi nhìn trên ảnh</li>
+<li>
+<p>Dấu của <span class="math">\(\beta\)</span> ngược với ma trận toán học ở trên vì trục y của ảnh hướng xuống: góc dương = xoay ngược chiều kim đồng hồ khi nhìn trên ảnh</p>
+<details class="opencv-proof"><summary>Chứng minh: ma trận của getRotationMatrix2D <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Xoay quanh tâm <span class="math">\(c = (c_x, c_y)\)</span> (không phải gốc) kèm co giãn <span class="math">\(s\)</span> = ghép 3 bước:</p>
+<ol>
+<li>Tịnh tiến để tâm về gốc: <span class="math">\(\mathbf{x} \mapsto \mathbf{x} - c\)</span></li>
+<li>Xoay và co giãn quanh gốc: nhân với <span class="math">\(A\)</span></li>
+<li>Tịnh tiến trả tâm về chỗ cũ: cộng <span class="math">\(c\)</span></li>
+</ol>
+<p><span class="math display">\[\mathbf{x}' = A(\mathbf{x} - c) + c = A\mathbf{x} + (I - A)\,c\]</span></p>
+<p><strong>Ma trận <span class="math">\(A\)</span> trong hệ trục ảnh.</strong> Trục <span class="math">\(y\)</span> của ảnh hướng <em>xuống</em>, tức là hệ trục toán học bị lật bởi <span class="math">\(F = \begin{bmatrix} 1 &amp; 0 \\ 0 &amp; -1 \end{bmatrix}\)</span>. Một phép xoay "ngược chiều kim đồng hồ khi nhìn trên màn hình" góc <span class="math">\(\theta\)</span> trong hệ ảnh tương ứng với: lật sang hệ toán học, xoay <span class="math">\(\theta\)</span>, lật lại:</p>
+<p><span class="math display">\[F\,R(\theta)\,F = \begin{bmatrix} 1 &amp; 0 \\ 0 &amp; -1 \end{bmatrix}\begin{bmatrix} \cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta \end{bmatrix}\begin{bmatrix} 1 &amp; 0 \\ 0 &amp; -1 \end{bmatrix} = \begin{bmatrix} \cos\theta &amp; \sin\theta \\ -\sin\theta &amp; \cos\theta \end{bmatrix} = R(-\theta)\]</span></p>
+<p>Nhân thêm hệ số <span class="math">\(s\)</span>: <span class="math">\(A = sR(-\theta) = \begin{bmatrix} \alpha &amp; \beta \\ -\beta &amp; \alpha \end{bmatrix}\)</span> với <span class="math">\(\alpha = s\cos\theta\)</span>, <span class="math">\(\beta = s\sin\theta\)</span>. Đây là lý do dấu của <span class="math">\(\beta\)</span> bị đảo.</p>
+<p><strong>Cột tịnh tiến</strong> <span class="math">\((I - A)c\)</span>:</p>
+<p><span class="math display">\[\begin{bmatrix} 1 - \alpha &amp; -\beta \\ \beta &amp; 1 - \alpha \end{bmatrix}\begin{bmatrix} c_x \\ c_y \end{bmatrix} = \begin{bmatrix} (1-\alpha)c_x - \beta c_y \\ \beta c_x + (1-\alpha)c_y \end{bmatrix}\]</span></p>
+<p>Ghép <span class="math">\([A \mid (I-A)c]\)</span> ra đúng ma trận ở trên. <span class="math">\(\blacksquare\)</span></p>
+<p>Kiểm chứng: tâm <span class="math">\(c\)</span> là điểm bất động vì <span class="math">\(A c + (I - A)c = c\)</span>. Mình đã so ma trận ghép <span class="math">\(T(c)\,sR(-\theta)\,T(-c)\)</span> với <code>cv.getRotationMatrix2D((40, 25), 30, 1.5)</code>: trùng khớp đến sai số làm tròn.</p>
+</div></details>
+</li>
 </ul>
 </li>
 <li>
@@ -1025,6 +1102,18 @@
 <span class="p">)</span>
 </pre></div>
 
+<details class="opencv-proof"><summary>Chứng minh: vì sao ngưỡng cục bộ chịu được ánh sáng không đều <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Mô hình ánh sáng.</strong> Giả sử ảnh = nội dung + độ sáng nền: <span class="math">\(I(x, y) = S(x, y) + L(x, y)\)</span>, trong đó <span class="math">\(L\)</span> (ánh sáng, bóng đổ) thay đổi <em>chậm</em>, gần như hằng số trong một cửa sổ <span class="math">\(\Omega\)</span> kích thước <code>blockSize</code>.</p>
+<p><strong>Bước 1.</strong> Với trọng số <span class="math">\(w\)</span> có tổng bằng 1 (trung bình đều <span class="math">\(w = 1/N\)</span>, hoặc Gauss đã chuẩn hóa), và <span class="math">\(L \approx L_0\)</span> trong <span class="math">\(\Omega\)</span>:</p>
+<p><span class="math display">\[\sum_{\Omega} w\,I = \sum_{\Omega} w\,S + \sum_{\Omega} w\,L \approx \overline{S} + L_0 \sum_\Omega w = \overline{S} + L_0\]</span></p>
+<p><strong>Bước 2.</strong> Điều kiện giữ pixel ở <code>THRESH_BINARY</code> là <span class="math">\(I(x, y) &gt; T(x, y) = \sum w I - C\)</span>, tương đương</p>
+<p><span class="math display">\[S(x, y) + L_0 &gt; \overline{S} + L_0 - C \iff S(x, y) - \overline{S} &gt; -C\]</span></p>
+<p><span class="math">\(L_0\)</span> <strong>bị triệt tiêu</strong>: quyết định chỉ còn phụ thuộc vào việc pixel sáng hơn hay tối hơn trung bình <em>xung quanh nó</em>, không phụ thuộc vùng đó đang sáng hay đang bị bóng. Ngưỡng toàn cục không làm được điều này vì <span class="math">\(L\)</span> khác nhau giữa các vùng. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Vì sao trọng số phải có tổng bằng 1.</strong> Nếu <span class="math">\(\sum w = k \ne 1\)</span> thì ở vùng phẳng <span class="math">\(I \equiv c\)</span>, ngưỡng thành <span class="math">\(kc - C\)</span>, lệch theo độ sáng <span class="math">\(c\)</span>, và <span class="math">\(L_0\)</span> không còn triệt tiêu. Với tổng bằng 1, vùng phẳng cho <span class="math">\(T = c - C\)</span> đúng như mong muốn.</p>
+<p><strong>Ý nghĩa của C.</strong> Ở vùng phẳng, <span class="math">\(S - \overline{S} \approx\)</span> nhiễu nhỏ. Với <span class="math">\(C &gt; 0\)</span>, điều kiện <span class="math">\(S - \overline{S} &gt; -C\)</span> đúng cho cả các pixel tối hơn trung bình một chút, nên vùng phẳng thành trắng hết thay vì lốm đốm nhiễu. Chỉ những nét tối hơn hẳn nền (chữ, đường kẻ) mới thành đen.</p>
+<p><strong>Thực tế OpenCV làm gì:</strong> <span class="math">\(T\)</span> chính là ảnh đã làm mờ (<code>boxFilter</code> hoặc <code>GaussianBlur</code> với cửa sổ <code>blockSize</code>) trừ <span class="math">\(C\)</span>, nên chi phí chỉ bằng một lần lọc. <code>blockSize</code> phải lẻ để cửa sổ có pixel tâm, và nên lớn hơn kích thước nét cần giữ (nếu cửa sổ nằm gọn trong một nét chữ dày thì trung bình chính là nét chữ, pixel không còn tối hơn trung bình).</p>
+</div></details>
 </li>
 </ul>
 </li>
@@ -1081,6 +1170,76 @@
 </ul>
 </li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: Otsu – từ phương sai trong lớp tới công thức tính nhanh <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Ký hiệu: <span class="math">\(P(i) = n_i / N\)</span> là xác suất mức xám <span class="math">\(i\)</span>, lớp <span class="math">\(C_1 = \{0, \dots, t-1\}\)</span>, <span class="math">\(C_2 = \{t, \dots, L-1\}\)</span>, các đại lượng <span class="math">\(q_k, \mu_k, \sigma_k^2\)</span> như trên, và</p>
+<p><span class="math display">\[\mu_T = \sum_{i=0}^{L-1} i\,P(i), \qquad \sigma_T^2 = \sum_{i=0}^{L-1} (i - \mu_T)^2 P(i)\]</span></p>
+<p>là trung bình và phương sai của <em>toàn ảnh</em>, <strong>không phụ thuộc <span class="math">\(t\)</span></strong>.</p>
+<p><strong>Bước 0 – trung bình toàn ảnh là trung bình có trọng số của hai lớp.</strong> Tách tổng làm hai phần:</p>
+<p><span class="math display">\[\mu_T = \sum_{C_1} iP(i) + \sum_{C_2} iP(i) = q_1\mu_1 + q_2\mu_2, \qquad q_1 + q_2 = 1\]</span></p>
+<p><strong>Bước 1 – phân rã phương sai: <span class="math">\(\sigma_T^2 = \sigma_w^2 + \sigma_b^2\)</span>.</strong> Xét phần tổng trên <span class="math">\(C_1\)</span>, chèn <span class="math">\(\mu_1\)</span> vào:</p>
+<p><span class="math display">\[\sum_{C_1} (i - \mu_T)^2 P(i) = \sum_{C_1} \big[(i - \mu_1) + (\mu_1 - \mu_T)\big]^2 P(i)\]</span></p>
+<p><span class="math display">\[= \underbrace{\sum_{C_1} (i - \mu_1)^2 P(i)}_{= q_1\sigma_1^2} + 2(\mu_1 - \mu_T)\underbrace{\sum_{C_1} (i - \mu_1) P(i)}_{= q_1\mu_1 - \mu_1 q_1 = 0} + (\mu_1 - \mu_T)^2 \underbrace{\sum_{C_1} P(i)}_{= q_1}\]</span></p>
+<p>Số hạng giữa bằng 0 vì <span class="math">\(\sum_{C_1} iP(i) = q_1\mu_1\)</span> (định nghĩa của <span class="math">\(\mu_1\)</span>). Làm y hệt cho <span class="math">\(C_2\)</span> rồi cộng lại:</p>
+<p><span class="math display">\[\sigma_T^2 = \underbrace{q_1\sigma_1^2 + q_2\sigma_2^2}_{\sigma_w^2 \text{ (trong lớp)}} + \underbrace{q_1(\mu_1 - \mu_T)^2 + q_2(\mu_2 - \mu_T)^2}_{\sigma_b^2 \text{ (giữa hai lớp)}}\]</span></p>
+<p><strong>Bước 2 – đổi bài toán.</strong> <span class="math">\(\sigma_T^2\)</span> cố định, nên</p>
+<p><span class="math display">\[\arg\min_t \sigma_w^2(t) = \arg\max_t \sigma_b^2(t)\]</span></p>
+<p><strong>Bước 3 – rút gọn <span class="math">\(\sigma_b^2\)</span>.</strong> Từ Bước 0: <span class="math">\(\mu_1 - \mu_T = \mu_1 - q_1\mu_1 - q_2\mu_2 = q_2(\mu_1 - \mu_2)\)</span>, tương tự <span class="math">\(\mu_2 - \mu_T = -q_1(\mu_1 - \mu_2)\)</span>. Thay vào:</p>
+<p><span class="math display">\[\sigma_b^2 = q_1 q_2^2(\mu_1 - \mu_2)^2 + q_2 q_1^2(\mu_1 - \mu_2)^2 = q_1 q_2 (q_1 + q_2)(\mu_1 - \mu_2)^2 = q_1 q_2 (\mu_1 - \mu_2)^2\]</span></p>
+<p>Công thức này giải thích trực quan của Otsu: <span class="math">\(\sigma_b^2\)</span> lớn khi <strong>hai lớp cách xa nhau</strong> (<span class="math">\(|\mu_1 - \mu_2|\)</span> lớn) <strong>và đều có nhiều pixel</strong> (<span class="math">\(q_1 q_2\)</span> lớn nhất khi <span class="math">\(q_1 = q_2 = 1/2\)</span>). Ngưỡng ở thung lũng giữa hai đỉnh thỏa cả hai điều đó.</p>
+<p><strong>Bước 4 – công thức tính nhanh <span class="math">\(O(L)\)</span>.</strong> Đặt <span class="math">\(m(t) = \sum_{i&lt;t} iP(i)\)</span> (tổng tích lũy), khi đó <span class="math">\(\mu_1 = m / q_1\)</span>, <span class="math">\(\mu_2 = (\mu_T - m)/q_2\)</span>:</p>
+<p><span class="math display">\[\sigma_b^2 = q_1 q_2\left(\frac{m}{q_1} - \frac{\mu_T - m}{q_2}\right)^2 = \frac{\big(m q_2 - (\mu_T - m) q_1\big)^2}{q_1 q_2} = \frac{\big(\mu_T\,q_1 - m\big)^2}{q_1(1 - q_1)}\]</span></p>
+<p>(dùng <span class="math">\(q_1 + q_2 = 1\)</span> ở bước cuối). Chỉ cần hai mảng tổng tích lũy <span class="math">\(q_1(t)\)</span> và <span class="math">\(m(t)\)</span> là tính được <span class="math">\(\sigma_b^2\)</span> cho mọi <span class="math">\(t\)</span> cùng lúc. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Ví dụ tính tay</strong> (<span class="math">\(L = 4\)</span>): <span class="math">\(P = (0.3,\ 0.2,\ 0.1,\ 0.4)\)</span>, nên <span class="math">\(\mu_T = 0.2 + 0.2 + 1.2 = 1.6\)</span> và <span class="math">\(\sigma_T^2 = (0.2 + 0.4 + 3.6) - 1.6^2 = 1.64\)</span>.</p>
+<table>
+<thead>
+<tr>
+<th><span class="math">\(t\)</span></th>
+<th><span class="math">\(C_1\)</span></th>
+<th><span class="math">\(q_1\)</span></th>
+<th><span class="math">\(m\)</span></th>
+<th><span class="math">\(\sigma_b^2 = (1.6\,q_1 - m)^2 / (q_1(1-q_1))\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>{0}</td>
+<td>0.3</td>
+<td>0</td>
+<td><span class="math">\(0.48^2/0.21 \approx 1.097\)</span></td>
+</tr>
+<tr>
+<td>2</td>
+<td>{0, 1}</td>
+<td>0.5</td>
+<td>0.2</td>
+<td><span class="math">\(0.6^2/0.25 = 1.44\)</span></td>
+</tr>
+<tr>
+<td>3</td>
+<td>{0, 1, 2}</td>
+<td>0.6</td>
+<td>0.4</td>
+<td><span class="math">\(0.56^2/0.24 \approx 1.307\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Chọn <span class="math">\(t = 2\)</span>. Kiểm tra lại bằng định nghĩa: <span class="math">\(\mu_1 = 0.4\)</span>, <span class="math">\(\sigma_1^2 = 0.24\)</span>, <span class="math">\(\mu_2 = 2.8\)</span>, <span class="math">\(\sigma_2^2 = 0.16\)</span>, nên <span class="math">\(\sigma_w^2 = 0.5 \cdot 0.24 + 0.5 \cdot 0.16 = 0.2 = 1.64 - 1.44\)</span> ✓.</p>
+<p><strong>Code NumPy</strong> (cho cùng ngưỡng với OpenCV):</p>
+<div class="highlight"><pre><span></span><span class="n">P</span> <span class="o">=</span> <span class="n">hist</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span> <span class="o">/</span> <span class="n">hist</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">256</span><span class="p">)</span>
+<span class="n">q1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>                 <span class="c1"># q1[t]: lớp 1 gồm các mức 0..t</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">P</span><span class="p">)</span>
+<span class="n">muT</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+    <span class="n">sb</span> <span class="o">=</span> <span class="p">(</span><span class="n">muT</span> <span class="o">*</span> <span class="n">q1</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">q1</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">q1</span><span class="p">))</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanargmax</span><span class="p">(</span><span class="n">sb</span><span class="p">)</span>              <span class="c1"># = giá trị ret của cv.threshold(..., THRESH_OTSU)</span>
+</pre></div>
+
+<p>Lưu ý chỉ số: <code>cumsum</code> tại vị trí <span class="math">\(t\)</span> gồm cả mức <span class="math">\(t\)</span>, nên <code>t</code> ở đây là mức lớn nhất của lớp 1 – đúng với <code>ret</code> của OpenCV (pixel <code>&gt; ret</code> thành <code>maxval</code>). Theo quy ước <span class="math">\(C_1 = \{0..t-1\}\)</span> ở trên thì đó là <span class="math">\(t = \text{ret} + 1\)</span>. Mình đã chạy trên histogram hai đỉnh mô phỏng: cả ba cách (min <span class="math">\(\sigma_w^2\)</span>, max <span class="math">\(\sigma_b^2\)</span>, OpenCV) cho cùng một ngưỡng.</p>
+<p><strong>Liên hệ:</strong> cực tiểu <span class="math">\(\sigma_w^2\)</span> chính là cực tiểu tổng bình phương khoảng cách tới tâm lớp, nên Otsu = <strong>k-means với k = 2 trên trục mức xám</strong>, giải chính xác bằng cách thử hết <span class="math">\(L\)</span> ngưỡng (trong 1D, phân cụm tối ưu luôn là một ngưỡng). Khi histogram chỉ có một đỉnh, <span class="math">\(\sigma_b^2(t)\)</span> gần như phẳng nên ngưỡng tìm được không còn ý nghĩa rõ ràng.</p>
+</div></details>
 </li>
 </ul>
 </div>
@@ -1185,6 +1344,16 @@
 <li>
 <p>Kernel 3x3</p>
 <p><span class="math display">\[M=\frac{1}{9} \begin{bmatrix} 1 &amp; 1 &amp; 1\\ 1 &amp; 1 &amp; 1\\ 1 &amp; 1 &amp; 1 \end{bmatrix}\]</span></p>
+<details class="opencv-proof"><summary>Chứng minh: vì sao hệ số là 1/9 và lọc trung bình giảm nhiễu <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Hệ số <span class="math">\(1/9\)</span> giữ nguyên độ sáng.</strong> Kết quả lọc là <span class="math">\(g(x, y) = \sum_{(i,j)} M(i, j)\,f(x+i, y+j)\)</span>. Ở vùng phẳng <span class="math">\(f \equiv c\)</span>:</p>
+<p><span class="math display">\[g = c\sum_{i,j} M(i, j) = c \cdot 9 \cdot \tfrac{1}{9} = c\]</span></p>
+<p>Nếu bỏ <span class="math">\(1/9\)</span> (tổng trọng số bằng 9) thì vùng phẳng sáng lên 9 lần và bị bão hòa. Mọi kernel làm mờ đều phải có <strong>tổng trọng số bằng 1</strong>; đó là ý nghĩa của <code>normalize=True</code> trong <code>boxFilter</code>.</p>
+<p><strong>2. Trung bình <span class="math">\(n\)</span> pixel giảm phương sai nhiễu đi <span class="math">\(n\)</span> lần.</strong> Giả sử <span class="math">\(f = s + \eta\)</span> với tín hiệu <span class="math">\(s\)</span> gần như phẳng trong cửa sổ, nhiễu <span class="math">\(\eta\)</span> độc lập, trung bình 0, phương sai <span class="math">\(\sigma^2\)</span>. Dùng <span class="math">\(\operatorname{Var}(aX) = a^2\operatorname{Var}(X)\)</span> và phương sai của tổng các biến độc lập bằng tổng phương sai:</p>
+<p><span class="math display">\[\operatorname{Var}\Big(\frac{1}{n}\sum_{k=1}^{n}\eta_k\Big) = \frac{1}{n^2}\sum_{k=1}^{n}\operatorname{Var}(\eta_k) = \frac{1}{n^2}\cdot n\sigma^2 = \frac{\sigma^2}{n}\]</span></p>
+<p>Kernel 3x3 (<span class="math">\(n = 9\)</span>): độ lệch chuẩn của nhiễu giảm <span class="math">\(\sqrt{9} = 3\)</span> lần; 5x5: giảm 5 lần. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>3. Cái giá phải trả.</strong> Ở biên, giả thiết "<span class="math">\(s\)</span> phẳng trong cửa sổ" sai: cửa sổ trộn hai vùng sáng/tối nên cạnh bị nhòe ra trên khoảng bằng kích thước kernel. Kernel càng lớn thì nhiễu giảm nhiều hơn nhưng ảnh càng mờ – đúng như ghi chú "kernel càng lớn ảnh càng mờ".</p>
+</div></details>
 </li>
 <li>
 <p>Hàm : <code>blur = cv.blur(img, (5, 5))</code></p>
@@ -1415,8 +1584,39 @@
 <p><img alt="" src="img/opencv-notes/13-morphological-transform-6.png" /></p>
 <ul>
 <li><strong>Opening là erosion trước, sau đó dilation</strong></li>
-<li><span class="math">\(\text{Opening}(A)=\text{Dilation}(\text{Erosion}(A))\)</span></li>
-<li><code>opening = cv.morphologyEx(img, cv.MORPH_OPEN, kernel)</code></li>
+<li>
+<p><span class="math">\(\text{Opening}(A)=\text{Dilation}(\text{Erosion}(A))\)</span></p>
+<details class="opencv-proof"><summary>Chứng minh: các tính chất của opening và closing <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Định nghĩa trên ảnh nhị phân (tập điểm trắng <span class="math">\(A\)</span>), với <span class="math">\(B_z\)</span> là kernel <span class="math">\(B\)</span> dịch tới vị trí <span class="math">\(z\)</span>, giả sử <span class="math">\(B\)</span> đối xứng và chứa tâm (đúng với các kernel chữ nhật, elip, chữ thập của OpenCV):</p>
+<p><span class="math display">\[A \ominus B = \{z : B_z \subseteq A\} \quad \text{(erosion)}, \qquad A \oplus B = \bigcup_{a \in A} B_a \quad \text{(dilation)}\]</span></p>
+<p><strong>Tính chất 1 – Opening là hợp của mọi bản sao kernel nằm gọn trong A:</strong></p>
+<p><span class="math display">\[A \circ B = (A \ominus B) \oplus B = \bigcup\{B_z : B_z \subseteq A\}\]</span></p>
+<p>Chứng minh: theo định nghĩa dilation, <span class="math">\((A \ominus B) \oplus B = \bigcup_{z \in A \ominus B} B_z\)</span>, và <span class="math">\(z \in A \ominus B\)</span> nghĩa là <span class="math">\(B_z \subseteq A\)</span>. <span class="math">\(\blacksquare\)</span></p>
+<p>Hệ quả – đây chính là ý nghĩa "xóa đốm nhỏ" của opening:</p>
+<ul>
+<li><span class="math">\(A \circ B \subseteq A\)</span> (mỗi <span class="math">\(B_z\)</span> trong hợp đều nằm trong <span class="math">\(A\)</span>) → opening <strong>không bao giờ thêm</strong> pixel trắng.</li>
+<li>Một đốm trắng không chứa vừa một bản sao của <span class="math">\(B\)</span> thì không có <span class="math">\(B_z\)</span> nào nằm trong nó → <strong>bị xóa hoàn toàn</strong>. Phần nào của vật thể chứa vừa <span class="math">\(B\)</span> thì được <strong>giữ nguyên hình dạng</strong> (không bị co lại như khi chỉ erosion).</li>
+</ul>
+<p><strong>Tính chất 2 – Opening lũy đẳng: <span class="math">\((A \circ B) \circ B = A \circ B\)</span>.</strong> Đặt <span class="math">\(A' = A \circ B\)</span>. Mọi <span class="math">\(B_z \subseteq A\)</span> đều nằm trong <span class="math">\(A'\)</span> (vì <span class="math">\(A'\)</span> là hợp của chúng), và ngược lại mọi <span class="math">\(B_z \subseteq A'\)</span> đều nằm trong <span class="math">\(A\)</span> (vì <span class="math">\(A' \subseteq A\)</span>). Hai họ <span class="math">\(\{B_z \subseteq A\}\)</span> và <span class="math">\(\{B_z \subseteq A'\}\)</span> trùng nhau nên hợp của chúng bằng nhau. <span class="math">\(\blacksquare\)</span> → Gọi opening nhiều lần với cùng kernel không thay đổi gì thêm (khác với <code>iterations</code> của erode/dilate).</p>
+<p><strong>Tính chất 3 – Closing là opening của nền (đối ngẫu).</strong> Với <span class="math">\(A^c\)</span> là phần nền (đen):</p>
+<p><span class="math display">\[z \notin A \ominus B \iff B_z \not\subseteq A \iff B_z \cap A^c \ne \emptyset \iff z \in A^c \oplus B\]</span></p>
+<p>(bước cuối dùng <span class="math">\(B\)</span> đối xứng). Vậy <span class="math">\((A \ominus B)^c = A^c \oplus B\)</span>, và tương tự <span class="math">\((A \oplus B)^c = A^c \ominus B\)</span>. Từ đó</p>
+<p><span class="math display">\[(A \bullet B)^c = \big((A \oplus B) \ominus B\big)^c = (A^c \ominus B) \oplus B = A^c \circ B\]</span></p>
+<p>Áp dụng Tính chất 1 cho nền: <span class="math">\(A^c \circ B \subseteq A^c\)</span>, tức là <span class="math">\(A \bullet B \supseteq A\)</span>. Closing <strong>không bao giờ xóa</strong> pixel trắng, chỉ lấp các lỗ đen không chứa vừa <span class="math">\(B\)</span>. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Tính chất 4 – các phép hiệu luôn không âm.</strong> Với ảnh xám, erosion = min, dilation = max trên cửa sổ kernel; cửa sổ chứa chính pixel tâm nên</p>
+<p><span class="math display">\[\text{erode}(A) \le A \le \text{dilate}(A)\]</span></p>
+<ul>
+<li><span class="math">\(\text{Gradient} = \max - \min\)</span> trên cửa sổ <span class="math">\(\ge 0\)</span>: chính là <strong>biên độ dao động cục bộ</strong>, bằng 0 ở vùng phẳng và lớn ở biên.</li>
+<li><span class="math">\(\text{TopHat} = A - \text{Opening}(A) \ge 0\)</span> do Tính chất 1 (bản xám tương tự): phần còn lại là các chi tiết sáng <em>nhỏ hơn kernel</em>.</li>
+<li><span class="math">\(\text{BlackHat} = \text{Closing}(A) - A \ge 0\)</span> do Tính chất 3: phần còn lại là các chi tiết tối nhỏ hơn kernel.</li>
+</ul>
+<p>Vì không âm nên kết quả nằm gọn trong <code>uint8</code>, không cần lo tràn số như phép trừ thường.</p>
+</div></details>
+</li>
+<li>
+<p><code>opening = cv.morphologyEx(img, cv.MORPH_OPEN, kernel)</code></p>
+</li>
 <li><mark>Ý nghĩa:</mark><ul>
 <li><mark>Erosion xóa nhiễu trắng nhỏ</mark></li>
 <li><mark>Dilation khôi phục lại kích thước tương đối của vật thể chính</mark></li>
@@ -1549,17 +1749,42 @@
 <li>
 <p><mark><strong>Gradient bằng Sobel và Scharr</strong></mark></p>
 <ul>
-<li>Kết hợp giữa:<ul>
+<li>
+<p>Kết hợp giữa:</p>
+<ul>
 <li>Làm mịn Gaussian</li>
 <li>Phép đạo hàm sai biệt</li>
 <li><code>Derivative×Gaussian</code></li>
-<li><span class="math">\(\frac{\partial I}{\partial x} = I(x+1, y) - I(x-1, y)\)</span> → <span class="math">\(dx = [-1, 0, 1]\)</span></li>
-<li><span class="math">\(\frac{\partial I}{\partial y} = I(x, y+1) - I(x, y-1)\)</span> → <span class="math">\(dy = [-1, 0, 1]^T\)</span></li>
+<li><span class="math">\(\frac{\partial I}{\partial x} \approx \frac{I(x+1, y) - I(x-1, y)}{2}\)</span> → <span class="math">\(dx = [-1, 0, 1]\)</span> (OpenCV bỏ hệ số <span class="math">\(\frac12\)</span>)</li>
+<li><span class="math">\(\frac{\partial I}{\partial y} \approx \frac{I(x, y+1) - I(x, y-1)}{2}\)</span> → <span class="math">\(dy = [-1, 0, 1]^T\)</span></li>
 <li>Đạo hàm theo x (dx) thì làm mượt Gaussian theo y → <span class="math">\(Ga_y = [1, 2, 1]^T\)</span></li>
 <li>Đạo hàm theo y (dy) thì làm mượt Gaussian theo x → <span class="math">\(Ga_x = [1, 2, 1]\)</span></li>
-<li>Với Scharr thì <span class="math">\(Ga_y = [3, 10, 3]^T\)</span> và <span class="math">\(Ga_x = [3, 10, 3]\)</span></li>
-<li>Sobel xấp xỉ:<ul>
-<li><mark>Chính xác nhất với cạnh ngang/dọc (0°, 90°), sai số góc lớn hơn ở các hướng chéo</mark></li>
+<li>
+<p>Với Scharr thì <span class="math">\(Ga_y = [3, 10, 3]^T\)</span> và <span class="math">\(Ga_x = [3, 10, 3]\)</span></p>
+<details class="opencv-proof"><summary>Chứng minh: đạo hàm sai phân, kernel Sobel tách được và hệ số Scharr <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Vì sao dùng sai phân trung tâm.</strong> Khai triển Taylor theo <span class="math">\(x\)</span> (bước <span class="math">\(h = 1\)</span> pixel):</p>
+<p><span class="math display">\[I(x+1) = I(x) + I'(x) + \tfrac{1}{2}I''(x) + \tfrac{1}{6}I'''(x) + \dots\]</span></p>
+<p><span class="math display">\[I(x-1) = I(x) - I'(x) + \tfrac{1}{2}I''(x) - \tfrac{1}{6}I'''(x) + \dots\]</span></p>
+<p>Trừ hai dòng, các số hạng bậc chẵn triệt tiêu:</p>
+<p><span class="math display">\[I(x+1) - I(x-1) = 2I'(x) + \tfrac{1}{3}I'''(x) + \dots \;\Rightarrow\; I'(x) = \frac{I(x+1) - I(x-1)}{2} + O(h^2)\]</span></p>
+<p>Sai phân tiến <span class="math">\(I(x+1) - I(x)\)</span> chỉ có sai số <span class="math">\(O(h)\)</span> (còn sót <span class="math">\(\tfrac12 I''\)</span>) và lệch nửa pixel. Kernel <span class="math">\([-1, 0, 1]\)</span> chính là sai phân trung tâm <strong>chưa chia 2</strong>; OpenCV bỏ hệ số này, nên giá trị Sobel lớn hơn đạo hàm thật (xem mục 3).</p>
+<p><strong>2. Kernel 3x3 = tích ngoài của hai vector 1D (tách được).</strong></p>
+<p><span class="math display">\[\begin{bmatrix} 1 \\ 2 \\ 1 \end{bmatrix}\begin{bmatrix} -1 &amp; 0 &amp; 1 \end{bmatrix} = \begin{bmatrix} -1 &amp; 0 &amp; 1 \\ -2 &amp; 0 &amp; 2 \\ -1 &amp; 0 &amp; 1 \end{bmatrix}\]</span></p>
+<p>Vì <span class="math">\(K(i, j) = a_i b_j\)</span> nên <span class="math">\(\sum_{i,j} a_i b_j f(x+j, y+i) = \sum_i a_i \big(\sum_j b_j f(x+j, y+i)\big)\)</span>: lọc theo hàng bằng <span class="math">\(b\)</span> rồi theo cột bằng <span class="math">\(a\)</span> cho cùng kết quả, tốn <span class="math">\(3 + 3 = 6\)</span> phép nhân thay vì 9 (kernel <span class="math">\(k \times k\)</span>: <span class="math">\(2k\)</span> thay vì <span class="math">\(k^2\)</span>). <span class="math">\([1, 2, 1] = [1, 1] * [1, 1]\)</span> là hệ số nhị thức, xấp xỉ Gauss rời rạc; nó làm mượt theo hướng <em>vuông góc</em> với hướng đạo hàm để giảm nhiễu mà không làm mờ cạnh theo hướng đang đo.</p>
+<p><strong>3. Sobel trả về 8 lần đạo hàm thật.</strong> Trên ảnh dốc đều <span class="math">\(I = ax\)</span>: hàng giữa cho <span class="math">\(a(x+1) - a(x-1) = 2a\)</span>, và ba hàng có trọng số <span class="math">\(1 + 2 + 1 = 4\)</span>, tổng cộng <span class="math">\(8a\)</span>. Mình đã kiểm tra: ảnh dốc với <span class="math">\(a = 3\)</span> cho Sobel = 24. Với Scharr hệ số là <span class="math">\(2 \cdot (3 + 10 + 3) = 32\)</span>. Hướng gradient không đổi vì <span class="math">\(G_x, G_y\)</span> cùng bị nhân một hằng số.</p>
+<p><strong>4. Vì sao Scharr chính xác hơn về hướng.</strong> Đưa vào một sóng phẳng tần số <span class="math">\(\omega\)</span> theo hướng <span class="math">\(\varphi\)</span>: <span class="math">\(I = \cos(\omega_x x + \omega_y y)\)</span> với <span class="math">\(\omega_x = \omega\cos\varphi\)</span>, <span class="math">\(\omega_y = \omega\sin\varphi\)</span>. Kernel tách được <span class="math">\([a, b, a]^T \otimes [-1, 0, 1]\)</span> cho</p>
+<p><span class="math display">\[G_x \propto \sin\omega_x\,(b + 2a\cos\omega_y), \qquad G_y \propto \sin\omega_y\,(b + 2a\cos\omega_x)\]</span></p>
+<p>Khai triển <span class="math">\(\sin u \approx u - u^3/6\)</span>, <span class="math">\(\cos u \approx 1 - u^2/2\)</span> khi <span class="math">\(\omega\)</span> nhỏ:</p>
+<p><span class="math display">\[\frac{G_y}{G_x} \approx \frac{\omega_y}{\omega_x}\Big[1 + (\omega_y^2 - \omega_x^2)\Big(\frac{a}{b + 2a} - \frac{1}{6}\Big)\Big]\]</span></p>
+<p>Hướng ước lượng đúng (<span class="math">\(G_y/G_x = \tan\varphi\)</span>) với mọi <span class="math">\(\varphi\)</span> khi <span class="math">\(\frac{a}{b+2a} = \frac16\)</span>, tức <span class="math">\(b = 4a\)</span>. Sobel có <span class="math">\(\frac{1}{1+2+1} = \frac14 \ne \frac16\)</span> nên lệch hướng; số hạng sai bằng 0 khi <span class="math">\(\omega_x = \omega_y\)</span> (45°) hoặc khi một trong hai bằng 0 (0°, 90°). Scharr <span class="math">\([3, 10, 3]\)</span> có <span class="math">\(\frac{3}{16} \approx 0.19\)</span>, gần <span class="math">\(\frac16 \approx 0.17\)</span> hơn nhiều; hệ số này được Scharr tối ưu số trên <em>mọi</em> tần số chứ không chỉ tần số thấp, nên không đúng bằng <span class="math">\([1,4,1]\)</span>.</p>
+<p>Tính số trên sóng có <span class="math">\(\omega = \pi/2\)</span> (chi tiết cỡ 4 pixel): Sobel lệch tối đa <strong>3.2°</strong> (ở 22.5° và 67.5°), Scharr chỉ <strong>0.3°</strong>. Ở 0°, 45°, 90° cả hai đều đúng tuyệt đối.</p>
+</div></details>
+</li>
+<li>
+<p>Sobel xấp xỉ:</p>
+<ul>
+<li><mark>Hướng gradient đúng ở 0°, 45°, 90°; lệch nhiều nhất quanh 22.5° và 67.5° (tới khoảng 3° với chi tiết nhỏ)</mark></li>
 <li><mark>Hay phát hiện cạnh giả do nhiễu</mark></li>
 <li><mark>Cạnh dày</mark></li>
 <li><span class="math">\(K_x = Ga_y * dx = \begin{bmatrix}-1 &amp; 0 &amp; 1 \\-2 &amp; 0 &amp; 2 \\-1 &amp; 0 &amp; 1\end{bmatrix}\)</span>: đạo hàm theo x (theo cột) → tìm cạnh dọc</li>
@@ -1574,8 +1799,26 @@
 </li>
 </ul>
 </li>
-<li><span class="math">\(G = \sqrt{G_x^2 + G_y^2}\)</span> hoặc có thể tăng tốc độ bằng <span class="math">\(G \approx |G_x| + |G_y|\)</span></li>
-<li><span class="math display">\[\theta = \operatorname{atan2}(G_y, G_x)\times\frac{180}{\pi}\]</span></li>
+<li>
+<p><span class="math">\(G = \sqrt{G_x^2 + G_y^2}\)</span> hoặc có thể tăng tốc độ bằng <span class="math">\(G \approx |G_x| + |G_y|\)</span></p>
+<details class="opencv-proof"><summary>Chứng minh: độ lớn, hướng gradient và xấp xỉ |Gx| + |Gy| <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Gradient chỉ hướng tăng nhanh nhất, độ lớn là tốc độ tăng đó.</strong> Đạo hàm theo hướng vector đơn vị <span class="math">\(\mathbf{u} = (\cos\psi, \sin\psi)\)</span> là</p>
+<p><span class="math display">\[D_{\mathbf{u}}I = \nabla I \cdot \mathbf{u} = G_x\cos\psi + G_y\sin\psi = |\nabla I|\cos(\psi - \theta)\]</span></p>
+<p>với <span class="math">\(\theta\)</span> là góc của <span class="math">\(\nabla I = (G_x, G_y)\)</span>. Biểu thức lớn nhất khi <span class="math">\(\psi = \theta\)</span> và có giá trị <span class="math">\(|\nabla I| = \sqrt{G_x^2 + G_y^2}\)</span>. Theo hướng <span class="math">\(\psi = \theta \pm 90°\)</span> thì <span class="math">\(D_{\mathbf{u}} I = 0\)</span>: cường độ không đổi → đó là <strong>hướng chạy dọc theo cạnh</strong>. Vậy gradient luôn vuông góc với cạnh. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>2. Vì sao dùng <code>atan2</code> chứ không dùng <code>atan(Gy/Gx)</code>.</strong> <code>atan</code> chỉ cho góc trong <span class="math">\((-90°, 90°)\)</span> và lỗi khi <span class="math">\(G_x = 0\)</span>; <span class="math">\((G_x, G_y)\)</span> và <span class="math">\((-G_x, -G_y)\)</span> cho cùng tỉ số nên không phân biệt được "tối → sáng" với "sáng → tối". <code>atan2</code> dùng dấu của cả hai thành phần để trả về góc đầy đủ <span class="math">\((-180°, 180°]\)</span>.</p>
+<p><strong>3. Sai số của <span class="math">\(|G_x| + |G_y|\)</span>.</strong> Với <span class="math">\(a = G_x\)</span>, <span class="math">\(b = G_y\)</span>:</p>
+<ul>
+<li><span class="math">\((|a| + |b|)^2 = a^2 + b^2 + 2|ab| \ge a^2 + b^2\)</span> → <span class="math">\(|a| + |b| \ge G\)</span></li>
+<li><span class="math">\(2|ab| \le a^2 + b^2\)</span> (vì <span class="math">\((|a| - |b|)^2 \ge 0\)</span>) → <span class="math">\((|a| + |b|)^2 \le 2(a^2 + b^2)\)</span> → <span class="math">\(|a| + |b| \le \sqrt{2}\,G\)</span></li>
+</ul>
+<p><span class="math display">\[G \le |G_x| + |G_y| \le \sqrt{2}\,G\]</span></p>
+<p>Đúng tuyệt đối với cạnh ngang/dọc (một thành phần bằng 0), lớn hơn thật tối đa <span class="math">\(\sqrt2 \approx 1.41\)</span> lần ở cạnh chéo 45°. Nghĩa là với cùng một ngưỡng, cạnh chéo dễ được giữ hơn cạnh ngang/dọc. Đó là lý do Canny có tùy chọn <code>L2gradient</code>.</p>
+</div></details>
+</li>
+<li>
+<p><span class="math display">\[\theta = \operatorname{atan2}(G_y, G_x)\times\frac{180}{\pi}\]</span></p>
+</li>
 <li><mark>Có khả năng chống nhiễu hạt tốt</mark></li>
 </ul>
 <div class="highlight"><pre><span></span><span class="c1"># Lưu ý: Sử dụng kiểu dữ liệu cv.CV_64F để giữ lại các giá trị âm (tránh mất biên)</span>
@@ -1596,6 +1839,18 @@
 <li>
 <p>Với <code>ksize = 1</code></p>
 <p><span class="math display">\[\begin{bmatrix}0 &amp; 1 &amp; 0 \\1 &amp; -4 &amp; 1 \\0 &amp; 1 &amp; 0\end{bmatrix}\]</span></p>
+<details class="opencv-proof"><summary>Chứng minh: kernel Laplace 3x3 và vì sao nó bất biến với phép xoay <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Đạo hàm bậc hai bằng sai phân.</strong> Cộng hai khai triển Taylor ở mục trước (lần này các số hạng bậc lẻ triệt tiêu):</p>
+<p><span class="math display">\[I(x+1) + I(x-1) = 2I(x) + I''(x) + O(h^4) \;\Rightarrow\; \frac{\partial^2 I}{\partial x^2} \approx I(x+1) - 2I(x) + I(x-1)\]</span></p>
+<p>tức kernel <span class="math">\([1, -2, 1]\)</span>, sai số <span class="math">\(O(h^2)\)</span>. Làm tương tự theo <span class="math">\(y\)</span> rồi cộng lại:</p>
+<p><span class="math display">\[\begin{bmatrix} 0 &amp; 0 &amp; 0 \\ 1 &amp; -2 &amp; 1 \\ 0 &amp; 0 &amp; 0 \end{bmatrix} + \begin{bmatrix} 0 &amp; 1 &amp; 0 \\ 0 &amp; -2 &amp; 0 \\ 0 &amp; 1 &amp; 0 \end{bmatrix} = \begin{bmatrix} 0 &amp; 1 &amp; 0 \\ 1 &amp; -4 &amp; 1 \\ 0 &amp; 1 &amp; 0 \end{bmatrix}\]</span></p>
+<p>Đã kiểm tra: <code>cv.Laplacian(img, cv.CV_32F)</code> (mặc định <code>ksize=1</code>) trùng với <code>filter2D</code> bằng kernel này.</p>
+<p><strong>2. Kernel có tổng bằng 0</strong> → kết quả bằng 0 trên vùng phẳng <em>và</em> trên vùng dốc đều <span class="math">\(I = ax + by + c\)</span> (đạo hàm bậc hai của hàm tuyến tính bằng 0). Laplace chỉ phản ứng với chỗ độ dốc <em>thay đổi</em>: hai bên của một cạnh cho dấu ngược nhau, và cạnh nằm ở <strong>điểm cắt không</strong> (zero-crossing).</p>
+<p><strong>3. Bất biến với phép xoay (bản liên tục).</strong> <span class="math">\(\Delta I\)</span> là vết (trace) của ma trận Hessian <span class="math">\(H = \begin{bmatrix} I_{xx} &amp; I_{xy} \\ I_{xy} &amp; I_{yy} \end{bmatrix}\)</span>. Khi xoay hệ trục bằng <span class="math">\(R\)</span>, Hessian thành <span class="math">\(R^T H R\)</span>, và</p>
+<p><span class="math display">\[\operatorname{tr}(R^T H R) = \operatorname{tr}(H R R^T) = \operatorname{tr}(H)\]</span></p>
+<p>(dùng <span class="math">\(\operatorname{tr}(AB) = \operatorname{tr}(BA)\)</span> và <span class="math">\(RR^T = I\)</span>). Vậy Laplace phát hiện biên <strong>theo mọi hướng bằng một phép lọc</strong>, không cần tách <span class="math">\(x\)</span>, <span class="math">\(y\)</span> như Sobel. Đổi lại nó là đạo hàm bậc hai nên khuếch đại nhiễu mạnh hơn (nhiễu tần số <span class="math">\(\omega\)</span> bị nhân khoảng <span class="math">\(\omega^2\)</span> thay vì <span class="math">\(\omega\)</span>) – đó là lý do thường làm mờ Gauss trước (LoG).</p>
+</div></details>
 </li>
 </ul>
 </li>
@@ -1716,11 +1971,55 @@
 <li>Giá trị góc này sẽ được làm tròn về 1 trong 4 hướng: 0°, 45°, 90°, 135°</li>
 </ul>
 </li>
-<li>GD3: Triệt tiêu phi cực đại - Loại trừ cạnh dày<ul>
+<li>
+<p>GD3: Triệt tiêu phi cực đại - Loại trừ cạnh dày</p>
+<ul>
 <li>Tại mỗi pixel A kiểm tra xem <span class="math">\(G_A\)</span> có max trong vùng lân cận dọc theo Gradient không</li>
 <li>Nếu <span class="math">\(G_A\)</span> max thì sẽ giữ lại</li>
 <li>Nếu <span class="math">\(G_A\)</span> không phải là max thì là cạnh giả đặt về 0 ( nền đen)</li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: vì sao triệt tiêu phi cực đại tìm đúng tâm cạnh <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Cạnh nằm ở đỉnh của độ lớn gradient theo hướng gradient.</strong> Cắt ảnh dọc theo hướng gradient <span class="math">\(\mathbf{n}\)</span> qua một điểm biên, ta được hồ sơ cường độ 1D <span class="math">\(f(s)\)</span>: một bậc thang đã bị làm mờ, có dạng chữ S. Độ lớn gradient trên lát cắt là <span class="math">\(|f'(s)|\)</span>. Tâm cạnh là nơi cường độ đổi nhanh nhất, tức <span class="math">\(|f'|\)</span> cực đại, tức</p>
+<p><span class="math display">\[\frac{d}{ds}f'(s) = f''(s) = 0 \quad \text{và } f' \ne 0\]</span></p>
+<p>(chính là <em>điểm uốn</em> của chữ S, cũng là điểm cắt không của Laplace theo hướng <span class="math">\(\mathbf{n}\)</span>). Sau khi làm mờ, <span class="math">\(|f'|\)</span> là một "quả đồi" rộng vài pixel, nên ngưỡng trực tiếp sẽ cho cạnh dày. Giữ lại <em>chỉ đỉnh đồi</em> thì cạnh dày đúng 1 pixel.</p>
+<p><strong>2. Vì sao chỉ so với 2 hàng xóm dọc theo gradient.</strong> Dọc theo cạnh (vuông góc với gradient), <span class="math">\(|\nabla I|\)</span> gần như không đổi – mọi điểm trên cạnh đều cao như nhau, so theo hướng đó sẽ xóa nhầm cạnh. Chỉ theo hướng gradient thì tâm cạnh mới là cực đại địa phương.</p>
+<p><strong>3. Làm tròn góc về 4 hướng.</strong> Lưới pixel chỉ có 8 hàng xóm, tức 4 trục: 0°, 45°, 90°, 135° (hướng và hướng ngược lại dùng chung một trục, nên xét <span class="math">\(\theta \bmod 180°\)</span>). Mỗi góc được gán về trục gần nhất, tức các khoảng rộng 45° có tâm tại trục:</p>
+<table>
+<thead>
+<tr>
+<th><span class="math">\(\theta \bmod 180°\)</span></th>
+<th>Trục</th>
+<th>So với hai pixel</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math">\([0°, 22.5°) \cup [157.5°, 180°)\)</span></td>
+<td>0°</td>
+<td>trái, phải</td>
+</tr>
+<tr>
+<td><span class="math">\([22.5°, 67.5°)\)</span></td>
+<td>45°</td>
+<td>hai pixel chéo theo hướng đó</td>
+</tr>
+<tr>
+<td><span class="math">\([67.5°, 112.5°)\)</span></td>
+<td>90°</td>
+<td>trên, dưới</td>
+</tr>
+<tr>
+<td><span class="math">\([112.5°, 157.5°)\)</span></td>
+<td>135°</td>
+<td>hai pixel chéo còn lại</td>
+</tr>
+</tbody>
+</table>
+<p>(Với trục <span class="math">\(y\)</span> hướng xuống, "45°" nối pixel dưới-phải với trên-trái.) Sai số hướng tối đa là 22.5°, đủ tốt vì ta chỉ cần biết hai hàng xóm nào nằm "phía trước" và "phía sau" của cạnh.</p>
+<p><strong>4. Hai ngưỡng (hysteresis) không có chứng minh tối ưu</strong> – đây là lựa chọn thiết kế. Canny đề xuất tỉ lệ <code>maxVal : minVal</code> khoảng 2:1 đến 3:1 dựa trên thực nghiệm: ngưỡng cao để chắc chắn bắt đầu từ cạnh thật, ngưỡng thấp để nối tiếp cạnh đó qua những đoạn yếu đi (bóng, độ tương phản giảm) mà không bị đứt. Nhiễu cô lập hiếm khi nối liền được tới một cạnh mạnh nên bị loại.</p>
+<p><strong>Về "tối ưu" của Canny:</strong> Canny (1986) đặt ra ba tiêu chí – phát hiện tốt, định vị chính xác, mỗi cạnh chỉ một phản hồi – rồi giải bài toán biến phân, được một bộ lọc gần giống <strong>đạo hàm của Gauss</strong> (sai khác khoảng 20%). Phép chứng minh này dài và nằm ngoài phạm vi ghi chú; trong thực hành nó là lý do pipeline Canny là "Gauss rồi lấy đạo hàm".</p>
+</div></details>
 </li>
 <li>
 <p>GD4: Ngưỡng trễ:</p>
@@ -1831,12 +2130,33 @@
 <li>Lưu ý do khi DownSample thì các chi tiết có tần số cao có thể biến mất vĩnh viễn và phép phóng to chỉ là phép nội suy làm mờ ảnh</li>
 </ul>
 </li>
-<li><mark><strong>Laplacian Pyramid</strong></mark><ul>
-<li>Công thức xây dựng một tầng của Laplacian:<ul>
+<li>
+<p><mark><strong>Laplacian Pyramid</strong></mark></p>
+<ul>
+<li>
+<p>Công thức xây dựng một tầng của Laplacian:</p>
+<ul>
 <li><span class="math">\(L_i = G_i - \text{pyrUp}(G_{i+1})\)</span></li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: tái tạo chính xác từ kim tự tháp Laplace <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Khẳng định:</strong> từ các tầng <span class="math">\(L_0, L_1, \dots, L_{n-1}\)</span> và tầng Gauss nhỏ nhất <span class="math">\(G_n\)</span>, ta khôi phục <strong>chính xác</strong> ảnh gốc <span class="math">\(G_0\)</span>:</p>
+<p><span class="math display">\[G_i = L_i + \text{pyrUp}(G_{i+1}), \quad i = n-1, \dots, 0\]</span></p>
+<p><strong>Chứng minh.</strong> Chỉ là chuyển vế định nghĩa <span class="math">\(L_i = G_i - \text{pyrUp}(G_{i+1})\)</span>. Bắt đầu từ <span class="math">\(G_n\)</span> đã lưu, tính được <span class="math">\(G_{n-1}\)</span>, rồi <span class="math">\(G_{n-2}\)</span>, ..., cuối cùng <span class="math">\(G_0\)</span>. Ghép lại (dạng "lồng nhau"):</p>
+<p><span class="math display">\[G_0 = L_0 + \text{pyrUp}\Big(L_1 + \text{pyrUp}\big(L_2 + \dots + \text{pyrUp}(G_n)\big)\Big) \qquad \blacksquare\]</span></p>
+<p>Điểm quan trọng: phép chứng minh <strong>không cần</strong> <code>pyrUp</code> là nghịch đảo của <code>pyrDown</code> (thực tế không phải). Thông tin bị mất khi thu nhỏ đã được cất sẵn trong <span class="math">\(L_i\)</span>. Mình đã kiểm tra với 3 tầng trên ảnh <code>float32</code>: sai số tái tạo <span class="math">\(6 \times 10^{-8}\)</span> (chỉ là làm tròn số thực). Với ảnh <code>uint8</code> phải tính <span class="math">\(L_i\)</span> bằng kiểu có dấu (<code>float32</code> hoặc <code>int16</code>) vì <span class="math">\(L_i\)</span> có giá trị âm.</p>
+<p><strong>Tổng dung lượng:</strong> mỗi tầng có <span class="math">\(1/4\)</span> số pixel của tầng trước:</p>
+<p><span class="math display">\[1 + \frac14 + \frac1{16} + \dots &lt; \frac{1}{1 - 1/4} = \frac43\]</span></p>
+<p>Cả kim tự tháp chỉ tốn thêm chưa tới 33% so với ảnh gốc.</p>
+<p><strong>Vì sao phải lọc Gauss trước khi bỏ hàng/cột.</strong> Bỏ một nửa số mẫu thì tần số cao nhất biểu diễn được giảm từ <span class="math">\(\pi\)</span> xuống <span class="math">\(\pi/2\)</span> (rad/pixel). Thành phần nào cao hơn <span class="math">\(\pi/2\)</span> sẽ "gập" lại thành tần số thấp giả (<strong>aliasing</strong> – răng cưa, vân moiré). Kernel của <code>pyrDown</code> là <span class="math">\(\frac{1}{16}[1, 4, 6, 4, 1]\)</span> theo mỗi chiều, và</p>
+<p><span class="math display">\[\tfrac{1}{16}[1, 4, 6, 4, 1] = \tfrac14[1, 2, 1] * \tfrac14[1, 2, 1]\]</span></p>
+<p>Đáp ứng tần số của <span class="math">\(\frac14[1, 2, 1]\)</span> là <span class="math">\(\frac14(2 + e^{i\omega} + e^{-i\omega}) = \frac{1 + \cos\omega}{2} = \cos^2\frac{\omega}{2}\)</span>, nên kernel 5 điểm có đáp ứng <span class="math">\(H(\omega) = \cos^4\frac{\omega}{2}\)</span>: bằng 1 ở <span class="math">\(\omega = 0\)</span> (giữ độ sáng), bằng 0 ở <span class="math">\(\omega = \pi\)</span>, và <span class="math">\(H(\pi/2) = 1/4\)</span> – các tần số sẽ bị gập đã bị dập phần lớn.</p>
+<p><strong>Vì sao <code>pyrUp</code> nhân kernel với 4.</strong> <code>pyrUp</code> chèn số 0 vào giữa các pixel (gấp đôi mỗi chiều), nên 3/4 số pixel bằng 0 và độ sáng trung bình giảm 4 lần. Kernel làm mờ có tổng 1 giữ nguyên trung bình, nên phải nhân 4 để trả lại độ sáng cũ.</p>
+</div></details>
 </li>
-<li>Ý nghĩa<ul>
+<li>
+<p>Ý nghĩa</p>
+<ul>
 <li><span class="math">\(G_i\)</span> tầng còn giữ được phần nào các chi tiết có tần số cao</li>
 <li><span class="math">\(G_{i+1}\)</span> là downSample của <span class="math">\(G_i\)</span> và đã mất đi vĩnh viễn các chi tiết có tần số cao</li>
 <li><span class="math">\(\text{pyrUp}(G_{i+1})\)</span> là nội suy làm mờ ảnh ngược lại về <span class="math">\(G'_i\)</span> đã không còn các chi tiết tần số cao</li>
@@ -1859,8 +2179,26 @@
 <li>Gaussian Pyramid lưu <strong>thành phần tần số thấp</strong> (ảnh ngày càng mờ sau mỗi lần Downsample).</li>
 <li>Laplacian Pyramid lưu <strong>các chi tiết/tần số cao bị mất</strong> khi Downsample.</li>
 <li>Tính Gaussian Pyramid và Laplacian Pyramid cho <strong>cả hai ảnh</strong>.</li>
-<li>Ghép (blend) các tầng <strong>Laplacian</strong> của hai ảnh (ví dụ: nửa trái từ ảnh A, nửa phải từ ảnh B) và ghép cả tầng Gaussian nhỏ nhất.</li>
-<li><strong>Khôi phục ảnh</strong> bằng cách bắt đầu từ tầng Gaussian nhỏ nhất đã ghép, sau đó lặp lại:<ol>
+<li>
+<p>Ghép (blend) các tầng <strong>Laplacian</strong> của hai ảnh (ví dụ: nửa trái từ ảnh A, nửa phải từ ảnh B) và ghép cả tầng Gaussian nhỏ nhất.</p>
+<details class="opencv-proof"><summary>Chứng minh: vì sao ghép theo từng tầng thì không lộ vết cắt <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Phần này là giải thích (theo Burt &amp; Adelson, 1983) chứ không phải chứng minh chặt.</p>
+<ul>
+<li>Ghép mỗi tầng <span class="math">\(L_i\)</span> bằng mặt nạ <span class="math">\(M_i\)</span> (mặt nạ đã thu nhỏ theo kim tự tháp Gauss): <span class="math">\(L_i^{AB} = M_i L_i^A + (1 - M_i) L_i^B\)</span>. Mặt nạ ở tầng <span class="math">\(i\)</span> bị làm mờ ở tỉ lệ <span class="math">\(2^i\)</span>, nên <strong>vùng chuyển tiếp rộng khoảng <span class="math">\(2^i\)</span> pixel</strong> (tính theo ảnh gốc).</li>
+<li>Tầng <span class="math">\(i\)</span> chủ yếu chứa chi tiết có kích thước cỡ <span class="math">\(2^i\)</span> pixel. Vậy mỗi dải tần được trộn qua một vùng chuyển tiếp <strong>vừa với kích thước của chính nó</strong>:<ul>
+<li>Tần số thấp (màu nền, độ sáng chung) trộn qua vùng rộng → không có bậc sáng tối đột ngột.</li>
+<li>Tần số cao (vân, chi tiết nhỏ) trộn qua vùng hẹp → không bị bóng ma hai lớp chồng lên nhau.</li>
+</ul>
+</li>
+<li>Ghép thẳng bằng <code>hstack</code> tương đương dùng vùng chuyển tiếp rộng 0 cho mọi tần số → vết cắt lộ rõ. Ngược lại, trộn tuyến tính toàn ảnh với một vùng chuyển tiếp rộng cố định thì chi tiết nhỏ ở vùng đó thành hai lớp chồng mờ.</li>
+</ul>
+<p>Tái tạo từ các tầng đã ghép dùng đúng công thức <span class="math">\(G_i = L_i + \text{pyrUp}(G_{i+1})\)</span> đã chứng minh ở trên.</p>
+</div></details>
+</li>
+<li>
+<p><strong>Khôi phục ảnh</strong> bằng cách bắt đầu từ tầng Gaussian nhỏ nhất đã ghép, sau đó lặp lại:</p>
+<ol>
 <li><code>pyrUp()</code></li>
 <li>cộng với Laplacian đã ghép ở tầng tương ứng.</li>
 </ol>
@@ -2047,6 +2385,18 @@
 <ul>
 <li>Cẩn thận <code>M['m00'] = 0</code> (contour suy biến, diện tích bằng 0) sẽ gây lỗi chia cho 0 → nên kiểm tra trước</li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: trọng tâm từ mô-men và công thức diện tích của contour <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Mô-men của vùng nhị phân.</strong> Định nghĩa <span class="math">\(M_{pq} = \sum_{x, y} x^p y^q\, I(x, y)\)</span>. Với ảnh nhị phân (<span class="math">\(I = 1\)</span> trong vùng <span class="math">\(R\)</span>, 0 ngoài vùng):</p>
+<p><span class="math display">\[M_{00} = \sum_{(x,y) \in R} 1 = |R| \;\text{(diện tích)}, \qquad M_{10} = \sum_{(x,y) \in R} x, \qquad M_{01} = \sum_{(x,y) \in R} y\]</span></p>
+<p>Nên <span class="math">\(C_x = \frac{M_{10}}{M_{00}} = \frac{1}{|R|}\sum_R x\)</span> chính là <strong>trung bình tọa độ x</strong> của các pixel trong vùng, tương tự <span class="math">\(C_y\)</span>. Với ảnh xám, <span class="math">\(I\)</span> đóng vai trò trọng số: pixel càng sáng kéo trọng tâm càng nhiều. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>2. Khi gọi <code>cv.moments(cnt)</code> trên contour, OpenCV không đếm pixel</strong> mà tính trên đa giác nối các đỉnh contour, bằng định lý Green. Với diện tích:</p>
+<p><span class="math display">\[A = \iint_R 1\,dx\,dy = \frac12 \oint_{\partial R} (x\,dy - y\,dx)\]</span></p>
+<p>(kiểm tra: theo Green, <span class="math">\(\oint (P\,dx + Q\,dy) = \iint (\partial_x Q - \partial_y P)\)</span>; với <span class="math">\(P = -y/2\)</span>, <span class="math">\(Q = x/2\)</span> thì vế phải là <span class="math">\(\iint (\frac12 + \frac12) = A\)</span>). Trên đa giác các đỉnh <span class="math">\((x_k, y_k)\)</span>, tích phân trên mỗi cạnh tính được chính xác, cho <strong>công thức dây giày (shoelace)</strong>:</p>
+<p><span class="math display">\[A = \frac12 \left|\sum_{k} (x_k\,y_{k+1} - x_{k+1}\,y_k)\right|\]</span></p>
+<p><strong>Hệ quả thực tế:</strong> đa giác đi qua <em>tâm</em> các pixel biên, nên bỏ mất nửa pixel ở mỗi phía. Mình đã kiểm tra: hình vuông trắng 10x10 pixel cho <code>contourArea = 81</code> (= 9 x 9) và <code>moments(cnt)['m00'] = 81</code>, trong khi <code>moments(img, binaryImage=True)['m00'] = 100</code>. Cần số pixel chính xác thì dùng <code>cv.countNonZero</code> hoặc mô-men của ảnh.</p>
+<p><strong>3. Vì sao <span class="math">\(M_{00} = 0\)</span> được.</strong> Contour suy biến (một đường thẳng, một điểm) có diện tích đa giác bằng 0, nên <span class="math">\(C_x = M_{10}/M_{00}\)</span> không xác định – đúng như cảnh báo ở trên.</p>
+</div></details>
 </li>
 </ul>
 </li>
@@ -2071,10 +2421,26 @@
 <ul>
 <li><code>cv2.approxPolyDP(cnt, epsilon, closed)</code></li>
 <li>Phép này giúp biến đổi một đường cong ngoằn ngoèo có nhiều đỉnh thành khối hình học có ít đỉnh hơn</li>
-<li><code>epsilon</code> : Khoảng cách tối đa cho phép đường viền gốc đến đường viền xấp xỉ<ul>
+<li>
+<p><code>epsilon</code> : Khoảng cách tối đa cho phép đường viền gốc đến đường viền xấp xỉ</p>
+<ul>
 <li><span class="math">\(\epsilon\)</span> quá lớn → Hình xấp xỉ bị thô và mất nhiều chi tiết</li>
 <li><span class="math">\(\epsilon\)</span> quá nhỏ → Hình xấp xỉ bám quá sát ảnh gốc, không nén được số đỉnh</li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: thuật toán Douglas–Peucker và ý nghĩa chính xác của epsilon <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><code>approxPolyDP</code> dùng thuật toán <strong>Douglas–Peucker</strong> (đệ quy):</p>
+<ol>
+<li>Nối điểm đầu <span class="math">\(A\)</span> và điểm cuối <span class="math">\(B\)</span> của đoạn đường cong bằng một đoạn thẳng.</li>
+<li>Tìm điểm <span class="math">\(P\)</span> trên đường cong <strong>xa đoạn <span class="math">\(AB\)</span> nhất</strong>, khoảng cách <span class="math">\(d_{\max}\)</span>.</li>
+<li>Nếu <span class="math">\(d_{\max} \le \varepsilon\)</span>: thay cả đoạn cong bằng đoạn <span class="math">\(AB\)</span>. Nếu không: giữ <span class="math">\(P\)</span> làm đỉnh, đệ quy cho hai đoạn <span class="math">\(A \to P\)</span> và <span class="math">\(P \to B\)</span>.</li>
+</ol>
+<p><strong>Khoảng cách từ điểm tới đường thẳng.</strong> Diện tích tam giác <span class="math">\(ABP\)</span> bằng nửa độ lớn tích có hướng, và cũng bằng <span class="math">\(\frac12 \cdot \text{đáy} \cdot \text{chiều cao}\)</span>:</p>
+<p><span class="math display">\[\frac12\big|(B - A) \times (P - A)\big| = \frac12\,|AB|\,d \;\Rightarrow\; d = \frac{|(x_B - x_A)(y_P - y_A) - (y_B - y_A)(x_P - x_A)|}{\sqrt{(x_B - x_A)^2 + (y_B - y_A)^2}}\]</span></p>
+<p><strong>Khẳng định:</strong> mọi điểm của contour gốc cách đa giác xấp xỉ không quá <span class="math">\(\varepsilon\)</span>.</p>
+<p><strong>Chứng minh (quy nạp theo số lần đệ quy).</strong> Một đoạn chỉ được thay bằng đường thẳng ở bước 3 khi <span class="math">\(d_{\max} \le \varepsilon\)</span>, tức <em>mọi</em> điểm của đoạn cong đó cách đường thẳng <span class="math">\(AB\)</span> không quá <span class="math">\(\varepsilon\)</span>. Mọi điểm gốc cuối cùng đều thuộc đúng một đoạn như vậy (vì đệ quy chỉ dừng khi điều kiện này đúng, hoặc khi đoạn chỉ còn 2 điểm – lúc đó khoảng cách bằng 0). <span class="math">\(\blacksquare\)</span></p>
+<p>Đây là lý do <span class="math">\(\varepsilon\)</span> được đặt theo <strong>tỉ lệ chu vi</strong> (<code>0.01</code>–<code>0.05 * arcLength</code>): sai số cho phép tỉ lệ với kích thước vật, nên cùng một hệ số cho kết quả giống nhau dù vật to hay nhỏ trong ảnh.</p>
+</div></details>
 </li>
 </ul>
 <div class="highlight"><pre><span></span><span class="c1"># Ví dụ trong tài liệu: epsilon = 10% chu vi (thực tế hay dùng 1-5% để giữ hình dạng tốt hơn)</span>
@@ -2269,6 +2635,14 @@
 <span class="n">extent</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">area</span><span class="p">)</span> <span class="o">/</span> <span class="n">rect_area</span>
 </pre></div>
 
+<details class="opencv-proof"><summary>Chứng minh: vì sao Extent, Solidity nằm trong (0, 1] và công thức đường kính tương đương <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Extent ≤ 1.</strong> Hình chữ nhật bao là hình chữ nhật thẳng nhỏ nhất <em>chứa</em> contour, nên vùng contour <span class="math">\(R \subseteq\)</span> hình chữ nhật, suy ra <span class="math">\(\text{Area}(R) \le w \cdot h\)</span>. Dấu bằng chỉ khi vật chính là hình chữ nhật thẳng. Ví dụ: hình tròn có Extent <span class="math">\(= \frac{\pi r^2}{(2r)^2} = \frac{\pi}{4} \approx 0.785\)</span>; tam giác vuông nửa hình chữ nhật có Extent <span class="math">\(= 0.5\)</span>.</p>
+<p><strong>Solidity ≤ 1, và = 1 khi và chỉ khi vật lồi.</strong> Bao lồi là tập lồi nhỏ nhất chứa <span class="math">\(R\)</span>, nên <span class="math">\(R \subseteq \text{Hull}(R)\)</span> và <span class="math">\(\text{Area}(R) \le \text{Area}(\text{Hull})\)</span>. Nếu <span class="math">\(R\)</span> lồi thì chính <span class="math">\(R\)</span> là tập lồi chứa <span class="math">\(R\)</span>, nên <span class="math">\(\text{Hull}(R) = R\)</span> và Solidity = 1. Ngược lại nếu <span class="math">\(R\)</span> không lồi thì phần "lõm" <span class="math">\(\text{Hull} \setminus R\)</span> có diện tích dương, nên Solidity &lt; 1. <span class="math">\(\blacksquare\)</span> (Do <code>contourArea</code> tính trên đa giác qua tâm pixel, contour lồi thực tế cho giá trị rất gần 1 chứ không phải luôn đúng bằng 1.)</p>
+<p><strong>Đường kính tương đương.</strong> Đặt diện tích hình tròn đường kính <span class="math">\(d\)</span> bằng diện tích vật:</p>
+<p><span class="math display">\[\pi\left(\frac{d}{2}\right)^2 = \text{Area} \iff \frac{\pi d^2}{4} = \text{Area} \iff d = \sqrt{\frac{4 \cdot \text{Area}}{\pi}}\]</span></p>
+<p><strong>Bất biến:</strong> Aspect Ratio, Extent, Solidity là tỉ số của hai đại lượng cùng đơn vị nên <strong>không đổi khi phóng to/thu nhỏ</strong> vật (cả tử và mẫu cùng nhân <span class="math">\(s\)</span> hoặc <span class="math">\(s^2\)</span>). Solidity còn không đổi khi xoay; Extent và Aspect Ratio thì có đổi khi xoay vì hình chữ nhật bao luôn thẳng theo trục.</p>
+</div></details>
 </li>
 <li>
 <p><strong>Độ đặc/ độ rắn (Solidity)</strong></p>
@@ -2506,7 +2880,7 @@
 <li><strong>Cùng cấp bậc (Same Hierarchy Level)</strong>: Các đường viền nằm độc lập ở cùng một tầng không gian</li>
 </ul>
 </li>
-<li><span class="math display">\[\text{Hierarchy Array} = \begin{bmatrix} \text{Next}, &amp; \text{Previous}, &amp; \text{First\_Child}, &amp; \text{Parent} \end{bmatrix}\]</span><ul>
+<li><span class="math display">\[\text{Hierarchy Array} = \begin{bmatrix} \text{Next}, &amp; \text{Previous}, &amp; \text{First_Child}, &amp; \text{Parent} \end{bmatrix}\]</span><ul>
 <li><code>Next</code> <strong>(Đường viền tiếp theo):</strong> Chỉ số (index) của đường viền tiếp theo <strong>nằm cùng một cấp bậc</strong> phân cấp với đường viền hiện tại.</li>
 <li><code>Previous</code> <strong>(Đường viền trước đó):</strong> Chỉ số của đường viền nằm ngay trước nó <strong>trên cùng một cấp bậc</strong>.</li>
 <li><code>First_Child</code> <strong>(Con đầu lòng):</strong> Chỉ số của đường viền con <strong>đầu tiên</strong> nằm lồng bên trong nó (nếu có nhiều con, chỉ lấy đứa đầu tiên).</li>
@@ -2648,6 +3022,50 @@
 <ul>
 <li><span class="math">\(M \times N\)</span>: số pixel, <span class="math">\(L = 256\)</span></li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: vì sao CDF làm phẳng histogram <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Bản liên tục (chứng minh chặt).</strong> Coi mức xám là biến ngẫu nhiên <span class="math">\(X\)</span> với hàm phân phối tích lũy <span class="math">\(F(v) = P(X \le v)\)</span>, liên tục và tăng ngặt. Đặt <span class="math">\(Y = F(X)\)</span>. Với mọi <span class="math">\(y \in [0, 1]\)</span>:</p>
+<p><span class="math display">\[P(Y \le y) = P\big(F(X) \le y\big) = P\big(X \le F^{-1}(y)\big) = F\big(F^{-1}(y)\big) = y\]</span></p>
+<p>(bước thứ hai dùng <span class="math">\(F\)</span> tăng ngặt nên giữ thứ tự). <span class="math">\(P(Y \le y) = y\)</span> chính là phân phối <strong>đều</strong> trên <span class="math">\([0, 1]\)</span>: histogram phẳng hoàn toàn. Nhân với <span class="math">\(L - 1\)</span> để trải ra <span class="math">\([0, 255]\)</span>. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Bản rời rạc (ảnh thật).</strong> Mức xám chỉ có 256 giá trị, và mọi pixel cùng mức <span class="math">\(v\)</span> phải đi tới cùng một mức mới, nên <strong>không thể tách</strong> một cột histogram cao thành nhiều cột. Kết quả chỉ <em>gần</em> phẳng: các cột được dàn ra sao cho CDF của ảnh mới gần một đường thẳng. Phép biến đổi là hàm <strong>không giảm</strong> (vì CDF không giảm), nên thứ tự sáng tối giữa các pixel được giữ nguyên.</p>
+<p><strong>Giải thích công thức.</strong> Tử số <span class="math">\(cdf(v) - cdf_{min}\)</span> và mẫu số <span class="math">\(MN - cdf_{min}\)</span> chọn sao cho:</p>
+<ul>
+<li>Mức xám nhỏ nhất có trong ảnh (<span class="math">\(cdf = cdf_{min}\)</span>) → <span class="math">\(h = 0\)</span> (đen tuyệt đối).</li>
+<li>Mức lớn nhất (<span class="math">\(cdf = MN\)</span>, tổng số pixel) → <span class="math">\(h = L - 1\)</span> (trắng tuyệt đối).</li>
+<li>Ở giữa nội suy tuyến tính theo CDF.</li>
+</ul>
+<p>Nếu không trừ <span class="math">\(cdf_{min}\)</span> thì mức tối nhất bị đưa tới <span class="math">\(\frac{cdf_{min}}{MN}(L-1) &gt; 0\)</span>, phí mất một phần dải động.</p>
+<p><strong>Ví dụ tính tay</strong> (<span class="math">\(L = 8\)</span>, ảnh 16 pixel): số pixel ở các mức 2, 3, 4, 5 lần lượt là 4, 8, 2, 2.</p>
+<table>
+<thead>
+<tr>
+<th><span class="math">\(v\)</span></th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math">\(cdf(v)\)</span></td>
+<td>4</td>
+<td>12</td>
+<td>14</td>
+<td>16</td>
+</tr>
+<tr>
+<td><span class="math">\(h(v) = \text{round}\big(\frac{cdf - 4}{16 - 4} \cdot 7\big)\)</span></td>
+<td>0</td>
+<td>round(4.67) = 5</td>
+<td>round(5.83) = 6</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+<p>Dải ban đầu 2–5 được kéo ra 0–7. Cột cao nhất (mức 3, 8 pixel) được dành khoảng cách lớn nhất với hàng xóm (từ 0 nhảy lên 5) – độ tương phản tăng nhiều nhất ở chỗ có nhiều pixel nhất. Mình đã kiểm tra công thức này bằng NumPy trên ảnh 80x80: <strong>trùng 100%</strong> với <code>cv.equalizeHist</code>.</p>
+<p><strong>Dẫn tới CLAHE.</strong> Độ dốc của bảng tra là <span class="math">\(\frac{h(v+1) - h(v)}{1} \approx \frac{L-1}{MN}\,\text{hist}(v+1)\)</span>, tức <strong>tỉ lệ với chiều cao histogram</strong>. Vùng nền phẳng (một cột histogram rất cao) sẽ có độ dốc rất lớn – nhiễu nhỏ trong nền bị khuếch đại thành vân. CLAHE cắt histogram ở <code>clipLimit</code> trước khi tính CDF, tức là <strong>chặn trên độ dốc</strong>, nên giới hạn được mức khuếch đại nhiễu.</p>
+</div></details>
 </li>
 </ul>
 <div class="highlight"><pre><span></span><span class="c1"># Cách làm bằng NumPy</span>
@@ -2772,11 +3190,29 @@
 </tbody>
 </table>
 <ul>
-<li>Ảnh có thể xem là tín hiệu lấy mẫu theo hai chiều → DFT 2D cho biết ảnh gồm những <mark>tần số</mark> nào<ul>
+<li>
+<p>Ảnh có thể xem là tín hiệu lấy mẫu theo hai chiều → DFT 2D cho biết ảnh gồm những <mark>tần số</mark> nào</p>
+<ul>
 <li>Biên, nhiễu: pixel thay đổi đột ngột → <mark>tần số cao</mark></li>
 <li>Vùng phẳng, mảng màu: thay đổi chậm → <mark>tần số thấp</mark></li>
 <li>FFT (Fast Fourier Transform) là thuật toán nhanh để tính DFT</li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: DFT, dịch phổ về giữa và định lý tích chập <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Định nghĩa DFT 2D</strong> của ảnh <span class="math">\(f\)</span> kích thước <span class="math">\(M \times N\)</span>:</p>
+<p><span class="math display">\[F(u, v) = \sum_{x=0}^{M-1}\sum_{y=0}^{N-1} f(x, y)\, e^{-2\pi i\left(\frac{ux}{M} + \frac{vy}{N}\right)}\]</span></p>
+<p>Mỗi <span class="math">\(F(u, v)\)</span> là một số phức <span class="math">\(= |F|e^{i\phi}\)</span>: <strong>độ lớn</strong> <span class="math">\(|F| = \sqrt{\text{Re}^2 + \text{Im}^2}\)</span> cho biết sóng tần số <span class="math">\((u, v)\)</span> mạnh đến đâu, <strong>pha</strong> <span class="math">\(\phi\)</span> cho biết sóng đó lệch vị trí ra sao.</p>
+<p><strong>1. Vì sao phải lấy log khi hiển thị.</strong> Thay <span class="math">\(u = v = 0\)</span>: <span class="math">\(F(0, 0) = \sum f(x, y)\)</span> = tổng mọi pixel (thành phần DC). Ảnh 512x512 trung bình 128 cho <span class="math">\(F(0,0) \approx 3.4 \times 10^7\)</span>, trong khi các tần số cao thường chỉ cỡ <span class="math">\(10^2\)</span>–<span class="math">\(10^4\)</span>. Hiển thị tuyến tính thì chỉ thấy một chấm sáng ở DC; log nén dải này lại. (Dùng <code>np.log(1 + |F|)</code> để tránh <span class="math">\(\log 0\)</span>.)</p>
+<p><strong>2. <code>fftshift</code> = nhân ảnh với <span class="math">\((-1)^{x+y}\)</span>.</strong> Vì <span class="math">\(e^{i\pi} = -1\)</span>:</p>
+<p><span class="math display">\[(-1)^{x+y} = e^{i\pi(x+y)} = e^{2\pi i\left(\frac{(M/2)x}{M} + \frac{(N/2)y}{N}\right)}\]</span></p>
+<p>Nhân <span class="math">\(f\)</span> với hàm mũ này rồi lấy DFT, số mũ cộng vào số mũ trong định nghĩa, cho <span class="math">\(F(u - M/2,\ v - N/2)\)</span>: phổ bị dịch đi nửa kích thước, đưa DC từ góc vào giữa (với <span class="math">\(M, N\)</span> chẵn). Vì DFT tuần hoàn chu kỳ <span class="math">\(M, N\)</span>, dịch nửa chu kỳ chính là hoán đổi bốn góc phần tư – đúng những gì <code>fftshift</code> làm.</p>
+<p><strong>3. Định lý tích chập – lý do lọc trong miền tần số được.</strong> Chứng minh cho 1D (2D làm y hệt theo từng chiều), với tích chập vòng <span class="math">\((f \circledast g)[n] = \sum_m f[m]\,g[(n - m) \bmod N]\)</span>:</p>
+<p><span class="math display">\[\mathcal{F}\{f \circledast g\}[k] = \sum_n \sum_m f[m]\,g[n - m]\,e^{-2\pi i kn/N} = \sum_m f[m]\,e^{-2\pi i km/N} \sum_n g[n - m]\,e^{-2\pi i k(n-m)/N}\]</span></p>
+<p>(tách <span class="math">\(e^{-2\pi i kn/N} = e^{-2\pi i km/N} \cdot e^{-2\pi i k(n-m)/N}\)</span>). Tổng bên trong chạy qua mọi <span class="math">\(n\)</span>, nên <span class="math">\(n' = n - m\)</span> cũng chạy qua đủ một chu kỳ, và bằng <span class="math">\(G[k]\)</span>. Vậy</p>
+<p><span class="math display">\[\mathcal{F}\{f \circledast g\} = F \cdot G \qquad \blacksquare\]</span></p>
+<p>Tích chập (tốn <span class="math">\(O(N^2)\)</span> với kernel lớn) trở thành <strong>phép nhân từng phần tử</strong> trong miền tần số, cộng hai lần FFT <span class="math">\(O(N\log N)\)</span>. Đặt một vùng của phổ về 0 (như HPF ở dưới) chính là nhân với mặt nạ <span class="math">\(G \in \{0, 1\}\)</span>, tương đương tích chập ảnh với <span class="math">\(g = \mathcal{F}^{-1}\{G\}\)</span>.</p>
+<p><strong>4. Vì sao mặt nạ chữ nhật gây gợn sóng (ringing).</strong> Biến đổi ngược của một hình chữ nhật là hàm sinc <span class="math">\(\frac{\sin x}{x}\)</span>, có nhiều vòng dao động. Lọc bằng mặt nạ chữ nhật = tích chập ảnh với sinc, nên quanh mỗi cạnh xuất hiện các vân lặp lại. Dùng mặt nạ Gauss (biến đổi của Gauss vẫn là Gauss, không dao động) thì hết gợn.</p>
+</div></details>
 </li>
 <li>
 <p><strong>Fourier bằng NumPy</strong></p>
@@ -2922,8 +3358,33 @@
 </tbody>
 </table>
 <ul>
-<li><mark>Với <code>TM_SQDIFF</code> và <code>TM_SQDIFF_NORMED</code> phải lấy <code>min_loc</code></mark>, các phương pháp còn lại lấy <code>max_loc</code></li>
-<li><code>TM_CCORR</code> không trừ trung bình nên dễ bị vùng sáng đánh lừa → kết quả kém nhất</li>
+<li>
+<p><mark>Với <code>TM_SQDIFF</code> và <code>TM_SQDIFF_NORMED</code> phải lấy <code>min_loc</code></mark>, các phương pháp còn lại lấy <code>max_loc</code></p>
+<details class="opencv-proof"><summary>Chứng minh: quan hệ giữa các phương pháp và vì sao CCOEFF_NORMED bền nhất <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Ký hiệu tổng chạy trên cửa sổ đang xét; <span class="math">\(I\)</span> là phần ảnh dưới template.</p>
+<p><strong>1. SQDIFF = năng lượng template + năng lượng ảnh − 2·CCORR.</strong></p>
+<p><span class="math display">\[\sum (T - I)^2 = \sum T^2 - 2\sum T\,I + \sum I^2\]</span></p>
+<p><span class="math">\(\sum T^2\)</span> không đổi theo vị trí. Nếu <span class="math">\(\sum I^2\)</span> cũng gần như không đổi thì min SQDIFF tương đương max CCORR. Nhưng <span class="math">\(\sum I^2\)</span> <strong>lớn ở vùng sáng</strong>, nên CCORR thuần có thể đạt cực đại ở một vùng trắng bất kỳ chứ không phải chỗ giống template – đúng lý do ghi chú nói CCORR "dễ bị vùng sáng đánh lừa".</p>
+<p><strong>2. Các bản chuẩn hóa nằm trong khoảng nào – bất đẳng thức Cauchy–Schwarz.</strong> Coi <span class="math">\(T\)</span>, <span class="math">\(I\)</span> là hai vector:</p>
+<p><span class="math display">\[\Big|\sum T\,I\Big| \le \sqrt{\sum T^2}\sqrt{\sum I^2}\]</span></p>
+<p>dấu bằng khi và chỉ khi <span class="math">\(I = cT\)</span>. Do đó</p>
+<ul>
+<li><code>TM_CCORR_NORMED</code> <span class="math">\(= \dfrac{\sum TI}{\sqrt{\sum T^2 \sum I^2}} \in [0, 1]\)</span> với ảnh không âm; bằng 1 khi cửa sổ là template nhân với một hằng số dương – đã <strong>bất biến với độ tương phản</strong> (nhân hệ số) nhưng chưa bất biến với cộng thêm độ sáng.</li>
+<li><code>TM_SQDIFF_NORMED</code> <span class="math">\(= \dfrac{\sum (T - I)^2}{\sqrt{\sum T^2 \sum I^2}}\)</span> bằng 0 khi khớp hoàn toàn. Về lý thuyết tỉ số này có thể <strong>lớn hơn 1</strong> (ví dụ template sáng đặt lên vùng tối), nhưng OpenCV <strong>kẹp kết quả về [0, 1]</strong>. Mình đã kiểm tra: template toàn 250 trượt trên ảnh có vùng toàn 5 cho giá trị lớn nhất đúng bằng 1.0.</li>
+</ul>
+<p><strong>3. CCOEFF_NORMED là hệ số tương quan Pearson.</strong> Đặt <span class="math">\(T' = T - \overline{T}\)</span>, <span class="math">\(I' = I - \overline{I}\)</span> (trừ trung bình trong cửa sổ):</p>
+<p><span class="math display">\[\mathrm{CCOEFF\_NORMED} = \frac{\sum T'I'}{\sqrt{\sum T'^2 \sum I'^2}} \in [-1, 1]\]</span></p>
+<p>(Cauchy–Schwarz cho <span class="math">\(T'\)</span>, <span class="math">\(I'\)</span>). <strong>Khẳng định:</strong> kết quả không đổi khi đổi <span class="math">\(I \to aI + b\)</span> với <span class="math">\(a &gt; 0\)</span>.</p>
+<p><em>Chứng minh.</em> <span class="math">\(\overline{aI + b} = a\overline{I} + b\)</span>, nên <span class="math">\((aI + b) - \overline{(aI + b)} = a(I - \overline{I}) = aI'\)</span>: hằng số <span class="math">\(b\)</span> biến mất. Thay vào:</p>
+<p><span class="math display">\[\frac{\sum T'(aI')}{\sqrt{\sum T'^2 \sum a^2 I'^2}} = \frac{a\sum T'I'}{a\sqrt{\sum T'^2 \sum I'^2}} \qquad \blacksquare\]</span></p>
+<p>Vậy CCOEFF_NORMED bất biến với cả <strong>thay đổi độ sáng</strong> (<span class="math">\(b\)</span>) lẫn <strong>độ tương phản</strong> (<span class="math">\(a\)</span>), và giá trị có ý nghĩa tuyệt đối: 1 = khớp hoàn hảo, 0 = không liên quan, −1 = ngược màu. Đó là lý do ngưỡng (ví dụ 0.8) dễ chọn. Mình đã thử: cắt template từ ảnh rồi tìm trên ảnh <span class="math">\(2I + 0.5\)</span>, kết quả cực đại 0.9999996 đúng ở vị trí cắt.</p>
+<p><strong>Lưu ý:</strong> cả ba phương pháp đều <strong>không</strong> bất biến với xoay hay co giãn. Template phải gần đúng kích thước và hướng của vật trong ảnh; nếu không, dùng đặc trưng (SIFT/ORB + homography).</p>
+</div></details>
+</li>
+<li>
+<p><code>TM_CCORR</code> không trừ trung bình nên dễ bị vùng sáng đánh lừa → kết quả kém nhất</p>
+</li>
 <li><mark>Thường dùng <code>TM_CCOEFF_NORMED</code></mark>: chịu được thay đổi độ sáng, ngưỡng dễ chọn (gần 1 là giống)</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">img</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;scene.jpg&quot;</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">IMREAD_GRAYSCALE</span><span class="p">)</span>
@@ -3006,13 +3467,31 @@
 <li>
 <p><mark><strong>Hough Lines</strong></mark></p>
 <ul>
-<li>Đường thẳng viết dạng tham số: <span class="math">\(\rho = x\cos\theta + y\sin\theta\)</span><ul>
+<li>
+<p>Đường thẳng viết dạng tham số: <span class="math">\(\rho = x\cos\theta + y\sin\theta\)</span></p>
+<ul>
 <li><span class="math">\(\rho\)</span>: khoảng cách vuông góc từ gốc tọa độ (góc trên trái) tới đường thẳng</li>
 <li><span class="math">\(\theta\)</span>: góc giữa đường vuông góc đó và trục ngang, tính theo radian</li>
 <li>Dạng <span class="math">\(y = mx + c\)</span> không biểu diễn được đường thẳng đứng (<span class="math">\(m = \infty\)</span>) nên không dùng</li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: dạng pháp tuyến của đường thẳng và vì sao mỗi điểm thành một đường sin <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Dạng pháp tuyến.</strong> Gọi <span class="math">\(\mathbf{n} = (\cos\theta, \sin\theta)\)</span> là vector đơn vị vuông góc với đường thẳng, <span class="math">\(P_0 = \rho\,\mathbf{n}\)</span> là chân đường vuông góc hạ từ gốc (cách gốc đúng <span class="math">\(\rho\)</span>). Điểm <span class="math">\(X = (x, y)\)</span> nằm trên đường thẳng khi và chỉ khi <span class="math">\(X - P_0\)</span> song song với đường, tức vuông góc với <span class="math">\(\mathbf{n}\)</span>:</p>
+<p><span class="math display">\[(X - \rho\,\mathbf{n}) \cdot \mathbf{n} = 0 \iff X \cdot \mathbf{n} = \rho\,(\mathbf{n} \cdot \mathbf{n}) = \rho \iff x\cos\theta + y\sin\theta = \rho \qquad \blacksquare\]</span></p>
+<p>Mọi đường thẳng (kể cả thẳng đứng: <span class="math">\(\theta = 0\)</span>, <span class="math">\(x = \rho\)</span>) đều có dạng này, với <span class="math">\(\theta \in [0, \pi)\)</span> và <span class="math">\(\rho\)</span> có dấu.</p>
+<p><strong>2. Miền giá trị hữu hạn.</strong> Với ảnh <span class="math">\(W \times H\)</span>, theo Cauchy–Schwarz <span class="math">\(|\rho| = |X \cdot \mathbf{n}| \le |X|\,|\mathbf{n}| = |X| \le \sqrt{W^2 + H^2}\)</span>. Cả <span class="math">\(\rho\)</span> và <span class="math">\(\theta\)</span> đều bị chặn, nên mảng tích lũy có kích thước cố định: khoảng <span class="math">\(2\sqrt{W^2+H^2}/\text{rho} \times \pi/\text{theta}\)</span> ô. Dạng <span class="math">\(y = mx + c\)</span> có <span class="math">\(m \in (-\infty, \infty)\)</span> nên không thể chia ô hữu hạn.</p>
+<p><strong>3. Mỗi điểm biên vẽ một đường sin trong không gian <span class="math">\((\theta, \rho)\)</span>.</strong> Cố định điểm <span class="math">\((x_0, y_0)\)</span>, viết <span class="math">\(x_0 = R\cos\varphi\)</span>, <span class="math">\(y_0 = R\sin\varphi\)</span> với <span class="math">\(R = \sqrt{x_0^2 + y_0^2}\)</span>:</p>
+<p><span class="math display">\[\rho(\theta) = R\cos\varphi\cos\theta + R\sin\varphi\sin\theta = R\cos(\theta - \varphi)\]</span></p>
+<p>Đây là tập mọi đường thẳng đi qua <span class="math">\((x_0, y_0)\)</span>.</p>
+<p><strong>4. Hai điểm → các đường sin cắt nhau đúng một lần, tại đường thẳng nối chúng.</strong> Hai đường cong của <span class="math">\((x_1, y_1)\)</span> và <span class="math">\((x_2, y_2)\)</span> cắt nhau khi</p>
+<p><span class="math display">\[x_1\cos\theta + y_1\sin\theta = x_2\cos\theta + y_2\sin\theta \iff (x_1 - x_2)\cos\theta + (y_1 - y_2)\sin\theta = 0\]</span></p>
+<p>tức <span class="math">\(\mathbf{n} \perp (P_1 - P_2)\)</span>: pháp tuyến vuông góc với đoạn nối hai điểm. Trong <span class="math">\([0, \pi)\)</span> chỉ có đúng một hướng như vậy, và nó xác định đúng đường thẳng qua <span class="math">\(P_1\)</span>, <span class="math">\(P_2\)</span>. Tổng quát: <span class="math">\(k\)</span> điểm thẳng hàng cho <span class="math">\(k\)</span> đường sin <strong>cùng đi qua một ô</strong> → ô đó nhận <span class="math">\(k\)</span> phiếu. <span class="math">\(\blacksquare\)</span> Đó là lý do "ô nhiều phiếu = nhiều điểm thẳng hàng", kể cả khi đường bị đứt đoạn hay lẫn nhiễu (điểm nhiễu chỉ rải phiếu đều ra nhiều ô).</p>
+<p><strong>5. Vì sao Hough Gradient cho đường tròn rẻ hơn.</strong> Không gian <span class="math">\((x_c, y_c, r)\)</span> có 3 chiều. Nhưng tại một điểm biên của đường tròn, gradient hướng theo <strong>bán kính</strong> (gradient vuông góc với biên – xem ghi chú Gradient), nên tâm phải nằm trên đường thẳng qua điểm đó theo hướng gradient. Mỗi điểm biên chỉ cần bỏ phiếu dọc một đoạn thẳng trong mặt phẳng <span class="math">\((x_c, y_c)\)</span> (2D). Tìm được tâm rồi mới chọn <span class="math">\(r\)</span> bằng histogram khoảng cách từ tâm tới các điểm biên (1D).</p>
+</div></details>
 </li>
-<li>Cơ chế bỏ phiếu (voting):<ul>
+<li>
+<p>Cơ chế bỏ phiếu (voting):</p>
+<ul>
 <li>Tạo mảng tích lũy (accumulator) 2D: hàng là <span class="math">\(\rho\)</span>, cột là <span class="math">\(\theta\)</span>, ban đầu bằng 0</li>
 <li>Với mỗi điểm biên (x, y), thử mọi <span class="math">\(\theta\)</span>, tính <span class="math">\(\rho\)</span> tương ứng rồi cộng 1 vào ô <span class="math">\((\rho, \theta)\)</span></li>
 <li><mark>Ô nào có nhiều phiếu → có nhiều điểm cùng nằm trên một đường thẳng</mark></li>
@@ -3389,6 +3868,54 @@
 <li><span class="math">\(I_x, I_y\)</span>: đạo hàm theo x, y (tính bằng Sobel)</li>
 <li><span class="math">\(w(x, y)\)</span>: cửa sổ (hình chữ nhật hoặc Gauss)</li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: từ E(u, v) tới ma trận M <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Bước 1 – khai triển Taylor bậc nhất</strong> (dịch nhỏ <span class="math">\(u, v\)</span>):</p>
+<p><span class="math display">\[I(x + u, y + v) \approx I(x, y) + I_x u + I_y v\]</span></p>
+<p>nên <span class="math">\(I(x + u, y + v) - I(x, y) \approx I_x u + I_y v = [u \;\; v]\begin{bmatrix} I_x \\ I_y \end{bmatrix}\)</span>.</p>
+<p><strong>Bước 2 – bình phương</strong> (dùng <span class="math">\((\mathbf{a}^T\mathbf{d})^2 = \mathbf{d}^T\mathbf{a}\mathbf{a}^T\mathbf{d}\)</span> với <span class="math">\(\mathbf{d} = (u, v)\)</span>):</p>
+<p><span class="math display">\[(I_x u + I_y v)^2 = I_x^2 u^2 + 2I_xI_y uv + I_y^2 v^2 = [u \;\; v]\begin{bmatrix} I_x^2 &amp; I_xI_y \\ I_xI_y &amp; I_y^2 \end{bmatrix}\begin{bmatrix} u \\ v \end{bmatrix}\]</span></p>
+<p><strong>Bước 3 – cộng có trọng số</strong> trên cửa sổ; <span class="math">\((u, v)\)</span> không phụ thuộc <span class="math">\((x, y)\)</span> nên đưa ra ngoài tổng:</p>
+<p><span class="math display">\[E(u, v) \approx [u \;\; v]\Big(\sum_{x,y} w(x,y)\begin{bmatrix} I_x^2 &amp; I_xI_y \\ I_xI_y &amp; I_y^2 \end{bmatrix}\Big)\begin{bmatrix} u \\ v \end{bmatrix} = [u \;\; v]\,M\begin{bmatrix} u \\ v \end{bmatrix} \qquad \blacksquare\]</span></p>
+<p><strong>M đối xứng và nửa xác định dương.</strong> <span class="math">\(\mathbf{d}^T M \mathbf{d} = \sum w\,(I_x u + I_y v)^2 \ge 0\)</span> với mọi <span class="math">\(\mathbf{d}\)</span> (vì <span class="math">\(w \ge 0\)</span>). Nên <span class="math">\(M\)</span> có hai trị riêng thực <span class="math">\(\lambda_1 \ge \lambda_2 \ge 0\)</span> và hai vector riêng vuông góc <span class="math">\(\mathbf{e}_1, \mathbf{e}_2\)</span>.</p>
+<p><strong>Ý nghĩa của trị riêng (thương Rayleigh).</strong> Viết hướng dịch đơn vị <span class="math">\(\mathbf{d} = c_1\mathbf{e}_1 + c_2\mathbf{e}_2\)</span> với <span class="math">\(c_1^2 + c_2^2 = 1\)</span>:</p>
+<p><span class="math display">\[E(\mathbf{d}) = \lambda_1 c_1^2 + \lambda_2 c_2^2 \in [\lambda_2, \lambda_1]\]</span></p>
+<ul>
+<li><span class="math">\(\lambda_1\)</span> = độ thay đổi khi dịch theo hướng <strong>thay đổi nhiều nhất</strong> (<span class="math">\(\mathbf{e}_1\)</span>).</li>
+<li><span class="math">\(\lambda_2\)</span> = độ thay đổi khi dịch theo hướng <strong>thay đổi ít nhất</strong> (<span class="math">\(\mathbf{e}_2\)</span>).</li>
+</ul>
+<p>Ba trường hợp ở đầu ghi chú trở thành chính xác:</p>
+<table>
+<thead>
+<tr>
+<th>Vùng</th>
+<th><span class="math">\(\lambda_1\)</span></th>
+<th><span class="math">\(\lambda_2\)</span></th>
+<th>Lý do</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phẳng</td>
+<td>≈ 0</td>
+<td>≈ 0</td>
+<td><span class="math">\(I_x \approx I_y \approx 0\)</span></td>
+</tr>
+<tr>
+<td>Cạnh</td>
+<td>lớn</td>
+<td>≈ 0</td>
+<td>mọi gradient cùng hướng <span class="math">\(\mathbf{g}\)</span> → <span class="math">\(M \approx \big(\sum w\lVert\mathbf{g}\rVert^2\big)\hat{\mathbf{g}}\hat{\mathbf{g}}^T\)</span> có hạng 1; dịch dọc cạnh (<span class="math">\(\perp \mathbf{g}\)</span>) cho <span class="math">\(E = 0\)</span></td>
+</tr>
+<tr>
+<td>Góc</td>
+<td>lớn</td>
+<td>lớn</td>
+<td>gradient theo ít nhất hai hướng khác nhau → dịch hướng nào cũng đổi</td>
+</tr>
+</tbody>
+</table>
+</div></details>
 </li>
 <li>
 <p>Điểm góc: <span class="math">\(R = \det(M) - k\,(\operatorname{trace} M)^2 = \lambda_1 \lambda_2 - k(\lambda_1 + \lambda_2)^2\)</span></p>
@@ -3397,8 +3924,26 @@
 <li><span class="math">\(R &lt; 0\)</span> (một <span class="math">\(\lambda\)</span> lớn hơn hẳn) → cạnh</li>
 <li><mark><span class="math">\(R\)</span> lớn (<span class="math">\(\lambda_1, \lambda_2\)</span> đều lớn và xấp xỉ nhau) → góc</mark></li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: vì sao R = det − k·trace² phân biệt được phẳng / cạnh / góc <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Không cần tính trị riêng.</strong> Với ma trận <span class="math">\(2 \times 2\)</span>, đa thức đặc trưng là <span class="math">\(\lambda^2 - (\operatorname{tr}M)\lambda + \det M\)</span>, nên theo định lý Viète:</p>
+<p><span class="math display">\[\det M = \lambda_1\lambda_2 = AC - B^2, \qquad \operatorname{tr}M = \lambda_1 + \lambda_2 = A + C\]</span></p>
+<p>với <span class="math">\(M = \begin{bmatrix} A &amp; B \\ B &amp; C \end{bmatrix}\)</span>. Chỉ cần vài phép nhân, không cần căn bậc hai.</p>
+<p><strong>Phân tích dấu của <span class="math">\(R = \lambda_1\lambda_2 - k(\lambda_1 + \lambda_2)^2\)</span>:</strong></p>
+<ul>
+<li><strong>Phẳng</strong> (<span class="math">\(\lambda_1, \lambda_2 \approx 0\)</span>): cả hai số hạng đều nhỏ → <span class="math">\(|R|\)</span> nhỏ.</li>
+<li><strong>Cạnh</strong> (<span class="math">\(\lambda_1 = \lambda \gg \lambda_2 \approx 0\)</span>): <span class="math">\(R \approx 0 - k\lambda^2 &lt; 0\)</span>.</li>
+<li><strong>Góc lý tưởng</strong> (<span class="math">\(\lambda_1 = \lambda_2 = \lambda\)</span>): <span class="math">\(R = \lambda^2 - 4k\lambda^2 = (1 - 4k)\lambda^2 &gt; 0\)</span> khi <span class="math">\(k &lt; 1/4\)</span>.</li>
+</ul>
+<p>Tổng quát, đặt <span class="math">\(\lambda_2 = r\lambda_1\)</span> với <span class="math">\(0 \le r \le 1\)</span>:</p>
+<p><span class="math display">\[R = \lambda_1^2\big[r - k(1 + r)^2\big] &gt; 0 \iff \frac{r}{(1 + r)^2} &gt; k\]</span></p>
+<p>Hàm <span class="math">\(\frac{r}{(1+r)^2}\)</span> tăng trên <span class="math">\([0, 1]\)</span> (đạo hàm <span class="math">\(\frac{1 - r}{(1+r)^3} \ge 0\)</span>). Vậy <span class="math">\(R &gt; 0\)</span> khi và chỉ khi tỉ số <span class="math">\(\lambda_2/\lambda_1\)</span> vượt một ngưỡng phụ thuộc <span class="math">\(k\)</span>. Với <span class="math">\(k = 0.04\)</span>: <span class="math">\(\frac{r}{(1+r)^2} = 0.04\)</span> cho <span class="math">\(r \approx 0.043\)</span>. Với <span class="math">\(k = 0.06\)</span>: <span class="math">\(r \approx 0.068\)</span>. <strong><span class="math">\(k\)</span> lớn → đòi hỏi hai trị riêng cân bằng hơn → ít góc hơn.</strong> Giá trị 0.04–0.06 là lựa chọn thực nghiệm của Harris &amp; Stephens, không có chứng minh tối ưu. <span class="math">\(\blacksquare\)</span></p>
+<p>Đã kiểm tra: tính <span class="math">\(\det - k\,\text{tr}^2\)</span> từ Sobel và tổng hộp <code>blockSize</code> cho cùng kết quả với <code>cv.cornerHarris</code> (sai lệch tương đối <span class="math">\(2 \times 10^{-6}\)</span> sau khi chuẩn hóa thang đo).</p>
+</div></details>
 </li>
-<li>Hàm: <code>dst = cv.cornerHarris(img, blockSize, ksize, k)</code><ul>
+<li>
+<p>Hàm: <code>dst = cv.cornerHarris(img, blockSize, ksize, k)</code></p>
+<ul>
 <li><code>img</code>: ảnh xám, <mark>kiểu <code>float32</code></mark></li>
 <li><code>blockSize</code>: kích thước vùng lân cận</li>
 <li><code>ksize</code>: kích thước kernel Sobel</li>
@@ -3432,8 +3977,21 @@
 <li>
 <p><mark><strong>Shi-Tomasi Corner Detector</strong></mark></p>
 <ul>
-<li>Thay hàm điểm của Harris bằng: <span class="math">\(R = \min(\lambda_1, \lambda_2)\)</span></li>
-<li><mark>Chỉ khi cả hai <span class="math">\(\lambda\)</span> đều lớn hơn một ngưỡng mới là góc</mark> → ổn định hơn Harris</li>
+<li>
+<p>Thay hàm điểm của Harris bằng: <span class="math">\(R = \min(\lambda_1, \lambda_2)\)</span></p>
+<details class="opencv-proof"><summary>Chứng minh: công thức đóng của min(λ1, λ2) <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Giải phương trình đặc trưng <span class="math">\(\lambda^2 - (A + C)\lambda + (AC - B^2) = 0\)</span>:</p>
+<p><span class="math display">\[\lambda = \frac{(A + C) \pm \sqrt{(A + C)^2 - 4(AC - B^2)}}{2} = \frac{A + C}{2} \pm \sqrt{\Big(\frac{A - C}{2}\Big)^2 + B^2}\]</span></p>
+<p>(vì <span class="math">\((A+C)^2 - 4AC = (A - C)^2\)</span>). Vậy</p>
+<p><span class="math display">\[\lambda_{\min} = \frac{A + C}{2} - \sqrt{\Big(\frac{A - C}{2}\Big)^2 + B^2}\]</span></p>
+<p>Biểu thức trong căn luôn <span class="math">\(\ge 0\)</span>, nên trị riêng luôn thực (đúng với ma trận đối xứng).</p>
+<p><strong>Vì sao Shi–Tomasi "tốt cho tracking".</strong> Tiêu chí <span class="math">\(\lambda_{\min} &gt; \tau\)</span> nói rằng <em>dịch theo hướng tệ nhất</em> cũng làm cửa sổ thay đổi ít nhất <span class="math">\(\tau\)</span>. Ma trận <span class="math">\(M\)</span> này <strong>chính là ma trận phải nghịch đảo trong Lucas–Kanade</strong> (xem ghi chú Optical Flow): <span class="math">\(\lambda_{\min}\)</span> lớn nghĩa là hệ phương trình ổn định, không bị nhiễu khuếch đại. Đó là lý do bài báo gốc tên là <em>Good Features to Track</em> và <code>goodFeaturesToTrack</code> thường đi cùng <code>calcOpticalFlowPyrLK</code>.</p>
+</div></details>
+</li>
+<li>
+<p><mark>Chỉ khi cả hai <span class="math">\(\lambda\)</span> đều lớn hơn một ngưỡng mới là góc</mark> → ổn định hơn Harris</p>
+</li>
 <li>Hàm: <code>corners = cv.goodFeaturesToTrack(gray, maxCorners, qualityLevel, minDistance)</code><ul>
 <li><code>maxCorners</code>: số góc tối đa (lấy N góc mạnh nhất)</li>
 <li><code>qualityLevel</code>: 0-1, loại góc có điểm &lt; <code>qualityLevel</code> x điểm cao nhất</li>
@@ -3544,14 +4102,37 @@
 <li>
 <p><mark><strong>SIFT (Scale-Invariant Feature Transform)</strong></mark> - David Lowe, 2004</p>
 <ul>
-<li><strong>B1. Tìm cực trị trong không gian tỷ lệ</strong><ul>
+<li>
+<p><strong>B1. Tìm cực trị trong không gian tỷ lệ</strong></p>
+<ul>
 <li>LoG với <span class="math">\(\sigma\)</span> khác nhau phát hiện đốm (blob) ở các kích thước khác nhau, nhưng LoG tốn kém</li>
-<li><mark>Xấp xỉ LoG bằng DoG (Difference of Gaussians)</mark>: hiệu hai ảnh làm mờ với <span class="math">\(\sigma\)</span> và <span class="math">\(k\sigma\)</span>, làm trên từng tầng kim tự tháp (octave)</li>
-<li>Một pixel là cực trị nếu lớn/nhỏ nhất so với 8 lân cận cùng tỷ lệ và 9 + 9 lân cận ở tỷ lệ trên và dưới</li>
+<li>
+<p><mark>Xấp xỉ LoG bằng DoG (Difference of Gaussians)</mark>: hiệu hai ảnh làm mờ với <span class="math">\(\sigma\)</span> và <span class="math">\(k\sigma\)</span>, làm trên từng tầng kim tự tháp (octave)</p>
+<details class="opencv-proof"><summary>Chứng minh: vì sao DoG ≈ (k − 1)σ²·LoG <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Bước 1 – Gauss thỏa phương trình nhiệt</strong> <span class="math">\(\dfrac{\partial G}{\partial \sigma} = \sigma\,\nabla^2 G\)</span>, với <span class="math">\(G = \frac{1}{2\pi\sigma^2}e^{-r^2/(2\sigma^2)}\)</span>, <span class="math">\(r^2 = x^2 + y^2\)</span>.</p>
+<p><em>Vế trái</em> (đạo hàm tích <span class="math">\(\sigma^{-2} \cdot e^{\dots}\)</span>):</p>
+<p><span class="math display">\[\frac{\partial G}{\partial\sigma} = G\cdot\Big(-\frac{2}{\sigma} + \frac{r^2}{\sigma^3}\Big)\]</span></p>
+<p><em>Vế phải</em>: <span class="math">\(\partial_x G = -\frac{x}{\sigma^2}G\)</span>, <span class="math">\(\partial_{xx} G = \big(\frac{x^2}{\sigma^4} - \frac{1}{\sigma^2}\big)G\)</span>; cộng với <span class="math">\(\partial_{yy}G\)</span>:</p>
+<p><span class="math display">\[\nabla^2 G = \Big(\frac{r^2}{\sigma^4} - \frac{2}{\sigma^2}\Big)G \;\Rightarrow\; \sigma\nabla^2 G = \Big(\frac{r^2}{\sigma^3} - \frac{2}{\sigma}\Big)G\]</span></p>
+<p>Hai vế bằng nhau. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Bước 2 – sai phân theo <span class="math">\(\sigma\)</span>.</strong> Xấp xỉ đạo hàm bằng hiệu hai mức tỉ lệ gần nhau:</p>
+<p><span class="math display">\[\frac{\partial G}{\partial\sigma} \approx \frac{G(x, y, k\sigma) - G(x, y, \sigma)}{k\sigma - \sigma}\]</span></p>
+<p>Kết hợp với Bước 1:</p>
+<p><span class="math display">\[G(k\sigma) - G(\sigma) \approx (k - 1)\,\sigma^2\,\nabla^2 G\]</span></p>
+<p><strong>Bước 3 – ý nghĩa.</strong> Vế phải là <strong>LoG đã chuẩn hóa tỉ lệ</strong> <span class="math">\(\sigma^2\nabla^2 G\)</span> nhân với hằng số <span class="math">\((k - 1)\)</span>, mà hằng số này <strong>giống nhau ở mọi tỉ lệ</strong> (vì <span class="math">\(k\)</span> cố định). Hệ số <span class="math">\(\sigma^2\)</span> cần thiết vì đạo hàm bậc hai của ảnh đã làm mờ bằng <span class="math">\(\sigma\)</span> giảm cỡ <span class="math">\(1/\sigma^2\)</span>; không nhân lại thì đốm lớn luôn có phản hồi yếu hơn đốm nhỏ và không so sánh được giữa các tỉ lệ. DoG cho sẵn sự chuẩn hóa này <strong>miễn phí</strong>, và chỉ cần trừ hai ảnh Gauss vốn đã có trong kim tự tháp.</p>
+<p><strong>Kiểm chứng số:</strong> với <span class="math">\(\sigma = 3\)</span>, <span class="math">\(k = 1.1\)</span> trên ảnh nhiễu đã làm mờ, DoG và LoG (<code>GaussianBlur</code> + <code>Laplacian</code>) có hệ số tương quan <strong>0.9986</strong>; tỉ lệ biên độ đo được 0.86 so với dự đoán <span class="math">\((k-1)\sigma^2 = 0.9\)</span> (chênh do Laplace rời rạc và xấp xỉ bậc nhất). SIFT dùng <span class="math">\(k = \sqrt2\)</span> lớn hơn, xấp xỉ thô hơn nhưng vị trí cực trị vẫn giữ được.</p>
+</div></details>
+</li>
+<li>
+<p>Một pixel là cực trị nếu lớn/nhỏ nhất so với 8 lân cận cùng tỷ lệ và 9 + 9 lân cận ở tỷ lệ trên và dưới</p>
+</li>
 <li>Tham số gợi ý: 4 octave, 5 mức tỷ lệ, <span class="math">\(\sigma = 1.6\)</span>, <span class="math">\(k = \sqrt{2}\)</span></li>
 </ul>
 </li>
-<li><strong>B2. Lọc keypoint</strong><ul>
+<li>
+<p><strong>B2. Lọc keypoint</strong></p>
+<ul>
 <li>Loại điểm tương phản thấp: ngưỡng <code>contrastThreshold</code> (mặc định 0.04)</li>
 <li>Loại điểm nằm trên cạnh (DoG phản hồi mạnh ở cạnh): dùng tỷ số trị riêng giống Harris, ngưỡng <code>edgeThreshold</code> (mặc định 10)</li>
 </ul>
@@ -3574,8 +4155,19 @@
 <li>Bài báo chọn n = 12; OpenCV mặc định <code>TYPE_9_16</code> (n = 9 trên vòng 16)</li>
 </ul>
 </li>
-<li>Kiểm tra nhanh: xét pixel 1, 9 rồi 5, 13 trước, loại được phần lớn điểm không phải góc</li>
-<li>Bản dùng machine learning (cây quyết định ID3) để chọn thứ tự kiểm tra tối ưu</li>
+<li>
+<p>Kiểm tra nhanh: xét pixel 1, 9 rồi 5, 13 trước, loại được phần lớn điểm không phải góc</p>
+<details class="opencv-proof"><summary>Chứng minh: vì sao kiểm tra 4 pixel 1, 5, 9, 13 là đủ để loại (với n = 12) <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Khẳng định:</strong> nếu có một cung <span class="math">\(n = 12\)</span> pixel liên tiếp (trên vòng 16) đều sáng hơn <span class="math">\(I_p + t\)</span>, thì <strong>ít nhất 3</strong> trong 4 pixel 1, 5, 9, 13 nằm trong cung đó.</p>
+<p><strong>Chứng minh.</strong> Phần bù của cung là <span class="math">\(16 - 12 = 4\)</span> pixel liên tiếp. Bốn pixel 1, 5, 9, 13 cách nhau đúng 4 bước, nên một dãy 4 pixel liên tiếp bất kỳ chứa <strong>đúng một</strong> trong số chúng. Vậy phần bù chứa đúng 1 điểm kiểm tra, cung chứa đúng 3. <span class="math">\(\blacksquare\)</span> (Trường hợp tối hơn <span class="math">\(I_p - t\)</span> hoàn toàn tương tự.)</p>
+<p><strong>Hệ quả:</strong> nếu ít hơn 3 trong 4 điểm kiểm tra cùng sáng hơn (hoặc cùng tối hơn) thì loại <span class="math">\(p\)</span> ngay, không cần xét 12 pixel còn lại. Phần lớn pixel trong ảnh (vùng phẳng) bị loại chỉ sau 2–4 phép so sánh.</p>
+<p><strong>Với <span class="math">\(n = 9\)</span> (mặc định của OpenCV)</strong>, phần bù dài 7 pixel có thể chứa 1 hoặc 2 điểm kiểm tra, nên cung chỉ chắc chắn chứa ít nhất 2. Kiểm tra nhanh yếu hơn – đó là lý do bản gốc dùng cây quyết định học từ dữ liệu để chọn thứ tự kiểm tra.</p>
+</div></details>
+</li>
+<li>
+<p>Bản dùng machine learning (cây quyết định ID3) để chọn thứ tự kiểm tra tối ưu</p>
+</li>
 <li>Non-maximum suppression: hai góc kề nhau giữ góc có tổng chênh lệch tuyệt đối với 16 pixel lớn hơn</li>
 <li>Mặc định: <code>threshold=10</code>, <code>nonmaxSuppression=True</code></li>
 </ul>
@@ -3592,8 +4184,18 @@
 <li><mark>Chỉ là descriptor</mark>, cần detector khác (FAST, STAR...)</li>
 <li>Làm mờ vùng ảnh, chọn <span class="math">\(n_d\)</span> cặp điểm (p, q): <span class="math">\(I(p) &lt; I(q)\)</span> thì bit = 1, ngược lại 0 → chuỗi <span class="math">\(n_d\)</span> bit</li>
 <li><span class="math">\(n_d\)</span> = 128, 256 hoặc 512 bit; OpenCV mặc định 256 bit = 32 byte</li>
-<li>So khớp bằng khoảng cách Hamming (đếm bit khác nhau, XOR + popcount) → rất nhanh</li>
-<li>Không bất biến với xoay</li>
+<li>
+<p>So khớp bằng khoảng cách Hamming (đếm bit khác nhau, XOR + popcount) → rất nhanh</p>
+<details class="opencv-proof"><summary>Chứng minh: khoảng cách Hamming = popcount(a XOR b) <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Với hai chuỗi bit <span class="math">\(a, b\)</span>: bit thứ <span class="math">\(i\)</span> của <span class="math">\(a \oplus b\)</span> bằng 1 khi và chỉ khi <span class="math">\(a_i \ne b_i\)</span> (bảng chân trị XOR: <span class="math">\(0\oplus0 = 1\oplus1 = 0\)</span>, <span class="math">\(0\oplus1 = 1\oplus0 = 1\)</span>). Nên số bit 1 của <span class="math">\(a \oplus b\)</span> đúng bằng số vị trí khác nhau:</p>
+<p><span class="math display">\[d_H(a, b) = \text{popcount}(a \oplus b) \qquad \blacksquare\]</span></p>
+<p>Descriptor 256 bit = 4 số 64 bit: chỉ cần 4 lệnh XOR và 4 lệnh <code>popcnt</code> của CPU, so với 128 phép trừ, 128 phép nhân, 127 phép cộng số thực của khoảng cách Euclid giữa hai descriptor SIFT. Đó là lý do khi dùng ORB/BRIEF phải chọn <code>cv.NORM_HAMMING</code> trong <code>BFMatcher</code>; dùng <code>NORM_L2</code> trên mảng byte là sai về nghĩa (nó coi mỗi byte là một số chứ không phải 8 bit).</p>
+</div></details>
+</li>
+<li>
+<p>Không bất biến với xoay</p>
+</li>
 <li>Nằm trong <code>opencv-contrib-python</code>: <code>cv.xfeatures2d.BriefDescriptorExtractor_create()</code></li>
 </ul>
 </li>
@@ -3753,6 +4355,22 @@
 <li>
 <p>Homography H (ma trận 3x3, 8 bậc tự do) ánh xạ điểm trên <mark>một mặt phẳng</mark> giữa hai ảnh:</p>
 <p><span class="math display">\[s \begin{bmatrix} x' \\ y' \\ 1 \end{bmatrix} = H \begin{bmatrix} x \\ y \\ 1 \end{bmatrix}\]</span></p>
+<details class="opencv-proof"><summary>Chứng minh: vì sao H có 8 bậc tự do, cần 4 điểm, và khi nào homography đúng <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Vì sao có hệ số <span class="math">\(s\)</span>.</strong> Khai triển <span class="math">\(s\,(x', y', 1)^T = H(x, y, 1)^T\)</span> với <span class="math">\(H = [h_{ij}]\)</span>; hàng thứ ba cho <span class="math">\(s = h_{31}x + h_{32}y + h_{33}\)</span>. Chia hai hàng đầu cho <span class="math">\(s\)</span>:</p>
+<p><span class="math display">\[x' = \frac{h_{11}x + h_{12}y + h_{13}}{h_{31}x + h_{32}y + h_{33}}, \qquad y' = \frac{h_{21}x + h_{22}y + h_{23}}{h_{31}x + h_{32}y + h_{33}}\]</span></p>
+<p>Mẫu số thay đổi theo vị trí là thứ tạo ra hiệu ứng <strong>phối cảnh</strong> (vật xa nhỏ lại). Khi <span class="math">\(h_{31} = h_{32} = 0\)</span> thì quay về phép affine.</p>
+<p><strong>2. 8 bậc tự do.</strong> Nhân <span class="math">\(H\)</span> với bất kỳ <span class="math">\(c \ne 0\)</span>, cả tử và mẫu cùng nhân <span class="math">\(c\)</span>, nên <span class="math">\((x', y')\)</span> không đổi. <span class="math">\(H\)</span> có 9 số nhưng chỉ xác định <strong>sai khác một hệ số</strong>: 9 − 1 = 8 bậc tự do (thường cố định <span class="math">\(h_{33} = 1\)</span>).</p>
+<p><strong>3. Mỗi cặp điểm cho 2 phương trình tuyến tính → cần 4 cặp.</strong> Nhân chéo mẫu số:</p>
+<p><span class="math display">\[h_{11}x + h_{12}y + h_{13} - x'(h_{31}x + h_{32}y + h_{33}) = 0\]</span></p>
+<p><span class="math display">\[h_{21}x + h_{22}y + h_{23} - y'(h_{31}x + h_{32}y + h_{33}) = 0\]</span></p>
+<p>Hai phương trình này <strong>tuyến tính</strong> theo 9 ẩn <span class="math">\(h_{ij}\)</span>. Bốn cặp điểm cho 8 phương trình, đúng bằng 8 bậc tự do. Với điều kiện không có 3 điểm nào thẳng hàng, hệ có nghiệm duy nhất (sai khác hệ số). Nhiều hơn 4 cặp thì giải bình phương tối thiểu: xếp thành <span class="math">\(A\mathbf{h} = 0\)</span> và lấy <span class="math">\(\mathbf{h}\)</span> là vector kỳ dị ứng với giá trị kỳ dị nhỏ nhất của <span class="math">\(A\)</span> (thuật toán <strong>DLT</strong>). Mình đã kiểm tra: DLT trên 4 góc khôi phục đúng <span class="math">\(H\)</span> ban đầu, trùng với <code>cv.getPerspectiveTransform</code>.</p>
+<p><strong>4. Vì sao chỉ đúng với mặt phẳng.</strong> Hai camera <span class="math">\(P = K[I \mid 0]\)</span> và <span class="math">\(P' = K'[R \mid \mathbf{t}]\)</span>; điểm 3D <span class="math">\(X\)</span> nằm trên mặt phẳng <span class="math">\(\mathbf{n}^T X = d\)</span>. Khi đó <span class="math">\(\frac{\mathbf{n}^T X}{d} = 1\)</span>, nên</p>
+<p><span class="math display">\[X' = RX + \mathbf{t} = RX + \mathbf{t}\,\frac{\mathbf{n}^T X}{d} = \Big(R + \frac{\mathbf{t}\,\mathbf{n}^T}{d}\Big)X\]</span></p>
+<p>Ảnh của <span class="math">\(X\)</span> là <span class="math">\(\mathbf{x} \sim KX\)</span> và <span class="math">\(\mathbf{x}' \sim K'X'\)</span>, nên</p>
+<p><span class="math display">\[\mathbf{x}' \sim K'\Big(R + \frac{\mathbf{t}\,\mathbf{n}^T}{d}\Big)K^{-1}\,\mathbf{x} = H\mathbf{x}\]</span></p>
+<p>Ma trận này <strong>chỉ phụ thuộc vào mặt phẳng</strong> <span class="math">\((\mathbf{n}, d)\)</span>. Điểm không nằm trên mặt phẳng đó thì không thỏa – vì vậy homography chỉ khớp vật phẳng (sách, bìa đĩa, mặt tường). Trường hợp đặc biệt <span class="math">\(\mathbf{t} = 0\)</span> (camera chỉ xoay, như khi chụp ảnh toàn cảnh) cho <span class="math">\(H = K'RK^{-1}\)</span>, đúng với <strong>mọi</strong> điểm bất kể độ sâu.</p>
+</div></details>
 </li>
 <li>
 <p><mark>Cần tối thiểu 4 cặp điểm đúng</mark> để tính H</p>
@@ -3771,7 +4389,22 @@
 <li><code>mask</code>: mảng 0/1, <mark>1 = inlier</mark></li>
 </ul>
 </li>
-<li>RANSAC: lặp nhiều lần {chọn ngẫu nhiên 4 cặp → tính H → đếm số cặp khớp với H}, giữ H có nhiều inlier nhất → <mark>bền vững với các cặp so khớp sai</mark></li>
+<li>
+<p>RANSAC: lặp nhiều lần {chọn ngẫu nhiên 4 cặp → tính H → đếm số cặp khớp với H}, giữ H có nhiều inlier nhất → <mark>bền vững với các cặp so khớp sai</mark></p>
+<details class="opencv-proof"><summary>Chứng minh: cần lặp RANSAC bao nhiêu lần <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Gọi <span class="math">\(w\)</span> là tỉ lệ cặp đúng (inlier), <span class="math">\(s = 4\)</span> là số cặp mỗi lần lấy mẫu, <span class="math">\(p\)</span> là xác suất mong muốn (ví dụ 0.99) để <strong>ít nhất một</strong> lần lấy mẫu toàn inlier.</p>
+<ul>
+<li>Một lần lấy mẫu toàn inlier: xác suất <span class="math">\(w^s\)</span> (coi các lần chọn độc lập).</li>
+<li>Một lần lấy mẫu có ít nhất một outlier: <span class="math">\(1 - w^s\)</span>.</li>
+<li>Cả <span class="math">\(N\)</span> lần đều có outlier: <span class="math">\((1 - w^s)^N\)</span>.</li>
+</ul>
+<p>Cần <span class="math">\((1 - w^s)^N \le 1 - p\)</span>. Lấy log hai vế (log của số trong <span class="math">\((0,1)\)</span> là số âm, nên đổi chiều bất đẳng thức khi chia):</p>
+<p><span class="math display">\[N \ge \frac{\log(1 - p)}{\log(1 - w^s)}\]</span></p>
+<p><strong>Ví dụ:</strong> <span class="math">\(w = 0.5\)</span>, <span class="math">\(s = 4\)</span>, <span class="math">\(p = 0.99\)</span>: <span class="math">\(w^4 = 0.0625\)</span>, <span class="math">\(N \ge \frac{\ln 0.01}{\ln 0.9375} = \frac{-4.605}{-0.0645} \approx 71.4\)</span> → <strong>72 lần</strong>. Nếu tính fundamental matrix với <span class="math">\(s = 8\)</span> thì <span class="math">\(w^8 \approx 0.0039\)</span>, cần khoảng <strong>1177 lần</strong> – mỗi điểm thêm vào mẫu làm số lần lặp tăng theo hàm mũ. Đó là lý do luôn dùng <strong>mẫu nhỏ nhất có thể</strong>.</p>
+<p>OpenCV ước lượng lại <span class="math">\(w\)</span> theo số inlier tốt nhất đã tìm được và giảm <span class="math">\(N\)</span> dần trong khi chạy (tham số <code>confidence</code>, mặc định 0.995; <code>maxIters</code>, mặc định 2000).</p>
+</div></details>
+</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">MIN_MATCH_COUNT</span> <span class="o">=</span> <span class="mi">10</span>
 
@@ -3849,13 +4482,28 @@
 <li>
 <p><mark><strong>Meanshift</strong></mark></p>
 <ul>
-<li>Ý tưởng: cho một tập điểm (ví dụ ảnh backprojection) và một cửa sổ<ul>
+<li>
+<p>Ý tưởng: cho một tập điểm (ví dụ ảnh backprojection) và một cửa sổ</p>
+<ul>
 <li>Tính trọng tâm các điểm trong cửa sổ</li>
 <li>Dịch tâm cửa sổ về trọng tâm đó</li>
 <li>Lặp lại đến khi cửa sổ không dịch nữa → cửa sổ nằm ở <mark>vùng có mật độ điểm cao nhất</mark></li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: dịch về trọng tâm = leo dốc theo mật độ <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Một bước meanShift tính gì.</strong> Với ảnh xác suất <span class="math">\(P(x, y)\)</span> (backprojection) và cửa sổ <span class="math">\(W\)</span>, trọng tâm có trọng số là</p>
+<p><span class="math display">\[\mathbf{c} = \Big(\frac{M_{10}}{M_{00}},\ \frac{M_{01}}{M_{00}}\Big), \qquad M_{pq} = \sum_{(x,y) \in W} x^p y^q P(x, y)\]</span></p>
+<p>– đúng công thức trọng tâm từ mô-men (xem ghi chú Contour), với <span class="math">\(P\)</span> đóng vai trò khối lượng.</p>
+<p><strong>2. Vì sao đi về phía mật độ cao nhất – mean shift là leo dốc.</strong> Ước lượng mật độ bằng kernel: <span class="math">\(f(\mathbf{x}) = \sum_i w_i\,k\big(\|\mathbf{x} - \mathbf{x}_i\|^2/h^2\big)\)</span>, với <span class="math">\(w_i = P(\mathbf{x}_i)\)</span> và <span class="math">\(k\)</span> là "profile" giảm dần. Đặt <span class="math">\(g = -k'\)</span>. Lấy gradient (đạo hàm hàm hợp):</p>
+<p><span class="math display">\[\nabla f(\mathbf{x}) = \frac{2}{h^2}\sum_i w_i\,g_i\,(\mathbf{x}_i - \mathbf{x}) = \frac{2}{h^2}\Big(\sum_i w_i g_i\Big)\Big[\underbrace{\frac{\sum_i w_i g_i\,\mathbf{x}_i}{\sum_i w_i g_i} - \mathbf{x}}_{\text{vector mean shift}}\Big]\]</span></p>
+<p>với <span class="math">\(g_i = g(\|\mathbf{x} - \mathbf{x}_i\|^2/h^2) \ge 0\)</span>. Hệ số đứng trước dấu ngoặc dương, nên <strong>vector mean shift luôn cùng hướng với <span class="math">\(\nabla f\)</span></strong>: mỗi bước đi lên dốc của mật độ. <span class="math">\(\blacksquare\)</span></p>
+<p>Với kernel Epanechnikov <span class="math">\(k(r) = 1 - r\)</span> (khi <span class="math">\(r \le 1\)</span>), ta có <span class="math">\(g = 1\)</span> trong cửa sổ và 0 ngoài cửa sổ, nên số hạng đầu trong ngoặc chính là <strong>trọng tâm có trọng số của các điểm trong cửa sổ</strong> – đúng bước "dịch tâm cửa sổ về trọng tâm" ở trên.</p>
+<p><strong>3. Hội tụ.</strong> Bước mean shift tự điều chỉnh độ dài: xa đỉnh (dốc lớn) thì bước dài, gần đỉnh (gradient → 0) thì bước ngắn dần, và tại đỉnh trọng tâm trùng tâm cửa sổ nên dừng. Comaniciu &amp; Meer (2002) chứng minh <span class="math">\(f\)</span> tăng đơn điệu qua các bước nên dãy hội tụ tới một cực đại địa phương. Hệ quả: meanShift chỉ tìm được đỉnh <strong>gần cửa sổ ban đầu nhất</strong>; vật di chuyển quá xa giữa hai frame (ra ngoài cửa sổ) sẽ bị mất dấu.</p>
+</div></details>
 </li>
-<li>Áp dụng để theo dõi vật thể trong video:<ul>
+<li>
+<p>Áp dụng để theo dõi vật thể trong video:</p>
+<ul>
 <li>Frame đầu: chọn cửa sổ chứa vật thể, tính histogram Hue của vùng đó</li>
 <li>Mỗi frame sau: backprojection histogram lên frame → ảnh xác suất → chạy meanShift từ cửa sổ cũ</li>
 </ul>
@@ -3898,8 +4546,25 @@
 <li>
 <p><mark><strong>Camshift (Continuously Adaptive Meanshift)</strong></mark> - Gary Bradski, 1998</p>
 <ul>
-<li>Chạy meanShift đến khi hội tụ, rồi <mark>cập nhật kích thước cửa sổ</mark> theo <span class="math">\(s = 2\sqrt{M_{00}/256}\)</span> và tính hướng của elip khớp nhất</li>
-<li>Chạy lại meanShift với cửa sổ mới, lặp đến khi đạt độ chính xác yêu cầu</li>
+<li>
+<p>Chạy meanShift đến khi hội tụ, rồi <mark>cập nhật kích thước cửa sổ</mark> theo <span class="math">\(s = 2\sqrt{M_{00}/256}\)</span> và tính hướng của elip khớp nhất</p>
+<details class="opencv-proof"><summary>Chứng minh: công thức s = 2√(M00/256) và hướng của elip <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Kích thước cửa sổ.</strong> Backprojection có giá trị 0–255, với 255 ≈ "chắc chắn là vật". <span class="math">\(M_{00} = \sum P\)</span> nên <span class="math">\(\frac{M_{00}}{256} \approx\)</span> <strong>số pixel tương đương có xác suất đầy</strong> – tức diện tích vật <span class="math">\(A\)</span> tính bằng pixel (chia 256 vì đó là số mức của ảnh 8 bit). Hình vuông có diện tích <span class="math">\(A\)</span> có cạnh <span class="math">\(\sqrt{A}\)</span>, nên</p>
+<p><span class="math display">\[s = 2\sqrt{\frac{M_{00}}{256}} \approx 2\sqrt{A}\]</span></p>
+<p>là cửa sổ có cạnh <strong>gấp đôi kích thước vật</strong>. Hệ số 2 là lựa chọn của Bradski (1998), không phải kết quả chứng minh: cửa sổ lớn hơn vật để vẫn bao được vật khi nó di chuyển hoặc to ra ở frame sau, nhưng không quá lớn để tránh lẫn nền. Vật to lên → <span class="math">\(M_{00}\)</span> tăng → cửa sổ tự to ra, và ngược lại.</p>
+<p><strong>2. Hướng của elip từ mô-men bậc hai.</strong> Ma trận hiệp phương sai của phân bố <span class="math">\(P\)</span> trong cửa sổ:</p>
+<p><span class="math display">\[C = \frac{1}{M_{00}}\begin{bmatrix} \mu_{20} &amp; \mu_{11} \\ \mu_{11} &amp; \mu_{02} \end{bmatrix}\]</span></p>
+<p>(<span class="math">\(\mu_{pq}\)</span>: mô-men trung tâm). Trục chính của elip là vector riêng ứng với trị riêng lớn. Tìm góc <span class="math">\(\theta\)</span> sao cho hệ trục xoay <span class="math">\(\theta\)</span> làm <span class="math">\(C\)</span> <strong>chéo hóa</strong>: phần tử ngoài đường chéo của <span class="math">\(R^TCR\)</span> bằng 0. Với hai trục mới <span class="math">\(\mathbf{e}_1 = (\cos\theta, \sin\theta)\)</span>, <span class="math">\(\mathbf{e}_2 = (-\sin\theta, \cos\theta)\)</span>:</p>
+<p><span class="math display">\[\mathbf{e}_1^T C\,\mathbf{e}_2 \propto -\sin\theta\cos\theta\,\mu_{20} + (\cos^2\theta - \sin^2\theta)\,\mu_{11} + \sin\theta\cos\theta\,\mu_{02} = 0\]</span></p>
+<p>Dùng <span class="math">\(\cos^2\theta - \sin^2\theta = \cos2\theta\)</span> và <span class="math">\(\sin\theta\cos\theta = \frac12\sin2\theta\)</span>:</p>
+<p><span class="math display">\[\mu_{11}\cos2\theta = \tfrac12(\mu_{20} - \mu_{02})\sin2\theta \;\Rightarrow\; \theta = \frac12\operatorname{atan2}\big(2\mu_{11},\ \mu_{20} - \mu_{02}\big) \qquad \blacksquare\]</span></p>
+<p>Dùng <code>atan2</code> để chọn đúng nghiệm ứng với trục <strong>dài</strong> (phương trình <span class="math">\(\tan 2\theta = \dots\)</span> có hai nghiệm cách nhau 90°, ứng với hai trục). Đây cũng là công thức hướng của đốm trong Bài 5–6 của khóa học. Độ dài hai trục tỉ lệ với căn bậc hai của hai trị riêng của <span class="math">\(C\)</span>.</p>
+</div></details>
+</li>
+<li>
+<p>Chạy lại meanShift với cửa sổ mới, lặp đến khi đạt độ chính xác yêu cầu</p>
+</li>
 <li>Code giống meanShift, chỉ đổi dòng theo dõi và cách vẽ:</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">ret</span><span class="p">,</span> <span class="n">track_window</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">CamShift</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">track_window</span><span class="p">,</span> <span class="n">term_crit</span><span class="p">)</span>
@@ -3964,6 +4629,19 @@
 <li>
 <p><span class="math">\(I(x, y, t) = I(x + dx, y + dy, t + dt)\)</span>, khai triển Taylor →</p>
 <p><span class="math display">\[I_x u + I_y v + I_t = 0\]</span></p>
+<details class="opencv-proof"><summary>Chứng minh: phương trình optical flow và bài toán khẩu độ <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Bước 1 – Taylor bậc nhất</strong> (dịch nhỏ):</p>
+<p><span class="math display">\[I(x + dx, y + dy, t + dt) \approx I(x, y, t) + I_x\,dx + I_y\,dy + I_t\,dt\]</span></p>
+<p><strong>Bước 2 – dùng giả thiết độ sáng không đổi</strong>, vế trái bằng <span class="math">\(I(x, y, t)\)</span>, nên</p>
+<p><span class="math display">\[I_x\,dx + I_y\,dy + I_t\,dt = 0\]</span></p>
+<p><strong>Bước 3 – chia cho <span class="math">\(dt\)</span></strong> và đặt <span class="math">\(u = dx/dt\)</span>, <span class="math">\(v = dy/dt\)</span> (với hai frame liên tiếp, <span class="math">\(dt = 1\)</span> frame và <span class="math">\(I_t\)</span> = hiệu hai frame):</p>
+<p><span class="math display">\[I_x u + I_y v + I_t = 0 \iff \nabla I \cdot (u, v) = -I_t \qquad \blacksquare\]</span></p>
+<p><strong>Bài toán khẩu độ (aperture problem) – chính xác thì biết được gì?</strong> Phương trình <span class="math">\(\nabla I \cdot \mathbf{d} = -I_t\)</span> là một <strong>đường thẳng</strong> trong mặt phẳng <span class="math">\((u, v)\)</span>. Nếu <span class="math">\(\mathbf{d}\)</span> là một nghiệm thì <span class="math">\(\mathbf{d} + c\,\mathbf{d}_\perp\)</span> (với <span class="math">\(\mathbf{d}_\perp \perp \nabla I\)</span>) cũng là nghiệm, vì <span class="math">\(\nabla I \cdot \mathbf{d}_\perp = 0\)</span>. Chỉ xác định được <strong>thành phần theo hướng gradient</strong>:</p>
+<p><span class="math display">\[\mathbf{d} \cdot \frac{\nabla I}{|\nabla I|} = \frac{-I_t}{|\nabla I|} \quad \text{(normal flow)}\]</span></p>
+<p>Thành phần dọc theo cạnh hoàn toàn không đo được. Ví dụ quen thuộc: nhìn một vạch thẳng dài di chuyển qua một lỗ nhỏ, ta chỉ thấy nó chuyển động vuông góc với chính nó, bất kể nó thực ra đi chéo.</p>
+<p><strong>Khi nào Taylor bậc nhất đúng:</strong> khi chuyển động nhỏ hơn khoảng cách mà ảnh còn gần tuyến tính – cỡ dưới 1 pixel với ảnh nhiều chi tiết. Đó là giả thiết "chuyển động nhỏ" ở trên, và là lý do cần kim tự tháp.</p>
+</div></details>
 </li>
 <li>
 <p><span class="math">\(I_x, I_y\)</span>: gradient không gian, <span class="math">\(I_t\)</span>: gradient theo thời gian, <span class="math">\((u, v)\)</span>: vector chuyển động cần tìm</p>
@@ -3977,6 +4655,24 @@
 <li>
 <p>Giả sử cả vùng 3x3 quanh điểm chuyển động như nhau → 9 phương trình, 2 ẩn → giải bằng bình phương tối thiểu:</p>
 <p><span class="math display">\[\begin{bmatrix} u \\ v \end{bmatrix} = \begin{bmatrix} \sum I_x^2 &amp; \sum I_x I_y \\ \sum I_x I_y &amp; \sum I_y^2 \end{bmatrix}^{-1} \begin{bmatrix} -\sum I_x I_t \\ -\sum I_y I_t \end{bmatrix}\]</span></p>
+<details class="opencv-proof"><summary>Chứng minh: nghiệm Lucas–Kanade từ bình phương tối thiểu <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Bước 1 – xếp <span class="math">\(n\)</span> phương trình</strong> (một cho mỗi pixel <span class="math">\(q_i\)</span> trong cửa sổ) thành <span class="math">\(A\mathbf{d} = \mathbf{b}\)</span>:</p>
+<p><span class="math display">\[A = \begin{bmatrix} I_x(q_1) &amp; I_y(q_1) \\ \vdots &amp; \vdots \\ I_x(q_n) &amp; I_y(q_n) \end{bmatrix}, \quad \mathbf{d} = \begin{bmatrix} u \\ v \end{bmatrix}, \quad \mathbf{b} = -\begin{bmatrix} I_t(q_1) \\ \vdots \\ I_t(q_n) \end{bmatrix}\]</span></p>
+<p><strong>Bước 2 – cực tiểu sai số bình phương</strong> <span class="math">\(S(u, v) = \sum_i (I_{x,i}u + I_{y,i}v + I_{t,i})^2\)</span>. Tại cực tiểu, đạo hàm riêng bằng 0:</p>
+<p><span class="math display">\[\frac{\partial S}{\partial u} = 2\sum_i I_{x,i}(I_{x,i}u + I_{y,i}v + I_{t,i}) = 0, \qquad \frac{\partial S}{\partial v} = 2\sum_i I_{y,i}(I_{x,i}u + I_{y,i}v + I_{t,i}) = 0\]</span></p>
+<p><strong>Bước 3 – sắp xếp lại</strong> thành hệ 2x2 (phương trình chuẩn <span class="math">\(A^TA\mathbf{d} = A^T\mathbf{b}\)</span>):</p>
+<p><span class="math display">\[\begin{bmatrix} \sum I_x^2 &amp; \sum I_xI_y \\ \sum I_xI_y &amp; \sum I_y^2 \end{bmatrix}\begin{bmatrix} u \\ v \end{bmatrix} = \begin{bmatrix} -\sum I_xI_t \\ -\sum I_yI_t \end{bmatrix}\]</span></p>
+<p>Nhân hai vế với nghịch đảo ra đúng công thức trên. <span class="math">\(S\)</span> là hàm bậc hai lồi (vì <span class="math">\(A^TA\)</span> nửa xác định dương), nên điểm dừng này là cực tiểu toàn cục. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Khi nào giải được – nối với Harris.</strong> <span class="math">\(A^TA\)</span> chính là ma trận <span class="math">\(M\)</span> của Harris (với cửa sổ đều). Nó khả nghịch khi <span class="math">\(\lambda_{\min} &gt; 0\)</span>, và nghiệm ổn định khi <span class="math">\(\lambda_{\min}\)</span> đủ lớn so với nhiễu:</p>
+<ul>
+<li>Vùng phẳng: <span class="math">\(\lambda_1 \approx \lambda_2 \approx 0\)</span> → gần suy biến, nghiệm là nhiễu.</li>
+<li>Cạnh: hạng 1 → đúng bài toán khẩu độ, chỉ giải được thành phần vuông góc với cạnh.</li>
+<li>Góc: hai trị riêng lớn → giải tốt.</li>
+</ul>
+<p><strong>Kiểm chứng số:</strong> dịch một ảnh đã làm mờ đi <span class="math">\((0.4, -0.3)\)</span> pixel, giải hệ trên cửa sổ 15x15 cho <span class="math">\((0.434, -0.349)\)</span>. Sai số đến từ xấp xỉ Taylor bậc nhất; <code>calcOpticalFlowPyrLK</code> <strong>lặp</strong> bước này (dịch ảnh theo ước lượng hiện tại rồi giải tiếp phần dư) đến khi thỏa <code>criteria</code>, nên hội tụ về giá trị đúng.</p>
+<p><strong>Vì sao kim tự tháp xử lý được chuyển động lớn.</strong> Ở tầng <span class="math">\(L\)</span>, ảnh thu nhỏ <span class="math">\(2^L\)</span> lần nên chuyển động <span class="math">\(d\)</span> pixel chỉ còn <span class="math">\(d / 2^L\)</span> – đủ nhỏ để Taylor đúng. Ước lượng ở tầng thô được nhân 2 làm điểm xuất phát cho tầng mịn hơn, tầng mịn chỉ phải sửa phần dư nhỏ. Với <code>maxLevel=2</code>, chuyển động tối đa xử lý được tăng khoảng <span class="math">\(2^2 = 4\)</span> lần.</p>
+</div></details>
 </li>
 <li>
 <p>Ma trận nghịch đảo giống ma trận M của Harris → <mark>giải tốt nhất tại các góc</mark> → chọn điểm bằng <code>goodFeaturesToTrack</code></p>
@@ -4159,6 +4855,27 @@
 </li>
 <li>
 <p><mark>Hệ số méo theo thứ tự OpenCV: <span class="math">\((k_1, k_2, p_1, p_2, k_3)\)</span></mark></p>
+<details class="opencv-proof"><summary>Chứng minh: vì sao méo xuyên tâm chỉ có lũy thừa chẵn, và mô hình đầy đủ của OpenCV <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Khẳng định:</strong> với thấu kính đối xứng quanh trục quang học, méo xuyên tâm có dạng <span class="math">\(\mathbf{x}_d = \mathbf{x}\,L(r)\)</span> với <span class="math">\(L\)</span> chỉ chứa lũy thừa <strong>chẵn</strong> của <span class="math">\(r\)</span>.</p>
+<p><strong>Lập luận.</strong> Đối xứng quay có hai hệ quả:</p>
+<ol>
+<li>Điểm bị đẩy dọc theo <strong>bán kính</strong> (không lệch sang ngang), nên <span class="math">\(\mathbf{x}_d\)</span> cùng hướng với <span class="math">\(\mathbf{x}\)</span>: <span class="math">\(\mathbf{x}_d = \mathbf{x}\,L(r)\)</span>, với <span class="math">\(L\)</span> chỉ phụ thuộc khoảng cách <span class="math">\(r = \sqrt{x^2 + y^2}\)</span> tới tâm.</li>
+<li><span class="math">\(L\)</span> phải là hàm <strong>trơn</strong> của tọa độ <span class="math">\((x, y)\)</span> tại tâm. Mà <span class="math">\(r = \sqrt{x^2 + y^2}\)</span> không khả vi tại gốc, còn <span class="math">\(r^2 = x^2 + y^2\)</span> là đa thức. Một hàm trơn, đối xứng quay của <span class="math">\((x, y)\)</span> thì viết được thành hàm trơn của <span class="math">\(r^2\)</span>. Khai triển Taylor theo <span class="math">\(r^2\)</span>:</li>
+</ol>
+<p><span class="math display">\[L(r) = 1 + k_1 r^2 + k_2 r^4 + k_3 r^6 + \dots\]</span></p>
+<p>Số hạng hằng bằng 1 vì tại tâm không có méo. Cắt ở bậc 6 là đủ cho hầu hết ống kính; ống kính mắt cá cần mô hình khác (<code>cv.fisheye</code>). <span class="math">\(\blacksquare\)</span></p>
+<ul>
+<li><span class="math">\(k_1 &lt; 0\)</span>: điểm xa tâm bị <strong>kéo vào</strong> → méo thùng (barrel), đường thẳng phình ra ngoài.</li>
+<li><span class="math">\(k_1 &gt; 0\)</span>: điểm xa tâm bị <strong>đẩy ra</strong> → méo gối (pincushion).</li>
+</ul>
+<p><strong>Méo tiếp tuyến</strong> (công thức của Brown–Conrady) là hạng tử bậc thấp nhất mô tả thấu kính bị lệch tâm/nghiêng; đây là mô hình thực nghiệm, không suy ra được từ một nguyên lý đối xứng như phần xuyên tâm.</p>
+<p><strong>Mô hình đầy đủ trong OpenCV</strong> cộng cả hai lên tọa độ chuẩn hóa <span class="math">\((x, y) = (X/Z, Y/Z)\)</span>, rồi mới nhân <span class="math">\(K\)</span>:</p>
+<p><span class="math display">\[x_d = x(1 + k_1r^2 + k_2r^4 + k_3r^6) + 2p_1xy + p_2(r^2 + 2x^2)\]</span></p>
+<p><span class="math display">\[y_d = y(1 + k_1r^2 + k_2r^4 + k_3r^6) + p_1(r^2 + 2y^2) + 2p_2xy\]</span></p>
+<p><span class="math display">\[u = f_x x_d + c_x, \qquad v = f_y y_d + c_y\]</span></p>
+<p>Mình đã kiểm tra: tự tính theo ba dòng trên cho kết quả trùng với <code>cv.projectPoints</code> (5 hệ số méo bất kỳ).</p>
+</div></details>
 </li>
 </ul>
 </li>
@@ -4168,13 +4885,47 @@
 <ul>
 <li><span class="math">\(f_x, f_y\)</span>: tiêu cự (đơn vị pixel), <span class="math">\((c_x, c_y)\)</span>: tâm quang học</li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: từ camera lỗ kim tới ma trận K <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Bước 1 – tam giác đồng dạng.</strong> Đặt tâm quang học ở gốc, trục <span class="math">\(Z\)</span> nhìn về phía trước, mặt phẳng ảnh cách tâm một khoảng <span class="math">\(f\)</span> (tiêu cự, đơn vị mm). Tia nối điểm 3D <span class="math">\((X, Y, Z)\)</span> với tâm cắt mặt phẳng ảnh tại <span class="math">\((x, y)\)</span>. Hai tam giác vuông có chung đỉnh ở tâm nên đồng dạng:</p>
+<p><span class="math display">\[\frac{x}{f} = \frac{X}{Z}, \quad \frac{y}{f} = \frac{Y}{Z} \;\Rightarrow\; x = f\frac{X}{Z}, \quad y = f\frac{Y}{Z}\]</span></p>
+<p>Chia cho <span class="math">\(Z\)</span> là lý do vật xa trông nhỏ hơn. Tọa độ <span class="math">\(x_n = X/Z\)</span>, <span class="math">\(y_n = Y/Z\)</span> gọi là <strong>tọa độ chuẩn hóa</strong> (camera có <span class="math">\(f = 1\)</span>).</p>
+<p><strong>Bước 2 – đổi từ mm sang pixel.</strong> Cảm biến có pixel kích thước <span class="math">\(p_x \times p_y\)</span> mm, gốc ảnh ở góc trên trái thay vì ở tâm quang học <span class="math">\((c_x, c_y)\)</span>:</p>
+<p><span class="math display">\[u = \frac{f}{p_x}\,x_n + c_x = f_x\,x_n + c_x, \qquad v = f_y\,y_n + c_y\]</span></p>
+<p>Vì vậy <span class="math">\(f_x = f/p_x\)</span>, <span class="math">\(f_y = f/p_y\)</span> có <strong>đơn vị pixel</strong>, và <span class="math">\(f_x \ne f_y\)</span> khi pixel không vuông.</p>
+<p><strong>Bước 3 – viết dạng ma trận</strong> bằng tọa độ đồng nhất (chia cho thành phần thứ ba ở cuối):</p>
+<p><span class="math display">\[\begin{bmatrix} u \\ v \\ 1 \end{bmatrix} \sim \begin{bmatrix} f_x &amp; 0 &amp; c_x \\ 0 &amp; f_y &amp; c_y \\ 0 &amp; 0 &amp; 1 \end{bmatrix}\begin{bmatrix} X \\ Y \\ Z \end{bmatrix} = \begin{bmatrix} f_xX + c_xZ \\ f_yY + c_yZ \\ Z \end{bmatrix} \;\to\; \Big(f_x\frac{X}{Z} + c_x,\ f_y\frac{Y}{Z} + c_y\Big) \qquad \blacksquare\]</span></p>
+<p>Cộng thêm thông số ngoại: điểm trong hệ thế giới <span class="math">\(X_w\)</span> được đưa về hệ camera bằng <span class="math">\(X = RX_w + \mathbf{t}\)</span> (<code>rvec</code>, <code>tvec</code>), nên toàn bộ phép chiếu là <span class="math">\(\mathbf{x} \sim K[R \mid \mathbf{t}]X_w\)</span>. Méo ống kính được áp lên <span class="math">\((x_n, y_n)\)</span> <strong>trước khi</strong> nhân <span class="math">\(K\)</span> (xem mục dưới).</p>
+</div></details>
 </li>
 <li>
 <p><strong>Thông số ngoại (extrinsic)</strong>: vector xoay <code>rvec</code> và tịnh tiến <code>tvec</code>, biến đổi từ hệ tọa độ thế giới sang hệ tọa độ camera, <mark>khác nhau với mỗi ảnh</mark></p>
 </li>
-<li><strong>Chuẩn bị:</strong><ul>
-<li>In bàn cờ (chessboard), chụp <mark>ít nhất 10 ảnh</mark> ở nhiều góc và vị trí khác nhau</li>
-<li><strong>Object points</strong>: tọa độ 3D các góc trong bàn cờ. Bàn cờ phẳng nên đặt Z = 0, mỗi ô dài 1 đơn vị: (0,0,0), (1,0,0), ..., (6,5,0)</li>
+<li>
+<p><strong>Chuẩn bị:</strong></p>
+<ul>
+<li>
+<p>In bàn cờ (chessboard), chụp <mark>ít nhất 10 ảnh</mark> ở nhiều góc và vị trí khác nhau</p>
+<details class="opencv-proof"><summary>Chứng minh: phương pháp Zhang – vì sao ảnh một mặt phẳng ở nhiều góc lại tìm được K <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Đây là thuật toán mà <code>calibrateCamera</code> dùng để khởi tạo (Zhang, 2000).</p>
+<p><strong>Bước 1 – mỗi ảnh bàn cờ cho một homography.</strong> Bàn cờ nằm trên mặt phẳng <span class="math">\(Z_w = 0\)</span>, nên với <span class="math">\(R = [\mathbf{r}_1\ \mathbf{r}_2\ \mathbf{r}_3]\)</span>:</p>
+<p><span class="math display">\[\mathbf{x} \sim K[\mathbf{r}_1\ \mathbf{r}_2\ \mathbf{r}_3\ \mathbf{t}]\begin{bmatrix} X \\ Y \\ 0 \\ 1 \end{bmatrix} = K[\mathbf{r}_1\ \mathbf{r}_2\ \mathbf{t}]\begin{bmatrix} X \\ Y \\ 1 \end{bmatrix}\]</span></p>
+<p>Tức <span class="math">\(H = [\mathbf{h}_1\ \mathbf{h}_2\ \mathbf{h}_3] = \lambda K[\mathbf{r}_1\ \mathbf{r}_2\ \mathbf{t}]\)</span>, tính được từ các góc bàn cờ (xem ghi chú Homography).</p>
+<p><strong>Bước 2 – hai ràng buộc từ tính chất của phép xoay.</strong> Từ đó <span class="math">\(\mathbf{r}_1 = \frac{1}{\lambda}K^{-1}\mathbf{h}_1\)</span>, <span class="math">\(\mathbf{r}_2 = \frac{1}{\lambda}K^{-1}\mathbf{h}_2\)</span>. Các cột của ma trận xoay <strong>vuông góc và có độ dài bằng nhau</strong>:</p>
+<p><span class="math display">\[\mathbf{r}_1^T\mathbf{r}_2 = 0 \;\Rightarrow\; \mathbf{h}_1^T B\,\mathbf{h}_2 = 0\]</span></p>
+<p><span class="math display">\[\mathbf{r}_1^T\mathbf{r}_1 = \mathbf{r}_2^T\mathbf{r}_2 \;\Rightarrow\; \mathbf{h}_1^T B\,\mathbf{h}_1 = \mathbf{h}_2^T B\,\mathbf{h}_2\]</span></p>
+<p>với <span class="math">\(B = K^{-T}K^{-1}\)</span> (vì <span class="math">\(\mathbf{r}_i^T\mathbf{r}_j = \frac{1}{\lambda^2}\mathbf{h}_i^T K^{-T}K^{-1}\mathbf{h}_j\)</span>, hệ số <span class="math">\(\frac{1}{\lambda^2}\)</span> ở hai vế triệt tiêu).</p>
+<p><strong>Bước 3 – đếm ẩn.</strong> <span class="math">\(B\)</span> đối xứng 3x3 → 6 phần tử, xác định sai khác hệ số → 5 ẩn (ứng với 5 thông số <span class="math">\(f_x, f_y, c_x, c_y\)</span>, skew). Hai ràng buộc ở Bước 2 <strong>tuyến tính</strong> theo các phần tử của <span class="math">\(B\)</span>. Mỗi ảnh cho 2 phương trình, nên cần <strong>ít nhất 3 ảnh</strong> ở các hướng khác nhau (2 ảnh nếu giả sử skew = 0). Giải hệ tuyến tính ra <span class="math">\(B\)</span>, rồi tách <span class="math">\(K\)</span> bằng phân tích Cholesky (<span class="math">\(B = K^{-T}K^{-1}\)</span>).</p>
+<p><strong>Vì sao ảnh phải nghiêng nhiều góc khác nhau.</strong> Nếu hai ảnh chỉ khác nhau một phép tịnh tiến song song với mặt bàn cờ, chúng cho cùng một cặp phương trình – không có thông tin mới. Ảnh chụp thẳng góc cũng yếu vì không ràng buộc được tiêu cự với khoảng cách.</p>
+<p><strong>Bước 4 – tinh chỉnh.</strong> Nghiệm tuyến tính chỉ là khởi tạo; sau đó OpenCV cực tiểu <strong>sai số chiếu lại</strong> (Levenberg–Marquardt) theo cả <span class="math">\(K\)</span>, hệ số méo và <span class="math">\((R, \mathbf{t})\)</span> của từng ảnh:</p>
+<p><span class="math display">\[\min \sum_{\text{ảnh } i}\sum_{\text{góc } j}\big\|\mathbf{x}_{ij} - \pi(K, \text{dist}, R_i, \mathbf{t}_i, X_j)\big\|^2\]</span></p>
+<p>Giá trị <code>ret</code> trả về là <span class="math">\(\sqrt{\text{tổng trên} / \text{số điểm}}\)</span> (RMS, đơn vị pixel). Khuyến nghị 10+ ảnh vì có nhiều ẩn hơn (5 hệ số méo + 6 thông số ngoại cho mỗi ảnh) và để trung bình hóa sai số phát hiện góc. Trong hình minh họa ở dưới: dữ liệu mô phỏng với <span class="math">\(f_x = 600\)</span>, <span class="math">\(k_1 = -0.35\)</span> cho ra lại <span class="math">\(f_x \approx 600.1\)</span>, <span class="math">\(k_1 \approx -0.36\)</span>, RMS ≈ 0.1 pixel.</p>
+</div></details>
+</li>
+<li>
+<p><strong>Object points</strong>: tọa độ 3D các góc trong bàn cờ. Bàn cờ phẳng nên đặt Z = 0, mỗi ô dài 1 đơn vị: (0,0,0), (1,0,0), ..., (6,5,0)</p>
+</li>
 <li><strong>Image points</strong>: tọa độ 2D các góc đó trong ảnh, tìm bằng <code>cv.findChessboardCorners</code></li>
 <li><mark><code>patternSize</code> là số <strong>góc trong</strong> (cols, rows)</mark>, không phải số ô: bàn cờ 8x8 ô có 7x7 góc trong</li>
 <li>Có thể dùng lưới hình tròn với <code>cv.findCirclesGrid()</code>, cần ít ảnh hơn</li>
@@ -4372,15 +5123,41 @@
 <li><strong>Epipole</strong>: giao của đường nối hai tâm camera với mặt phẳng ảnh; mọi epiline đều đi qua epipole (có thể nằm ngoài ảnh)</li>
 </ul>
 </li>
-<li><strong>Ma trận cơ bản (Fundamental Matrix) F</strong> và <strong>ma trận thiết yếu (Essential Matrix) E</strong>:<ul>
-<li>Ràng buộc epipolar: <mark><span class="math">\(x'^T F x = 0\)</span></mark> với x, x' là cặp điểm tương ứng (tọa độ pixel)</li>
-<li>E chứa phép xoay và tịnh tiến giữa hai camera, dùng tọa độ đã chuẩn hóa; F = E + thông số nội: <span class="math">\(F = K'^{-T} E K^{-1}\)</span></li>
+<li>
+<p><strong>Ma trận cơ bản (Fundamental Matrix) F</strong> và <strong>ma trận thiết yếu (Essential Matrix) E</strong>:</p>
+<ul>
+<li>
+<p>Ràng buộc epipolar: <mark><span class="math">\(x'^T F x = 0\)</span></mark> với x, x' là cặp điểm tương ứng (tọa độ pixel)</p>
+<details class="opencv-proof"><summary>Chứng minh: suy ra E = [t]×R, F = K&#x27;^{-T}EK^{-1} và epiline <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Thiết lập.</strong> Camera 1 ở gốc tọa độ. Điểm 3D có tọa độ <span class="math">\(X\)</span> trong hệ camera 1 và <span class="math">\(X' = RX + \mathbf{t}\)</span> trong hệ camera 2. Tọa độ ảnh chuẩn hóa: <span class="math">\(\hat{\mathbf{x}} \sim X\)</span>, <span class="math">\(\hat{\mathbf{x}}' \sim X'\)</span> (tức <span class="math">\(\hat{\mathbf{x}} = K^{-1}\mathbf{x}\)</span>).</p>
+<p><strong>Bước 1 – ba vector đồng phẳng.</strong> Trong hệ camera 2: tâm camera 2 ở gốc, tâm camera 1 ở <span class="math">\(\mathbf{t}\)</span>, điểm 3D ở <span class="math">\(X'\)</span>. Ba điểm này (và gốc) tạo thành <strong>mặt phẳng epipolar</strong>. Các vector <span class="math">\(X'\)</span>, <span class="math">\(\mathbf{t}\)</span>, và <span class="math">\(X' - \mathbf{t} = RX\)</span> cùng nằm trong mặt phẳng đó, nên <span class="math">\(X'\)</span> vuông góc với pháp tuyến <span class="math">\(\mathbf{t} \times RX\)</span>:</p>
+<p><span class="math display">\[X'^T(\mathbf{t} \times RX) = 0\]</span></p>
+<p><strong>Bước 2 – viết tích có hướng thành ma trận.</strong> <span class="math">\(\mathbf{t} \times \mathbf{a} = [\mathbf{t}]_\times\mathbf{a}\)</span> với</p>
+<p><span class="math display">\[[\mathbf{t}]_\times = \begin{bmatrix} 0 &amp; -t_z &amp; t_y \\ t_z &amp; 0 &amp; -t_x \\ -t_y &amp; t_x &amp; 0 \end{bmatrix}\]</span></p>
+<p>(kiểm tra từng thành phần của tích có hướng). Thay vào Bước 1:</p>
+<p><span class="math display">\[X'^T\,\underbrace{[\mathbf{t}]_\times R}_{E}\,X = 0\]</span></p>
+<p>Phương trình đồng nhất nên chia hai vế cho độ sâu: <span class="math">\(\hat{\mathbf{x}}'^T E\,\hat{\mathbf{x}} = 0\)</span>. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Bước 3 – sang tọa độ pixel.</strong> Thay <span class="math">\(\hat{\mathbf{x}} = K^{-1}\mathbf{x}\)</span>, <span class="math">\(\hat{\mathbf{x}}' = K'^{-1}\mathbf{x}'\)</span>:</p>
+<p><span class="math display">\[\mathbf{x}'^T\,\underbrace{K'^{-T}EK^{-1}}_{F}\,\mathbf{x} = 0 \qquad \blacksquare\]</span></p>
+<p><strong>Hạng 2.</strong> <span class="math">\([\mathbf{t}]_\times\mathbf{t} = \mathbf{t} \times \mathbf{t} = 0\)</span> nên <span class="math">\([\mathbf{t}]_\times\)</span> có nhân khác 0, hạng 2. Nhân với ma trận khả nghịch không làm tăng hạng, nên <span class="math">\(E\)</span>, <span class="math">\(F\)</span> đều hạng 2, <span class="math">\(\det F = 0\)</span>.</p>
+<p><strong>Bậc tự do.</strong> <span class="math">\(F\)</span> có 9 số, trừ 1 (sai khác hệ số), trừ 1 (ràng buộc <span class="math">\(\det F = 0\)</span>) → <strong>7</strong>. Mỗi cặp điểm cho <strong>một</strong> phương trình tuyến tính <span class="math">\(\mathbf{x}'^TF\mathbf{x} = 0\)</span> theo 9 phần tử của <span class="math">\(F\)</span>. Thuật toán 8 điểm dùng 8 phương trình để giải tuyến tính (bỏ qua ràng buộc det), sau đó ép hạng 2 bằng SVD (đặt giá trị kỳ dị nhỏ nhất bằng 0). <span class="math">\(E\)</span> chỉ có 5 bậc tự do (3 cho xoay, 2 cho hướng của <span class="math">\(\mathbf{t}\)</span> – độ dài của <span class="math">\(\mathbf{t}\)</span> không xác định được từ ảnh).</p>
+<p><strong>Epiline.</strong> Một đường thẳng <span class="math">\(ax + by + c = 0\)</span> viết bằng tọa độ đồng nhất là <span class="math">\(\mathbf{l}^T\mathbf{x} = 0\)</span> với <span class="math">\(\mathbf{l} = (a, b, c)\)</span>. Cố định <span class="math">\(\mathbf{x}\)</span>, đặt <span class="math">\(\mathbf{l}' = F\mathbf{x}\)</span>; ràng buộc epipolar thành <span class="math">\(\mathbf{x}'^T\mathbf{l}' = 0\)</span>: mọi điểm tương ứng <span class="math">\(\mathbf{x}'\)</span> nằm trên đường thẳng <span class="math">\(\mathbf{l}' = F\mathbf{x}\)</span>. Tương tự, chuyển vị ràng buộc cho <span class="math">\(\mathbf{x}^T(F^T\mathbf{x}') = 0\)</span>, nên <span class="math">\(\mathbf{l} = F^T\mathbf{x}'\)</span>. Để vẽ, tính hai đầu mút tại <span class="math">\(x = 0\)</span> và <span class="math">\(x = W\)</span>: <span class="math">\(y = -(c + ax)/b\)</span>.</p>
+<p><strong>Epipole.</strong> Epipole <span class="math">\(\mathbf{e}\)</span> trên ảnh 1 thỏa <span class="math">\(F\mathbf{e} = 0\)</span> (vector trong nhân của <span class="math">\(F\)</span>). Khi đó mọi epiline <span class="math">\(\mathbf{l} = F^T\mathbf{x}'\)</span> đều đi qua <span class="math">\(\mathbf{e}\)</span> vì <span class="math">\(\mathbf{e}^T F^T\mathbf{x}' = (F\mathbf{e})^T\mathbf{x}' = 0\)</span> – đúng như "mọi epiline đều đi qua epipole".</p>
+<p><strong>Kiểm chứng số:</strong> hai camera mô phỏng (<span class="math">\(K \ne K'\)</span>, có xoay và tịnh tiến), 10 điểm 3D ngẫu nhiên: <span class="math">\(\max|\mathbf{x}'^TF\mathbf{x}| = 2 \times 10^{-16}\)</span> và hạng của <span class="math">\(F\)</span> bằng 2.</p>
+</div></details>
+</li>
+<li>
+<p>E chứa phép xoay và tịnh tiến giữa hai camera, dùng tọa độ đã chuẩn hóa; F = E + thông số nội: <span class="math">\(F = K'^{-T} E K^{-1}\)</span></p>
+</li>
 <li>F là ma trận 3x3, hạng 2, 7 bậc tự do</li>
 <li>Epiline trên ảnh 2 ứng với x: <span class="math">\(l' = F x\)</span>; trên ảnh 1 ứng với x': <span class="math">\(l = F^T x'\)</span></li>
 <li><mark>Cần tối thiểu 8 cặp điểm</mark> (thuật toán 8 điểm), nên dùng RANSAC/LMedS để chống outlier</li>
 </ul>
 </li>
-<li>Hàm:<ul>
+<li>
+<p>Hàm:</p>
+<ul>
 <li><code>F, mask = cv.findFundamentalMat(pts1, pts2, method)</code>: <code>method</code> = <code>cv.FM_8POINT</code>, <code>cv.FM_LMEDS</code>, <code>cv.FM_RANSAC</code>; <code>mask</code> = 1 với inlier</li>
 <li><code>lines = cv.computeCorrespondEpilines(points, whichImage, F)</code><ul>
 <li><code>whichImage = 1</code>: điểm thuộc ảnh 1 → trả về epiline trên ảnh 2</li>
@@ -4459,6 +5236,19 @@
 <ul>
 <li><mark>Disparity lớn → vật ở gần; disparity nhỏ → vật ở xa</mark></li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: Z = Bf/d và sai số độ sâu tăng theo Z² <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Thiết lập.</strong> Hai camera song song đã rectify: camera trái ở gốc, camera phải dịch sang phải một đoạn <span class="math">\(B\)</span> theo trục <span class="math">\(x\)</span>, cùng tiêu cự <span class="math">\(f\)</span> (pixel). Đo <span class="math">\(x\)</span>, <span class="math">\(x'\)</span> từ tâm ảnh của mỗi camera.</p>
+<p><strong>Bước 1 – chiếu điểm <span class="math">\((X, Y, Z)\)</span></strong> (công thức lỗ kim, xem ghi chú Camera Calibration). Trong hệ camera phải, tọa độ ngang của điểm là <span class="math">\(X - B\)</span>:</p>
+<p><span class="math display">\[x = f\frac{X}{Z}, \qquad x' = f\frac{X - B}{Z}\]</span></p>
+<p><strong>Bước 2 – trừ hai phương trình</strong>, <span class="math">\(X\)</span> triệt tiêu:</p>
+<p><span class="math display">\[d = x - x' = \frac{fX - fX + fB}{Z} = \frac{fB}{Z} \;\Rightarrow\; Z = \frac{B \cdot f}{d} \qquad \blacksquare\]</span></p>
+<p>Cùng một hàng <span class="math">\(y\)</span> ở hai ảnh vì <span class="math">\(y = fY/Z\)</span> như nhau – đó là lý do sau khi rectify chỉ cần tìm theo hàng ngang. <span class="math">\(d &gt; 0\)</span> với mọi điểm phía trước camera.</p>
+<p><strong>Sai số độ sâu.</strong> Đạo hàm theo <span class="math">\(d\)</span>:</p>
+<p><span class="math display">\[\frac{dZ}{dd} = -\frac{Bf}{d^2} = -\frac{Z^2}{Bf} \;\Rightarrow\; |\Delta Z| \approx \frac{Z^2}{Bf}\,|\Delta d|\]</span></p>
+<p>Sai số độ sâu <strong>tăng theo bình phương khoảng cách</strong>. Ví dụ <span class="math">\(B = 0.1\)</span> m, <span class="math">\(f = 700\)</span> px: vật ở <span class="math">\(Z = 2\)</span> m có <span class="math">\(d = 35\)</span> px, sai 1 px disparity → sai khoảng <span class="math">\(4/70 \approx 6\)</span> cm; vật ở 10 m (<span class="math">\(d = 7\)</span> px) → sai khoảng 1.4 m. Muốn đo xa chính xác thì tăng <span class="math">\(B\)</span> hoặc <span class="math">\(f\)</span>.</p>
+<p><strong>Lưu ý với OpenCV:</strong> <code>StereoBM</code> / <code>StereoSGBM</code> trả disparity dạng số nguyên <strong>nhân 16</strong> (4 bit phần lẻ), nên phải chia 16 trước khi dùng công thức trên.</p>
+</div></details>
 </li>
 <li>
 <p><mark>Điều kiện: hai ảnh phải được chỉnh song song (rectified)</mark>: điểm tương ứng nằm trên cùng một hàng → chỉ cần tìm theo hàng ngang</p>
@@ -4534,15 +5324,37 @@
 <p class="opencv-note-lesson">Gắn với: <a href="lessons/lesson19_clustering.html#opencv-note-35-kmeans">Bài 19: Phân cụm — k-Means, GMM và DBSCAN (Clustering — k-Means, GMMs, and DBSCAN)</a></p>
 <div class="opencv-note-body">
 <ul>
-<li>K-Means chia dữ liệu thành K cụm:<ul>
+<li>
+<p>K-Means chia dữ liệu thành K cụm:</p>
+<ul>
 <li><strong>B1</strong>: chọn ngẫu nhiên K tâm cụm</li>
 <li><strong>B2</strong>: gán mỗi điểm vào tâm gần nhất</li>
 <li><strong>B3</strong>: tính lại tâm = trung bình các điểm trong cụm</li>
 <li>Lặp B2-B3 đến khi tâm không đổi (hoặc đạt điều kiện dừng)</li>
-<li>Mục tiêu: cực tiểu tổng bình phương khoảng cách từ điểm tới tâm cụm của nó (compactness)</li>
+<li>
+<p>Mục tiêu: cực tiểu tổng bình phương khoảng cách từ điểm tới tâm cụm của nó (compactness)</p>
+<details class="opencv-proof"><summary>Chứng minh: vì sao k-means luôn dừng và vì sao tâm = trung bình <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Hàm mục tiêu (chính là <code>compactness</code>), với <span class="math">\(c(i)\)</span> là cụm của điểm <span class="math">\(\mathbf{x}_i\)</span> và <span class="math">\(\boldsymbol{\mu}_j\)</span> là các tâm:</p>
+<p><span class="math display">\[J = \sum_{i=1}^{N}\big\|\mathbf{x}_i - \boldsymbol{\mu}_{c(i)}\big\|^2\]</span></p>
+<p><strong>Bổ đề – trung bình là điểm gần nhất (theo bình phương) với một nhóm điểm.</strong> Với nhóm <span class="math">\(S\)</span> có <span class="math">\(n\)</span> điểm, trung bình <span class="math">\(\bar{\mathbf{x}}\)</span>, và một điểm <span class="math">\(\mathbf{m}\)</span> bất kỳ:</p>
+<p><span class="math display">\[\sum_{i \in S}\|\mathbf{x}_i - \mathbf{m}\|^2 = \sum_{i \in S}\|(\mathbf{x}_i - \bar{\mathbf{x}}) + (\bar{\mathbf{x}} - \mathbf{m})\|^2 = \sum_{i \in S}\|\mathbf{x}_i - \bar{\mathbf{x}}\|^2 + n\|\bar{\mathbf{x}} - \mathbf{m}\|^2\]</span></p>
+<p>(số hạng chéo <span class="math">\(2(\bar{\mathbf{x}} - \mathbf{m})^T\sum_{i\in S}(\mathbf{x}_i - \bar{\mathbf{x}})\)</span> bằng 0 vì tổng độ lệch so với trung bình bằng 0). Vế phải nhỏ nhất khi và chỉ khi <span class="math">\(\mathbf{m} = \bar{\mathbf{x}}\)</span>. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Định lý – <span class="math">\(J\)</span> không bao giờ tăng, và thuật toán dừng sau hữu hạn bước.</strong></p>
+<ul>
+<li><strong>B2 (gán điểm)</strong>: tâm cố định, mỗi điểm chuyển sang tâm gần nhất, nên số hạng của từng điểm không tăng → <span class="math">\(J\)</span> không tăng.</li>
+<li><strong>B3 (cập nhật tâm)</strong>: nhãn cố định, <span class="math">\(J\)</span> tách thành tổng theo từng cụm, và theo bổ đề mỗi cụm đạt nhỏ nhất khi tâm là trung bình → <span class="math">\(J\)</span> không tăng.</li>
+</ul>
+<p><span class="math">\(J \ge 0\)</span> và không tăng qua mỗi vòng. Hơn nữa chỉ có hữu hạn cách chia <span class="math">\(N\)</span> điểm thành <span class="math">\(K\)</span> nhóm (nhiều nhất <span class="math">\(K^N\)</span>), và mỗi cách chia xác định duy nhất các tâm. Nếu <span class="math">\(J\)</span> giảm ngặt thì không thể quay lại một cách chia cũ, nên sau hữu hạn bước các nhãn ngừng thay đổi. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Nhưng chỉ là cực tiểu địa phương.</strong> Phép chứng minh chỉ nói <span class="math">\(J\)</span> giảm, không nói đạt cực tiểu toàn cục (bài toán tổng quát là NP-khó). Kết quả phụ thuộc khởi tạo – đó là lý do có tham số <code>attempts</code> (chạy nhiều lần, giữ <span class="math">\(J\)</span> nhỏ nhất) và <code>KMEANS_PP_CENTERS</code> (k-means++ chọn tâm ban đầu xa nhau, có đảm bảo kỳ vọng <span class="math">\(J\)</span> chỉ kém tối ưu cỡ <span class="math">\(O(\log K)\)</span> lần).</p>
+<p><strong>Vì sao phải <code>float32</code> và chuẩn hóa đặc trưng.</strong> <span class="math">\(J\)</span> dùng khoảng cách Euclid, nên đặc trưng có thang đo lớn (ví dụ chiều cao tính bằng cm cạnh cân nặng tính bằng tấn) sẽ lấn át hoàn toàn đặc trưng còn lại.</p>
+</div></details>
+</li>
 </ul>
 </li>
-<li>Hàm: <code>compactness, labels, centers = cv.kmeans(data, K, bestLabels, criteria, attempts, flags)</code></li>
+<li>
+<p>Hàm: <code>compactness, labels, centers = cv.kmeans(data, K, bestLabels, criteria, attempts, flags)</code></p>
+</li>
 </ul>
 <table>
 <thead>
@@ -4662,8 +5474,18 @@
 <p><mark><strong>k-Nearest Neighbour (kNN)</strong></mark></p>
 <ul>
 <li>Không có bước học thật sự: lưu lại toàn bộ dữ liệu</li>
-<li>Phân loại điểm mới: tìm k điểm gần nhất, <mark>lớp nào chiếm đa số thì gán lớp đó</mark></li>
-<li>k nhỏ → nhạy với nhiễu; k lớn → biên quyết định mượt hơn nhưng có thể lấn sang lớp khác; thường chọn k lẻ để tránh hòa</li>
+<li>
+<p>Phân loại điểm mới: tìm k điểm gần nhất, <mark>lớp nào chiếm đa số thì gán lớp đó</mark></p>
+<details class="opencv-proof"><summary>Chứng minh: vì sao kNN với k lẻ không hòa (2 lớp) và trọng số theo khoảng cách <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>k lẻ không hòa với 2 lớp.</strong> Nếu hai lớp có <span class="math">\(a\)</span> và <span class="math">\(b\)</span> phiếu thì <span class="math">\(a + b = k\)</span>. Hòa nghĩa là <span class="math">\(a = b\)</span>, tức <span class="math">\(k = 2a\)</span> chẵn. Vậy <span class="math">\(k\)</span> lẻ thì không thể hòa. <span class="math">\(\blacksquare\)</span> Với 3 lớp trở lên, <span class="math">\(k\)</span> lẻ <strong>không</strong> đủ (ví dụ <span class="math">\(k = 3\)</span> với ba lớp mỗi lớp 1 phiếu) – khi đó cần quy tắc phá hòa, thường là chọn lớp có điểm gần nhất.</p>
+<p><strong>Trọng số theo khoảng cách</strong> (ví dụ <span class="math">\(w_i = 1/d_i\)</span>): lớp được chọn là lớp có tổng <span class="math">\(w_i\)</span> lớn nhất. Điểm nằm gần điểm mới quyết định nhiều hơn, nên kết quả ít nhạy với việc chọn <span class="math">\(k\)</span> hơn.</p>
+<p><strong>Vì sao kNN cần chuẩn hóa đặc trưng</strong> – giống k-means: khoảng cách Euclid <span class="math">\(\sqrt{\sum_j (x_j - x'_j)^2}\)</span> bị chi phối bởi đặc trưng có thang đo lớn nhất.</p>
+</div></details>
+</li>
+<li>
+<p>k nhỏ → nhạy với nhiễu; k lớn → biên quyết định mượt hơn nhưng có thể lấn sang lớp khác; thường chọn k lẻ để tránh hòa</p>
+</li>
 <li>Có thể đặt trọng số theo khoảng cách (điểm gần quan trọng hơn)</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">knn</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">ml</span><span class="o">.</span><span class="n">KNearest_create</span><span class="p">()</span>
@@ -4702,8 +5524,27 @@
 <li>
 <p><mark><strong>Support Vector Machine (SVM)</strong></mark></p>
 <ul>
-<li>Tìm siêu phẳng phân chia hai lớp với <mark>lề (margin) lớn nhất</mark></li>
-<li>Chỉ các điểm nằm sát biên (<mark>support vectors</mark>) quyết định siêu phẳng → sau khi học không cần giữ toàn bộ dữ liệu</li>
+<li>
+<p>Tìm siêu phẳng phân chia hai lớp với <mark>lề (margin) lớn nhất</mark></p>
+<details class="opencv-proof"><summary>Chứng minh: độ rộng lề 2/‖w‖, vai trò của C và kernel RBF <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Khoảng cách từ điểm tới siêu phẳng.</strong> Siêu phẳng <span class="math">\(\mathbf{w}^T\mathbf{x} + b = 0\)</span> có pháp tuyến <span class="math">\(\mathbf{w}\)</span>. Lấy <span class="math">\(\mathbf{x}_0\)</span> trên siêu phẳng; khoảng cách từ <span class="math">\(\mathbf{x}\)</span> là độ dài hình chiếu của <span class="math">\(\mathbf{x} - \mathbf{x}_0\)</span> lên <span class="math">\(\mathbf{w}/\|\mathbf{w}\|\)</span>:</p>
+<p><span class="math display">\[\text{dist} = \frac{|\mathbf{w}^T(\mathbf{x} - \mathbf{x}_0)|}{\|\mathbf{w}\|} = \frac{|\mathbf{w}^T\mathbf{x} + b|}{\|\mathbf{w}\|}\]</span></p>
+<p>(vì <span class="math">\(\mathbf{w}^T\mathbf{x}_0 = -b\)</span>).</p>
+<p><strong>2. Độ rộng lề = <span class="math">\(2/\|\mathbf{w}\|\)</span>.</strong> Nhân <span class="math">\(\mathbf{w}, b\)</span> với cùng một hằng số không đổi siêu phẳng, nên có thể chọn thang đo sao cho các điểm gần nhất thỏa <span class="math">\(|\mathbf{w}^T\mathbf{x} + b| = 1\)</span>. Với nhãn <span class="math">\(y_i \in \{-1, +1\}\)</span>, mọi điểm được phân loại đúng với lề khi <span class="math">\(y_i(\mathbf{w}^T\mathbf{x}_i + b) \ge 1\)</span>. Hai đường biên của lề là <span class="math">\(\mathbf{w}^T\mathbf{x} + b = \pm1\)</span>, mỗi đường cách siêu phẳng <span class="math">\(\frac{1}{\|\mathbf{w}\|}\)</span> (theo mục 1), nên lề rộng <span class="math">\(\frac{2}{\|\mathbf{w}\|}\)</span>. Cực đại lề tương đương bài toán lồi:</p>
+<p><span class="math display">\[\min_{\mathbf{w}, b}\ \frac12\|\mathbf{w}\|^2 \quad \text{với } y_i(\mathbf{w}^T\mathbf{x}_i + b) \ge 1\ \ \forall i\]</span></p>
+<p><strong>3. Vì sao chỉ support vector quyết định.</strong> Theo điều kiện tối ưu (KKT) của bài toán trên, nghiệm có dạng <span class="math">\(\mathbf{w} = \sum_i \alpha_i y_i \mathbf{x}_i\)</span> với <span class="math">\(\alpha_i \ge 0\)</span>, và <span class="math">\(\alpha_i &gt; 0\)</span> <strong>chỉ</strong> với các điểm nằm đúng trên biên lề (<span class="math">\(y_i(\mathbf{w}^T\mathbf{x}_i + b) = 1\)</span>). Xóa một điểm nằm ngoài lề thì <span class="math">\(\alpha_i = 0\)</span> vẫn thỏa mọi điều kiện, nghiệm không đổi. Đó là các <em>support vector</em> trong hình minh họa.</p>
+<p><strong>4. Tham số C (lề mềm).</strong> Khi dữ liệu không tách được, cho phép vi phạm <span class="math">\(\xi_i \ge 0\)</span>:</p>
+<p><span class="math display">\[\min\ \frac12\|\mathbf{w}\|^2 + C\sum_i\xi_i \quad \text{với } y_i(\mathbf{w}^T\mathbf{x}_i + b) \ge 1 - \xi_i\]</span></p>
+<p><span class="math">\(C\)</span> là giá của mỗi đơn vị vi phạm. <span class="math">\(C\)</span> lớn → vi phạm rất đắt → bộ giải chấp nhận <span class="math">\(\|\mathbf{w}\|\)</span> lớn (lề hẹp) để phân loại đúng hết, dễ khớp cả nhiễu. <span class="math">\(C\)</span> nhỏ → ưu tiên <span class="math">\(\|\mathbf{w}\|\)</span> nhỏ (lề rộng), chấp nhận vài điểm sai. Đó chính là mô tả <code>C</code> trong ghi chú.</p>
+<p><strong>5. Kernel trick.</strong> Trong bài toán đối ngẫu, dữ liệu chỉ xuất hiện qua tích vô hướng <span class="math">\(\mathbf{x}_i^T\mathbf{x}_j\)</span>, và hàm quyết định là <span class="math">\(\sum_i\alpha_iy_i\,\mathbf{x}_i^T\mathbf{x} + b\)</span>. Thay tích vô hướng bằng <span class="math">\(K(\mathbf{x}_i, \mathbf{x}) = \phi(\mathbf{x}_i)^T\phi(\mathbf{x})\)</span> là làm SVM tuyến tính trong không gian đặc trưng <span class="math">\(\phi\)</span>, mà không cần tính <span class="math">\(\phi\)</span> tường minh. RBF:</p>
+<p><span class="math display">\[K(\mathbf{x}, \mathbf{x}') = e^{-\gamma\|\mathbf{x} - \mathbf{x}'\|^2}\]</span></p>
+<p>Hàm quyết định thành tổng các "quả chuông" Gauss đặt tại các support vector, độ rộng cỡ <span class="math">\(1/\sqrt{\gamma}\)</span>. <strong><span class="math">\(\gamma\)</span> lớn → chuông hẹp → biên uốn sát từng điểm</strong>; <span class="math">\(\gamma\)</span> nhỏ → chuông rộng → biên mượt. Đúng như mô tả tham số <code>gamma</code> ở dưới.</p>
+</div></details>
+</li>
+<li>
+<p>Chỉ các điểm nằm sát biên (<mark>support vectors</mark>) quyết định siêu phẳng → sau khi học không cần giữ toàn bộ dữ liệu</p>
+</li>
 <li>Dữ liệu không tách được bằng đường thẳng → <strong>kernel trick</strong>: ánh xạ ngầm sang không gian nhiều chiều hơn (RBF, đa thức)</li>
 <li>Tham số:<ul>
 <li><code>C</code>: <mark>C lớn → phạt nặng điểm bị phân loại sai, lề hẹp, dễ overfit; C nhỏ → lề rộng, chấp nhận vài điểm sai</mark></li>

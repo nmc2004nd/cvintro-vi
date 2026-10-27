@@ -544,6 +544,27 @@ $$y_d = y(1 + k_1r^2 + k_2r^4 + k_3r^6) + p_1(r^2+2y^2) + 2p_2xy$$</p>
 </li>
 <li>
 <p><mark>Hệ số méo theo thứ tự OpenCV: <span class="math">\((k_1, k_2, p_1, p_2, k_3)\)</span></mark></p>
+<details class="opencv-proof"><summary>Chứng minh: vì sao méo xuyên tâm chỉ có lũy thừa chẵn, và mô hình đầy đủ của OpenCV <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Khẳng định:</strong> với thấu kính đối xứng quanh trục quang học, méo xuyên tâm có dạng <span class="math">\(\mathbf{x}_d = \mathbf{x}\,L(r)\)</span> với <span class="math">\(L\)</span> chỉ chứa lũy thừa <strong>chẵn</strong> của <span class="math">\(r\)</span>.</p>
+<p><strong>Lập luận.</strong> Đối xứng quay có hai hệ quả:</p>
+<ol>
+<li>Điểm bị đẩy dọc theo <strong>bán kính</strong> (không lệch sang ngang), nên <span class="math">\(\mathbf{x}_d\)</span> cùng hướng với <span class="math">\(\mathbf{x}\)</span>: <span class="math">\(\mathbf{x}_d = \mathbf{x}\,L(r)\)</span>, với <span class="math">\(L\)</span> chỉ phụ thuộc khoảng cách <span class="math">\(r = \sqrt{x^2 + y^2}\)</span> tới tâm.</li>
+<li><span class="math">\(L\)</span> phải là hàm <strong>trơn</strong> của tọa độ <span class="math">\((x, y)\)</span> tại tâm. Mà <span class="math">\(r = \sqrt{x^2 + y^2}\)</span> không khả vi tại gốc, còn <span class="math">\(r^2 = x^2 + y^2\)</span> là đa thức. Một hàm trơn, đối xứng quay của <span class="math">\((x, y)\)</span> thì viết được thành hàm trơn của <span class="math">\(r^2\)</span>. Khai triển Taylor theo <span class="math">\(r^2\)</span>:</li>
+</ol>
+<p><span class="math display">\[L(r) = 1 + k_1 r^2 + k_2 r^4 + k_3 r^6 + \dots\]</span></p>
+<p>Số hạng hằng bằng 1 vì tại tâm không có méo. Cắt ở bậc 6 là đủ cho hầu hết ống kính; ống kính mắt cá cần mô hình khác (<code>cv.fisheye</code>). <span class="math">\(\blacksquare\)</span></p>
+<ul>
+<li><span class="math">\(k_1 &lt; 0\)</span>: điểm xa tâm bị <strong>kéo vào</strong> → méo thùng (barrel), đường thẳng phình ra ngoài.</li>
+<li><span class="math">\(k_1 &gt; 0\)</span>: điểm xa tâm bị <strong>đẩy ra</strong> → méo gối (pincushion).</li>
+</ul>
+<p><strong>Méo tiếp tuyến</strong> (công thức của Brown–Conrady) là hạng tử bậc thấp nhất mô tả thấu kính bị lệch tâm/nghiêng; đây là mô hình thực nghiệm, không suy ra được từ một nguyên lý đối xứng như phần xuyên tâm.</p>
+<p><strong>Mô hình đầy đủ trong OpenCV</strong> cộng cả hai lên tọa độ chuẩn hóa <span class="math">\((x, y) = (X/Z, Y/Z)\)</span>, rồi mới nhân <span class="math">\(K\)</span>:</p>
+<p><span class="math display">\[x_d = x(1 + k_1r^2 + k_2r^4 + k_3r^6) + 2p_1xy + p_2(r^2 + 2x^2)\]</span></p>
+<p><span class="math display">\[y_d = y(1 + k_1r^2 + k_2r^4 + k_3r^6) + p_1(r^2 + 2y^2) + 2p_2xy\]</span></p>
+<p><span class="math display">\[u = f_x x_d + c_x, \qquad v = f_y y_d + c_y\]</span></p>
+<p>Mình đã kiểm tra: tự tính theo ba dòng trên cho kết quả trùng với <code>cv.projectPoints</code> (5 hệ số méo bất kỳ).</p>
+</div></details>
 </li>
 </ul>
 </li>
@@ -553,13 +574,47 @@ $$y_d = y(1 + k_1r^2 + k_2r^4 + k_3r^6) + p_1(r^2+2y^2) + 2p_2xy$$</p>
 <ul>
 <li><span class="math">\(f_x, f_y\)</span>: tiêu cự (đơn vị pixel), <span class="math">\((c_x, c_y)\)</span>: tâm quang học</li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: từ camera lỗ kim tới ma trận K <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Bước 1 – tam giác đồng dạng.</strong> Đặt tâm quang học ở gốc, trục <span class="math">\(Z\)</span> nhìn về phía trước, mặt phẳng ảnh cách tâm một khoảng <span class="math">\(f\)</span> (tiêu cự, đơn vị mm). Tia nối điểm 3D <span class="math">\((X, Y, Z)\)</span> với tâm cắt mặt phẳng ảnh tại <span class="math">\((x, y)\)</span>. Hai tam giác vuông có chung đỉnh ở tâm nên đồng dạng:</p>
+<p><span class="math display">\[\frac{x}{f} = \frac{X}{Z}, \quad \frac{y}{f} = \frac{Y}{Z} \;\Rightarrow\; x = f\frac{X}{Z}, \quad y = f\frac{Y}{Z}\]</span></p>
+<p>Chia cho <span class="math">\(Z\)</span> là lý do vật xa trông nhỏ hơn. Tọa độ <span class="math">\(x_n = X/Z\)</span>, <span class="math">\(y_n = Y/Z\)</span> gọi là <strong>tọa độ chuẩn hóa</strong> (camera có <span class="math">\(f = 1\)</span>).</p>
+<p><strong>Bước 2 – đổi từ mm sang pixel.</strong> Cảm biến có pixel kích thước <span class="math">\(p_x \times p_y\)</span> mm, gốc ảnh ở góc trên trái thay vì ở tâm quang học <span class="math">\((c_x, c_y)\)</span>:</p>
+<p><span class="math display">\[u = \frac{f}{p_x}\,x_n + c_x = f_x\,x_n + c_x, \qquad v = f_y\,y_n + c_y\]</span></p>
+<p>Vì vậy <span class="math">\(f_x = f/p_x\)</span>, <span class="math">\(f_y = f/p_y\)</span> có <strong>đơn vị pixel</strong>, và <span class="math">\(f_x \ne f_y\)</span> khi pixel không vuông.</p>
+<p><strong>Bước 3 – viết dạng ma trận</strong> bằng tọa độ đồng nhất (chia cho thành phần thứ ba ở cuối):</p>
+<p><span class="math display">\[\begin{bmatrix} u \\ v \\ 1 \end{bmatrix} \sim \begin{bmatrix} f_x &amp; 0 &amp; c_x \\ 0 &amp; f_y &amp; c_y \\ 0 &amp; 0 &amp; 1 \end{bmatrix}\begin{bmatrix} X \\ Y \\ Z \end{bmatrix} = \begin{bmatrix} f_xX + c_xZ \\ f_yY + c_yZ \\ Z \end{bmatrix} \;\to\; \Big(f_x\frac{X}{Z} + c_x,\ f_y\frac{Y}{Z} + c_y\Big) \qquad \blacksquare\]</span></p>
+<p>Cộng thêm thông số ngoại: điểm trong hệ thế giới <span class="math">\(X_w\)</span> được đưa về hệ camera bằng <span class="math">\(X = RX_w + \mathbf{t}\)</span> (<code>rvec</code>, <code>tvec</code>), nên toàn bộ phép chiếu là <span class="math">\(\mathbf{x} \sim K[R \mid \mathbf{t}]X_w\)</span>. Méo ống kính được áp lên <span class="math">\((x_n, y_n)\)</span> <strong>trước khi</strong> nhân <span class="math">\(K\)</span> (xem mục dưới).</p>
+</div></details>
 </li>
 <li>
 <p><strong>Thông số ngoại (extrinsic)</strong>: vector xoay <code>rvec</code> và tịnh tiến <code>tvec</code>, biến đổi từ hệ tọa độ thế giới sang hệ tọa độ camera, <mark>khác nhau với mỗi ảnh</mark></p>
 </li>
-<li><strong>Chuẩn bị:</strong><ul>
-<li>In bàn cờ (chessboard), chụp <mark>ít nhất 10 ảnh</mark> ở nhiều góc và vị trí khác nhau</li>
-<li><strong>Object points</strong>: tọa độ 3D các góc trong bàn cờ. Bàn cờ phẳng nên đặt Z = 0, mỗi ô dài 1 đơn vị: (0,0,0), (1,0,0), ..., (6,5,0)</li>
+<li>
+<p><strong>Chuẩn bị:</strong></p>
+<ul>
+<li>
+<p>In bàn cờ (chessboard), chụp <mark>ít nhất 10 ảnh</mark> ở nhiều góc và vị trí khác nhau</p>
+<details class="opencv-proof"><summary>Chứng minh: phương pháp Zhang – vì sao ảnh một mặt phẳng ở nhiều góc lại tìm được K <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Đây là thuật toán mà <code>calibrateCamera</code> dùng để khởi tạo (Zhang, 2000).</p>
+<p><strong>Bước 1 – mỗi ảnh bàn cờ cho một homography.</strong> Bàn cờ nằm trên mặt phẳng <span class="math">\(Z_w = 0\)</span>, nên với <span class="math">\(R = [\mathbf{r}_1\ \mathbf{r}_2\ \mathbf{r}_3]\)</span>:</p>
+<p><span class="math display">\[\mathbf{x} \sim K[\mathbf{r}_1\ \mathbf{r}_2\ \mathbf{r}_3\ \mathbf{t}]\begin{bmatrix} X \\ Y \\ 0 \\ 1 \end{bmatrix} = K[\mathbf{r}_1\ \mathbf{r}_2\ \mathbf{t}]\begin{bmatrix} X \\ Y \\ 1 \end{bmatrix}\]</span></p>
+<p>Tức <span class="math">\(H = [\mathbf{h}_1\ \mathbf{h}_2\ \mathbf{h}_3] = \lambda K[\mathbf{r}_1\ \mathbf{r}_2\ \mathbf{t}]\)</span>, tính được từ các góc bàn cờ (xem ghi chú Homography).</p>
+<p><strong>Bước 2 – hai ràng buộc từ tính chất của phép xoay.</strong> Từ đó <span class="math">\(\mathbf{r}_1 = \frac{1}{\lambda}K^{-1}\mathbf{h}_1\)</span>, <span class="math">\(\mathbf{r}_2 = \frac{1}{\lambda}K^{-1}\mathbf{h}_2\)</span>. Các cột của ma trận xoay <strong>vuông góc và có độ dài bằng nhau</strong>:</p>
+<p><span class="math display">\[\mathbf{r}_1^T\mathbf{r}_2 = 0 \;\Rightarrow\; \mathbf{h}_1^T B\,\mathbf{h}_2 = 0\]</span></p>
+<p><span class="math display">\[\mathbf{r}_1^T\mathbf{r}_1 = \mathbf{r}_2^T\mathbf{r}_2 \;\Rightarrow\; \mathbf{h}_1^T B\,\mathbf{h}_1 = \mathbf{h}_2^T B\,\mathbf{h}_2\]</span></p>
+<p>với <span class="math">\(B = K^{-T}K^{-1}\)</span> (vì <span class="math">\(\mathbf{r}_i^T\mathbf{r}_j = \frac{1}{\lambda^2}\mathbf{h}_i^T K^{-T}K^{-1}\mathbf{h}_j\)</span>, hệ số <span class="math">\(\frac{1}{\lambda^2}\)</span> ở hai vế triệt tiêu).</p>
+<p><strong>Bước 3 – đếm ẩn.</strong> <span class="math">\(B\)</span> đối xứng 3x3 → 6 phần tử, xác định sai khác hệ số → 5 ẩn (ứng với 5 thông số <span class="math">\(f_x, f_y, c_x, c_y\)</span>, skew). Hai ràng buộc ở Bước 2 <strong>tuyến tính</strong> theo các phần tử của <span class="math">\(B\)</span>. Mỗi ảnh cho 2 phương trình, nên cần <strong>ít nhất 3 ảnh</strong> ở các hướng khác nhau (2 ảnh nếu giả sử skew = 0). Giải hệ tuyến tính ra <span class="math">\(B\)</span>, rồi tách <span class="math">\(K\)</span> bằng phân tích Cholesky (<span class="math">\(B = K^{-T}K^{-1}\)</span>).</p>
+<p><strong>Vì sao ảnh phải nghiêng nhiều góc khác nhau.</strong> Nếu hai ảnh chỉ khác nhau một phép tịnh tiến song song với mặt bàn cờ, chúng cho cùng một cặp phương trình – không có thông tin mới. Ảnh chụp thẳng góc cũng yếu vì không ràng buộc được tiêu cự với khoảng cách.</p>
+<p><strong>Bước 4 – tinh chỉnh.</strong> Nghiệm tuyến tính chỉ là khởi tạo; sau đó OpenCV cực tiểu <strong>sai số chiếu lại</strong> (Levenberg–Marquardt) theo cả <span class="math">\(K\)</span>, hệ số méo và <span class="math">\((R, \mathbf{t})\)</span> của từng ảnh:</p>
+<p><span class="math display">\[\min \sum_{\text{ảnh } i}\sum_{\text{góc } j}\big\|\mathbf{x}_{ij} - \pi(K, \text{dist}, R_i, \mathbf{t}_i, X_j)\big\|^2\]</span></p>
+<p>Giá trị <code>ret</code> trả về là <span class="math">\(\sqrt{\text{tổng trên} / \text{số điểm}}\)</span> (RMS, đơn vị pixel). Khuyến nghị 10+ ảnh vì có nhiều ẩn hơn (5 hệ số méo + 6 thông số ngoại cho mỗi ảnh) và để trung bình hóa sai số phát hiện góc. Trong hình minh họa ở dưới: dữ liệu mô phỏng với <span class="math">\(f_x = 600\)</span>, <span class="math">\(k_1 = -0.35\)</span> cho ra lại <span class="math">\(f_x \approx 600.1\)</span>, <span class="math">\(k_1 \approx -0.36\)</span>, RMS ≈ 0.1 pixel.</p>
+</div></details>
+</li>
+<li>
+<p><strong>Object points</strong>: tọa độ 3D các góc trong bàn cờ. Bàn cờ phẳng nên đặt Z = 0, mỗi ô dài 1 đơn vị: (0,0,0), (1,0,0), ..., (6,5,0)</p>
+</li>
 <li><strong>Image points</strong>: tọa độ 2D các góc đó trong ảnh, tìm bằng <code>cv.findChessboardCorners</code></li>
 <li><mark><code>patternSize</code> là số <strong>góc trong</strong> (cols, rows)</mark>, không phải số ô: bàn cờ 8x8 ô có 7x7 góc trong</li>
 <li>Có thể dùng lưới hình tròn với <code>cv.findCirclesGrid()</code>, cần ít ảnh hơn</li>

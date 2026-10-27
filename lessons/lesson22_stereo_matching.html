@@ -736,6 +736,19 @@ newly marked invalid:           264
 <ul>
 <li><mark>Disparity lớn → vật ở gần; disparity nhỏ → vật ở xa</mark></li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: Z = Bf/d và sai số độ sâu tăng theo Z² <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Thiết lập.</strong> Hai camera song song đã rectify: camera trái ở gốc, camera phải dịch sang phải một đoạn <span class="math">\(B\)</span> theo trục <span class="math">\(x\)</span>, cùng tiêu cự <span class="math">\(f\)</span> (pixel). Đo <span class="math">\(x\)</span>, <span class="math">\(x'\)</span> từ tâm ảnh của mỗi camera.</p>
+<p><strong>Bước 1 – chiếu điểm <span class="math">\((X, Y, Z)\)</span></strong> (công thức lỗ kim, xem ghi chú Camera Calibration). Trong hệ camera phải, tọa độ ngang của điểm là <span class="math">\(X - B\)</span>:</p>
+<p><span class="math display">\[x = f\frac{X}{Z}, \qquad x' = f\frac{X - B}{Z}\]</span></p>
+<p><strong>Bước 2 – trừ hai phương trình</strong>, <span class="math">\(X\)</span> triệt tiêu:</p>
+<p><span class="math display">\[d = x - x' = \frac{fX - fX + fB}{Z} = \frac{fB}{Z} \;\Rightarrow\; Z = \frac{B \cdot f}{d} \qquad \blacksquare\]</span></p>
+<p>Cùng một hàng <span class="math">\(y\)</span> ở hai ảnh vì <span class="math">\(y = fY/Z\)</span> như nhau – đó là lý do sau khi rectify chỉ cần tìm theo hàng ngang. <span class="math">\(d &gt; 0\)</span> với mọi điểm phía trước camera.</p>
+<p><strong>Sai số độ sâu.</strong> Đạo hàm theo <span class="math">\(d\)</span>:</p>
+<p><span class="math display">\[\frac{dZ}{dd} = -\frac{Bf}{d^2} = -\frac{Z^2}{Bf} \;\Rightarrow\; |\Delta Z| \approx \frac{Z^2}{Bf}\,|\Delta d|\]</span></p>
+<p>Sai số độ sâu <strong>tăng theo bình phương khoảng cách</strong>. Ví dụ <span class="math">\(B = 0.1\)</span> m, <span class="math">\(f = 700\)</span> px: vật ở <span class="math">\(Z = 2\)</span> m có <span class="math">\(d = 35\)</span> px, sai 1 px disparity → sai khoảng <span class="math">\(4/70 \approx 6\)</span> cm; vật ở 10 m (<span class="math">\(d = 7\)</span> px) → sai khoảng 1.4 m. Muốn đo xa chính xác thì tăng <span class="math">\(B\)</span> hoặc <span class="math">\(f\)</span>.</p>
+<p><strong>Lưu ý với OpenCV:</strong> <code>StereoBM</code> / <code>StereoSGBM</code> trả disparity dạng số nguyên <strong>nhân 16</strong> (4 bit phần lẻ), nên phải chia 16 trước khi dùng công thức trên.</p>
+</div></details>
 </li>
 <li>
 <p><mark>Điều kiện: hai ảnh phải được chỉnh song song (rectified)</mark>: điểm tương ứng nằm trên cùng một hàng → chỉ cần tìm theo hàng ngang</p>

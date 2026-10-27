@@ -7,6 +7,11 @@
               Bỏ trống -> chèn ngay trước phần Bài tập (hoặc cuối bài).
       draft:  true -> gắn nhãn "Bản nháp – chưa review" (ghi chú do AI soạn, chưa được đọc lại).
               Xóa dòng này sau khi đã review.
+- Khối chứng minh thu gọn được (do AI soạn nên luôn có nhãn bản nháp; viết `:::proof!` để bỏ nhãn
+  sau khi đã review). Có thể thụt lề để nằm trong danh sách:
+      :::proof Tiêu đề
+      nội dung Markdown, công thức, code...
+      :::
 - Kết quả:
       lessons/*.html     ô "Ghi chú OpenCV" nằm giữa hai marker <!-- opencv-note:begin/end -->
       opencv-notes.html  trang tổng hợp tất cả ghi chú
@@ -76,6 +81,26 @@ class FencePreprocessor(Preprocessor):
         return self.FENCE.sub(repl, text).split("\n")
 
 
+class ProofPreprocessor(Preprocessor):
+    """Khối :::proof Tiêu đề ... ::: -> <details> thu gọn được chứa phần giải thích / chứng minh."""
+
+    BLOCK = re.compile(r"^([ \t]*):::proof(!?)[ \t]*(.*?)\n(.*?)^\1:::[ \t]*$", re.M | re.S)
+
+    def run(self, lines):
+        text = "\n".join(lines)
+
+        def repl(m):
+            indent, reviewed, title, body = m.groups()
+            body = "\n".join(l[len(indent):] if l.startswith(indent) else l.lstrip() for l in body.split("\n"))
+            inner = markdown.Markdown(extensions=["tables", NoteExtension()]).convert(body)
+            badge = "" if reviewed else " " + DRAFT_BADGE
+            out = (f'<details class="opencv-proof"><summary>Chứng minh: {html.escape(title)}{badge}</summary>\n'
+                   f'<div class="opencv-proof-body">\n{inner}\n</div></details>')
+            return indent + self.md.htmlStash.store(out)
+
+        return self.BLOCK.sub(repl, text).split("\n")
+
+
 class LooseListPreprocessor(Preprocessor):
     """Chèn dòng trống trước mục danh sách thụt ra ngoài nếu mục con bên trên có dòng trống.
 
@@ -106,6 +131,7 @@ class LooseListPreprocessor(Preprocessor):
 
 class NoteExtension(markdown.Extension):
     def extendMarkdown(self, md):
+        md.preprocessors.register(ProofPreprocessor(md), "note_proof", 30)  # sau normalize_whitespace (cùng 30, đăng ký sau), trước note_fence
         md.preprocessors.register(FencePreprocessor(md), "note_fence", 30)
         md.preprocessors.register(LooseListPreprocessor(md), "note_loose_list", 29)
         # sau backtick (190) để code không bị coi là công thức, trước escape (180)

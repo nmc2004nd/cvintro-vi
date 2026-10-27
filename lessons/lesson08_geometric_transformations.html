@@ -626,6 +626,13 @@
 <li>
 <p>Ma trận tịnh tiến</p>
 <p><span class="math display">\[M= \begin{bmatrix} 1 &amp; 0 &amp; dx\\ 0 &amp; 1 &amp; dy \end{bmatrix}\]</span></p>
+<details class="opencv-proof"><summary>Chứng minh: vì sao ma trận tịnh tiến có kích thước 2x3 <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Phép tịnh tiến <span class="math">\(x' = x + d_x,\ y' = y + d_y\)</span> <strong>không tuyến tính</strong>: nó đưa gốc <span class="math">\((0, 0)\)</span> tới <span class="math">\((d_x, d_y) \ne (0, 0)\)</span>, trong khi mọi ma trận <span class="math">\(2 \times 2\)</span> đều giữ nguyên gốc (<span class="math">\(A \cdot \mathbf{0} = \mathbf{0}\)</span>). Vì vậy không có ma trận <span class="math">\(2 \times 2\)</span> nào biểu diễn được phép tịnh tiến.</p>
+<p><strong>Cách giải: tọa độ đồng nhất.</strong> Thêm thành phần thứ ba bằng 1 vào điểm, <span class="math">\((x, y) \to (x, y, 1)\)</span>:</p>
+<p><span class="math display">\[\begin{bmatrix} 1 &amp; 0 &amp; d_x \\ 0 &amp; 1 &amp; d_y \end{bmatrix} \begin{bmatrix} x \\ y \\ 1 \end{bmatrix} = \begin{bmatrix} 1\cdot x + 0\cdot y + d_x \cdot 1 \\ 0 \cdot x + 1 \cdot y + d_y \cdot 1 \end{bmatrix} = \begin{bmatrix} x + d_x \\ y + d_y \end{bmatrix}\]</span></p>
+<p>Cột thứ ba nhân với số 1 nên được <em>cộng thẳng</em> vào kết quả. Tổng quát, mọi phép affine <span class="math">\(\mathbf{x}' = A\mathbf{x} + \mathbf{t}\)</span> đều viết được thành một ma trận <span class="math">\(2 \times 3\)</span> là <span class="math">\([A \mid \mathbf{t}]\)</span>; đó chính là dạng mà <code>cv2.warpAffine</code> nhận vào.</p>
+</div></details>
 </li>
 <li>
 <p>Hàm dùng: <code>dst = cv2.warpAffine(img, M, dsize)</code></p>
@@ -638,6 +645,23 @@
 <li>
 <p>Ma trận xoay trong toán học : 2x2 → xoay quanh gốc tọa độ (0, 0)</p>
 <p><span class="math display">\[M= \begin{bmatrix} \cos\theta &amp; -\sin\theta\\ \sin\theta &amp; \cos\theta \end{bmatrix}\]</span></p>
+<details class="opencv-proof"><summary>Chứng minh: công thức ma trận xoay <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Bước 1 – viết điểm theo tọa độ cực.</strong> Một điểm cách gốc <span class="math">\(r\)</span>, hợp với trục <span class="math">\(x\)</span> góc <span class="math">\(\varphi\)</span>:</p>
+<p><span class="math display">\[x = r\cos\varphi, \qquad y = r\sin\varphi\]</span></p>
+<p><strong>Bước 2 – xoay thêm góc <span class="math">\(\theta\)</span></strong> (ngược chiều kim đồng hồ trong hệ trục toán học, <span class="math">\(y\)</span> hướng lên): khoảng cách <span class="math">\(r\)</span> giữ nguyên, góc thành <span class="math">\(\varphi + \theta\)</span>:</p>
+<p><span class="math display">\[x' = r\cos(\varphi + \theta), \qquad y' = r\sin(\varphi + \theta)\]</span></p>
+<p><strong>Bước 3 – khai triển bằng công thức cộng góc:</strong></p>
+<p><span class="math display">\[x' = r\cos\varphi\cos\theta - r\sin\varphi\sin\theta = x\cos\theta - y\sin\theta\]</span></p>
+<p><span class="math display">\[y' = r\sin\varphi\cos\theta + r\cos\varphi\sin\theta = x\sin\theta + y\cos\theta\]</span></p>
+<p>Viết dạng ma trận ra đúng <span class="math">\(R(\theta) = \begin{bmatrix} \cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta \end{bmatrix}\)</span>. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Tính chất (kiểm tra trực tiếp):</strong></p>
+<ul>
+<li><span class="math">\(R^T R = I\)</span> vì <span class="math">\(\cos^2\theta + \sin^2\theta = 1\)</span> và hai cột vuông góc → phép xoay <strong>giữ nguyên độ dài và góc</strong>.</li>
+<li><span class="math">\(\det R = \cos^2\theta + \sin^2\theta = 1\)</span> → giữ nguyên diện tích, không lật ảnh.</li>
+<li><span class="math">\(R(\theta)^{-1} = R(-\theta) = R(\theta)^T\)</span>: xoay ngược lại chỉ cần chuyển vị.</li>
+</ul>
+</div></details>
 </li>
 <li>
 <p>Chọn các tham số:</p>
@@ -649,7 +673,26 @@
 <p><span class="math display">\[\begin{aligned}\alpha &amp;= \text{scale}\cdot\cos\theta\\\beta &amp;= \text{scale}\cdot\sin\theta\end{aligned}\]</span></p>
 <p><span class="math display">\[M=\begin{bmatrix}\alpha &amp; \beta &amp; (1-\alpha)\,\mathrm{center.x}-\beta\,\mathrm{center.y}\\-\beta &amp; \alpha &amp; \beta\,\mathrm{center.x}+(1-\alpha)\,\mathrm{center.y}\end{bmatrix}\]</span></p>
 <ul>
-<li>Dấu của <span class="math">\(\beta\)</span> ngược với ma trận toán học ở trên vì trục y của ảnh hướng xuống: góc dương = xoay ngược chiều kim đồng hồ khi nhìn trên ảnh</li>
+<li>
+<p>Dấu của <span class="math">\(\beta\)</span> ngược với ma trận toán học ở trên vì trục y của ảnh hướng xuống: góc dương = xoay ngược chiều kim đồng hồ khi nhìn trên ảnh</p>
+<details class="opencv-proof"><summary>Chứng minh: ma trận của getRotationMatrix2D <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Xoay quanh tâm <span class="math">\(c = (c_x, c_y)\)</span> (không phải gốc) kèm co giãn <span class="math">\(s\)</span> = ghép 3 bước:</p>
+<ol>
+<li>Tịnh tiến để tâm về gốc: <span class="math">\(\mathbf{x} \mapsto \mathbf{x} - c\)</span></li>
+<li>Xoay và co giãn quanh gốc: nhân với <span class="math">\(A\)</span></li>
+<li>Tịnh tiến trả tâm về chỗ cũ: cộng <span class="math">\(c\)</span></li>
+</ol>
+<p><span class="math display">\[\mathbf{x}' = A(\mathbf{x} - c) + c = A\mathbf{x} + (I - A)\,c\]</span></p>
+<p><strong>Ma trận <span class="math">\(A\)</span> trong hệ trục ảnh.</strong> Trục <span class="math">\(y\)</span> của ảnh hướng <em>xuống</em>, tức là hệ trục toán học bị lật bởi <span class="math">\(F = \begin{bmatrix} 1 &amp; 0 \\ 0 &amp; -1 \end{bmatrix}\)</span>. Một phép xoay "ngược chiều kim đồng hồ khi nhìn trên màn hình" góc <span class="math">\(\theta\)</span> trong hệ ảnh tương ứng với: lật sang hệ toán học, xoay <span class="math">\(\theta\)</span>, lật lại:</p>
+<p><span class="math display">\[F\,R(\theta)\,F = \begin{bmatrix} 1 &amp; 0 \\ 0 &amp; -1 \end{bmatrix}\begin{bmatrix} \cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta \end{bmatrix}\begin{bmatrix} 1 &amp; 0 \\ 0 &amp; -1 \end{bmatrix} = \begin{bmatrix} \cos\theta &amp; \sin\theta \\ -\sin\theta &amp; \cos\theta \end{bmatrix} = R(-\theta)\]</span></p>
+<p>Nhân thêm hệ số <span class="math">\(s\)</span>: <span class="math">\(A = sR(-\theta) = \begin{bmatrix} \alpha &amp; \beta \\ -\beta &amp; \alpha \end{bmatrix}\)</span> với <span class="math">\(\alpha = s\cos\theta\)</span>, <span class="math">\(\beta = s\sin\theta\)</span>. Đây là lý do dấu của <span class="math">\(\beta\)</span> bị đảo.</p>
+<p><strong>Cột tịnh tiến</strong> <span class="math">\((I - A)c\)</span>:</p>
+<p><span class="math display">\[\begin{bmatrix} 1 - \alpha &amp; -\beta \\ \beta &amp; 1 - \alpha \end{bmatrix}\begin{bmatrix} c_x \\ c_y \end{bmatrix} = \begin{bmatrix} (1-\alpha)c_x - \beta c_y \\ \beta c_x + (1-\alpha)c_y \end{bmatrix}\]</span></p>
+<p>Ghép <span class="math">\([A \mid (I-A)c]\)</span> ra đúng ma trận ở trên. <span class="math">\(\blacksquare\)</span></p>
+<p>Kiểm chứng: tâm <span class="math">\(c\)</span> là điểm bất động vì <span class="math">\(A c + (I - A)c = c\)</span>. Mình đã so ma trận ghép <span class="math">\(T(c)\,sR(-\theta)\,T(-c)\)</span> với <code>cv.getRotationMatrix2D((40, 25), 30, 1.5)</code>: trùng khớp đến sai số làm tròn.</p>
+</div></details>
+</li>
 </ul>
 </li>
 <li>

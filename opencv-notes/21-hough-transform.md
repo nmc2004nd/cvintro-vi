@@ -17,6 +17,31 @@ draft: true
         - $\rho$: khoảng cách vuông góc từ gốc tọa độ (góc trên trái) tới đường thẳng
         - $\theta$: góc giữa đường vuông góc đó và trục ngang, tính theo radian
         - Dạng $y = mx + c$ không biểu diễn được đường thẳng đứng ($m = \infty$) nên không dùng
+
+        :::proof dạng pháp tuyến của đường thẳng và vì sao mỗi điểm thành một đường sin
+        **1. Dạng pháp tuyến.** Gọi $\mathbf{n} = (\cos\theta, \sin\theta)$ là vector đơn vị vuông góc với đường thẳng, $P_0 = \rho\,\mathbf{n}$ là chân đường vuông góc hạ từ gốc (cách gốc đúng $\rho$). Điểm $X = (x, y)$ nằm trên đường thẳng khi và chỉ khi $X - P_0$ song song với đường, tức vuông góc với $\mathbf{n}$:
+
+        $$(X - \rho\,\mathbf{n}) \cdot \mathbf{n} = 0 \iff X \cdot \mathbf{n} = \rho\,(\mathbf{n} \cdot \mathbf{n}) = \rho \iff x\cos\theta + y\sin\theta = \rho \qquad \blacksquare$$
+
+        Mọi đường thẳng (kể cả thẳng đứng: $\theta = 0$, $x = \rho$) đều có dạng này, với $\theta \in [0, \pi)$ và $\rho$ có dấu.
+
+        **2. Miền giá trị hữu hạn.** Với ảnh $W \times H$, theo Cauchy–Schwarz $|\rho| = |X \cdot \mathbf{n}| \le |X|\,|\mathbf{n}| = |X| \le \sqrt{W^2 + H^2}$. Cả $\rho$ và $\theta$ đều bị chặn, nên mảng tích lũy có kích thước cố định: khoảng $2\sqrt{W^2+H^2}/\text{rho} \times \pi/\text{theta}$ ô. Dạng $y = mx + c$ có $m \in (-\infty, \infty)$ nên không thể chia ô hữu hạn.
+
+        **3. Mỗi điểm biên vẽ một đường sin trong không gian $(\theta, \rho)$.** Cố định điểm $(x_0, y_0)$, viết $x_0 = R\cos\varphi$, $y_0 = R\sin\varphi$ với $R = \sqrt{x_0^2 + y_0^2}$:
+
+        $$\rho(\theta) = R\cos\varphi\cos\theta + R\sin\varphi\sin\theta = R\cos(\theta - \varphi)$$
+
+        Đây là tập mọi đường thẳng đi qua $(x_0, y_0)$.
+
+        **4. Hai điểm → các đường sin cắt nhau đúng một lần, tại đường thẳng nối chúng.** Hai đường cong của $(x_1, y_1)$ và $(x_2, y_2)$ cắt nhau khi
+
+        $$x_1\cos\theta + y_1\sin\theta = x_2\cos\theta + y_2\sin\theta \iff (x_1 - x_2)\cos\theta + (y_1 - y_2)\sin\theta = 0$$
+
+        tức $\mathbf{n} \perp (P_1 - P_2)$: pháp tuyến vuông góc với đoạn nối hai điểm. Trong $[0, \pi)$ chỉ có đúng một hướng như vậy, và nó xác định đúng đường thẳng qua $P_1$, $P_2$. Tổng quát: $k$ điểm thẳng hàng cho $k$ đường sin **cùng đi qua một ô** → ô đó nhận $k$ phiếu. $\blacksquare$ Đó là lý do "ô nhiều phiếu = nhiều điểm thẳng hàng", kể cả khi đường bị đứt đoạn hay lẫn nhiễu (điểm nhiễu chỉ rải phiếu đều ra nhiều ô).
+
+        **5. Vì sao Hough Gradient cho đường tròn rẻ hơn.** Không gian $(x_c, y_c, r)$ có 3 chiều. Nhưng tại một điểm biên của đường tròn, gradient hướng theo **bán kính** (gradient vuông góc với biên – xem ghi chú Gradient), nên tâm phải nằm trên đường thẳng qua điểm đó theo hướng gradient. Mỗi điểm biên chỉ cần bỏ phiếu dọc một đoạn thẳng trong mặt phẳng $(x_c, y_c)$ (2D). Tìm được tâm rồi mới chọn $r$ bằng histogram khoảng cách từ tâm tới các điểm biên (1D).
+        :::
+
     - Cơ chế bỏ phiếu (voting):
         - Tạo mảng tích lũy (accumulator) 2D: hàng là $\rho$, cột là $\theta$, ban đầu bằng 0
         - Với mỗi điểm biên (x, y), thử mọi $\theta$, tính $\rho$ tương ứng rồi cộng 1 vào ô $(\rho, \theta)$

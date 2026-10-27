@@ -11,6 +11,29 @@ draft: true
     $$Z = \frac{B \cdot f}{d}$$
 
     - ==Disparity lớn → vật ở gần; disparity nhỏ → vật ở xa==
+
+    :::proof Z = Bf/d và sai số độ sâu tăng theo Z²
+    **Thiết lập.** Hai camera song song đã rectify: camera trái ở gốc, camera phải dịch sang phải một đoạn $B$ theo trục $x$, cùng tiêu cự $f$ (pixel). Đo $x$, $x'$ từ tâm ảnh của mỗi camera.
+
+    **Bước 1 – chiếu điểm $(X, Y, Z)$** (công thức lỗ kim, xem ghi chú Camera Calibration). Trong hệ camera phải, tọa độ ngang của điểm là $X - B$:
+
+    $$x = f\frac{X}{Z}, \qquad x' = f\frac{X - B}{Z}$$
+
+    **Bước 2 – trừ hai phương trình**, $X$ triệt tiêu:
+
+    $$d = x - x' = \frac{fX - fX + fB}{Z} = \frac{fB}{Z} \;\Rightarrow\; Z = \frac{B \cdot f}{d} \qquad \blacksquare$$
+
+    Cùng một hàng $y$ ở hai ảnh vì $y = fY/Z$ như nhau – đó là lý do sau khi rectify chỉ cần tìm theo hàng ngang. $d > 0$ với mọi điểm phía trước camera.
+
+    **Sai số độ sâu.** Đạo hàm theo $d$:
+
+    $$\frac{dZ}{dd} = -\frac{Bf}{d^2} = -\frac{Z^2}{Bf} \;\Rightarrow\; |\Delta Z| \approx \frac{Z^2}{Bf}\,|\Delta d|$$
+
+    Sai số độ sâu **tăng theo bình phương khoảng cách**. Ví dụ $B = 0.1$ m, $f = 700$ px: vật ở $Z = 2$ m có $d = 35$ px, sai 1 px disparity → sai khoảng $4/70 \approx 6$ cm; vật ở 10 m ($d = 7$ px) → sai khoảng 1.4 m. Muốn đo xa chính xác thì tăng $B$ hoặc $f$.
+
+    **Lưu ý với OpenCV:** `StereoBM` / `StereoSGBM` trả disparity dạng số nguyên **nhân 16** (4 bit phần lẻ), nên phải chia 16 trước khi dùng công thức trên.
+    :::
+
 - ==Điều kiện: hai ảnh phải được chỉnh song song (rectified)==: điểm tương ứng nằm trên cùng một hàng → chỉ cần tìm theo hàng ngang
     - Chưa rectify thì dùng `cv.stereoRectify` + `cv.initUndistortRectifyMap` + `cv.remap` (cần hiệu chỉnh stereo trước)
 

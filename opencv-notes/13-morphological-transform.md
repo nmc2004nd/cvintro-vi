@@ -84,6 +84,46 @@ after:
 
     - **Opening là erosion trước, sau đó dilation**
     - $\text{Opening}(A)=\text{Dilation}(\text{Erosion}(A))$
+
+        :::proof các tính chất của opening và closing
+        Định nghĩa trên ảnh nhị phân (tập điểm trắng $A$), với $B_z$ là kernel $B$ dịch tới vị trí $z$, giả sử $B$ đối xứng và chứa tâm (đúng với các kernel chữ nhật, elip, chữ thập của OpenCV):
+
+        $$A \ominus B = \{z : B_z \subseteq A\} \quad \text{(erosion)}, \qquad A \oplus B = \bigcup_{a \in A} B_a \quad \text{(dilation)}$$
+
+        **Tính chất 1 – Opening là hợp của mọi bản sao kernel nằm gọn trong A:**
+
+        $$A \circ B = (A \ominus B) \oplus B = \bigcup\{B_z : B_z \subseteq A\}$$
+
+        Chứng minh: theo định nghĩa dilation, $(A \ominus B) \oplus B = \bigcup_{z \in A \ominus B} B_z$, và $z \in A \ominus B$ nghĩa là $B_z \subseteq A$. $\blacksquare$
+
+        Hệ quả – đây chính là ý nghĩa "xóa đốm nhỏ" của opening:
+
+        - $A \circ B \subseteq A$ (mỗi $B_z$ trong hợp đều nằm trong $A$) → opening **không bao giờ thêm** pixel trắng.
+        - Một đốm trắng không chứa vừa một bản sao của $B$ thì không có $B_z$ nào nằm trong nó → **bị xóa hoàn toàn**. Phần nào của vật thể chứa vừa $B$ thì được **giữ nguyên hình dạng** (không bị co lại như khi chỉ erosion).
+
+        **Tính chất 2 – Opening lũy đẳng: $(A \circ B) \circ B = A \circ B$.** Đặt $A' = A \circ B$. Mọi $B_z \subseteq A$ đều nằm trong $A'$ (vì $A'$ là hợp của chúng), và ngược lại mọi $B_z \subseteq A'$ đều nằm trong $A$ (vì $A' \subseteq A$). Hai họ $\{B_z \subseteq A\}$ và $\{B_z \subseteq A'\}$ trùng nhau nên hợp của chúng bằng nhau. $\blacksquare$ → Gọi opening nhiều lần với cùng kernel không thay đổi gì thêm (khác với `iterations` của erode/dilate).
+
+        **Tính chất 3 – Closing là opening của nền (đối ngẫu).** Với $A^c$ là phần nền (đen):
+
+        $$z \notin A \ominus B \iff B_z \not\subseteq A \iff B_z \cap A^c \ne \emptyset \iff z \in A^c \oplus B$$
+
+        (bước cuối dùng $B$ đối xứng). Vậy $(A \ominus B)^c = A^c \oplus B$, và tương tự $(A \oplus B)^c = A^c \ominus B$. Từ đó
+
+        $$(A \bullet B)^c = \big((A \oplus B) \ominus B\big)^c = (A^c \ominus B) \oplus B = A^c \circ B$$
+
+        Áp dụng Tính chất 1 cho nền: $A^c \circ B \subseteq A^c$, tức là $A \bullet B \supseteq A$. Closing **không bao giờ xóa** pixel trắng, chỉ lấp các lỗ đen không chứa vừa $B$. $\blacksquare$
+
+        **Tính chất 4 – các phép hiệu luôn không âm.** Với ảnh xám, erosion = min, dilation = max trên cửa sổ kernel; cửa sổ chứa chính pixel tâm nên
+
+        $$\text{erode}(A) \le A \le \text{dilate}(A)$$
+
+        - $\text{Gradient} = \max - \min$ trên cửa sổ $\ge 0$: chính là **biên độ dao động cục bộ**, bằng 0 ở vùng phẳng và lớn ở biên.
+        - $\text{TopHat} = A - \text{Opening}(A) \ge 0$ do Tính chất 1 (bản xám tương tự): phần còn lại là các chi tiết sáng *nhỏ hơn kernel*.
+        - $\text{BlackHat} = \text{Closing}(A) - A \ge 0$ do Tính chất 3: phần còn lại là các chi tiết tối nhỏ hơn kernel.
+
+        Vì không âm nên kết quả nằm gọn trong `uint8`, không cần lo tràn số như phép trừ thường.
+        :::
+
     - `opening = cv.morphologyEx(img, cv.MORPH_OPEN, kernel)`
     - ==Ý nghĩa:==
         - ==Erosion xóa nhiễu trắng nhỏ==

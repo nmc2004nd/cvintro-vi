@@ -494,11 +494,26 @@
 </li>
 <li>Lưu ảnh bằng <code>cv2.imwrite(name, img)</code></li>
 <li>Hiển thị ảnh bằng: <code>cv2.imshow(name_window, img)</code></li>
-<li>Chờ phím <code>cv2.waitKey(d)</code> :<ul>
+<li>
+<p>Chờ phím <code>cv2.waitKey(d)</code> :</p>
+<ul>
 <li>d = 0 - Chờ đến khi nào người dùng nhập phím</li>
 <li>d &gt; 0 - chờ tối đa d mili giây</li>
-<li>Khi phát video với mỗi frame chờ d ms → FPS ≈ <span class="math">\(\frac{1000}{d}\)</span> (thực tế thấp hơn một chút vì còn thời gian xử lý frame)</li>
-<li><code>waitKey</code> chỉ hoạt động khi có ít nhất một cửa sổ <code>imshow</code> đang mở</li>
+<li>
+<p>Khi phát video với mỗi frame chờ d ms → FPS ≈ <span class="math">\(\frac{1000}{d}\)</span> (thực tế thấp hơn một chút vì còn thời gian xử lý frame)</p>
+<details class="opencv-proof"><summary>Chứng minh: FPS khi dùng waitKey(d) <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Gọi <span class="math">\(p\)</span> là thời gian (ms) để đọc, xử lý và hiển thị một frame. Mỗi vòng lặp tốn <span class="math">\(d + p\)</span> ms, nên số frame mỗi giây là</p>
+<p><span class="math display">\[\text{FPS} = \frac{1000}{d + p} &lt; \frac{1000}{d} \quad (p &gt; 0)\]</span></p>
+<ul>
+<li>Ví dụ: <span class="math">\(d = 25\)</span> → tối đa <span class="math">\(1000/25 = 40\)</span> FPS. Nếu xử lý mất <span class="math">\(p = 5\)</span> ms thì chỉ còn <span class="math">\(1000/30 \approx 33\)</span> FPS.</li>
+<li>Muốn phát đúng tốc độ gốc của video (lấy bằng <code>cap.get(cv2.CAP_PROP_FPS)</code>) thì chọn <span class="math">\(d \approx \frac{1000}{\text{fps}} - p\)</span>, và <span class="math">\(d \ge 1\)</span> vì <code>waitKey(0)</code> là chờ vô hạn.</li>
+</ul>
+</div></details>
+</li>
+<li>
+<p><code>waitKey</code> chỉ hoạt động khi có ít nhất một cửa sổ <code>imshow</code> đang mở</p>
+</li>
 </ul>
 </li>
 </ul>

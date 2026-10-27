@@ -9,6 +9,35 @@ draft: true
 
     $$s \begin{bmatrix} x' \\ y' \\ 1 \end{bmatrix} = H \begin{bmatrix} x \\ y \\ 1 \end{bmatrix}$$
 
+    :::proof vì sao H có 8 bậc tự do, cần 4 điểm, và khi nào homography đúng
+    **1. Vì sao có hệ số $s$.** Khai triển $s\,(x', y', 1)^T = H(x, y, 1)^T$ với $H = [h_{ij}]$; hàng thứ ba cho $s = h_{31}x + h_{32}y + h_{33}$. Chia hai hàng đầu cho $s$:
+
+    $$x' = \frac{h_{11}x + h_{12}y + h_{13}}{h_{31}x + h_{32}y + h_{33}}, \qquad y' = \frac{h_{21}x + h_{22}y + h_{23}}{h_{31}x + h_{32}y + h_{33}}$$
+
+    Mẫu số thay đổi theo vị trí là thứ tạo ra hiệu ứng **phối cảnh** (vật xa nhỏ lại). Khi $h_{31} = h_{32} = 0$ thì quay về phép affine.
+
+    **2. 8 bậc tự do.** Nhân $H$ với bất kỳ $c \ne 0$, cả tử và mẫu cùng nhân $c$, nên $(x', y')$ không đổi. $H$ có 9 số nhưng chỉ xác định **sai khác một hệ số**: 9 − 1 = 8 bậc tự do (thường cố định $h_{33} = 1$).
+
+    **3. Mỗi cặp điểm cho 2 phương trình tuyến tính → cần 4 cặp.** Nhân chéo mẫu số:
+
+    $$h_{11}x + h_{12}y + h_{13} - x'(h_{31}x + h_{32}y + h_{33}) = 0$$
+
+    $$h_{21}x + h_{22}y + h_{23} - y'(h_{31}x + h_{32}y + h_{33}) = 0$$
+
+    Hai phương trình này **tuyến tính** theo 9 ẩn $h_{ij}$. Bốn cặp điểm cho 8 phương trình, đúng bằng 8 bậc tự do. Với điều kiện không có 3 điểm nào thẳng hàng, hệ có nghiệm duy nhất (sai khác hệ số). Nhiều hơn 4 cặp thì giải bình phương tối thiểu: xếp thành $A\mathbf{h} = 0$ và lấy $\mathbf{h}$ là vector kỳ dị ứng với giá trị kỳ dị nhỏ nhất của $A$ (thuật toán **DLT**). Mình đã kiểm tra: DLT trên 4 góc khôi phục đúng $H$ ban đầu, trùng với `cv.getPerspectiveTransform`.
+
+    **4. Vì sao chỉ đúng với mặt phẳng.** Hai camera $P = K[I \mid 0]$ và $P' = K'[R \mid \mathbf{t}]$; điểm 3D $X$ nằm trên mặt phẳng $\mathbf{n}^T X = d$. Khi đó $\frac{\mathbf{n}^T X}{d} = 1$, nên
+
+    $$X' = RX + \mathbf{t} = RX + \mathbf{t}\,\frac{\mathbf{n}^T X}{d} = \Big(R + \frac{\mathbf{t}\,\mathbf{n}^T}{d}\Big)X$$
+
+    Ảnh của $X$ là $\mathbf{x} \sim KX$ và $\mathbf{x}' \sim K'X'$, nên
+
+    $$\mathbf{x}' \sim K'\Big(R + \frac{\mathbf{t}\,\mathbf{n}^T}{d}\Big)K^{-1}\,\mathbf{x} = H\mathbf{x}$$
+
+    Ma trận này **chỉ phụ thuộc vào mặt phẳng** $(\mathbf{n}, d)$. Điểm không nằm trên mặt phẳng đó thì không thỏa – vì vậy homography chỉ khớp vật phẳng (sách, bìa đĩa, mặt tường). Trường hợp đặc biệt $\mathbf{t} = 0$ (camera chỉ xoay, như khi chụp ảnh toàn cảnh) cho $H = K'RK^{-1}$, đúng với **mọi** điểm bất kể độ sâu.
+    :::
+
+
 - ==Cần tối thiểu 4 cặp điểm đúng== để tính H
 - Các bước:
     - **B1**: Tìm keypoint + descriptor ở ảnh vật thể và ảnh cảnh (SIFT, ORB)
@@ -21,6 +50,23 @@ draft: true
     - `ransacReprojThreshold`: sai số chiếu lại tối đa (pixel) để coi là inlier, thường 3-5
     - `mask`: mảng 0/1, ==1 = inlier==
 - RANSAC: lặp nhiều lần {chọn ngẫu nhiên 4 cặp → tính H → đếm số cặp khớp với H}, giữ H có nhiều inlier nhất → ==bền vững với các cặp so khớp sai==
+
+    :::proof cần lặp RANSAC bao nhiêu lần
+    Gọi $w$ là tỉ lệ cặp đúng (inlier), $s = 4$ là số cặp mỗi lần lấy mẫu, $p$ là xác suất mong muốn (ví dụ 0.99) để **ít nhất một** lần lấy mẫu toàn inlier.
+
+    - Một lần lấy mẫu toàn inlier: xác suất $w^s$ (coi các lần chọn độc lập).
+    - Một lần lấy mẫu có ít nhất một outlier: $1 - w^s$.
+    - Cả $N$ lần đều có outlier: $(1 - w^s)^N$.
+
+    Cần $(1 - w^s)^N \le 1 - p$. Lấy log hai vế (log của số trong $(0,1)$ là số âm, nên đổi chiều bất đẳng thức khi chia):
+
+    $$N \ge \frac{\log(1 - p)}{\log(1 - w^s)}$$
+
+    **Ví dụ:** $w = 0.5$, $s = 4$, $p = 0.99$: $w^4 = 0.0625$, $N \ge \frac{\ln 0.01}{\ln 0.9375} = \frac{-4.605}{-0.0645} \approx 71.4$ → **72 lần**. Nếu tính fundamental matrix với $s = 8$ thì $w^8 \approx 0.0039$, cần khoảng **1177 lần** – mỗi điểm thêm vào mẫu làm số lần lặp tăng theo hàm mũ. Đó là lý do luôn dùng **mẫu nhỏ nhất có thể**.
+
+    OpenCV ước lượng lại $w$ theo số inlier tốt nhất đã tìm được và giảm $N$ dần trong khi chạy (tham số `confidence`, mặc định 0.995; `maxIters`, mặc định 2000).
+    :::
+
 
 ```python
 MIN_MATCH_COUNT = 10

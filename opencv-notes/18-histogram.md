@@ -61,6 +61,36 @@ draft: true
 
         - $M \times N$: số pixel, $L = 256$
 
+        :::proof vì sao CDF làm phẳng histogram
+        **Bản liên tục (chứng minh chặt).** Coi mức xám là biến ngẫu nhiên $X$ với hàm phân phối tích lũy $F(v) = P(X \le v)$, liên tục và tăng ngặt. Đặt $Y = F(X)$. Với mọi $y \in [0, 1]$:
+
+        $$P(Y \le y) = P\big(F(X) \le y\big) = P\big(X \le F^{-1}(y)\big) = F\big(F^{-1}(y)\big) = y$$
+
+        (bước thứ hai dùng $F$ tăng ngặt nên giữ thứ tự). $P(Y \le y) = y$ chính là phân phối **đều** trên $[0, 1]$: histogram phẳng hoàn toàn. Nhân với $L - 1$ để trải ra $[0, 255]$. $\blacksquare$
+
+        **Bản rời rạc (ảnh thật).** Mức xám chỉ có 256 giá trị, và mọi pixel cùng mức $v$ phải đi tới cùng một mức mới, nên **không thể tách** một cột histogram cao thành nhiều cột. Kết quả chỉ *gần* phẳng: các cột được dàn ra sao cho CDF của ảnh mới gần một đường thẳng. Phép biến đổi là hàm **không giảm** (vì CDF không giảm), nên thứ tự sáng tối giữa các pixel được giữ nguyên.
+
+        **Giải thích công thức.** Tử số $cdf(v) - cdf_{min}$ và mẫu số $MN - cdf_{min}$ chọn sao cho:
+
+        - Mức xám nhỏ nhất có trong ảnh ($cdf = cdf_{min}$) → $h = 0$ (đen tuyệt đối).
+        - Mức lớn nhất ($cdf = MN$, tổng số pixel) → $h = L - 1$ (trắng tuyệt đối).
+        - Ở giữa nội suy tuyến tính theo CDF.
+
+        Nếu không trừ $cdf_{min}$ thì mức tối nhất bị đưa tới $\frac{cdf_{min}}{MN}(L-1) > 0$, phí mất một phần dải động.
+
+        **Ví dụ tính tay** ($L = 8$, ảnh 16 pixel): số pixel ở các mức 2, 3, 4, 5 lần lượt là 4, 8, 2, 2.
+
+        | $v$ | 2 | 3 | 4 | 5 |
+        |---|---|---|---|---|
+        | $cdf(v)$ | 4 | 12 | 14 | 16 |
+        | $h(v) = \text{round}\big(\frac{cdf - 4}{16 - 4} \cdot 7\big)$ | 0 | round(4.67) = 5 | round(5.83) = 6 | 7 |
+
+        Dải ban đầu 2–5 được kéo ra 0–7. Cột cao nhất (mức 3, 8 pixel) được dành khoảng cách lớn nhất với hàng xóm (từ 0 nhảy lên 5) – độ tương phản tăng nhiều nhất ở chỗ có nhiều pixel nhất. Mình đã kiểm tra công thức này bằng NumPy trên ảnh 80x80: **trùng 100%** với `cv.equalizeHist`.
+
+        **Dẫn tới CLAHE.** Độ dốc của bảng tra là $\frac{h(v+1) - h(v)}{1} \approx \frac{L-1}{MN}\,\text{hist}(v+1)$, tức **tỉ lệ với chiều cao histogram**. Vùng nền phẳng (một cột histogram rất cao) sẽ có độ dốc rất lớn – nhiễu nhỏ trong nền bị khuếch đại thành vân. CLAHE cắt histogram ở `clipLimit` trước khi tính CDF, tức là **chặn trên độ dốc**, nên giới hạn được mức khuếch đại nhiễu.
+        :::
+
+
     ```python
     # Cách làm bằng NumPy
     hist, bins = np.histogram(img.flatten(), 256, [0, 256])

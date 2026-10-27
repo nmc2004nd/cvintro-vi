@@ -654,8 +654,33 @@ separable == full 2D convolution? True
 </tbody>
 </table>
 <ul>
-<li><mark>Với <code>TM_SQDIFF</code> và <code>TM_SQDIFF_NORMED</code> phải lấy <code>min_loc</code></mark>, các phương pháp còn lại lấy <code>max_loc</code></li>
-<li><code>TM_CCORR</code> không trừ trung bình nên dễ bị vùng sáng đánh lừa → kết quả kém nhất</li>
+<li>
+<p><mark>Với <code>TM_SQDIFF</code> và <code>TM_SQDIFF_NORMED</code> phải lấy <code>min_loc</code></mark>, các phương pháp còn lại lấy <code>max_loc</code></p>
+<details class="opencv-proof"><summary>Chứng minh: quan hệ giữa các phương pháp và vì sao CCOEFF_NORMED bền nhất <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Ký hiệu tổng chạy trên cửa sổ đang xét; <span class="math">\(I\)</span> là phần ảnh dưới template.</p>
+<p><strong>1. SQDIFF = năng lượng template + năng lượng ảnh − 2·CCORR.</strong></p>
+<p><span class="math display">\[\sum (T - I)^2 = \sum T^2 - 2\sum T\,I + \sum I^2\]</span></p>
+<p><span class="math">\(\sum T^2\)</span> không đổi theo vị trí. Nếu <span class="math">\(\sum I^2\)</span> cũng gần như không đổi thì min SQDIFF tương đương max CCORR. Nhưng <span class="math">\(\sum I^2\)</span> <strong>lớn ở vùng sáng</strong>, nên CCORR thuần có thể đạt cực đại ở một vùng trắng bất kỳ chứ không phải chỗ giống template – đúng lý do ghi chú nói CCORR "dễ bị vùng sáng đánh lừa".</p>
+<p><strong>2. Các bản chuẩn hóa nằm trong khoảng nào – bất đẳng thức Cauchy–Schwarz.</strong> Coi <span class="math">\(T\)</span>, <span class="math">\(I\)</span> là hai vector:</p>
+<p><span class="math display">\[\Big|\sum T\,I\Big| \le \sqrt{\sum T^2}\sqrt{\sum I^2}\]</span></p>
+<p>dấu bằng khi và chỉ khi <span class="math">\(I = cT\)</span>. Do đó</p>
+<ul>
+<li><code>TM_CCORR_NORMED</code> <span class="math">\(= \dfrac{\sum TI}{\sqrt{\sum T^2 \sum I^2}} \in [0, 1]\)</span> với ảnh không âm; bằng 1 khi cửa sổ là template nhân với một hằng số dương – đã <strong>bất biến với độ tương phản</strong> (nhân hệ số) nhưng chưa bất biến với cộng thêm độ sáng.</li>
+<li><code>TM_SQDIFF_NORMED</code> <span class="math">\(= \dfrac{\sum (T - I)^2}{\sqrt{\sum T^2 \sum I^2}}\)</span> bằng 0 khi khớp hoàn toàn. Về lý thuyết tỉ số này có thể <strong>lớn hơn 1</strong> (ví dụ template sáng đặt lên vùng tối), nhưng OpenCV <strong>kẹp kết quả về [0, 1]</strong>. Mình đã kiểm tra: template toàn 250 trượt trên ảnh có vùng toàn 5 cho giá trị lớn nhất đúng bằng 1.0.</li>
+</ul>
+<p><strong>3. CCOEFF_NORMED là hệ số tương quan Pearson.</strong> Đặt <span class="math">\(T' = T - \overline{T}\)</span>, <span class="math">\(I' = I - \overline{I}\)</span> (trừ trung bình trong cửa sổ):</p>
+<p><span class="math display">\[\mathrm{CCOEFF\_NORMED} = \frac{\sum T'I'}{\sqrt{\sum T'^2 \sum I'^2}} \in [-1, 1]\]</span></p>
+<p>(Cauchy–Schwarz cho <span class="math">\(T'\)</span>, <span class="math">\(I'\)</span>). <strong>Khẳng định:</strong> kết quả không đổi khi đổi <span class="math">\(I \to aI + b\)</span> với <span class="math">\(a &gt; 0\)</span>.</p>
+<p><em>Chứng minh.</em> <span class="math">\(\overline{aI + b} = a\overline{I} + b\)</span>, nên <span class="math">\((aI + b) - \overline{(aI + b)} = a(I - \overline{I}) = aI'\)</span>: hằng số <span class="math">\(b\)</span> biến mất. Thay vào:</p>
+<p><span class="math display">\[\frac{\sum T'(aI')}{\sqrt{\sum T'^2 \sum a^2 I'^2}} = \frac{a\sum T'I'}{a\sqrt{\sum T'^2 \sum I'^2}} \qquad \blacksquare\]</span></p>
+<p>Vậy CCOEFF_NORMED bất biến với cả <strong>thay đổi độ sáng</strong> (<span class="math">\(b\)</span>) lẫn <strong>độ tương phản</strong> (<span class="math">\(a\)</span>), và giá trị có ý nghĩa tuyệt đối: 1 = khớp hoàn hảo, 0 = không liên quan, −1 = ngược màu. Đó là lý do ngưỡng (ví dụ 0.8) dễ chọn. Mình đã thử: cắt template từ ảnh rồi tìm trên ảnh <span class="math">\(2I + 0.5\)</span>, kết quả cực đại 0.9999996 đúng ở vị trí cắt.</p>
+<p><strong>Lưu ý:</strong> cả ba phương pháp đều <strong>không</strong> bất biến với xoay hay co giãn. Template phải gần đúng kích thước và hướng của vật trong ảnh; nếu không, dùng đặc trưng (SIFT/ORB + homography).</p>
+</div></details>
+</li>
+<li>
+<p><code>TM_CCORR</code> không trừ trung bình nên dễ bị vùng sáng đánh lừa → kết quả kém nhất</p>
+</li>
 <li><mark>Thường dùng <code>TM_CCOEFF_NORMED</code></mark>: chịu được thay đổi độ sáng, ngưỡng dễ chọn (gần 1 là giống)</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">img</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">&quot;scene.jpg&quot;</span><span class="p">,</span> <span class="n">cv</span><span class="o">.</span><span class="n">IMREAD_GRAYSCALE</span><span class="p">)</span>

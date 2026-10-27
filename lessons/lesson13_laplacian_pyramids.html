@@ -565,12 +565,33 @@ mean reconstruction error = 0.0000 gray levels
 <li>Lưu ý do khi DownSample thì các chi tiết có tần số cao có thể biến mất vĩnh viễn và phép phóng to chỉ là phép nội suy làm mờ ảnh</li>
 </ul>
 </li>
-<li><mark><strong>Laplacian Pyramid</strong></mark><ul>
-<li>Công thức xây dựng một tầng của Laplacian:<ul>
+<li>
+<p><mark><strong>Laplacian Pyramid</strong></mark></p>
+<ul>
+<li>
+<p>Công thức xây dựng một tầng của Laplacian:</p>
+<ul>
 <li><span class="math">\(L_i = G_i - \text{pyrUp}(G_{i+1})\)</span></li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: tái tạo chính xác từ kim tự tháp Laplace <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Khẳng định:</strong> từ các tầng <span class="math">\(L_0, L_1, \dots, L_{n-1}\)</span> và tầng Gauss nhỏ nhất <span class="math">\(G_n\)</span>, ta khôi phục <strong>chính xác</strong> ảnh gốc <span class="math">\(G_0\)</span>:</p>
+<p><span class="math display">\[G_i = L_i + \text{pyrUp}(G_{i+1}), \quad i = n-1, \dots, 0\]</span></p>
+<p><strong>Chứng minh.</strong> Chỉ là chuyển vế định nghĩa <span class="math">\(L_i = G_i - \text{pyrUp}(G_{i+1})\)</span>. Bắt đầu từ <span class="math">\(G_n\)</span> đã lưu, tính được <span class="math">\(G_{n-1}\)</span>, rồi <span class="math">\(G_{n-2}\)</span>, ..., cuối cùng <span class="math">\(G_0\)</span>. Ghép lại (dạng "lồng nhau"):</p>
+<p><span class="math display">\[G_0 = L_0 + \text{pyrUp}\Big(L_1 + \text{pyrUp}\big(L_2 + \dots + \text{pyrUp}(G_n)\big)\Big) \qquad \blacksquare\]</span></p>
+<p>Điểm quan trọng: phép chứng minh <strong>không cần</strong> <code>pyrUp</code> là nghịch đảo của <code>pyrDown</code> (thực tế không phải). Thông tin bị mất khi thu nhỏ đã được cất sẵn trong <span class="math">\(L_i\)</span>. Mình đã kiểm tra với 3 tầng trên ảnh <code>float32</code>: sai số tái tạo <span class="math">\(6 \times 10^{-8}\)</span> (chỉ là làm tròn số thực). Với ảnh <code>uint8</code> phải tính <span class="math">\(L_i\)</span> bằng kiểu có dấu (<code>float32</code> hoặc <code>int16</code>) vì <span class="math">\(L_i\)</span> có giá trị âm.</p>
+<p><strong>Tổng dung lượng:</strong> mỗi tầng có <span class="math">\(1/4\)</span> số pixel của tầng trước:</p>
+<p><span class="math display">\[1 + \frac14 + \frac1{16} + \dots &lt; \frac{1}{1 - 1/4} = \frac43\]</span></p>
+<p>Cả kim tự tháp chỉ tốn thêm chưa tới 33% so với ảnh gốc.</p>
+<p><strong>Vì sao phải lọc Gauss trước khi bỏ hàng/cột.</strong> Bỏ một nửa số mẫu thì tần số cao nhất biểu diễn được giảm từ <span class="math">\(\pi\)</span> xuống <span class="math">\(\pi/2\)</span> (rad/pixel). Thành phần nào cao hơn <span class="math">\(\pi/2\)</span> sẽ "gập" lại thành tần số thấp giả (<strong>aliasing</strong> – răng cưa, vân moiré). Kernel của <code>pyrDown</code> là <span class="math">\(\frac{1}{16}[1, 4, 6, 4, 1]\)</span> theo mỗi chiều, và</p>
+<p><span class="math display">\[\tfrac{1}{16}[1, 4, 6, 4, 1] = \tfrac14[1, 2, 1] * \tfrac14[1, 2, 1]\]</span></p>
+<p>Đáp ứng tần số của <span class="math">\(\frac14[1, 2, 1]\)</span> là <span class="math">\(\frac14(2 + e^{i\omega} + e^{-i\omega}) = \frac{1 + \cos\omega}{2} = \cos^2\frac{\omega}{2}\)</span>, nên kernel 5 điểm có đáp ứng <span class="math">\(H(\omega) = \cos^4\frac{\omega}{2}\)</span>: bằng 1 ở <span class="math">\(\omega = 0\)</span> (giữ độ sáng), bằng 0 ở <span class="math">\(\omega = \pi\)</span>, và <span class="math">\(H(\pi/2) = 1/4\)</span> – các tần số sẽ bị gập đã bị dập phần lớn.</p>
+<p><strong>Vì sao <code>pyrUp</code> nhân kernel với 4.</strong> <code>pyrUp</code> chèn số 0 vào giữa các pixel (gấp đôi mỗi chiều), nên 3/4 số pixel bằng 0 và độ sáng trung bình giảm 4 lần. Kernel làm mờ có tổng 1 giữ nguyên trung bình, nên phải nhân 4 để trả lại độ sáng cũ.</p>
+</div></details>
 </li>
-<li>Ý nghĩa<ul>
+<li>
+<p>Ý nghĩa</p>
+<ul>
 <li><span class="math">\(G_i\)</span> tầng còn giữ được phần nào các chi tiết có tần số cao</li>
 <li><span class="math">\(G_{i+1}\)</span> là downSample của <span class="math">\(G_i\)</span> và đã mất đi vĩnh viễn các chi tiết có tần số cao</li>
 <li><span class="math">\(\text{pyrUp}(G_{i+1})\)</span> là nội suy làm mờ ảnh ngược lại về <span class="math">\(G'_i\)</span> đã không còn các chi tiết tần số cao</li>
@@ -593,8 +614,26 @@ mean reconstruction error = 0.0000 gray levels
 <li>Gaussian Pyramid lưu <strong>thành phần tần số thấp</strong> (ảnh ngày càng mờ sau mỗi lần Downsample).</li>
 <li>Laplacian Pyramid lưu <strong>các chi tiết/tần số cao bị mất</strong> khi Downsample.</li>
 <li>Tính Gaussian Pyramid và Laplacian Pyramid cho <strong>cả hai ảnh</strong>.</li>
-<li>Ghép (blend) các tầng <strong>Laplacian</strong> của hai ảnh (ví dụ: nửa trái từ ảnh A, nửa phải từ ảnh B) và ghép cả tầng Gaussian nhỏ nhất.</li>
-<li><strong>Khôi phục ảnh</strong> bằng cách bắt đầu từ tầng Gaussian nhỏ nhất đã ghép, sau đó lặp lại:<ol>
+<li>
+<p>Ghép (blend) các tầng <strong>Laplacian</strong> của hai ảnh (ví dụ: nửa trái từ ảnh A, nửa phải từ ảnh B) và ghép cả tầng Gaussian nhỏ nhất.</p>
+<details class="opencv-proof"><summary>Chứng minh: vì sao ghép theo từng tầng thì không lộ vết cắt <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Phần này là giải thích (theo Burt &amp; Adelson, 1983) chứ không phải chứng minh chặt.</p>
+<ul>
+<li>Ghép mỗi tầng <span class="math">\(L_i\)</span> bằng mặt nạ <span class="math">\(M_i\)</span> (mặt nạ đã thu nhỏ theo kim tự tháp Gauss): <span class="math">\(L_i^{AB} = M_i L_i^A + (1 - M_i) L_i^B\)</span>. Mặt nạ ở tầng <span class="math">\(i\)</span> bị làm mờ ở tỉ lệ <span class="math">\(2^i\)</span>, nên <strong>vùng chuyển tiếp rộng khoảng <span class="math">\(2^i\)</span> pixel</strong> (tính theo ảnh gốc).</li>
+<li>Tầng <span class="math">\(i\)</span> chủ yếu chứa chi tiết có kích thước cỡ <span class="math">\(2^i\)</span> pixel. Vậy mỗi dải tần được trộn qua một vùng chuyển tiếp <strong>vừa với kích thước của chính nó</strong>:<ul>
+<li>Tần số thấp (màu nền, độ sáng chung) trộn qua vùng rộng → không có bậc sáng tối đột ngột.</li>
+<li>Tần số cao (vân, chi tiết nhỏ) trộn qua vùng hẹp → không bị bóng ma hai lớp chồng lên nhau.</li>
+</ul>
+</li>
+<li>Ghép thẳng bằng <code>hstack</code> tương đương dùng vùng chuyển tiếp rộng 0 cho mọi tần số → vết cắt lộ rõ. Ngược lại, trộn tuyến tính toàn ảnh với một vùng chuyển tiếp rộng cố định thì chi tiết nhỏ ở vùng đó thành hai lớp chồng mờ.</li>
+</ul>
+<p>Tái tạo từ các tầng đã ghép dùng đúng công thức <span class="math">\(G_i = L_i + \text{pyrUp}(G_{i+1})\)</span> đã chứng minh ở trên.</p>
+</div></details>
+</li>
+<li>
+<p><strong>Khôi phục ảnh</strong> bằng cách bắt đầu từ tầng Gaussian nhỏ nhất đã ghép, sau đó lặp lại:</p>
+<ol>
 <li><code>pyrUp()</code></li>
 <li>cộng với Laplacian đã ghép ở tầng tương ứng.</li>
 </ol>

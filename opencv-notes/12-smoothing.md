@@ -46,6 +46,23 @@ after:
 
         $$M=\frac{1}{9} \begin{bmatrix} 1 & 1 & 1\\ 1 & 1 & 1\\ 1 & 1 & 1 \end{bmatrix}$$
 
+        :::proof vì sao hệ số là 1/9 và lọc trung bình giảm nhiễu
+        **1. Hệ số $1/9$ giữ nguyên độ sáng.** Kết quả lọc là $g(x, y) = \sum_{(i,j)} M(i, j)\,f(x+i, y+j)$. Ở vùng phẳng $f \equiv c$:
+
+        $$g = c\sum_{i,j} M(i, j) = c \cdot 9 \cdot \tfrac{1}{9} = c$$
+
+        Nếu bỏ $1/9$ (tổng trọng số bằng 9) thì vùng phẳng sáng lên 9 lần và bị bão hòa. Mọi kernel làm mờ đều phải có **tổng trọng số bằng 1**; đó là ý nghĩa của `normalize=True` trong `boxFilter`.
+
+        **2. Trung bình $n$ pixel giảm phương sai nhiễu đi $n$ lần.** Giả sử $f = s + \eta$ với tín hiệu $s$ gần như phẳng trong cửa sổ, nhiễu $\eta$ độc lập, trung bình 0, phương sai $\sigma^2$. Dùng $\operatorname{Var}(aX) = a^2\operatorname{Var}(X)$ và phương sai của tổng các biến độc lập bằng tổng phương sai:
+
+        $$\operatorname{Var}\Big(\frac{1}{n}\sum_{k=1}^{n}\eta_k\Big) = \frac{1}{n^2}\sum_{k=1}^{n}\operatorname{Var}(\eta_k) = \frac{1}{n^2}\cdot n\sigma^2 = \frac{\sigma^2}{n}$$
+
+        Kernel 3x3 ($n = 9$): độ lệch chuẩn của nhiễu giảm $\sqrt{9} = 3$ lần; 5x5: giảm 5 lần. $\blacksquare$
+
+        **3. Cái giá phải trả.** Ở biên, giả thiết "$s$ phẳng trong cửa sổ" sai: cửa sổ trộn hai vùng sáng/tối nên cạnh bị nhòe ra trên khoảng bằng kích thước kernel. Kernel càng lớn thì nhiễu giảm nhiều hơn nhưng ảnh càng mờ – đúng như ghi chú "kernel càng lớn ảnh càng mờ".
+        :::
+
+
     - Hàm : `blur = cv.blur(img, (5, 5))`
     - Kernel càng lớn ảnh càng mờ
     - `cv2.blur()` : tương đương `cv2.boxFilter(normalize = True)`

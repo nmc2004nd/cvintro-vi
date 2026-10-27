@@ -647,6 +647,18 @@ label   area         centroid
 <ul>
 <li>Cẩn thận <code>M['m00'] = 0</code> (contour suy biến, diện tích bằng 0) sẽ gây lỗi chia cho 0 → nên kiểm tra trước</li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: trọng tâm từ mô-men và công thức diện tích của contour <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Mô-men của vùng nhị phân.</strong> Định nghĩa <span class="math">\(M_{pq} = \sum_{x, y} x^p y^q\, I(x, y)\)</span>. Với ảnh nhị phân (<span class="math">\(I = 1\)</span> trong vùng <span class="math">\(R\)</span>, 0 ngoài vùng):</p>
+<p><span class="math display">\[M_{00} = \sum_{(x,y) \in R} 1 = |R| \;\text{(diện tích)}, \qquad M_{10} = \sum_{(x,y) \in R} x, \qquad M_{01} = \sum_{(x,y) \in R} y\]</span></p>
+<p>Nên <span class="math">\(C_x = \frac{M_{10}}{M_{00}} = \frac{1}{|R|}\sum_R x\)</span> chính là <strong>trung bình tọa độ x</strong> của các pixel trong vùng, tương tự <span class="math">\(C_y\)</span>. Với ảnh xám, <span class="math">\(I\)</span> đóng vai trò trọng số: pixel càng sáng kéo trọng tâm càng nhiều. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>2. Khi gọi <code>cv.moments(cnt)</code> trên contour, OpenCV không đếm pixel</strong> mà tính trên đa giác nối các đỉnh contour, bằng định lý Green. Với diện tích:</p>
+<p><span class="math display">\[A = \iint_R 1\,dx\,dy = \frac12 \oint_{\partial R} (x\,dy - y\,dx)\]</span></p>
+<p>(kiểm tra: theo Green, <span class="math">\(\oint (P\,dx + Q\,dy) = \iint (\partial_x Q - \partial_y P)\)</span>; với <span class="math">\(P = -y/2\)</span>, <span class="math">\(Q = x/2\)</span> thì vế phải là <span class="math">\(\iint (\frac12 + \frac12) = A\)</span>). Trên đa giác các đỉnh <span class="math">\((x_k, y_k)\)</span>, tích phân trên mỗi cạnh tính được chính xác, cho <strong>công thức dây giày (shoelace)</strong>:</p>
+<p><span class="math display">\[A = \frac12 \left|\sum_{k} (x_k\,y_{k+1} - x_{k+1}\,y_k)\right|\]</span></p>
+<p><strong>Hệ quả thực tế:</strong> đa giác đi qua <em>tâm</em> các pixel biên, nên bỏ mất nửa pixel ở mỗi phía. Mình đã kiểm tra: hình vuông trắng 10x10 pixel cho <code>contourArea = 81</code> (= 9 x 9) và <code>moments(cnt)['m00'] = 81</code>, trong khi <code>moments(img, binaryImage=True)['m00'] = 100</code>. Cần số pixel chính xác thì dùng <code>cv.countNonZero</code> hoặc mô-men của ảnh.</p>
+<p><strong>3. Vì sao <span class="math">\(M_{00} = 0\)</span> được.</strong> Contour suy biến (một đường thẳng, một điểm) có diện tích đa giác bằng 0, nên <span class="math">\(C_x = M_{10}/M_{00}\)</span> không xác định – đúng như cảnh báo ở trên.</p>
+</div></details>
 </li>
 </ul>
 </li>
@@ -671,10 +683,26 @@ label   area         centroid
 <ul>
 <li><code>cv2.approxPolyDP(cnt, epsilon, closed)</code></li>
 <li>Phép này giúp biến đổi một đường cong ngoằn ngoèo có nhiều đỉnh thành khối hình học có ít đỉnh hơn</li>
-<li><code>epsilon</code> : Khoảng cách tối đa cho phép đường viền gốc đến đường viền xấp xỉ<ul>
+<li>
+<p><code>epsilon</code> : Khoảng cách tối đa cho phép đường viền gốc đến đường viền xấp xỉ</p>
+<ul>
 <li><span class="math">\(\epsilon\)</span> quá lớn → Hình xấp xỉ bị thô và mất nhiều chi tiết</li>
 <li><span class="math">\(\epsilon\)</span> quá nhỏ → Hình xấp xỉ bám quá sát ảnh gốc, không nén được số đỉnh</li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: thuật toán Douglas–Peucker và ý nghĩa chính xác của epsilon <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><code>approxPolyDP</code> dùng thuật toán <strong>Douglas–Peucker</strong> (đệ quy):</p>
+<ol>
+<li>Nối điểm đầu <span class="math">\(A\)</span> và điểm cuối <span class="math">\(B\)</span> của đoạn đường cong bằng một đoạn thẳng.</li>
+<li>Tìm điểm <span class="math">\(P\)</span> trên đường cong <strong>xa đoạn <span class="math">\(AB\)</span> nhất</strong>, khoảng cách <span class="math">\(d_{\max}\)</span>.</li>
+<li>Nếu <span class="math">\(d_{\max} \le \varepsilon\)</span>: thay cả đoạn cong bằng đoạn <span class="math">\(AB\)</span>. Nếu không: giữ <span class="math">\(P\)</span> làm đỉnh, đệ quy cho hai đoạn <span class="math">\(A \to P\)</span> và <span class="math">\(P \to B\)</span>.</li>
+</ol>
+<p><strong>Khoảng cách từ điểm tới đường thẳng.</strong> Diện tích tam giác <span class="math">\(ABP\)</span> bằng nửa độ lớn tích có hướng, và cũng bằng <span class="math">\(\frac12 \cdot \text{đáy} \cdot \text{chiều cao}\)</span>:</p>
+<p><span class="math display">\[\frac12\big|(B - A) \times (P - A)\big| = \frac12\,|AB|\,d \;\Rightarrow\; d = \frac{|(x_B - x_A)(y_P - y_A) - (y_B - y_A)(x_P - x_A)|}{\sqrt{(x_B - x_A)^2 + (y_B - y_A)^2}}\]</span></p>
+<p><strong>Khẳng định:</strong> mọi điểm của contour gốc cách đa giác xấp xỉ không quá <span class="math">\(\varepsilon\)</span>.</p>
+<p><strong>Chứng minh (quy nạp theo số lần đệ quy).</strong> Một đoạn chỉ được thay bằng đường thẳng ở bước 3 khi <span class="math">\(d_{\max} \le \varepsilon\)</span>, tức <em>mọi</em> điểm của đoạn cong đó cách đường thẳng <span class="math">\(AB\)</span> không quá <span class="math">\(\varepsilon\)</span>. Mọi điểm gốc cuối cùng đều thuộc đúng một đoạn như vậy (vì đệ quy chỉ dừng khi điều kiện này đúng, hoặc khi đoạn chỉ còn 2 điểm – lúc đó khoảng cách bằng 0). <span class="math">\(\blacksquare\)</span></p>
+<p>Đây là lý do <span class="math">\(\varepsilon\)</span> được đặt theo <strong>tỉ lệ chu vi</strong> (<code>0.01</code>–<code>0.05 * arcLength</code>): sai số cho phép tỉ lệ với kích thước vật, nên cùng một hệ số cho kết quả giống nhau dù vật to hay nhỏ trong ảnh.</p>
+</div></details>
 </li>
 </ul>
 <div class="highlight"><pre><span></span><span class="c1"># Ví dụ trong tài liệu: epsilon = 10% chu vi (thực tế hay dùng 1-5% để giữ hình dạng tốt hơn)</span>
@@ -869,6 +897,14 @@ label   area         centroid
 <span class="n">extent</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">area</span><span class="p">)</span> <span class="o">/</span> <span class="n">rect_area</span>
 </pre></div>
 
+<details class="opencv-proof"><summary>Chứng minh: vì sao Extent, Solidity nằm trong (0, 1] và công thức đường kính tương đương <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Extent ≤ 1.</strong> Hình chữ nhật bao là hình chữ nhật thẳng nhỏ nhất <em>chứa</em> contour, nên vùng contour <span class="math">\(R \subseteq\)</span> hình chữ nhật, suy ra <span class="math">\(\text{Area}(R) \le w \cdot h\)</span>. Dấu bằng chỉ khi vật chính là hình chữ nhật thẳng. Ví dụ: hình tròn có Extent <span class="math">\(= \frac{\pi r^2}{(2r)^2} = \frac{\pi}{4} \approx 0.785\)</span>; tam giác vuông nửa hình chữ nhật có Extent <span class="math">\(= 0.5\)</span>.</p>
+<p><strong>Solidity ≤ 1, và = 1 khi và chỉ khi vật lồi.</strong> Bao lồi là tập lồi nhỏ nhất chứa <span class="math">\(R\)</span>, nên <span class="math">\(R \subseteq \text{Hull}(R)\)</span> và <span class="math">\(\text{Area}(R) \le \text{Area}(\text{Hull})\)</span>. Nếu <span class="math">\(R\)</span> lồi thì chính <span class="math">\(R\)</span> là tập lồi chứa <span class="math">\(R\)</span>, nên <span class="math">\(\text{Hull}(R) = R\)</span> và Solidity = 1. Ngược lại nếu <span class="math">\(R\)</span> không lồi thì phần "lõm" <span class="math">\(\text{Hull} \setminus R\)</span> có diện tích dương, nên Solidity &lt; 1. <span class="math">\(\blacksquare\)</span> (Do <code>contourArea</code> tính trên đa giác qua tâm pixel, contour lồi thực tế cho giá trị rất gần 1 chứ không phải luôn đúng bằng 1.)</p>
+<p><strong>Đường kính tương đương.</strong> Đặt diện tích hình tròn đường kính <span class="math">\(d\)</span> bằng diện tích vật:</p>
+<p><span class="math display">\[\pi\left(\frac{d}{2}\right)^2 = \text{Area} \iff \frac{\pi d^2}{4} = \text{Area} \iff d = \sqrt{\frac{4 \cdot \text{Area}}{\pi}}\]</span></p>
+<p><strong>Bất biến:</strong> Aspect Ratio, Extent, Solidity là tỉ số của hai đại lượng cùng đơn vị nên <strong>không đổi khi phóng to/thu nhỏ</strong> vật (cả tử và mẫu cùng nhân <span class="math">\(s\)</span> hoặc <span class="math">\(s^2\)</span>). Solidity còn không đổi khi xoay; Extent và Aspect Ratio thì có đổi khi xoay vì hình chữ nhật bao luôn thẳng theo trục.</p>
+</div></details>
 </li>
 <li>
 <p><strong>Độ đặc/ độ rắn (Solidity)</strong></p>
@@ -1106,7 +1142,7 @@ label   area         centroid
 <li><strong>Cùng cấp bậc (Same Hierarchy Level)</strong>: Các đường viền nằm độc lập ở cùng một tầng không gian</li>
 </ul>
 </li>
-<li><span class="math display">\[\text{Hierarchy Array} = \begin{bmatrix} \text{Next}, &amp; \text{Previous}, &amp; \text{First\_Child}, &amp; \text{Parent} \end{bmatrix}\]</span><ul>
+<li><span class="math display">\[\text{Hierarchy Array} = \begin{bmatrix} \text{Next}, &amp; \text{Previous}, &amp; \text{First_Child}, &amp; \text{Parent} \end{bmatrix}\]</span><ul>
 <li><code>Next</code> <strong>(Đường viền tiếp theo):</strong> Chỉ số (index) của đường viền tiếp theo <strong>nằm cùng một cấp bậc</strong> phân cấp với đường viền hiện tại.</li>
 <li><code>Previous</code> <strong>(Đường viền trước đó):</strong> Chỉ số của đường viền nằm ngay trước nó <strong>trên cùng một cấp bậc</strong>.</li>
 <li><code>First_Child</code> <strong>(Con đầu lòng):</strong> Chỉ số của đường viền con <strong>đầu tiên</strong> nằm lồng bên trong nó (nếu có nhiều con, chỉ lấy đứa đầu tiên).</li>

@@ -720,13 +720,28 @@ cv2.calcOpticalFlowPyrLK estimate:    (4.000, 3.000)  &lt;- accurate
 <li>
 <p><mark><strong>Meanshift</strong></mark></p>
 <ul>
-<li>Ý tưởng: cho một tập điểm (ví dụ ảnh backprojection) và một cửa sổ<ul>
+<li>
+<p>Ý tưởng: cho một tập điểm (ví dụ ảnh backprojection) và một cửa sổ</p>
+<ul>
 <li>Tính trọng tâm các điểm trong cửa sổ</li>
 <li>Dịch tâm cửa sổ về trọng tâm đó</li>
 <li>Lặp lại đến khi cửa sổ không dịch nữa → cửa sổ nằm ở <mark>vùng có mật độ điểm cao nhất</mark></li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: dịch về trọng tâm = leo dốc theo mật độ <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Một bước meanShift tính gì.</strong> Với ảnh xác suất <span class="math">\(P(x, y)\)</span> (backprojection) và cửa sổ <span class="math">\(W\)</span>, trọng tâm có trọng số là</p>
+<p><span class="math display">\[\mathbf{c} = \Big(\frac{M_{10}}{M_{00}},\ \frac{M_{01}}{M_{00}}\Big), \qquad M_{pq} = \sum_{(x,y) \in W} x^p y^q P(x, y)\]</span></p>
+<p>– đúng công thức trọng tâm từ mô-men (xem ghi chú Contour), với <span class="math">\(P\)</span> đóng vai trò khối lượng.</p>
+<p><strong>2. Vì sao đi về phía mật độ cao nhất – mean shift là leo dốc.</strong> Ước lượng mật độ bằng kernel: <span class="math">\(f(\mathbf{x}) = \sum_i w_i\,k\big(\|\mathbf{x} - \mathbf{x}_i\|^2/h^2\big)\)</span>, với <span class="math">\(w_i = P(\mathbf{x}_i)\)</span> và <span class="math">\(k\)</span> là "profile" giảm dần. Đặt <span class="math">\(g = -k'\)</span>. Lấy gradient (đạo hàm hàm hợp):</p>
+<p><span class="math display">\[\nabla f(\mathbf{x}) = \frac{2}{h^2}\sum_i w_i\,g_i\,(\mathbf{x}_i - \mathbf{x}) = \frac{2}{h^2}\Big(\sum_i w_i g_i\Big)\Big[\underbrace{\frac{\sum_i w_i g_i\,\mathbf{x}_i}{\sum_i w_i g_i} - \mathbf{x}}_{\text{vector mean shift}}\Big]\]</span></p>
+<p>với <span class="math">\(g_i = g(\|\mathbf{x} - \mathbf{x}_i\|^2/h^2) \ge 0\)</span>. Hệ số đứng trước dấu ngoặc dương, nên <strong>vector mean shift luôn cùng hướng với <span class="math">\(\nabla f\)</span></strong>: mỗi bước đi lên dốc của mật độ. <span class="math">\(\blacksquare\)</span></p>
+<p>Với kernel Epanechnikov <span class="math">\(k(r) = 1 - r\)</span> (khi <span class="math">\(r \le 1\)</span>), ta có <span class="math">\(g = 1\)</span> trong cửa sổ và 0 ngoài cửa sổ, nên số hạng đầu trong ngoặc chính là <strong>trọng tâm có trọng số của các điểm trong cửa sổ</strong> – đúng bước "dịch tâm cửa sổ về trọng tâm" ở trên.</p>
+<p><strong>3. Hội tụ.</strong> Bước mean shift tự điều chỉnh độ dài: xa đỉnh (dốc lớn) thì bước dài, gần đỉnh (gradient → 0) thì bước ngắn dần, và tại đỉnh trọng tâm trùng tâm cửa sổ nên dừng. Comaniciu &amp; Meer (2002) chứng minh <span class="math">\(f\)</span> tăng đơn điệu qua các bước nên dãy hội tụ tới một cực đại địa phương. Hệ quả: meanShift chỉ tìm được đỉnh <strong>gần cửa sổ ban đầu nhất</strong>; vật di chuyển quá xa giữa hai frame (ra ngoài cửa sổ) sẽ bị mất dấu.</p>
+</div></details>
 </li>
-<li>Áp dụng để theo dõi vật thể trong video:<ul>
+<li>
+<p>Áp dụng để theo dõi vật thể trong video:</p>
+<ul>
 <li>Frame đầu: chọn cửa sổ chứa vật thể, tính histogram Hue của vùng đó</li>
 <li>Mỗi frame sau: backprojection histogram lên frame → ảnh xác suất → chạy meanShift từ cửa sổ cũ</li>
 </ul>
@@ -769,8 +784,25 @@ cv2.calcOpticalFlowPyrLK estimate:    (4.000, 3.000)  &lt;- accurate
 <li>
 <p><mark><strong>Camshift (Continuously Adaptive Meanshift)</strong></mark> - Gary Bradski, 1998</p>
 <ul>
-<li>Chạy meanShift đến khi hội tụ, rồi <mark>cập nhật kích thước cửa sổ</mark> theo <span class="math">\(s = 2\sqrt{M_{00}/256}\)</span> và tính hướng của elip khớp nhất</li>
-<li>Chạy lại meanShift với cửa sổ mới, lặp đến khi đạt độ chính xác yêu cầu</li>
+<li>
+<p>Chạy meanShift đến khi hội tụ, rồi <mark>cập nhật kích thước cửa sổ</mark> theo <span class="math">\(s = 2\sqrt{M_{00}/256}\)</span> và tính hướng của elip khớp nhất</p>
+<details class="opencv-proof"><summary>Chứng minh: công thức s = 2√(M00/256) và hướng của elip <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>1. Kích thước cửa sổ.</strong> Backprojection có giá trị 0–255, với 255 ≈ "chắc chắn là vật". <span class="math">\(M_{00} = \sum P\)</span> nên <span class="math">\(\frac{M_{00}}{256} \approx\)</span> <strong>số pixel tương đương có xác suất đầy</strong> – tức diện tích vật <span class="math">\(A\)</span> tính bằng pixel (chia 256 vì đó là số mức của ảnh 8 bit). Hình vuông có diện tích <span class="math">\(A\)</span> có cạnh <span class="math">\(\sqrt{A}\)</span>, nên</p>
+<p><span class="math display">\[s = 2\sqrt{\frac{M_{00}}{256}} \approx 2\sqrt{A}\]</span></p>
+<p>là cửa sổ có cạnh <strong>gấp đôi kích thước vật</strong>. Hệ số 2 là lựa chọn của Bradski (1998), không phải kết quả chứng minh: cửa sổ lớn hơn vật để vẫn bao được vật khi nó di chuyển hoặc to ra ở frame sau, nhưng không quá lớn để tránh lẫn nền. Vật to lên → <span class="math">\(M_{00}\)</span> tăng → cửa sổ tự to ra, và ngược lại.</p>
+<p><strong>2. Hướng của elip từ mô-men bậc hai.</strong> Ma trận hiệp phương sai của phân bố <span class="math">\(P\)</span> trong cửa sổ:</p>
+<p><span class="math display">\[C = \frac{1}{M_{00}}\begin{bmatrix} \mu_{20} &amp; \mu_{11} \\ \mu_{11} &amp; \mu_{02} \end{bmatrix}\]</span></p>
+<p>(<span class="math">\(\mu_{pq}\)</span>: mô-men trung tâm). Trục chính của elip là vector riêng ứng với trị riêng lớn. Tìm góc <span class="math">\(\theta\)</span> sao cho hệ trục xoay <span class="math">\(\theta\)</span> làm <span class="math">\(C\)</span> <strong>chéo hóa</strong>: phần tử ngoài đường chéo của <span class="math">\(R^TCR\)</span> bằng 0. Với hai trục mới <span class="math">\(\mathbf{e}_1 = (\cos\theta, \sin\theta)\)</span>, <span class="math">\(\mathbf{e}_2 = (-\sin\theta, \cos\theta)\)</span>:</p>
+<p><span class="math display">\[\mathbf{e}_1^T C\,\mathbf{e}_2 \propto -\sin\theta\cos\theta\,\mu_{20} + (\cos^2\theta - \sin^2\theta)\,\mu_{11} + \sin\theta\cos\theta\,\mu_{02} = 0\]</span></p>
+<p>Dùng <span class="math">\(\cos^2\theta - \sin^2\theta = \cos2\theta\)</span> và <span class="math">\(\sin\theta\cos\theta = \frac12\sin2\theta\)</span>:</p>
+<p><span class="math display">\[\mu_{11}\cos2\theta = \tfrac12(\mu_{20} - \mu_{02})\sin2\theta \;\Rightarrow\; \theta = \frac12\operatorname{atan2}\big(2\mu_{11},\ \mu_{20} - \mu_{02}\big) \qquad \blacksquare\]</span></p>
+<p>Dùng <code>atan2</code> để chọn đúng nghiệm ứng với trục <strong>dài</strong> (phương trình <span class="math">\(\tan 2\theta = \dots\)</span> có hai nghiệm cách nhau 90°, ứng với hai trục). Đây cũng là công thức hướng của đốm trong Bài 5–6 của khóa học. Độ dài hai trục tỉ lệ với căn bậc hai của hai trị riêng của <span class="math">\(C\)</span>.</p>
+</div></details>
+</li>
+<li>
+<p>Chạy lại meanShift với cửa sổ mới, lặp đến khi đạt độ chính xác yêu cầu</p>
+</li>
 <li>Code giống meanShift, chỉ đổi dòng theo dõi và cách vẽ:</li>
 </ul>
 <div class="highlight"><pre><span></span><span class="n">ret</span><span class="p">,</span> <span class="n">track_window</span> <span class="o">=</span> <span class="n">cv</span><span class="o">.</span><span class="n">CamShift</span><span class="p">(</span><span class="n">dst</span><span class="p">,</span> <span class="n">track_window</span><span class="p">,</span> <span class="n">term_crit</span><span class="p">)</span>
@@ -837,6 +869,19 @@ cv2.calcOpticalFlowPyrLK estimate:    (4.000, 3.000)  &lt;- accurate
 <li>
 <p><span class="math">\(I(x, y, t) = I(x + dx, y + dy, t + dt)\)</span>, khai triển Taylor →</p>
 <p><span class="math display">\[I_x u + I_y v + I_t = 0\]</span></p>
+<details class="opencv-proof"><summary>Chứng minh: phương trình optical flow và bài toán khẩu độ <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Bước 1 – Taylor bậc nhất</strong> (dịch nhỏ):</p>
+<p><span class="math display">\[I(x + dx, y + dy, t + dt) \approx I(x, y, t) + I_x\,dx + I_y\,dy + I_t\,dt\]</span></p>
+<p><strong>Bước 2 – dùng giả thiết độ sáng không đổi</strong>, vế trái bằng <span class="math">\(I(x, y, t)\)</span>, nên</p>
+<p><span class="math display">\[I_x\,dx + I_y\,dy + I_t\,dt = 0\]</span></p>
+<p><strong>Bước 3 – chia cho <span class="math">\(dt\)</span></strong> và đặt <span class="math">\(u = dx/dt\)</span>, <span class="math">\(v = dy/dt\)</span> (với hai frame liên tiếp, <span class="math">\(dt = 1\)</span> frame và <span class="math">\(I_t\)</span> = hiệu hai frame):</p>
+<p><span class="math display">\[I_x u + I_y v + I_t = 0 \iff \nabla I \cdot (u, v) = -I_t \qquad \blacksquare\]</span></p>
+<p><strong>Bài toán khẩu độ (aperture problem) – chính xác thì biết được gì?</strong> Phương trình <span class="math">\(\nabla I \cdot \mathbf{d} = -I_t\)</span> là một <strong>đường thẳng</strong> trong mặt phẳng <span class="math">\((u, v)\)</span>. Nếu <span class="math">\(\mathbf{d}\)</span> là một nghiệm thì <span class="math">\(\mathbf{d} + c\,\mathbf{d}_\perp\)</span> (với <span class="math">\(\mathbf{d}_\perp \perp \nabla I\)</span>) cũng là nghiệm, vì <span class="math">\(\nabla I \cdot \mathbf{d}_\perp = 0\)</span>. Chỉ xác định được <strong>thành phần theo hướng gradient</strong>:</p>
+<p><span class="math display">\[\mathbf{d} \cdot \frac{\nabla I}{|\nabla I|} = \frac{-I_t}{|\nabla I|} \quad \text{(normal flow)}\]</span></p>
+<p>Thành phần dọc theo cạnh hoàn toàn không đo được. Ví dụ quen thuộc: nhìn một vạch thẳng dài di chuyển qua một lỗ nhỏ, ta chỉ thấy nó chuyển động vuông góc với chính nó, bất kể nó thực ra đi chéo.</p>
+<p><strong>Khi nào Taylor bậc nhất đúng:</strong> khi chuyển động nhỏ hơn khoảng cách mà ảnh còn gần tuyến tính – cỡ dưới 1 pixel với ảnh nhiều chi tiết. Đó là giả thiết "chuyển động nhỏ" ở trên, và là lý do cần kim tự tháp.</p>
+</div></details>
 </li>
 <li>
 <p><span class="math">\(I_x, I_y\)</span>: gradient không gian, <span class="math">\(I_t\)</span>: gradient theo thời gian, <span class="math">\((u, v)\)</span>: vector chuyển động cần tìm</p>
@@ -850,6 +895,24 @@ cv2.calcOpticalFlowPyrLK estimate:    (4.000, 3.000)  &lt;- accurate
 <li>
 <p>Giả sử cả vùng 3x3 quanh điểm chuyển động như nhau → 9 phương trình, 2 ẩn → giải bằng bình phương tối thiểu:</p>
 <p><span class="math display">\[\begin{bmatrix} u \\ v \end{bmatrix} = \begin{bmatrix} \sum I_x^2 &amp; \sum I_x I_y \\ \sum I_x I_y &amp; \sum I_y^2 \end{bmatrix}^{-1} \begin{bmatrix} -\sum I_x I_t \\ -\sum I_y I_t \end{bmatrix}\]</span></p>
+<details class="opencv-proof"><summary>Chứng minh: nghiệm Lucas–Kanade từ bình phương tối thiểu <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Bước 1 – xếp <span class="math">\(n\)</span> phương trình</strong> (một cho mỗi pixel <span class="math">\(q_i\)</span> trong cửa sổ) thành <span class="math">\(A\mathbf{d} = \mathbf{b}\)</span>:</p>
+<p><span class="math display">\[A = \begin{bmatrix} I_x(q_1) &amp; I_y(q_1) \\ \vdots &amp; \vdots \\ I_x(q_n) &amp; I_y(q_n) \end{bmatrix}, \quad \mathbf{d} = \begin{bmatrix} u \\ v \end{bmatrix}, \quad \mathbf{b} = -\begin{bmatrix} I_t(q_1) \\ \vdots \\ I_t(q_n) \end{bmatrix}\]</span></p>
+<p><strong>Bước 2 – cực tiểu sai số bình phương</strong> <span class="math">\(S(u, v) = \sum_i (I_{x,i}u + I_{y,i}v + I_{t,i})^2\)</span>. Tại cực tiểu, đạo hàm riêng bằng 0:</p>
+<p><span class="math display">\[\frac{\partial S}{\partial u} = 2\sum_i I_{x,i}(I_{x,i}u + I_{y,i}v + I_{t,i}) = 0, \qquad \frac{\partial S}{\partial v} = 2\sum_i I_{y,i}(I_{x,i}u + I_{y,i}v + I_{t,i}) = 0\]</span></p>
+<p><strong>Bước 3 – sắp xếp lại</strong> thành hệ 2x2 (phương trình chuẩn <span class="math">\(A^TA\mathbf{d} = A^T\mathbf{b}\)</span>):</p>
+<p><span class="math display">\[\begin{bmatrix} \sum I_x^2 &amp; \sum I_xI_y \\ \sum I_xI_y &amp; \sum I_y^2 \end{bmatrix}\begin{bmatrix} u \\ v \end{bmatrix} = \begin{bmatrix} -\sum I_xI_t \\ -\sum I_yI_t \end{bmatrix}\]</span></p>
+<p>Nhân hai vế với nghịch đảo ra đúng công thức trên. <span class="math">\(S\)</span> là hàm bậc hai lồi (vì <span class="math">\(A^TA\)</span> nửa xác định dương), nên điểm dừng này là cực tiểu toàn cục. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Khi nào giải được – nối với Harris.</strong> <span class="math">\(A^TA\)</span> chính là ma trận <span class="math">\(M\)</span> của Harris (với cửa sổ đều). Nó khả nghịch khi <span class="math">\(\lambda_{\min} &gt; 0\)</span>, và nghiệm ổn định khi <span class="math">\(\lambda_{\min}\)</span> đủ lớn so với nhiễu:</p>
+<ul>
+<li>Vùng phẳng: <span class="math">\(\lambda_1 \approx \lambda_2 \approx 0\)</span> → gần suy biến, nghiệm là nhiễu.</li>
+<li>Cạnh: hạng 1 → đúng bài toán khẩu độ, chỉ giải được thành phần vuông góc với cạnh.</li>
+<li>Góc: hai trị riêng lớn → giải tốt.</li>
+</ul>
+<p><strong>Kiểm chứng số:</strong> dịch một ảnh đã làm mờ đi <span class="math">\((0.4, -0.3)\)</span> pixel, giải hệ trên cửa sổ 15x15 cho <span class="math">\((0.434, -0.349)\)</span>. Sai số đến từ xấp xỉ Taylor bậc nhất; <code>calcOpticalFlowPyrLK</code> <strong>lặp</strong> bước này (dịch ảnh theo ước lượng hiện tại rồi giải tiếp phần dư) đến khi thỏa <code>criteria</code>, nên hội tụ về giá trị đúng.</p>
+<p><strong>Vì sao kim tự tháp xử lý được chuyển động lớn.</strong> Ở tầng <span class="math">\(L\)</span>, ảnh thu nhỏ <span class="math">\(2^L\)</span> lần nên chuyển động <span class="math">\(d\)</span> pixel chỉ còn <span class="math">\(d / 2^L\)</span> – đủ nhỏ để Taylor đúng. Ước lượng ở tầng thô được nhân 2 làm điểm xuất phát cho tầng mịn hơn, tầng mịn chỉ phải sửa phần dư nhỏ. Với <code>maxLevel=2</code>, chuyển động tối đa xử lý được tăng khoảng <span class="math">\(2^2 = 4\)</span> lần.</p>
+</div></details>
 </li>
 <li>
 <p>Ma trận nghịch đảo giống ma trận M của Harris → <mark>giải tốt nhất tại các góc</mark> → chọn điểm bằng <code>goodFeaturesToTrack</code></p>

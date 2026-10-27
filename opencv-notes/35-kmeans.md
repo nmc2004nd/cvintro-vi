@@ -10,6 +10,30 @@ draft: true
     - **B3**: tính lại tâm = trung bình các điểm trong cụm
     - Lặp B2-B3 đến khi tâm không đổi (hoặc đạt điều kiện dừng)
     - Mục tiêu: cực tiểu tổng bình phương khoảng cách từ điểm tới tâm cụm của nó (compactness)
+
+        :::proof vì sao k-means luôn dừng và vì sao tâm = trung bình
+        Hàm mục tiêu (chính là `compactness`), với $c(i)$ là cụm của điểm $\mathbf{x}_i$ và $\boldsymbol{\mu}_j$ là các tâm:
+
+        $$J = \sum_{i=1}^{N}\big\|\mathbf{x}_i - \boldsymbol{\mu}_{c(i)}\big\|^2$$
+
+        **Bổ đề – trung bình là điểm gần nhất (theo bình phương) với một nhóm điểm.** Với nhóm $S$ có $n$ điểm, trung bình $\bar{\mathbf{x}}$, và một điểm $\mathbf{m}$ bất kỳ:
+
+        $$\sum_{i \in S}\|\mathbf{x}_i - \mathbf{m}\|^2 = \sum_{i \in S}\|(\mathbf{x}_i - \bar{\mathbf{x}}) + (\bar{\mathbf{x}} - \mathbf{m})\|^2 = \sum_{i \in S}\|\mathbf{x}_i - \bar{\mathbf{x}}\|^2 + n\|\bar{\mathbf{x}} - \mathbf{m}\|^2$$
+
+        (số hạng chéo $2(\bar{\mathbf{x}} - \mathbf{m})^T\sum_{i\in S}(\mathbf{x}_i - \bar{\mathbf{x}})$ bằng 0 vì tổng độ lệch so với trung bình bằng 0). Vế phải nhỏ nhất khi và chỉ khi $\mathbf{m} = \bar{\mathbf{x}}$. $\blacksquare$
+
+        **Định lý – $J$ không bao giờ tăng, và thuật toán dừng sau hữu hạn bước.**
+
+        - **B2 (gán điểm)**: tâm cố định, mỗi điểm chuyển sang tâm gần nhất, nên số hạng của từng điểm không tăng → $J$ không tăng.
+        - **B3 (cập nhật tâm)**: nhãn cố định, $J$ tách thành tổng theo từng cụm, và theo bổ đề mỗi cụm đạt nhỏ nhất khi tâm là trung bình → $J$ không tăng.
+
+        $J \ge 0$ và không tăng qua mỗi vòng. Hơn nữa chỉ có hữu hạn cách chia $N$ điểm thành $K$ nhóm (nhiều nhất $K^N$), và mỗi cách chia xác định duy nhất các tâm. Nếu $J$ giảm ngặt thì không thể quay lại một cách chia cũ, nên sau hữu hạn bước các nhãn ngừng thay đổi. $\blacksquare$
+
+        **Nhưng chỉ là cực tiểu địa phương.** Phép chứng minh chỉ nói $J$ giảm, không nói đạt cực tiểu toàn cục (bài toán tổng quát là NP-khó). Kết quả phụ thuộc khởi tạo – đó là lý do có tham số `attempts` (chạy nhiều lần, giữ $J$ nhỏ nhất) và `KMEANS_PP_CENTERS` (k-means++ chọn tâm ban đầu xa nhau, có đảm bảo kỳ vọng $J$ chỉ kém tối ưu cỡ $O(\log K)$ lần).
+
+        **Vì sao phải `float32` và chuẩn hóa đặc trưng.** $J$ dùng khoảng cách Euclid, nên đặc trưng có thang đo lớn (ví dụ chiều cao tính bằng cm cạnh cân nặng tính bằng tấn) sẽ lấn át hoàn toàn đặc trưng còn lại.
+        :::
+
 - Hàm: `compactness, labels, centers = cv.kmeans(data, K, bestLabels, criteria, attempts, flags)`
 
 | Tham số | Ý nghĩa |

@@ -591,15 +591,41 @@ recovered translation direction:  [ 0.9806 -0.      0.1961]
 <li><strong>Epipole</strong>: giao của đường nối hai tâm camera với mặt phẳng ảnh; mọi epiline đều đi qua epipole (có thể nằm ngoài ảnh)</li>
 </ul>
 </li>
-<li><strong>Ma trận cơ bản (Fundamental Matrix) F</strong> và <strong>ma trận thiết yếu (Essential Matrix) E</strong>:<ul>
-<li>Ràng buộc epipolar: <mark><span class="math">\(x'^T F x = 0\)</span></mark> với x, x' là cặp điểm tương ứng (tọa độ pixel)</li>
-<li>E chứa phép xoay và tịnh tiến giữa hai camera, dùng tọa độ đã chuẩn hóa; F = E + thông số nội: <span class="math">\(F = K'^{-T} E K^{-1}\)</span></li>
+<li>
+<p><strong>Ma trận cơ bản (Fundamental Matrix) F</strong> và <strong>ma trận thiết yếu (Essential Matrix) E</strong>:</p>
+<ul>
+<li>
+<p>Ràng buộc epipolar: <mark><span class="math">\(x'^T F x = 0\)</span></mark> với x, x' là cặp điểm tương ứng (tọa độ pixel)</p>
+<details class="opencv-proof"><summary>Chứng minh: suy ra E = [t]×R, F = K&#x27;^{-T}EK^{-1} và epiline <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Thiết lập.</strong> Camera 1 ở gốc tọa độ. Điểm 3D có tọa độ <span class="math">\(X\)</span> trong hệ camera 1 và <span class="math">\(X' = RX + \mathbf{t}\)</span> trong hệ camera 2. Tọa độ ảnh chuẩn hóa: <span class="math">\(\hat{\mathbf{x}} \sim X\)</span>, <span class="math">\(\hat{\mathbf{x}}' \sim X'\)</span> (tức <span class="math">\(\hat{\mathbf{x}} = K^{-1}\mathbf{x}\)</span>).</p>
+<p><strong>Bước 1 – ba vector đồng phẳng.</strong> Trong hệ camera 2: tâm camera 2 ở gốc, tâm camera 1 ở <span class="math">\(\mathbf{t}\)</span>, điểm 3D ở <span class="math">\(X'\)</span>. Ba điểm này (và gốc) tạo thành <strong>mặt phẳng epipolar</strong>. Các vector <span class="math">\(X'\)</span>, <span class="math">\(\mathbf{t}\)</span>, và <span class="math">\(X' - \mathbf{t} = RX\)</span> cùng nằm trong mặt phẳng đó, nên <span class="math">\(X'\)</span> vuông góc với pháp tuyến <span class="math">\(\mathbf{t} \times RX\)</span>:</p>
+<p><span class="math display">\[X'^T(\mathbf{t} \times RX) = 0\]</span></p>
+<p><strong>Bước 2 – viết tích có hướng thành ma trận.</strong> <span class="math">\(\mathbf{t} \times \mathbf{a} = [\mathbf{t}]_\times\mathbf{a}\)</span> với</p>
+<p><span class="math display">\[[\mathbf{t}]_\times = \begin{bmatrix} 0 &amp; -t_z &amp; t_y \\ t_z &amp; 0 &amp; -t_x \\ -t_y &amp; t_x &amp; 0 \end{bmatrix}\]</span></p>
+<p>(kiểm tra từng thành phần của tích có hướng). Thay vào Bước 1:</p>
+<p><span class="math display">\[X'^T\,\underbrace{[\mathbf{t}]_\times R}_{E}\,X = 0\]</span></p>
+<p>Phương trình đồng nhất nên chia hai vế cho độ sâu: <span class="math">\(\hat{\mathbf{x}}'^T E\,\hat{\mathbf{x}} = 0\)</span>. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Bước 3 – sang tọa độ pixel.</strong> Thay <span class="math">\(\hat{\mathbf{x}} = K^{-1}\mathbf{x}\)</span>, <span class="math">\(\hat{\mathbf{x}}' = K'^{-1}\mathbf{x}'\)</span>:</p>
+<p><span class="math display">\[\mathbf{x}'^T\,\underbrace{K'^{-T}EK^{-1}}_{F}\,\mathbf{x} = 0 \qquad \blacksquare\]</span></p>
+<p><strong>Hạng 2.</strong> <span class="math">\([\mathbf{t}]_\times\mathbf{t} = \mathbf{t} \times \mathbf{t} = 0\)</span> nên <span class="math">\([\mathbf{t}]_\times\)</span> có nhân khác 0, hạng 2. Nhân với ma trận khả nghịch không làm tăng hạng, nên <span class="math">\(E\)</span>, <span class="math">\(F\)</span> đều hạng 2, <span class="math">\(\det F = 0\)</span>.</p>
+<p><strong>Bậc tự do.</strong> <span class="math">\(F\)</span> có 9 số, trừ 1 (sai khác hệ số), trừ 1 (ràng buộc <span class="math">\(\det F = 0\)</span>) → <strong>7</strong>. Mỗi cặp điểm cho <strong>một</strong> phương trình tuyến tính <span class="math">\(\mathbf{x}'^TF\mathbf{x} = 0\)</span> theo 9 phần tử của <span class="math">\(F\)</span>. Thuật toán 8 điểm dùng 8 phương trình để giải tuyến tính (bỏ qua ràng buộc det), sau đó ép hạng 2 bằng SVD (đặt giá trị kỳ dị nhỏ nhất bằng 0). <span class="math">\(E\)</span> chỉ có 5 bậc tự do (3 cho xoay, 2 cho hướng của <span class="math">\(\mathbf{t}\)</span> – độ dài của <span class="math">\(\mathbf{t}\)</span> không xác định được từ ảnh).</p>
+<p><strong>Epiline.</strong> Một đường thẳng <span class="math">\(ax + by + c = 0\)</span> viết bằng tọa độ đồng nhất là <span class="math">\(\mathbf{l}^T\mathbf{x} = 0\)</span> với <span class="math">\(\mathbf{l} = (a, b, c)\)</span>. Cố định <span class="math">\(\mathbf{x}\)</span>, đặt <span class="math">\(\mathbf{l}' = F\mathbf{x}\)</span>; ràng buộc epipolar thành <span class="math">\(\mathbf{x}'^T\mathbf{l}' = 0\)</span>: mọi điểm tương ứng <span class="math">\(\mathbf{x}'\)</span> nằm trên đường thẳng <span class="math">\(\mathbf{l}' = F\mathbf{x}\)</span>. Tương tự, chuyển vị ràng buộc cho <span class="math">\(\mathbf{x}^T(F^T\mathbf{x}') = 0\)</span>, nên <span class="math">\(\mathbf{l} = F^T\mathbf{x}'\)</span>. Để vẽ, tính hai đầu mút tại <span class="math">\(x = 0\)</span> và <span class="math">\(x = W\)</span>: <span class="math">\(y = -(c + ax)/b\)</span>.</p>
+<p><strong>Epipole.</strong> Epipole <span class="math">\(\mathbf{e}\)</span> trên ảnh 1 thỏa <span class="math">\(F\mathbf{e} = 0\)</span> (vector trong nhân của <span class="math">\(F\)</span>). Khi đó mọi epiline <span class="math">\(\mathbf{l} = F^T\mathbf{x}'\)</span> đều đi qua <span class="math">\(\mathbf{e}\)</span> vì <span class="math">\(\mathbf{e}^T F^T\mathbf{x}' = (F\mathbf{e})^T\mathbf{x}' = 0\)</span> – đúng như "mọi epiline đều đi qua epipole".</p>
+<p><strong>Kiểm chứng số:</strong> hai camera mô phỏng (<span class="math">\(K \ne K'\)</span>, có xoay và tịnh tiến), 10 điểm 3D ngẫu nhiên: <span class="math">\(\max|\mathbf{x}'^TF\mathbf{x}| = 2 \times 10^{-16}\)</span> và hạng của <span class="math">\(F\)</span> bằng 2.</p>
+</div></details>
+</li>
+<li>
+<p>E chứa phép xoay và tịnh tiến giữa hai camera, dùng tọa độ đã chuẩn hóa; F = E + thông số nội: <span class="math">\(F = K'^{-T} E K^{-1}\)</span></p>
+</li>
 <li>F là ma trận 3x3, hạng 2, 7 bậc tự do</li>
 <li>Epiline trên ảnh 2 ứng với x: <span class="math">\(l' = F x\)</span>; trên ảnh 1 ứng với x': <span class="math">\(l = F^T x'\)</span></li>
 <li><mark>Cần tối thiểu 8 cặp điểm</mark> (thuật toán 8 điểm), nên dùng RANSAC/LMedS để chống outlier</li>
 </ul>
 </li>
-<li>Hàm:<ul>
+<li>
+<p>Hàm:</p>
+<ul>
 <li><code>F, mask = cv.findFundamentalMat(pts1, pts2, method)</code>: <code>method</code> = <code>cv.FM_8POINT</code>, <code>cv.FM_LMEDS</code>, <code>cv.FM_RANSAC</code>; <code>mask</code> = 1 với inlier</li>
 <li><code>lines = cv.computeCorrespondEpilines(points, whichImage, F)</code><ul>
 <li><code>whichImage = 1</code>: điểm thuộc ảnh 1 → trả về epiline trên ảnh 2</li>

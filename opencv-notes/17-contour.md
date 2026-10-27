@@ -92,6 +92,27 @@ contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMP
 
         - Cẩn thận `M['m00'] = 0` (contour suy biến, diện tích bằng 0) sẽ gây lỗi chia cho 0 → nên kiểm tra trước
 
+        :::proof trọng tâm từ mô-men và công thức diện tích của contour
+        **1. Mô-men của vùng nhị phân.** Định nghĩa $M_{pq} = \sum_{x, y} x^p y^q\, I(x, y)$. Với ảnh nhị phân ($I = 1$ trong vùng $R$, 0 ngoài vùng):
+
+        $$M_{00} = \sum_{(x,y) \in R} 1 = |R| \;\text{(diện tích)}, \qquad M_{10} = \sum_{(x,y) \in R} x, \qquad M_{01} = \sum_{(x,y) \in R} y$$
+
+        Nên $C_x = \frac{M_{10}}{M_{00}} = \frac{1}{|R|}\sum_R x$ chính là **trung bình tọa độ x** của các pixel trong vùng, tương tự $C_y$. Với ảnh xám, $I$ đóng vai trò trọng số: pixel càng sáng kéo trọng tâm càng nhiều. $\blacksquare$
+
+        **2. Khi gọi `cv.moments(cnt)` trên contour, OpenCV không đếm pixel** mà tính trên đa giác nối các đỉnh contour, bằng định lý Green. Với diện tích:
+
+        $$A = \iint_R 1\,dx\,dy = \frac12 \oint_{\partial R} (x\,dy - y\,dx)$$
+
+        (kiểm tra: theo Green, $\oint (P\,dx + Q\,dy) = \iint (\partial_x Q - \partial_y P)$; với $P = -y/2$, $Q = x/2$ thì vế phải là $\iint (\frac12 + \frac12) = A$). Trên đa giác các đỉnh $(x_k, y_k)$, tích phân trên mỗi cạnh tính được chính xác, cho **công thức dây giày (shoelace)**:
+
+        $$A = \frac12 \left|\sum_{k} (x_k\,y_{k+1} - x_{k+1}\,y_k)\right|$$
+
+        **Hệ quả thực tế:** đa giác đi qua *tâm* các pixel biên, nên bỏ mất nửa pixel ở mỗi phía. Mình đã kiểm tra: hình vuông trắng 10x10 pixel cho `contourArea = 81` (= 9 x 9) và `moments(cnt)['m00'] = 81`, trong khi `moments(img, binaryImage=True)['m00'] = 100`. Cần số pixel chính xác thì dùng `cv.countNonZero` hoặc mô-men của ảnh.
+
+        **3. Vì sao $M_{00} = 0$ được.** Contour suy biến (một đường thẳng, một điểm) có diện tích đa giác bằng 0, nên $C_x = M_{10}/M_{00}$ không xác định – đúng như cảnh báo ở trên.
+        :::
+
+
 - Diện tích và chu vi đường viền
     - Diện tích contour - `cv2.contourArea()`
         - `area = cv.contourArea(cnt)`
@@ -108,6 +129,25 @@ contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMP
     - `epsilon` : Khoảng cách tối đa cho phép đường viền gốc đến đường viền xấp xỉ
         - $\epsilon$ quá lớn → Hình xấp xỉ bị thô và mất nhiều chi tiết
         - $\epsilon$ quá nhỏ → Hình xấp xỉ bám quá sát ảnh gốc, không nén được số đỉnh
+
+        :::proof thuật toán Douglas–Peucker và ý nghĩa chính xác của epsilon
+        `approxPolyDP` dùng thuật toán **Douglas–Peucker** (đệ quy):
+
+        1. Nối điểm đầu $A$ và điểm cuối $B$ của đoạn đường cong bằng một đoạn thẳng.
+        2. Tìm điểm $P$ trên đường cong **xa đoạn $AB$ nhất**, khoảng cách $d_{\max}$.
+        3. Nếu $d_{\max} \le \varepsilon$: thay cả đoạn cong bằng đoạn $AB$. Nếu không: giữ $P$ làm đỉnh, đệ quy cho hai đoạn $A \to P$ và $P \to B$.
+
+        **Khoảng cách từ điểm tới đường thẳng.** Diện tích tam giác $ABP$ bằng nửa độ lớn tích có hướng, và cũng bằng $\frac12 \cdot \text{đáy} \cdot \text{chiều cao}$:
+
+        $$\frac12\big|(B - A) \times (P - A)\big| = \frac12\,|AB|\,d \;\Rightarrow\; d = \frac{|(x_B - x_A)(y_P - y_A) - (y_B - y_A)(x_P - x_A)|}{\sqrt{(x_B - x_A)^2 + (y_B - y_A)^2}}$$
+
+        **Khẳng định:** mọi điểm của contour gốc cách đa giác xấp xỉ không quá $\varepsilon$.
+
+        **Chứng minh (quy nạp theo số lần đệ quy).** Một đoạn chỉ được thay bằng đường thẳng ở bước 3 khi $d_{\max} \le \varepsilon$, tức *mọi* điểm của đoạn cong đó cách đường thẳng $AB$ không quá $\varepsilon$. Mọi điểm gốc cuối cùng đều thuộc đúng một đoạn như vậy (vì đệ quy chỉ dừng khi điều kiện này đúng, hoặc khi đoạn chỉ còn 2 điểm – lúc đó khoảng cách bằng 0). $\blacksquare$
+
+        Đây là lý do $\varepsilon$ được đặt theo **tỉ lệ chu vi** (`0.01`–`0.05 * arcLength`): sai số cho phép tỉ lệ với kích thước vật, nên cùng một hệ số cho kết quả giống nhau dù vật to hay nhỏ trong ảnh.
+        :::
+
 
     ```python
     # Ví dụ trong tài liệu: epsilon = 10% chu vi (thực tế hay dùng 1-5% để giữ hình dạng tốt hơn)
@@ -236,6 +276,19 @@ contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMP
 
         extent = float(area) / rect_area
         ```
+
+        :::proof vì sao Extent, Solidity nằm trong (0, 1] và công thức đường kính tương đương
+        **Extent ≤ 1.** Hình chữ nhật bao là hình chữ nhật thẳng nhỏ nhất *chứa* contour, nên vùng contour $R \subseteq$ hình chữ nhật, suy ra $\text{Area}(R) \le w \cdot h$. Dấu bằng chỉ khi vật chính là hình chữ nhật thẳng. Ví dụ: hình tròn có Extent $= \frac{\pi r^2}{(2r)^2} = \frac{\pi}{4} \approx 0.785$; tam giác vuông nửa hình chữ nhật có Extent $= 0.5$.
+
+        **Solidity ≤ 1, và = 1 khi và chỉ khi vật lồi.** Bao lồi là tập lồi nhỏ nhất chứa $R$, nên $R \subseteq \text{Hull}(R)$ và $\text{Area}(R) \le \text{Area}(\text{Hull})$. Nếu $R$ lồi thì chính $R$ là tập lồi chứa $R$, nên $\text{Hull}(R) = R$ và Solidity = 1. Ngược lại nếu $R$ không lồi thì phần "lõm" $\text{Hull} \setminus R$ có diện tích dương, nên Solidity < 1. $\blacksquare$ (Do `contourArea` tính trên đa giác qua tâm pixel, contour lồi thực tế cho giá trị rất gần 1 chứ không phải luôn đúng bằng 1.)
+
+        **Đường kính tương đương.** Đặt diện tích hình tròn đường kính $d$ bằng diện tích vật:
+
+        $$\pi\left(\frac{d}{2}\right)^2 = \text{Area} \iff \frac{\pi d^2}{4} = \text{Area} \iff d = \sqrt{\frac{4 \cdot \text{Area}}{\pi}}$$
+
+        **Bất biến:** Aspect Ratio, Extent, Solidity là tỉ số của hai đại lượng cùng đơn vị nên **không đổi khi phóng to/thu nhỏ** vật (cả tử và mẫu cùng nhân $s$ hoặc $s^2$). Solidity còn không đổi khi xoay; Extent và Aspect Ratio thì có đổi khi xoay vì hình chữ nhật bao luôn thẳng theo trục.
+        :::
+
 
     - **Độ đặc/ độ rắn (Solidity)**
         - Tỷ số giữa diện tích của đường viền vật thể và diện tích bao lồi (Convex Hull)
@@ -394,7 +447,7 @@ contours, hierarchy = cv.findContours(thresh, cv.RETR_TREE, cv.CHAIN_APPROX_SIMP
     - **Đường viền Cha (Parent Contour)**: Đường bao bọc phía ngoài
     - **Đường viền Con (Child Contour)**: Đường nằm trọn vẹn ở phía bên trong
     - **Cùng cấp bậc (Same Hierarchy Level)**: Các đường viền nằm độc lập ở cùng một tầng không gian
-- $$\text{Hierarchy Array} = \begin{bmatrix} \text{Next}, & \text{Previous}, & \text{First\_Child}, & \text{Parent} \end{bmatrix}$$
+- $$\text{Hierarchy Array} = \begin{bmatrix} \text{Next}, & \text{Previous}, & \text{First_Child}, & \text{Parent} \end{bmatrix}$$
     - `Next` **(Đường viền tiếp theo):** Chỉ số (index) của đường viền tiếp theo **nằm cùng một cấp bậc** phân cấp với đường viền hiện tại.
     - `Previous` **(Đường viền trước đó):** Chỉ số của đường viền nằm ngay trước nó **trên cùng một cấp bậc**.
     - `First_Child` **(Con đầu lòng):** Chỉ số của đường viền con **đầu tiên** nằm lồng bên trong nó (nếu có nhiều con, chỉ lấy đứa đầu tiên).

@@ -724,3 +724,28 @@ body.site-toc-open .site-toc-overlay {
         padding-right: 12px;
     }
 }
+
+/* Khối chứng minh thu gọn được trong ghi chú OpenCV (:::proof) */
+.opencv-proof {
+    margin: 12px 0 16px;
+    border: 1px solid #d5e8e2;
+    border-left: 4px solid #16a085;
+    border-radius: 6px;
+    background: #f7fbfa;
+}
+
+.opencv-proof > summary {
+    cursor: pointer;
+    padding: 8px 12px;
+    font-weight: 600;
+    color: #11785f;
+}
+
+.opencv-proof[open] > summary {
+    border-bottom: 1px solid #d5e8e2;
+}
+
+.opencv-proof-body {
+    padding: 4px 16px 10px;
+    overflow-x: auto;
+}

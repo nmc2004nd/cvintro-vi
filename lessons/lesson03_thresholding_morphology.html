@@ -372,6 +372,50 @@
 <ul>
 <li><span class="math">\(M \times N\)</span>: số pixel, <span class="math">\(L = 256\)</span></li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: vì sao CDF làm phẳng histogram <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Bản liên tục (chứng minh chặt).</strong> Coi mức xám là biến ngẫu nhiên <span class="math">\(X\)</span> với hàm phân phối tích lũy <span class="math">\(F(v) = P(X \le v)\)</span>, liên tục và tăng ngặt. Đặt <span class="math">\(Y = F(X)\)</span>. Với mọi <span class="math">\(y \in [0, 1]\)</span>:</p>
+<p><span class="math display">\[P(Y \le y) = P\big(F(X) \le y\big) = P\big(X \le F^{-1}(y)\big) = F\big(F^{-1}(y)\big) = y\]</span></p>
+<p>(bước thứ hai dùng <span class="math">\(F\)</span> tăng ngặt nên giữ thứ tự). <span class="math">\(P(Y \le y) = y\)</span> chính là phân phối <strong>đều</strong> trên <span class="math">\([0, 1]\)</span>: histogram phẳng hoàn toàn. Nhân với <span class="math">\(L - 1\)</span> để trải ra <span class="math">\([0, 255]\)</span>. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Bản rời rạc (ảnh thật).</strong> Mức xám chỉ có 256 giá trị, và mọi pixel cùng mức <span class="math">\(v\)</span> phải đi tới cùng một mức mới, nên <strong>không thể tách</strong> một cột histogram cao thành nhiều cột. Kết quả chỉ <em>gần</em> phẳng: các cột được dàn ra sao cho CDF của ảnh mới gần một đường thẳng. Phép biến đổi là hàm <strong>không giảm</strong> (vì CDF không giảm), nên thứ tự sáng tối giữa các pixel được giữ nguyên.</p>
+<p><strong>Giải thích công thức.</strong> Tử số <span class="math">\(cdf(v) - cdf_{min}\)</span> và mẫu số <span class="math">\(MN - cdf_{min}\)</span> chọn sao cho:</p>
+<ul>
+<li>Mức xám nhỏ nhất có trong ảnh (<span class="math">\(cdf = cdf_{min}\)</span>) → <span class="math">\(h = 0\)</span> (đen tuyệt đối).</li>
+<li>Mức lớn nhất (<span class="math">\(cdf = MN\)</span>, tổng số pixel) → <span class="math">\(h = L - 1\)</span> (trắng tuyệt đối).</li>
+<li>Ở giữa nội suy tuyến tính theo CDF.</li>
+</ul>
+<p>Nếu không trừ <span class="math">\(cdf_{min}\)</span> thì mức tối nhất bị đưa tới <span class="math">\(\frac{cdf_{min}}{MN}(L-1) &gt; 0\)</span>, phí mất một phần dải động.</p>
+<p><strong>Ví dụ tính tay</strong> (<span class="math">\(L = 8\)</span>, ảnh 16 pixel): số pixel ở các mức 2, 3, 4, 5 lần lượt là 4, 8, 2, 2.</p>
+<table>
+<thead>
+<tr>
+<th><span class="math">\(v\)</span></th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="math">\(cdf(v)\)</span></td>
+<td>4</td>
+<td>12</td>
+<td>14</td>
+<td>16</td>
+</tr>
+<tr>
+<td><span class="math">\(h(v) = \text{round}\big(\frac{cdf - 4}{16 - 4} \cdot 7\big)\)</span></td>
+<td>0</td>
+<td>round(4.67) = 5</td>
+<td>round(5.83) = 6</td>
+<td>7</td>
+</tr>
+</tbody>
+</table>
+<p>Dải ban đầu 2–5 được kéo ra 0–7. Cột cao nhất (mức 3, 8 pixel) được dành khoảng cách lớn nhất với hàng xóm (từ 0 nhảy lên 5) – độ tương phản tăng nhiều nhất ở chỗ có nhiều pixel nhất. Mình đã kiểm tra công thức này bằng NumPy trên ảnh 80x80: <strong>trùng 100%</strong> với <code>cv.equalizeHist</code>.</p>
+<p><strong>Dẫn tới CLAHE.</strong> Độ dốc của bảng tra là <span class="math">\(\frac{h(v+1) - h(v)}{1} \approx \frac{L-1}{MN}\,\text{hist}(v+1)\)</span>, tức <strong>tỉ lệ với chiều cao histogram</strong>. Vùng nền phẳng (một cột histogram rất cao) sẽ có độ dốc rất lớn – nhiễu nhỏ trong nền bị khuếch đại thành vân. CLAHE cắt histogram ở <code>clipLimit</code> trước khi tính CDF, tức là <strong>chặn trên độ dốc</strong>, nên giới hạn được mức khuếch đại nhiễu.</p>
+</div></details>
 </li>
 </ul>
 <div class="highlight"><pre><span></span><span class="c1"># Cách làm bằng NumPy</span>
@@ -655,6 +699,18 @@
 <span class="p">)</span>
 </pre></div>
 
+<details class="opencv-proof"><summary>Chứng minh: vì sao ngưỡng cục bộ chịu được ánh sáng không đều <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Mô hình ánh sáng.</strong> Giả sử ảnh = nội dung + độ sáng nền: <span class="math">\(I(x, y) = S(x, y) + L(x, y)\)</span>, trong đó <span class="math">\(L\)</span> (ánh sáng, bóng đổ) thay đổi <em>chậm</em>, gần như hằng số trong một cửa sổ <span class="math">\(\Omega\)</span> kích thước <code>blockSize</code>.</p>
+<p><strong>Bước 1.</strong> Với trọng số <span class="math">\(w\)</span> có tổng bằng 1 (trung bình đều <span class="math">\(w = 1/N\)</span>, hoặc Gauss đã chuẩn hóa), và <span class="math">\(L \approx L_0\)</span> trong <span class="math">\(\Omega\)</span>:</p>
+<p><span class="math display">\[\sum_{\Omega} w\,I = \sum_{\Omega} w\,S + \sum_{\Omega} w\,L \approx \overline{S} + L_0 \sum_\Omega w = \overline{S} + L_0\]</span></p>
+<p><strong>Bước 2.</strong> Điều kiện giữ pixel ở <code>THRESH_BINARY</code> là <span class="math">\(I(x, y) &gt; T(x, y) = \sum w I - C\)</span>, tương đương</p>
+<p><span class="math display">\[S(x, y) + L_0 &gt; \overline{S} + L_0 - C \iff S(x, y) - \overline{S} &gt; -C\]</span></p>
+<p><span class="math">\(L_0\)</span> <strong>bị triệt tiêu</strong>: quyết định chỉ còn phụ thuộc vào việc pixel sáng hơn hay tối hơn trung bình <em>xung quanh nó</em>, không phụ thuộc vùng đó đang sáng hay đang bị bóng. Ngưỡng toàn cục không làm được điều này vì <span class="math">\(L\)</span> khác nhau giữa các vùng. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Vì sao trọng số phải có tổng bằng 1.</strong> Nếu <span class="math">\(\sum w = k \ne 1\)</span> thì ở vùng phẳng <span class="math">\(I \equiv c\)</span>, ngưỡng thành <span class="math">\(kc - C\)</span>, lệch theo độ sáng <span class="math">\(c\)</span>, và <span class="math">\(L_0\)</span> không còn triệt tiêu. Với tổng bằng 1, vùng phẳng cho <span class="math">\(T = c - C\)</span> đúng như mong muốn.</p>
+<p><strong>Ý nghĩa của C.</strong> Ở vùng phẳng, <span class="math">\(S - \overline{S} \approx\)</span> nhiễu nhỏ. Với <span class="math">\(C &gt; 0\)</span>, điều kiện <span class="math">\(S - \overline{S} &gt; -C\)</span> đúng cho cả các pixel tối hơn trung bình một chút, nên vùng phẳng thành trắng hết thay vì lốm đốm nhiễu. Chỉ những nét tối hơn hẳn nền (chữ, đường kẻ) mới thành đen.</p>
+<p><strong>Thực tế OpenCV làm gì:</strong> <span class="math">\(T\)</span> chính là ảnh đã làm mờ (<code>boxFilter</code> hoặc <code>GaussianBlur</code> với cửa sổ <code>blockSize</code>) trừ <span class="math">\(C\)</span>, nên chi phí chỉ bằng một lần lọc. <code>blockSize</code> phải lẻ để cửa sổ có pixel tâm, và nên lớn hơn kích thước nét cần giữ (nếu cửa sổ nằm gọn trong một nét chữ dày thì trung bình chính là nét chữ, pixel không còn tối hơn trung bình).</p>
+</div></details>
 </li>
 </ul>
 </li>
@@ -711,6 +767,76 @@
 </ul>
 </li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: Otsu – từ phương sai trong lớp tới công thức tính nhanh <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Ký hiệu: <span class="math">\(P(i) = n_i / N\)</span> là xác suất mức xám <span class="math">\(i\)</span>, lớp <span class="math">\(C_1 = \{0, \dots, t-1\}\)</span>, <span class="math">\(C_2 = \{t, \dots, L-1\}\)</span>, các đại lượng <span class="math">\(q_k, \mu_k, \sigma_k^2\)</span> như trên, và</p>
+<p><span class="math display">\[\mu_T = \sum_{i=0}^{L-1} i\,P(i), \qquad \sigma_T^2 = \sum_{i=0}^{L-1} (i - \mu_T)^2 P(i)\]</span></p>
+<p>là trung bình và phương sai của <em>toàn ảnh</em>, <strong>không phụ thuộc <span class="math">\(t\)</span></strong>.</p>
+<p><strong>Bước 0 – trung bình toàn ảnh là trung bình có trọng số của hai lớp.</strong> Tách tổng làm hai phần:</p>
+<p><span class="math display">\[\mu_T = \sum_{C_1} iP(i) + \sum_{C_2} iP(i) = q_1\mu_1 + q_2\mu_2, \qquad q_1 + q_2 = 1\]</span></p>
+<p><strong>Bước 1 – phân rã phương sai: <span class="math">\(\sigma_T^2 = \sigma_w^2 + \sigma_b^2\)</span>.</strong> Xét phần tổng trên <span class="math">\(C_1\)</span>, chèn <span class="math">\(\mu_1\)</span> vào:</p>
+<p><span class="math display">\[\sum_{C_1} (i - \mu_T)^2 P(i) = \sum_{C_1} \big[(i - \mu_1) + (\mu_1 - \mu_T)\big]^2 P(i)\]</span></p>
+<p><span class="math display">\[= \underbrace{\sum_{C_1} (i - \mu_1)^2 P(i)}_{= q_1\sigma_1^2} + 2(\mu_1 - \mu_T)\underbrace{\sum_{C_1} (i - \mu_1) P(i)}_{= q_1\mu_1 - \mu_1 q_1 = 0} + (\mu_1 - \mu_T)^2 \underbrace{\sum_{C_1} P(i)}_{= q_1}\]</span></p>
+<p>Số hạng giữa bằng 0 vì <span class="math">\(\sum_{C_1} iP(i) = q_1\mu_1\)</span> (định nghĩa của <span class="math">\(\mu_1\)</span>). Làm y hệt cho <span class="math">\(C_2\)</span> rồi cộng lại:</p>
+<p><span class="math display">\[\sigma_T^2 = \underbrace{q_1\sigma_1^2 + q_2\sigma_2^2}_{\sigma_w^2 \text{ (trong lớp)}} + \underbrace{q_1(\mu_1 - \mu_T)^2 + q_2(\mu_2 - \mu_T)^2}_{\sigma_b^2 \text{ (giữa hai lớp)}}\]</span></p>
+<p><strong>Bước 2 – đổi bài toán.</strong> <span class="math">\(\sigma_T^2\)</span> cố định, nên</p>
+<p><span class="math display">\[\arg\min_t \sigma_w^2(t) = \arg\max_t \sigma_b^2(t)\]</span></p>
+<p><strong>Bước 3 – rút gọn <span class="math">\(\sigma_b^2\)</span>.</strong> Từ Bước 0: <span class="math">\(\mu_1 - \mu_T = \mu_1 - q_1\mu_1 - q_2\mu_2 = q_2(\mu_1 - \mu_2)\)</span>, tương tự <span class="math">\(\mu_2 - \mu_T = -q_1(\mu_1 - \mu_2)\)</span>. Thay vào:</p>
+<p><span class="math display">\[\sigma_b^2 = q_1 q_2^2(\mu_1 - \mu_2)^2 + q_2 q_1^2(\mu_1 - \mu_2)^2 = q_1 q_2 (q_1 + q_2)(\mu_1 - \mu_2)^2 = q_1 q_2 (\mu_1 - \mu_2)^2\]</span></p>
+<p>Công thức này giải thích trực quan của Otsu: <span class="math">\(\sigma_b^2\)</span> lớn khi <strong>hai lớp cách xa nhau</strong> (<span class="math">\(|\mu_1 - \mu_2|\)</span> lớn) <strong>và đều có nhiều pixel</strong> (<span class="math">\(q_1 q_2\)</span> lớn nhất khi <span class="math">\(q_1 = q_2 = 1/2\)</span>). Ngưỡng ở thung lũng giữa hai đỉnh thỏa cả hai điều đó.</p>
+<p><strong>Bước 4 – công thức tính nhanh <span class="math">\(O(L)\)</span>.</strong> Đặt <span class="math">\(m(t) = \sum_{i&lt;t} iP(i)\)</span> (tổng tích lũy), khi đó <span class="math">\(\mu_1 = m / q_1\)</span>, <span class="math">\(\mu_2 = (\mu_T - m)/q_2\)</span>:</p>
+<p><span class="math display">\[\sigma_b^2 = q_1 q_2\left(\frac{m}{q_1} - \frac{\mu_T - m}{q_2}\right)^2 = \frac{\big(m q_2 - (\mu_T - m) q_1\big)^2}{q_1 q_2} = \frac{\big(\mu_T\,q_1 - m\big)^2}{q_1(1 - q_1)}\]</span></p>
+<p>(dùng <span class="math">\(q_1 + q_2 = 1\)</span> ở bước cuối). Chỉ cần hai mảng tổng tích lũy <span class="math">\(q_1(t)\)</span> và <span class="math">\(m(t)\)</span> là tính được <span class="math">\(\sigma_b^2\)</span> cho mọi <span class="math">\(t\)</span> cùng lúc. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Ví dụ tính tay</strong> (<span class="math">\(L = 4\)</span>): <span class="math">\(P = (0.3,\ 0.2,\ 0.1,\ 0.4)\)</span>, nên <span class="math">\(\mu_T = 0.2 + 0.2 + 1.2 = 1.6\)</span> và <span class="math">\(\sigma_T^2 = (0.2 + 0.4 + 3.6) - 1.6^2 = 1.64\)</span>.</p>
+<table>
+<thead>
+<tr>
+<th><span class="math">\(t\)</span></th>
+<th><span class="math">\(C_1\)</span></th>
+<th><span class="math">\(q_1\)</span></th>
+<th><span class="math">\(m\)</span></th>
+<th><span class="math">\(\sigma_b^2 = (1.6\,q_1 - m)^2 / (q_1(1-q_1))\)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>{0}</td>
+<td>0.3</td>
+<td>0</td>
+<td><span class="math">\(0.48^2/0.21 \approx 1.097\)</span></td>
+</tr>
+<tr>
+<td>2</td>
+<td>{0, 1}</td>
+<td>0.5</td>
+<td>0.2</td>
+<td><span class="math">\(0.6^2/0.25 = 1.44\)</span></td>
+</tr>
+<tr>
+<td>3</td>
+<td>{0, 1, 2}</td>
+<td>0.6</td>
+<td>0.4</td>
+<td><span class="math">\(0.56^2/0.24 \approx 1.307\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>Chọn <span class="math">\(t = 2\)</span>. Kiểm tra lại bằng định nghĩa: <span class="math">\(\mu_1 = 0.4\)</span>, <span class="math">\(\sigma_1^2 = 0.24\)</span>, <span class="math">\(\mu_2 = 2.8\)</span>, <span class="math">\(\sigma_2^2 = 0.16\)</span>, nên <span class="math">\(\sigma_w^2 = 0.5 \cdot 0.24 + 0.5 \cdot 0.16 = 0.2 = 1.64 - 1.44\)</span> ✓.</p>
+<p><strong>Code NumPy</strong> (cho cùng ngưỡng với OpenCV):</p>
+<div class="highlight"><pre><span></span><span class="n">P</span> <span class="o">=</span> <span class="n">hist</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span> <span class="o">/</span> <span class="n">hist</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">256</span><span class="p">)</span>
+<span class="n">q1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">P</span><span class="p">)</span>                 <span class="c1"># q1[t]: lớp 1 gồm các mức 0..t</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">i</span> <span class="o">*</span> <span class="n">P</span><span class="p">)</span>
+<span class="n">muT</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+<span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">):</span>
+    <span class="n">sb</span> <span class="o">=</span> <span class="p">(</span><span class="n">muT</span> <span class="o">*</span> <span class="n">q1</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">/</span> <span class="p">(</span><span class="n">q1</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">q1</span><span class="p">))</span>
+<span class="n">t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nanargmax</span><span class="p">(</span><span class="n">sb</span><span class="p">)</span>              <span class="c1"># = giá trị ret của cv.threshold(..., THRESH_OTSU)</span>
+</pre></div>
+
+<p>Lưu ý chỉ số: <code>cumsum</code> tại vị trí <span class="math">\(t\)</span> gồm cả mức <span class="math">\(t\)</span>, nên <code>t</code> ở đây là mức lớn nhất của lớp 1 – đúng với <code>ret</code> của OpenCV (pixel <code>&gt; ret</code> thành <code>maxval</code>). Theo quy ước <span class="math">\(C_1 = \{0..t-1\}\)</span> ở trên thì đó là <span class="math">\(t = \text{ret} + 1\)</span>. Mình đã chạy trên histogram hai đỉnh mô phỏng: cả ba cách (min <span class="math">\(\sigma_w^2\)</span>, max <span class="math">\(\sigma_b^2\)</span>, OpenCV) cho cùng một ngưỡng.</p>
+<p><strong>Liên hệ:</strong> cực tiểu <span class="math">\(\sigma_w^2\)</span> chính là cực tiểu tổng bình phương khoảng cách tới tâm lớp, nên Otsu = <strong>k-means với k = 2 trên trục mức xám</strong>, giải chính xác bằng cách thử hết <span class="math">\(L\)</span> ngưỡng (trong 1D, phân cụm tối ưu luôn là một ngưỡng). Khi histogram chỉ có một đỉnh, <span class="math">\(\sigma_b^2(t)\)</span> gần như phẳng nên ngưỡng tìm được không còn ý nghĩa rõ ràng.</p>
+</div></details>
 </li>
 </ul>
 <p class="opencv-note-footer"><a href="../opencv-notes.html#11-thresholding">Xem tất cả ghi chú OpenCV &rarr;</a></p>
@@ -1011,8 +1137,39 @@
 <p><img alt="" src="../img/opencv-notes/13-morphological-transform-6.png" /></p>
 <ul>
 <li><strong>Opening là erosion trước, sau đó dilation</strong></li>
-<li><span class="math">\(\text{Opening}(A)=\text{Dilation}(\text{Erosion}(A))\)</span></li>
-<li><code>opening = cv.morphologyEx(img, cv.MORPH_OPEN, kernel)</code></li>
+<li>
+<p><span class="math">\(\text{Opening}(A)=\text{Dilation}(\text{Erosion}(A))\)</span></p>
+<details class="opencv-proof"><summary>Chứng minh: các tính chất của opening và closing <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p>Định nghĩa trên ảnh nhị phân (tập điểm trắng <span class="math">\(A\)</span>), với <span class="math">\(B_z\)</span> là kernel <span class="math">\(B\)</span> dịch tới vị trí <span class="math">\(z\)</span>, giả sử <span class="math">\(B\)</span> đối xứng và chứa tâm (đúng với các kernel chữ nhật, elip, chữ thập của OpenCV):</p>
+<p><span class="math display">\[A \ominus B = \{z : B_z \subseteq A\} \quad \text{(erosion)}, \qquad A \oplus B = \bigcup_{a \in A} B_a \quad \text{(dilation)}\]</span></p>
+<p><strong>Tính chất 1 – Opening là hợp của mọi bản sao kernel nằm gọn trong A:</strong></p>
+<p><span class="math display">\[A \circ B = (A \ominus B) \oplus B = \bigcup\{B_z : B_z \subseteq A\}\]</span></p>
+<p>Chứng minh: theo định nghĩa dilation, <span class="math">\((A \ominus B) \oplus B = \bigcup_{z \in A \ominus B} B_z\)</span>, và <span class="math">\(z \in A \ominus B\)</span> nghĩa là <span class="math">\(B_z \subseteq A\)</span>. <span class="math">\(\blacksquare\)</span></p>
+<p>Hệ quả – đây chính là ý nghĩa "xóa đốm nhỏ" của opening:</p>
+<ul>
+<li><span class="math">\(A \circ B \subseteq A\)</span> (mỗi <span class="math">\(B_z\)</span> trong hợp đều nằm trong <span class="math">\(A\)</span>) → opening <strong>không bao giờ thêm</strong> pixel trắng.</li>
+<li>Một đốm trắng không chứa vừa một bản sao của <span class="math">\(B\)</span> thì không có <span class="math">\(B_z\)</span> nào nằm trong nó → <strong>bị xóa hoàn toàn</strong>. Phần nào của vật thể chứa vừa <span class="math">\(B\)</span> thì được <strong>giữ nguyên hình dạng</strong> (không bị co lại như khi chỉ erosion).</li>
+</ul>
+<p><strong>Tính chất 2 – Opening lũy đẳng: <span class="math">\((A \circ B) \circ B = A \circ B\)</span>.</strong> Đặt <span class="math">\(A' = A \circ B\)</span>. Mọi <span class="math">\(B_z \subseteq A\)</span> đều nằm trong <span class="math">\(A'\)</span> (vì <span class="math">\(A'\)</span> là hợp của chúng), và ngược lại mọi <span class="math">\(B_z \subseteq A'\)</span> đều nằm trong <span class="math">\(A\)</span> (vì <span class="math">\(A' \subseteq A\)</span>). Hai họ <span class="math">\(\{B_z \subseteq A\}\)</span> và <span class="math">\(\{B_z \subseteq A'\}\)</span> trùng nhau nên hợp của chúng bằng nhau. <span class="math">\(\blacksquare\)</span> → Gọi opening nhiều lần với cùng kernel không thay đổi gì thêm (khác với <code>iterations</code> của erode/dilate).</p>
+<p><strong>Tính chất 3 – Closing là opening của nền (đối ngẫu).</strong> Với <span class="math">\(A^c\)</span> là phần nền (đen):</p>
+<p><span class="math display">\[z \notin A \ominus B \iff B_z \not\subseteq A \iff B_z \cap A^c \ne \emptyset \iff z \in A^c \oplus B\]</span></p>
+<p>(bước cuối dùng <span class="math">\(B\)</span> đối xứng). Vậy <span class="math">\((A \ominus B)^c = A^c \oplus B\)</span>, và tương tự <span class="math">\((A \oplus B)^c = A^c \ominus B\)</span>. Từ đó</p>
+<p><span class="math display">\[(A \bullet B)^c = \big((A \oplus B) \ominus B\big)^c = (A^c \ominus B) \oplus B = A^c \circ B\]</span></p>
+<p>Áp dụng Tính chất 1 cho nền: <span class="math">\(A^c \circ B \subseteq A^c\)</span>, tức là <span class="math">\(A \bullet B \supseteq A\)</span>. Closing <strong>không bao giờ xóa</strong> pixel trắng, chỉ lấp các lỗ đen không chứa vừa <span class="math">\(B\)</span>. <span class="math">\(\blacksquare\)</span></p>
+<p><strong>Tính chất 4 – các phép hiệu luôn không âm.</strong> Với ảnh xám, erosion = min, dilation = max trên cửa sổ kernel; cửa sổ chứa chính pixel tâm nên</p>
+<p><span class="math display">\[\text{erode}(A) \le A \le \text{dilate}(A)\]</span></p>
+<ul>
+<li><span class="math">\(\text{Gradient} = \max - \min\)</span> trên cửa sổ <span class="math">\(\ge 0\)</span>: chính là <strong>biên độ dao động cục bộ</strong>, bằng 0 ở vùng phẳng và lớn ở biên.</li>
+<li><span class="math">\(\text{TopHat} = A - \text{Opening}(A) \ge 0\)</span> do Tính chất 1 (bản xám tương tự): phần còn lại là các chi tiết sáng <em>nhỏ hơn kernel</em>.</li>
+<li><span class="math">\(\text{BlackHat} = \text{Closing}(A) - A \ge 0\)</span> do Tính chất 3: phần còn lại là các chi tiết tối nhỏ hơn kernel.</li>
+</ul>
+<p>Vì không âm nên kết quả nằm gọn trong <code>uint8</code>, không cần lo tràn số như phép trừ thường.</p>
+</div></details>
+</li>
+<li>
+<p><code>opening = cv.morphologyEx(img, cv.MORPH_OPEN, kernel)</code></p>
+</li>
 <li><mark>Ý nghĩa:</mark><ul>
 <li><mark>Erosion xóa nhiễu trắng nhỏ</mark></li>
 <li><mark>Dilation khôi phục lại kích thước tương đối của vật thể chính</mark></li>

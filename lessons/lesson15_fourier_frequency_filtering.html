@@ -621,11 +621,29 @@
 </tbody>
 </table>
 <ul>
-<li>Ảnh có thể xem là tín hiệu lấy mẫu theo hai chiều → DFT 2D cho biết ảnh gồm những <mark>tần số</mark> nào<ul>
+<li>
+<p>Ảnh có thể xem là tín hiệu lấy mẫu theo hai chiều → DFT 2D cho biết ảnh gồm những <mark>tần số</mark> nào</p>
+<ul>
 <li>Biên, nhiễu: pixel thay đổi đột ngột → <mark>tần số cao</mark></li>
 <li>Vùng phẳng, mảng màu: thay đổi chậm → <mark>tần số thấp</mark></li>
 <li>FFT (Fast Fourier Transform) là thuật toán nhanh để tính DFT</li>
 </ul>
+<details class="opencv-proof"><summary>Chứng minh: DFT, dịch phổ về giữa và định lý tích chập <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Định nghĩa DFT 2D</strong> của ảnh <span class="math">\(f\)</span> kích thước <span class="math">\(M \times N\)</span>:</p>
+<p><span class="math display">\[F(u, v) = \sum_{x=0}^{M-1}\sum_{y=0}^{N-1} f(x, y)\, e^{-2\pi i\left(\frac{ux}{M} + \frac{vy}{N}\right)}\]</span></p>
+<p>Mỗi <span class="math">\(F(u, v)\)</span> là một số phức <span class="math">\(= |F|e^{i\phi}\)</span>: <strong>độ lớn</strong> <span class="math">\(|F| = \sqrt{\text{Re}^2 + \text{Im}^2}\)</span> cho biết sóng tần số <span class="math">\((u, v)\)</span> mạnh đến đâu, <strong>pha</strong> <span class="math">\(\phi\)</span> cho biết sóng đó lệch vị trí ra sao.</p>
+<p><strong>1. Vì sao phải lấy log khi hiển thị.</strong> Thay <span class="math">\(u = v = 0\)</span>: <span class="math">\(F(0, 0) = \sum f(x, y)\)</span> = tổng mọi pixel (thành phần DC). Ảnh 512x512 trung bình 128 cho <span class="math">\(F(0,0) \approx 3.4 \times 10^7\)</span>, trong khi các tần số cao thường chỉ cỡ <span class="math">\(10^2\)</span>–<span class="math">\(10^4\)</span>. Hiển thị tuyến tính thì chỉ thấy một chấm sáng ở DC; log nén dải này lại. (Dùng <code>np.log(1 + |F|)</code> để tránh <span class="math">\(\log 0\)</span>.)</p>
+<p><strong>2. <code>fftshift</code> = nhân ảnh với <span class="math">\((-1)^{x+y}\)</span>.</strong> Vì <span class="math">\(e^{i\pi} = -1\)</span>:</p>
+<p><span class="math display">\[(-1)^{x+y} = e^{i\pi(x+y)} = e^{2\pi i\left(\frac{(M/2)x}{M} + \frac{(N/2)y}{N}\right)}\]</span></p>
+<p>Nhân <span class="math">\(f\)</span> với hàm mũ này rồi lấy DFT, số mũ cộng vào số mũ trong định nghĩa, cho <span class="math">\(F(u - M/2,\ v - N/2)\)</span>: phổ bị dịch đi nửa kích thước, đưa DC từ góc vào giữa (với <span class="math">\(M, N\)</span> chẵn). Vì DFT tuần hoàn chu kỳ <span class="math">\(M, N\)</span>, dịch nửa chu kỳ chính là hoán đổi bốn góc phần tư – đúng những gì <code>fftshift</code> làm.</p>
+<p><strong>3. Định lý tích chập – lý do lọc trong miền tần số được.</strong> Chứng minh cho 1D (2D làm y hệt theo từng chiều), với tích chập vòng <span class="math">\((f \circledast g)[n] = \sum_m f[m]\,g[(n - m) \bmod N]\)</span>:</p>
+<p><span class="math display">\[\mathcal{F}\{f \circledast g\}[k] = \sum_n \sum_m f[m]\,g[n - m]\,e^{-2\pi i kn/N} = \sum_m f[m]\,e^{-2\pi i km/N} \sum_n g[n - m]\,e^{-2\pi i k(n-m)/N}\]</span></p>
+<p>(tách <span class="math">\(e^{-2\pi i kn/N} = e^{-2\pi i km/N} \cdot e^{-2\pi i k(n-m)/N}\)</span>). Tổng bên trong chạy qua mọi <span class="math">\(n\)</span>, nên <span class="math">\(n' = n - m\)</span> cũng chạy qua đủ một chu kỳ, và bằng <span class="math">\(G[k]\)</span>. Vậy</p>
+<p><span class="math display">\[\mathcal{F}\{f \circledast g\} = F \cdot G \qquad \blacksquare\]</span></p>
+<p>Tích chập (tốn <span class="math">\(O(N^2)\)</span> với kernel lớn) trở thành <strong>phép nhân từng phần tử</strong> trong miền tần số, cộng hai lần FFT <span class="math">\(O(N\log N)\)</span>. Đặt một vùng của phổ về 0 (như HPF ở dưới) chính là nhân với mặt nạ <span class="math">\(G \in \{0, 1\}\)</span>, tương đương tích chập ảnh với <span class="math">\(g = \mathcal{F}^{-1}\{G\}\)</span>.</p>
+<p><strong>4. Vì sao mặt nạ chữ nhật gây gợn sóng (ringing).</strong> Biến đổi ngược của một hình chữ nhật là hàm sinc <span class="math">\(\frac{\sin x}{x}\)</span>, có nhiều vòng dao động. Lọc bằng mặt nạ chữ nhật = tích chập ảnh với sinc, nên quanh mỗi cạnh xuất hiện các vân lặp lại. Dùng mặt nạ Gauss (biến đổi của Gauss vẫn là Gauss, không dao động) thì hết gợn.</p>
+</div></details>
 </li>
 <li>
 <p><strong>Fourier bằng NumPy</strong></p>

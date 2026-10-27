@@ -11,6 +11,39 @@ draft: true
     - **Epipole**: giao của đường nối hai tâm camera với mặt phẳng ảnh; mọi epiline đều đi qua epipole (có thể nằm ngoài ảnh)
 - **Ma trận cơ bản (Fundamental Matrix) F** và **ma trận thiết yếu (Essential Matrix) E**:
     - Ràng buộc epipolar: ==$x'^T F x = 0$== với x, x' là cặp điểm tương ứng (tọa độ pixel)
+
+        :::proof suy ra E = [t]×R, F = K'^{-T}EK^{-1} và epiline
+        **Thiết lập.** Camera 1 ở gốc tọa độ. Điểm 3D có tọa độ $X$ trong hệ camera 1 và $X' = RX + \mathbf{t}$ trong hệ camera 2. Tọa độ ảnh chuẩn hóa: $\hat{\mathbf{x}} \sim X$, $\hat{\mathbf{x}}' \sim X'$ (tức $\hat{\mathbf{x}} = K^{-1}\mathbf{x}$).
+
+        **Bước 1 – ba vector đồng phẳng.** Trong hệ camera 2: tâm camera 2 ở gốc, tâm camera 1 ở $\mathbf{t}$, điểm 3D ở $X'$. Ba điểm này (và gốc) tạo thành **mặt phẳng epipolar**. Các vector $X'$, $\mathbf{t}$, và $X' - \mathbf{t} = RX$ cùng nằm trong mặt phẳng đó, nên $X'$ vuông góc với pháp tuyến $\mathbf{t} \times RX$:
+
+        $$X'^T(\mathbf{t} \times RX) = 0$$
+
+        **Bước 2 – viết tích có hướng thành ma trận.** $\mathbf{t} \times \mathbf{a} = [\mathbf{t}]_\times\mathbf{a}$ với
+
+        $$[\mathbf{t}]_\times = \begin{bmatrix} 0 & -t_z & t_y \\ t_z & 0 & -t_x \\ -t_y & t_x & 0 \end{bmatrix}$$
+
+        (kiểm tra từng thành phần của tích có hướng). Thay vào Bước 1:
+
+        $$X'^T\,\underbrace{[\mathbf{t}]_\times R}_{E}\,X = 0$$
+
+        Phương trình đồng nhất nên chia hai vế cho độ sâu: $\hat{\mathbf{x}}'^T E\,\hat{\mathbf{x}} = 0$. $\blacksquare$
+
+        **Bước 3 – sang tọa độ pixel.** Thay $\hat{\mathbf{x}} = K^{-1}\mathbf{x}$, $\hat{\mathbf{x}}' = K'^{-1}\mathbf{x}'$:
+
+        $$\mathbf{x}'^T\,\underbrace{K'^{-T}EK^{-1}}_{F}\,\mathbf{x} = 0 \qquad \blacksquare$$
+
+        **Hạng 2.** $[\mathbf{t}]_\times\mathbf{t} = \mathbf{t} \times \mathbf{t} = 0$ nên $[\mathbf{t}]_\times$ có nhân khác 0, hạng 2. Nhân với ma trận khả nghịch không làm tăng hạng, nên $E$, $F$ đều hạng 2, $\det F = 0$.
+
+        **Bậc tự do.** $F$ có 9 số, trừ 1 (sai khác hệ số), trừ 1 (ràng buộc $\det F = 0$) → **7**. Mỗi cặp điểm cho **một** phương trình tuyến tính $\mathbf{x}'^TF\mathbf{x} = 0$ theo 9 phần tử của $F$. Thuật toán 8 điểm dùng 8 phương trình để giải tuyến tính (bỏ qua ràng buộc det), sau đó ép hạng 2 bằng SVD (đặt giá trị kỳ dị nhỏ nhất bằng 0). $E$ chỉ có 5 bậc tự do (3 cho xoay, 2 cho hướng của $\mathbf{t}$ – độ dài của $\mathbf{t}$ không xác định được từ ảnh).
+
+        **Epiline.** Một đường thẳng $ax + by + c = 0$ viết bằng tọa độ đồng nhất là $\mathbf{l}^T\mathbf{x} = 0$ với $\mathbf{l} = (a, b, c)$. Cố định $\mathbf{x}$, đặt $\mathbf{l}' = F\mathbf{x}$; ràng buộc epipolar thành $\mathbf{x}'^T\mathbf{l}' = 0$: mọi điểm tương ứng $\mathbf{x}'$ nằm trên đường thẳng $\mathbf{l}' = F\mathbf{x}$. Tương tự, chuyển vị ràng buộc cho $\mathbf{x}^T(F^T\mathbf{x}') = 0$, nên $\mathbf{l} = F^T\mathbf{x}'$. Để vẽ, tính hai đầu mút tại $x = 0$ và $x = W$: $y = -(c + ax)/b$.
+
+        **Epipole.** Epipole $\mathbf{e}$ trên ảnh 1 thỏa $F\mathbf{e} = 0$ (vector trong nhân của $F$). Khi đó mọi epiline $\mathbf{l} = F^T\mathbf{x}'$ đều đi qua $\mathbf{e}$ vì $\mathbf{e}^T F^T\mathbf{x}' = (F\mathbf{e})^T\mathbf{x}' = 0$ – đúng như "mọi epiline đều đi qua epipole".
+
+        **Kiểm chứng số:** hai camera mô phỏng ($K \ne K'$, có xoay và tịnh tiến), 10 điểm 3D ngẫu nhiên: $\max|\mathbf{x}'^TF\mathbf{x}| = 2 \times 10^{-16}$ và hạng của $F$ bằng 2.
+        :::
+
     - E chứa phép xoay và tịnh tiến giữa hai camera, dùng tọa độ đã chuẩn hóa; F = E + thông số nội: $F = K'^{-T} E K^{-1}$
     - F là ma trận 3x3, hạng 2, 7 bậc tự do
     - Epiline trên ảnh 2 ứng với x: $l' = F x$; trên ảnh 1 ứng với x': $l = F^T x'$

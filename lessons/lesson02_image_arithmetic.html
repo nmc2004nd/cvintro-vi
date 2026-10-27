@@ -527,14 +527,33 @@ grass pixel (BGR), before -&gt; after: [72 94 75] -&gt; [72 94 75]
 <li>
 <p>Trộn hai ảnh với nhau</p>
 <ul>
-<li><span class="math">\(g(x) = (1 - \alpha) f_0(x) + \alpha f_1(x)\)</span></li>
-<li>Dùng hàm <code>cv2.addWeighted(img1, alpha, img2, beta, gamma)</code> = <code>img1*alpha + img2*beta + gamma</code>, để ra công thức trên thì<code>beta = 1 - alpha</code></li>
+<li>
+<p><span class="math">\(g(x) = (1 - \alpha) f_0(x) + \alpha f_1(x)\)</span></p>
+<details class="opencv-proof"><summary>Chứng minh: trộn ảnh không bị tràn số <span class="opencv-note-draft">Bản nháp – chưa review</span></summary>
+<div class="opencv-proof-body">
+<p><strong>Khẳng định:</strong> nếu <span class="math">\(0 \le \alpha \le 1\)</span> và <span class="math">\(f_0(x), f_1(x) \in [0, 255]\)</span> thì <span class="math">\(g(x) \in [\min(f_0, f_1), \max(f_0, f_1)] \subseteq [0, 255]\)</span>.</p>
+<p><strong>Chứng minh.</strong> Đặt <span class="math">\(a = \min(f_0(x), f_1(x))\)</span>, <span class="math">\(b = \max(f_0(x), f_1(x))\)</span>. Vì <span class="math">\(1 - \alpha \ge 0\)</span> và <span class="math">\(\alpha \ge 0\)</span>:</p>
+<p><span class="math display">\[g(x) = (1-\alpha) f_0(x) + \alpha f_1(x) \ge (1-\alpha)a + \alpha a = a\]</span></p>
+<p><span class="math display">\[g(x) \le (1-\alpha) b + \alpha b = b\]</span></p>
+<p>Vậy <span class="math">\(g\)</span> luôn nằm giữa hai giá trị gốc (đây là một <em>tổ hợp lồi</em>), không thể vượt 255 hay xuống dưới 0. <span class="math">\(\blacksquare\)</span></p>
+<ul>
+<li>Hai hệ số có tổng <span class="math">\((1 - \alpha) + \alpha = 1\)</span> là điều kiện then chốt. Với <code>addWeighted(img1, alpha, img2, beta, gamma)</code>, nếu <code>alpha + beta &gt; 1</code> hoặc <code>gamma != 0</code> thì kết quả có thể vượt 255 và bị OpenCV bão hòa (kẹp về 255).</li>
+<li>Độ sáng trung bình cũng trộn tuyến tính: <span class="math">\(\overline{g} = (1-\alpha)\overline{f_0} + \alpha\overline{f_1}\)</span> (lấy trung bình hai vế, phép trung bình là tuyến tính).</li>
+<li>Hiệu ứng fade: cho <span class="math">\(\alpha\)</span> tăng đều từ 0 đến 1 theo thời gian, ảnh đi thẳng từ <span class="math">\(f_0\)</span> (<span class="math">\(\alpha = 0\)</span>) sang <span class="math">\(f_1\)</span> (<span class="math">\(\alpha = 1\)</span>).</li>
+</ul>
+</div></details>
+</li>
+<li>
+<p>Dùng hàm <code>cv2.addWeighted(img1, alpha, img2, beta, gamma)</code> = <code>img1*alpha + img2*beta + gamma</code>, để ra công thức trên thì<code>beta = 1 - alpha</code></p>
+</li>
 <li>Hai ảnh <code>img1</code> và <code>img2</code> phải cùng kích thước và cùng số kênh</li>
 <li>Dùng hàm <code>cv2.resize(img, (W, H))</code> - chú ý thứ tự (W, H) khác với <code>img.shape</code> là (H, W, D)</li>
 <li>Có thể tạo hiệu ứng <code>Fade in Fade out</code> bằng cách đổi <code>alpha từ 0-1</code></li>
 </ul>
 </li>
-<li>Phép toán Bitwise cần <mark>mask</mark></li>
+<li>
+<p>Phép toán Bitwise cần <mark>mask</mark></p>
+</li>
 </ul>
 <table>
 <thead>
